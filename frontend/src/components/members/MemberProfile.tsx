@@ -1,5 +1,5 @@
 import Link from "next/link";
-import Badge from "@/components/ui/Badge";
+import ColorBadge from "@/components/ui/color-badge";
 import { getElectedLabel } from "@/lib/utils";
 import type { Member, MemberTerm } from "@/types";
 
@@ -25,7 +25,7 @@ export default function MemberProfile({ member, memberTerm, allTermIds }: Member
         <div className="min-w-0 flex-1">
           <h1 className="text-2xl font-bold">{member.name}</h1>
           <div className="mt-1 flex items-center gap-2">
-            <Badge label={memberTerm.party.name} color={memberTerm.party.color} />
+            <ColorBadge label={memberTerm.party.name} color={memberTerm.party.color} />
             <span className="text-sm text-(--color-text-tertiary)">
               {getElectedLabel(member.electedCount)}
             </span>

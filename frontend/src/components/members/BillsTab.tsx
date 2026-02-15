@@ -1,4 +1,4 @@
-import Badge from "@/components/ui/Badge";
+import ColorBadge from "@/components/ui/color-badge";
 import { formatDate } from "@/lib/utils";
 import { BILL_STATUS_MAP } from "@/lib/constants";
 import type { Bill } from "@/types";
@@ -26,7 +26,7 @@ export default function BillsTab({ bills }: BillsTabProps) {
           >
             <div className="mb-2 flex items-start justify-between gap-2">
               <h4 className="line-clamp-2 text-base font-semibold">{bill.title}</h4>
-              <Badge label={statusInfo.label} color={statusInfo.color} size="sm" />
+              <ColorBadge label={statusInfo.label} color={statusInfo.color} size="sm" />
             </div>
             <div className="flex items-center gap-3 text-xs text-(--color-text-tertiary)">
               <span>{formatDate(bill.proposedDate)}</span>

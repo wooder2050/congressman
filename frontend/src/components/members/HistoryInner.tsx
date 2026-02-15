@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useCongressSuspenseQuery } from "@/hooks/useCongressQuery";
 import { getMember, getMemberHistory, getMemberTerms } from "@/lib/api";
 import HistoryCharts from "./HistoryCharts";
-import Badge from "@/components/ui/Badge";
+import ColorBadge from "@/components/ui/color-badge";
 import { formatPercent } from "@/lib/utils";
 
 interface HistoryInnerProps {
@@ -55,7 +55,9 @@ export default function HistoryInner({ id, termId }: HistoryInnerProps) {
                   >
                     <div className="mb-2 flex items-center gap-2">
                       <span className="text-lg font-bold">{activity.termName}</span>
-                      {mt && <Badge label={mt.party.shortName} color={mt.party.color} size="sm" />}
+                      {mt && (
+                        <ColorBadge label={mt.party.shortName} color={mt.party.color} size="sm" />
+                      )}
                     </div>
                     {mt && (
                       <p className="mb-2 text-sm text-(--color-text-secondary)">
