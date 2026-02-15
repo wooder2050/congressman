@@ -21,12 +21,12 @@ function TermSelectorInner() {
   };
 
   return (
-    <div className="sticky top-16 z-40 bg-(--color-bg-primary) border-b border-(--color-bg-tertiary) shadow-(--shadow-sticky)">
-      <div className="max-w-5xl mx-auto px-4 py-2">
+    <div className="sticky top-16 z-40 border-b border-(--color-bg-tertiary) bg-(--color-bg-primary) shadow-(--shadow-sticky)">
+      <div className="mx-auto max-w-5xl px-4 py-2">
         <select
           value={currentTerm}
           onChange={handleChange}
-          className="w-full px-4 py-3 text-base font-semibold rounded-lg border-2 border-(--color-bg-tertiary) bg-(--color-bg-primary) text-(--color-text-primary) cursor-pointer"
+          className="w-full cursor-pointer rounded-lg border-2 border-(--color-bg-tertiary) bg-(--color-bg-primary) px-4 py-3 text-base font-semibold text-(--color-text-primary)"
           aria-label="국회 대수 선택"
         >
           {terms.map((term) => (
@@ -44,9 +44,9 @@ export default function TermSelector() {
   return (
     <Suspense
       fallback={
-        <div className="sticky top-16 z-40 bg-(--color-bg-primary) border-b border-(--color-bg-tertiary)">
-          <div className="max-w-5xl mx-auto px-4 py-2">
-            <div className="w-full h-12 rounded-lg bg-(--color-bg-secondary) animate-pulse" />
+        <div className="sticky top-16 z-40 border-b border-(--color-bg-tertiary) bg-(--color-bg-primary)">
+          <div className="mx-auto max-w-5xl px-4 py-2">
+            <div className="h-12 w-full animate-pulse rounded-lg bg-(--color-bg-secondary)" />
           </div>
         </div>
       }

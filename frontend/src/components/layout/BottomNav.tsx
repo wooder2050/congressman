@@ -77,23 +77,21 @@ export default function BottomNav() {
   };
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-50 bg-(--color-bg-primary) border-t border-(--color-bg-tertiary) shadow-[0_-2px_8px_rgba(0,0,0,0.08)] pb-[env(safe-area-inset-bottom)]">
-      <div className="max-w-5xl mx-auto flex">
+    <nav className="fixed right-0 bottom-0 left-0 z-50 border-t border-(--color-bg-tertiary) bg-(--color-bg-primary) pb-[env(safe-area-inset-bottom)] shadow-[0_-2px_8px_rgba(0,0,0,0.08)]">
+      <div className="mx-auto flex max-w-5xl">
         {navItems.map((item) => {
           const active = isActive(item.href);
           return (
             <Link
               key={item.href}
               href={item.href}
-              className={`flex-1 flex flex-col items-center justify-center py-2 no-underline transition-colors ${
-                active
-                  ? "text-(--color-primary) font-bold"
-                  : "text-(--color-text-tertiary)"
+              className={`flex flex-1 flex-col items-center justify-center py-2 no-underline transition-colors ${
+                active ? "font-bold text-(--color-primary)" : "text-(--color-text-tertiary)"
               }`}
               aria-current={active ? "page" : undefined}
             >
               {item.icon}
-              <span className="text-xs mt-1">{item.label}</span>
+              <span className="mt-1 text-xs">{item.label}</span>
             </Link>
           );
         })}

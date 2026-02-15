@@ -9,8 +9,8 @@ export default function Card({ children, className = "", onClick }: CardProps) {
   return (
     <Component
       onClick={onClick}
-      className={`bg-(--color-bg-primary) rounded-xl shadow-(--shadow-card) p-4 transition-shadow hover:shadow-(--shadow-card-hover) ${
-        onClick ? "cursor-pointer w-full text-left" : ""
+      className={`rounded-xl bg-(--color-bg-primary) p-4 shadow-(--shadow-card) transition-shadow hover:shadow-(--shadow-card-hover) ${
+        onClick ? "w-full cursor-pointer text-left" : ""
       } ${className}`}
     >
       {children}

@@ -5,12 +5,7 @@ interface BadgeProps {
   size?: "sm" | "md";
 }
 
-export default function Badge({
-  label,
-  color,
-  textColor = "#FFFFFF",
-  size = "md",
-}: BadgeProps) {
+export default function Badge({ label, color, textColor = "#FFFFFF", size = "md" }: BadgeProps) {
   return (
     <span
       className={`inline-flex items-center rounded-full font-semibold ${

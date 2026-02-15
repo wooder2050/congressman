@@ -17,8 +17,7 @@ export const metadata: Metadata = {
     default: "국회의원 의정활동 정보",
     template: "%s | 국회의원 의정활동 정보",
   },
-  description:
-    "대한민국 국회의원의 출석, 법안 발의, 표결 등 의정활동 정보를 한눈에 확인하세요.",
+  description: "대한민국 국회의원의 출석, 법안 발의, 표결 등 의정활동 정보를 한눈에 확인하세요.",
 };
 
 export const viewport: Viewport = {
