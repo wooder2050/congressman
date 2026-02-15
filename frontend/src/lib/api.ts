@@ -36,18 +36,20 @@ export async function getMemberTerms(memberId: string): Promise<MemberTerm[]> {
   return mockMemberTerms.filter((mt) => mt.memberId === memberId);
 }
 
-export async function getAttendance(
-  memberId: string,
-  termId: number,
-): Promise<AttendanceRecord | null> {
-  return mockAttendance.find((a) => a.memberId === memberId && a.termId === termId) ?? null;
+export async function getAttendance(params: {
+  memberId: string;
+  termId: number;
+}): Promise<AttendanceRecord | null> {
+  return (
+    mockAttendance.find((a) => a.memberId === params.memberId && a.termId === params.termId) ?? null
+  );
 }
 
-export async function getAbsenceDetails(
-  memberId: string,
-  termId: number,
-): Promise<AbsenceDetail[]> {
-  return mockAbsenceDetails[`${memberId}_${termId}`] ?? [];
+export async function getAbsenceDetails(params: {
+  memberId: string;
+  termId: number;
+}): Promise<AbsenceDetail[]> {
+  return mockAbsenceDetails[`${params.memberId}_${params.termId}`] ?? [];
 }
 
 export async function getBills(params: {
@@ -84,3 +86,13 @@ export async function getMemberHistory(memberId: string): Promise<TermActivity[]
     };
   });
 }
+
+// Query Keys
+Object.defineProperty(getTerms, "queryKey", { value: "terms" });
+Object.defineProperty(getMembers, "queryKey", { value: "members" });
+Object.defineProperty(getMember, "queryKey", { value: "member" });
+Object.defineProperty(getMemberTerms, "queryKey", { value: "memberTerms" });
+Object.defineProperty(getAttendance, "queryKey", { value: "attendance" });
+Object.defineProperty(getAbsenceDetails, "queryKey", { value: "absenceDetails" });
+Object.defineProperty(getBills, "queryKey", { value: "bills" });
+Object.defineProperty(getMemberHistory, "queryKey", { value: "memberHistory" });

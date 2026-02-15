@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
-import { getBills } from "@/lib/api";
-import BillListClient from "@/components/bills/BillListClient";
+import CongressWrapper from "@/common/CongressWrapper";
+import BillListInner from "@/components/bills/BillListInner";
+import BillListSkeleton from "@/components/skeletons/BillListSkeleton";
 
 export const metadata: Metadata = {
   title: "법안 목록",
@@ -14,12 +15,13 @@ interface BillsPageProps {
 export default async function BillsPage({ searchParams }: BillsPageProps) {
   const params = await searchParams;
   const termId = Number(params.term) || 22;
-  const { bills } = await getBills({ termId });
 
   return (
     <div className="mx-auto max-w-5xl">
       <h1 className="mb-4 text-2xl font-bold">법안 목록</h1>
-      <BillListClient bills={bills} />
+      <CongressWrapper fallback={<BillListSkeleton />}>
+        <BillListInner termId={termId} />
+      </CongressWrapper>
     </div>
   );
 }
