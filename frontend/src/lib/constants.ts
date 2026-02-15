@@ -33,6 +33,14 @@ export const PARTIES: Record<string, Party> = {
   },
 };
 
+export const VOTE_RESULT_MAP = {
+  passed: { label: "원안가결", color: "#16A34A" },
+  amended: { label: "수정가결", color: "#2563EB" },
+  rejected: { label: "부결", color: "#DC2626" },
+  discarded: { label: "폐기", color: "#6B7280" },
+  other: { label: "기타", color: "#9CA3AF" },
+} as const;
+
 export const BILL_STATUS_MAP = {
   passed: { label: "가결", color: "#16A34A" },
   pending: { label: "계류", color: "#CA8A04" },

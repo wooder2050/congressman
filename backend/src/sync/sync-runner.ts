@@ -5,6 +5,7 @@ import { AssemblyApiService } from './services/assembly-api.service';
 import { SyncLogService } from './services/sync-log.service';
 import { MemberSyncService } from './services/member-sync.service';
 import { BillSyncService } from './services/bill-sync.service';
+import { VoteSyncService } from './services/vote-sync.service';
 
 async function invalidateCache(command: string) {
   const url = process.env.UPSTASH_REDIS_REST_URL;
@@ -22,6 +23,9 @@ async function invalidateCache(command: string) {
   }
   if (command === 'bills' || command === 'all') {
     prefixes.push('bills:', 'member:history:');
+  }
+  if (command === 'votes' || command === 'all') {
+    prefixes.push('votes:');
   }
 
   for (const prefix of prefixes) {
@@ -49,6 +53,7 @@ async function main() {
   const syncLog = new SyncLogService(prisma);
   const memberSync = new MemberSyncService(prisma, api, syncLog);
   const billSync = new BillSyncService(prisma, api, syncLog);
+  const voteSync = new VoteSyncService(prisma, api, syncLog);
 
   const command = process.argv[2] ?? 'all';
   const termId = parseInt(process.argv[3] ?? '22', 10);
@@ -63,10 +68,14 @@ async function main() {
       case 'bills':
         await billSync.syncBills(termId);
         break;
+      case 'votes':
+        await voteSync.syncVotes(termId);
+        break;
       case 'all':
       default:
         await memberSync.syncMembers(termId);
         await billSync.syncBills(termId);
+        await voteSync.syncVotes(termId);
         break;
     }
 

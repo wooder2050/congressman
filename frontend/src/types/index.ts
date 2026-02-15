@@ -64,6 +64,32 @@ export interface Bill {
   committee?: string;
 }
 
+// ====== 표결 ======
+export interface Vote {
+  id: string;
+  billNo: string;
+  billName: string;
+  committee?: string;
+  procDate: string;
+  procResult: string;
+  resultCode: "passed" | "amended" | "rejected" | "discarded" | "other";
+  memberTotal: number;
+  voteTotal: number;
+  yesCount: number;
+  noCount: number;
+  abstainCount: number;
+  linkUrl: string;
+  termId: number;
+}
+
+export interface VoteSummary {
+  total: number;
+  passed: number;
+  amended: number;
+  rejected: number;
+  discarded: number;
+}
+
 // ====== 역대 활동 비교 ======
 export interface TermActivity {
   termId: number;
