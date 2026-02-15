@@ -1,9 +1,45 @@
 import 'dotenv/config';
 import { PrismaClient } from '@prisma/client';
+import { Redis } from '@upstash/redis';
 import { AssemblyApiService } from './services/assembly-api.service';
 import { SyncLogService } from './services/sync-log.service';
 import { MemberSyncService } from './services/member-sync.service';
 import { BillSyncService } from './services/bill-sync.service';
+
+async function invalidateCache(command: string) {
+  const url = process.env.UPSTASH_REDIS_REST_URL;
+  const token = process.env.UPSTASH_REDIS_REST_TOKEN;
+  if (!url || !token) {
+    console.log('[SyncRunner] Redis not configured, skipping cache invalidation');
+    return;
+  }
+
+  const redis = new Redis({ url, token });
+  const prefixes: string[] = [];
+
+  if (command === 'members' || command === 'all') {
+    prefixes.push('terms:', 'members:', 'member:');
+  }
+  if (command === 'bills' || command === 'all') {
+    prefixes.push('bills:', 'member:history:');
+  }
+
+  for (const prefix of prefixes) {
+    const scanAndDelete = async (cur: number): Promise<number> => {
+      const [nextCursor, keys] = await redis.scan(cur, { match: `${prefix}*`, count: 100 });
+      if (keys.length > 0) {
+        await redis.del(...keys);
+        console.log(`[SyncRunner] Invalidated ${keys.length} cache keys (${prefix}*)`);
+      }
+      return Number(nextCursor);
+    };
+
+    let cursor = await scanAndDelete(0);
+    while (cursor !== 0) {
+      cursor = await scanAndDelete(cursor);
+    }
+  }
+}
 
 async function main() {
   const prisma = new PrismaClient();
@@ -33,6 +69,8 @@ async function main() {
         await billSync.syncBills(termId);
         break;
     }
+
+    await invalidateCache(command);
     console.log('[SyncRunner] Sync completed successfully');
   } catch (error) {
     console.error('[SyncRunner] Sync failed', error);

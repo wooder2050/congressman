@@ -1,0 +1,51 @@
+import { Injectable, OnModuleInit, Logger } from '@nestjs/common';
+import { Redis } from '@upstash/redis';
+
+@Injectable()
+export class RedisService implements OnModuleInit {
+  private readonly logger = new Logger(RedisService.name);
+  private client!: Redis;
+
+  onModuleInit() {
+    this.client = new Redis({
+      url: process.env.UPSTASH_REDIS_REST_URL!,
+      token: process.env.UPSTASH_REDIS_REST_TOKEN!,
+    });
+  }
+
+  async get<T>(key: string): Promise<T | null> {
+    return this.client.get<T>(key);
+  }
+
+  async set(key: string, value: unknown, ttlSeconds: number): Promise<void> {
+    await this.client.set(key, value, { ex: ttlSeconds });
+  }
+
+  async del(...keys: string[]): Promise<void> {
+    if (keys.length === 0) return;
+    await this.client.del(...keys);
+  }
+
+  async invalidateByPrefix(prefix: string): Promise<void> {
+    const scanAndDelete = async (cur: number): Promise<number> => {
+      const [nextCursor, keys] = await this.client.scan(cur, {
+        match: `${prefix}*`,
+        count: 100,
+      });
+      if (keys.length > 0) {
+        await this.client.del(...keys);
+        this.logger.log(`Invalidated ${keys.length} keys with prefix "${prefix}"`);
+      }
+      return Number(nextCursor);
+    };
+
+    let cursor = await scanAndDelete(0);
+    while (cursor !== 0) {
+      cursor = await scanAndDelete(cursor);
+    }
+  }
+
+  async ping(): Promise<string> {
+    return this.client.ping();
+  }
+}
