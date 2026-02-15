@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
+import { RedisService } from '../redis/redis.service';
 import { Prisma } from '@prisma/client';
 
 interface FindAllParams {
@@ -10,11 +11,20 @@ interface FindAllParams {
   limit: number;
 }
 
+const TTL_HOUR = 60 * 60; // 1h
+
 @Injectable()
 export class BillsService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly redis: RedisService,
+  ) {}
 
   async findAll(params: FindAllParams) {
+    const key = `bills:${params.termId ?? ''}:${params.memberId ?? ''}:${params.status ?? ''}:${params.page}:${params.limit}`;
+    const cached = await this.redis.get(key);
+    if (cached) return cached;
+
     const where: Prisma.BillWhereInput = {};
 
     if (params.termId) where.termId = params.termId;
@@ -34,7 +44,7 @@ export class BillsService {
       this.prisma.bill.count({ where }),
     ]);
 
-    return {
+    const result = {
       bills: bills.map((b) => ({
         id: b.id,
         title: b.title,
@@ -48,5 +58,8 @@ export class BillsService {
       })),
       total,
     };
+
+    await this.redis.set(key, result, TTL_HOUR);
+    return result;
   }
 }

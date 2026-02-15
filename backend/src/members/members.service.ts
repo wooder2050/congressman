@@ -1,17 +1,28 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
+import { RedisService } from '../redis/redis.service';
+
+const TTL_DAY = 60 * 60 * 24; // 24h
+const TTL_HOUR = 60 * 60; // 1h
 
 @Injectable()
 export class MembersService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly redis: RedisService,
+  ) {}
 
   async findByTerm(termId: number) {
+    const key = `members:term:${termId}`;
+    const cached = await this.redis.get(key);
+    if (cached) return cached;
+
     const memberTerms = await this.prisma.memberTerm.findMany({
       where: { termId },
       include: { member: true, party: true },
     });
 
-    return memberTerms.map((mt) => ({
+    const result = memberTerms.map((mt) => ({
       id: mt.member.id,
       name: mt.member.name,
       photoUrl: mt.member.photoUrl,
@@ -31,29 +42,43 @@ export class MembersService {
         committees: mt.committees,
       },
     }));
+
+    await this.redis.set(key, result, TTL_DAY);
+    return result;
   }
 
   async findById(id: string) {
+    const key = `member:${id}`;
+    const cached = await this.redis.get(key);
+    if (cached) return cached;
+
     const member = await this.prisma.member.findUnique({ where: { id } });
     if (!member) return null;
 
-    return {
+    const result = {
       id: member.id,
       name: member.name,
       photoUrl: member.photoUrl,
       birthDate: member.birthDate,
       electedCount: member.electedCount,
     };
+
+    await this.redis.set(key, result, TTL_DAY);
+    return result;
   }
 
   async findTermsByMemberId(memberId: string) {
+    const key = `member:terms:${memberId}`;
+    const cached = await this.redis.get(key);
+    if (cached) return cached;
+
     const memberTerms = await this.prisma.memberTerm.findMany({
       where: { memberId },
       include: { party: true },
       orderBy: { termId: 'desc' },
     });
 
-    return memberTerms.map((mt) => ({
+    const result = memberTerms.map((mt) => ({
       memberId: mt.memberId,
       termId: mt.termId,
       party: {
@@ -66,16 +91,23 @@ export class MembersService {
       proportional: mt.proportional,
       committees: mt.committees,
     }));
+
+    await this.redis.set(key, result, TTL_DAY);
+    return result;
   }
 
   async getHistory(memberId: string) {
+    const key = `member:history:${memberId}`;
+    const cached = await this.redis.get(key);
+    if (cached) return cached;
+
     const memberTerms = await this.prisma.memberTerm.findMany({
       where: { memberId },
       include: { term: true },
       orderBy: { termId: 'desc' },
     });
 
-    return Promise.all(
+    const result = await Promise.all(
       memberTerms.map(async (mt) => {
         const attendance = await this.prisma.attendance.findUnique({
           where: { memberId_termId: { memberId, termId: mt.termId } },
@@ -104,5 +136,8 @@ export class MembersService {
         };
       }),
     );
+
+    await this.redis.set(key, result, TTL_HOUR);
+    return result;
   }
 }

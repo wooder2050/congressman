@@ -6,11 +6,13 @@ import { MembersModule } from './members/members.module';
 import { AttendanceModule } from './attendance/attendance.module';
 import { BillsModule } from './bills/bills.module';
 import { HealthModule } from './health/health.module';
+import { RedisModule } from './redis/redis.module';
 
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
     PrismaModule,
+    RedisModule,
     HealthModule,
     TermsModule,
     MembersModule,
