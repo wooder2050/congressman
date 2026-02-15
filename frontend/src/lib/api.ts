@@ -13,43 +13,63 @@ import type {
   MemberWithTerm,
 } from "@/types";
 
+const API_BASE = process.env.NEXT_PUBLIC_API_URL;
+const useMock = !API_BASE;
+
+async function fetchApi<T>(path: string): Promise<T> {
+  const res = await fetch(`${API_BASE}${path}`);
+  if (!res.ok) throw new Error(`API error: ${res.status}`);
+  return res.json();
+}
+
 export async function getTerms(): Promise<AssemblyTerm[]> {
-  return mockTerms;
+  if (useMock) return mockTerms;
+  return fetchApi("/api/terms");
 }
 
 export async function getMembers(termId: number): Promise<MemberWithTerm[]> {
-  const termMembers = mockMemberTerms.filter((mt) => mt.termId === termId);
-  return termMembers
-    .map((mt) => {
-      const member = mockMembers.find((m) => m.id === mt.memberId);
-      if (!member) return null;
-      return { ...member, term: mt };
-    })
-    .filter((m): m is MemberWithTerm => m !== null);
+  if (useMock) {
+    const termMembers = mockMemberTerms.filter((mt) => mt.termId === termId);
+    return termMembers
+      .map((mt) => {
+        const member = mockMembers.find((m) => m.id === mt.memberId);
+        if (!member) return null;
+        return { ...member, term: mt };
+      })
+      .filter((m): m is MemberWithTerm => m !== null);
+  }
+  return fetchApi(`/api/members?termId=${termId}`);
 }
 
 export async function getMember(id: string): Promise<Member | null> {
-  return mockMembers.find((m) => m.id === id) ?? null;
+  if (useMock) return mockMembers.find((m) => m.id === id) ?? null;
+  return fetchApi(`/api/members/${id}`);
 }
 
 export async function getMemberTerms(memberId: string): Promise<MemberTerm[]> {
-  return mockMemberTerms.filter((mt) => mt.memberId === memberId);
+  if (useMock) return mockMemberTerms.filter((mt) => mt.memberId === memberId);
+  return fetchApi(`/api/members/${memberId}/terms`);
 }
 
 export async function getAttendance(params: {
   memberId: string;
   termId: number;
 }): Promise<AttendanceRecord | null> {
-  return (
-    mockAttendance.find((a) => a.memberId === params.memberId && a.termId === params.termId) ?? null
-  );
+  if (useMock) {
+    return (
+      mockAttendance.find((a) => a.memberId === params.memberId && a.termId === params.termId) ??
+      null
+    );
+  }
+  return fetchApi(`/api/attendance?memberId=${params.memberId}&termId=${params.termId}`);
 }
 
 export async function getAbsenceDetails(params: {
   memberId: string;
   termId: number;
 }): Promise<AbsenceDetail[]> {
-  return mockAbsenceDetails[`${params.memberId}_${params.termId}`] ?? [];
+  if (useMock) return mockAbsenceDetails[`${params.memberId}_${params.termId}`] ?? [];
+  return fetchApi(`/api/attendance/absence?memberId=${params.memberId}&termId=${params.termId}`);
 }
 
 export async function getBills(params: {
@@ -59,32 +79,45 @@ export async function getBills(params: {
   page?: number;
   limit?: number;
 }): Promise<{ bills: Bill[]; total: number }> {
-  let filtered = [...mockBills];
-  if (params.termId) filtered = filtered.filter((b) => b.termId === params.termId);
-  if (params.memberId) filtered = filtered.filter((b) => b.proposerIds.includes(params.memberId!));
-  if (params.status) filtered = filtered.filter((b) => b.status === params.status);
-  const total = filtered.length;
-  const page = params.page ?? 1;
-  const limit = params.limit ?? 20;
-  const start = (page - 1) * limit;
-  return { bills: filtered.slice(start, start + limit), total };
+  if (useMock) {
+    let filtered = [...mockBills];
+    if (params.termId) filtered = filtered.filter((b) => b.termId === params.termId);
+    if (params.memberId)
+      filtered = filtered.filter((b) => b.proposerIds.includes(params.memberId!));
+    if (params.status) filtered = filtered.filter((b) => b.status === params.status);
+    const total = filtered.length;
+    const page = params.page ?? 1;
+    const limit = params.limit ?? 20;
+    const start = (page - 1) * limit;
+    return { bills: filtered.slice(start, start + limit), total };
+  }
+  const searchParams = new URLSearchParams();
+  if (params.termId) searchParams.set("termId", String(params.termId));
+  if (params.memberId) searchParams.set("memberId", params.memberId);
+  if (params.status) searchParams.set("status", params.status);
+  if (params.page) searchParams.set("page", String(params.page));
+  if (params.limit) searchParams.set("limit", String(params.limit));
+  return fetchApi(`/api/bills?${searchParams.toString()}`);
 }
 
 export async function getMemberHistory(memberId: string): Promise<TermActivity[]> {
-  const memberTerms = mockMemberTerms.filter((mt) => mt.memberId === memberId);
-  return memberTerms.map((mt) => {
-    const att = mockAttendance.find((a) => a.memberId === memberId && a.termId === mt.termId);
-    const bills = mockBills.filter(
-      (b) => b.proposerIds.includes(memberId) && b.termId === mt.termId,
-    );
-    return {
-      termId: mt.termId,
-      termName: `제${mt.termId}대`,
-      attendanceRate: att?.rate ?? 0,
-      billsProposed: bills.length,
-      billsPassed: bills.filter((b) => b.status === "passed").length,
-    };
-  });
+  if (useMock) {
+    const memberTerms = mockMemberTerms.filter((mt) => mt.memberId === memberId);
+    return memberTerms.map((mt) => {
+      const att = mockAttendance.find((a) => a.memberId === memberId && a.termId === mt.termId);
+      const bills = mockBills.filter(
+        (b) => b.proposerIds.includes(memberId) && b.termId === mt.termId,
+      );
+      return {
+        termId: mt.termId,
+        termName: `제${mt.termId}대`,
+        attendanceRate: att?.rate ?? 0,
+        billsProposed: bills.length,
+        billsPassed: bills.filter((b) => b.status === "passed").length,
+      };
+    });
+  }
+  return fetchApi(`/api/members/${memberId}/history`);
 }
 
 // Query Keys

@@ -1,0 +1,9 @@
+[build]
+buildCommand = "npx prisma generate && nest build"
+
+[deploy]
+startCommand = "node dist/main"
+healthcheckPath = "/api/health"
+healthcheckTimeout = 120
+restartPolicyType = "ON_FAILURE"
+restartPolicyMaxRetries = 3

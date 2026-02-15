@@ -1,0 +1,134 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model Term {
+  id        Int      @id // 대수 번호 (e.g., 22, 21)
+  name      String // "제22대"
+  startDate DateTime
+  endDate   DateTime
+  isCurrent Boolean  @default(false)
+
+  memberTerms MemberTerm[]
+  attendances Attendance[]
+  bills       Bill[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Party {
+  id        String @id // "democratic", "ppp", etc.
+  name      String @unique // "더불어민주당"
+  shortName String // "민주당"
+  color     String // "#1B56DB"
+
+  memberTerms MemberTerm[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Member {
+  id           String  @id // MONA_CD from API or mock id
+  name         String
+  photoUrl     String  @default("")
+  birthDate    String?
+  electedCount Int     @default(1)
+
+  memberTerms MemberTerm[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([name])
+}
+
+model MemberTerm {
+  id           Int      @id @default(autoincrement())
+  memberId     String
+  termId       Int
+  partyId      String
+  district     String   @default("")
+  proportional Boolean  @default(false)
+  committees   String[] @default([])
+
+  member Member @relation(fields: [memberId], references: [id])
+  term   Term   @relation(fields: [termId], references: [id])
+  party  Party  @relation(fields: [partyId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([memberId, termId])
+  @@index([termId])
+  @@index([partyId])
+}
+
+model Attendance {
+  id            Int   @id @default(autoincrement())
+  memberId      String
+  termId        Int
+  totalSessions Int   @default(0)
+  attended      Int   @default(0)
+  absent        Int   @default(0)
+  leave         Int   @default(0) // 청가
+  travel        Int   @default(0) // 출장
+  rate          Float @default(0)
+
+  term Term @relation(fields: [termId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([memberId, termId])
+  @@index([termId])
+}
+
+model Bill {
+  id              String  @id // BILL_ID from API or mock id
+  title           String
+  proposerName    String  @default("")
+  coProposerCount Int     @default(0)
+  status          String  @default("pending") // passed, pending, discarded, committee
+  proposedDate    String
+  termId          Int
+  committee       String?
+
+  term      Term           @relation(fields: [termId], references: [id])
+  proposers BillProposer[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([termId])
+  @@index([status])
+}
+
+model BillProposer {
+  id       Int    @id @default(autoincrement())
+  billId   String
+  memberId String
+
+  bill Bill @relation(fields: [billId], references: [id])
+
+  @@unique([billId, memberId])
+  @@index([memberId])
+}
+
+model SyncLog {
+  id          Int       @id @default(autoincrement())
+  syncType    String // "members", "bills", "attendance"
+  termId      Int?
+  status      String // "started", "completed", "failed"
+  recordCount Int       @default(0)
+  errorMsg    String?
+  startedAt   DateTime  @default(now())
+  completedAt DateTime?
+}
