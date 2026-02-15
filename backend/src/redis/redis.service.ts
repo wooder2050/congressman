@@ -4,36 +4,45 @@ import { Redis } from '@upstash/redis';
 @Injectable()
 export class RedisService implements OnModuleInit {
   private readonly logger = new Logger(RedisService.name);
-  private client!: Redis;
+  private client: Redis | null = null;
 
   onModuleInit() {
-    this.client = new Redis({
-      url: process.env.UPSTASH_REDIS_REST_URL!,
-      token: process.env.UPSTASH_REDIS_REST_TOKEN!,
-    });
+    const url = process.env.UPSTASH_REDIS_REST_URL;
+    const token = process.env.UPSTASH_REDIS_REST_TOKEN;
+    if (url && token) {
+      this.client = new Redis({ url, token });
+      this.logger.log('Redis client initialized');
+    } else {
+      this.logger.warn('Redis credentials not configured — caching disabled');
+    }
   }
 
   async get<T>(key: string): Promise<T | null> {
+    if (!this.client) return null;
     return this.client.get<T>(key);
   }
 
   async set(key: string, value: unknown, ttlSeconds: number): Promise<void> {
+    if (!this.client) return;
     await this.client.set(key, value, { ex: ttlSeconds });
   }
 
   async del(...keys: string[]): Promise<void> {
-    if (keys.length === 0) return;
+    if (!this.client || keys.length === 0) return;
     await this.client.del(...keys);
   }
 
   async invalidateByPrefix(prefix: string): Promise<void> {
+    if (!this.client) return;
+    const client = this.client;
+
     const scanAndDelete = async (cur: number): Promise<number> => {
-      const [nextCursor, keys] = await this.client.scan(cur, {
+      const [nextCursor, keys] = await client.scan(cur, {
         match: `${prefix}*`,
         count: 100,
       });
       if (keys.length > 0) {
-        await this.client.del(...keys);
+        await client.del(...keys);
         this.logger.log(`Invalidated ${keys.length} keys with prefix "${prefix}"`);
       }
       return Number(nextCursor);
@@ -46,6 +55,7 @@ export class RedisService implements OnModuleInit {
   }
 
   async ping(): Promise<string> {
+    if (!this.client) return 'DISABLED';
     return this.client.ping();
   }
 }
