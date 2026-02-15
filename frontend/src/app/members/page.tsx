@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
-import { getMembers } from "@/lib/api";
-import MemberListClient from "@/components/members/MemberListClient";
+import CongressWrapper from "@/common/CongressWrapper";
+import MemberListInner from "@/components/members/MemberListInner";
+import MemberListSkeleton from "@/components/skeletons/MemberListSkeleton";
 
 export const metadata: Metadata = {
   title: "의원 목록",
@@ -14,12 +15,13 @@ interface MembersPageProps {
 export default async function MembersPage({ searchParams }: MembersPageProps) {
   const params = await searchParams;
   const termId = Number(params.term) || 22;
-  const members = await getMembers(termId);
 
   return (
     <div className="mx-auto max-w-5xl">
       <h1 className="mb-4 text-2xl font-bold">의원 목록</h1>
-      <MemberListClient members={members} />
+      <CongressWrapper fallback={<MemberListSkeleton />}>
+        <MemberListInner termId={termId} />
+      </CongressWrapper>
     </div>
   );
 }

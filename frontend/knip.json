@@ -9,5 +9,13 @@
     "recharts",
     "postcss"
   ],
-  "ignore": ["src/mocks/**", "src/types/**", "src/components/**", "src/lib/**", "src/hooks/**"]
+  "ignore": [
+    "src/mocks/**",
+    "src/types/**",
+    "src/components/**",
+    "src/lib/**",
+    "src/hooks/**",
+    "src/common/**",
+    "src/constants/**"
+  ]
 }

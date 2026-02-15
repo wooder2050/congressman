@@ -15,9 +15,11 @@
     "knip": "knip"
   },
   "dependencies": {
+    "@tanstack/react-query": "^5.90.21",
     "next": "16.1.6",
     "react": "19.2.3",
     "react-dom": "19.2.3",
+    "react-error-boundary": "^6.1.1",
     "recharts": "^3.7.0"
   },
   "devDependencies": {
