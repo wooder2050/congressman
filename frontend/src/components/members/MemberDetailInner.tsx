@@ -3,7 +3,15 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { useCongressSuspenseQuery } from "@/hooks/useCongressQuery";
-import { getMember, getMemberTerms, getAttendance, getAbsenceDetails, getBills } from "@/lib/api";
+import {
+  getMember,
+  getMemberTerms,
+  getAttendance,
+  getAbsenceDetails,
+  getBills,
+  getVoteSummary,
+  getVotes,
+} from "@/lib/api";
 import MemberProfile from "./MemberProfile";
 import MemberDetailClient from "./MemberDetailClient";
 
@@ -25,6 +33,8 @@ export default function MemberDetailInner({ id, termId, defaultTab }: MemberDeta
     termId,
   });
   const { data: billsResult } = useCongressSuspenseQuery(getBills, { memberId: id, termId });
+  const { data: voteSummary } = useCongressSuspenseQuery(getVoteSummary, termId);
+  const { data: votesResult } = useCongressSuspenseQuery(getVotes, { termId, limit: 5 });
 
   if (!member) return notFound();
 
@@ -48,6 +58,9 @@ export default function MemberDetailInner({ id, termId, defaultTab }: MemberDeta
         attendance={attendance}
         absenceDetails={absenceDetails}
         bills={billsResult.bills}
+        voteSummary={voteSummary}
+        recentVotes={votesResult.votes}
+        termId={termId}
         defaultTab={defaultTab}
       />
     </div>
