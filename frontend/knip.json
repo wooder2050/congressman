@@ -1,0 +1,13 @@
+{
+  "$schema": "https://unpkg.com/knip@5/schema.json",
+  "entry": ["src/app/**/*.{ts,tsx}"],
+  "project": ["src/**/*.{ts,tsx}"],
+  "ignoreDependencies": [
+    "@tailwindcss/postcss",
+    "prettier-plugin-tailwindcss",
+    "tailwindcss",
+    "recharts",
+    "postcss"
+  ],
+  "ignore": ["src/mocks/**", "src/types/**", "src/components/**", "src/lib/**", "src/hooks/**"]
+}

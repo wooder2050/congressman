@@ -1,0 +1,98 @@
+@import "tailwindcss";
+
+/* ============================================
+   고령자 친화 디자인 토큰
+   타겟: 50~80대 Android 모바일 사용자
+   WCAG AAA (7:1 명도대비)
+   ============================================ */
+
+@theme inline {
+  /* ---- 타이포그래피 (Tailwind v4 font-size 유틸리티) ---- */
+  --text-xs: 0.875rem;
+  --text-sm: 1rem;
+  --text-base: 1.125rem;
+  --text-lg: 1.25rem;
+  --text-xl: 1.5rem;
+  --text-2xl: 1.75rem;
+  --text-3xl: 2.25rem;
+
+  /* ---- 색상 ---- */
+  /* 배경 */
+  --color-bg-primary: #ffffff;
+  --color-bg-secondary: #f5f5f5;
+  --color-bg-tertiary: #eeeeee;
+
+  /* 텍스트 (WCAG AAA 7:1 on white) */
+  --color-text-primary: #1a1a1a;
+  --color-text-secondary: #404040;
+  --color-text-tertiary: #595959;
+  --color-text-inverse: #ffffff;
+
+  /* 정당 컬러 */
+  --color-party-democratic: #1b56db;
+  --color-party-ppp: #e61e2b;
+  --color-party-rebuilding: #003da5;
+  --color-party-reform: #f37924;
+  --color-party-justice: #ffcc00;
+  --color-party-progressive: #d91656;
+  --color-party-independent: #999999;
+  --color-party-default: #6b7280;
+
+  /* 상태 컬러 */
+  --color-status-passed: #16a34a;
+  --color-status-pending: #ca8a04;
+  --color-status-discarded: #6b7280;
+  --color-status-present: #16a34a;
+  --color-status-absent: #dc2626;
+
+  /* 인터랙티브 */
+  --color-primary: #1b56db;
+  --color-primary-hover: #1544b0;
+  --color-primary-active: #103590;
+
+  /* 그림자 */
+  --shadow-card: 0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.06);
+  --shadow-card-hover: 0 4px 6px rgba(0, 0, 0, 0.1), 0 2px 4px rgba(0, 0, 0, 0.06);
+  --shadow-sticky: 0 2px 8px rgba(0, 0, 0, 0.12);
+
+  /* 폰트 */
+  --font-sans:
+    "Pretendard Variable", Pretendard, -apple-system, BlinkMacSystemFont, system-ui, Roboto,
+    "Helvetica Neue", "Segoe UI", "Apple SD Gothic Neo", "Noto Sans KR", "Malgun Gothic", sans-serif;
+}
+
+/* ---- 기본 스타일 ---- */
+@layer base {
+  html {
+    font-size: 100%;
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+  }
+
+  body {
+    font-family: var(--font-sans);
+    font-size: var(--text-base);
+    line-height: 1.6;
+    color: var(--color-text-primary);
+    background-color: var(--color-bg-primary);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    padding-bottom: 4.5rem;
+  }
+
+  button,
+  a,
+  input,
+  select,
+  [role="button"],
+  [role="tab"] {
+    min-height: 3rem;
+    min-width: 3rem;
+  }
+
+  :focus-visible {
+    outline: 3px solid var(--color-primary);
+    outline-offset: 2px;
+    border-radius: 0.5rem;
+  }
+}

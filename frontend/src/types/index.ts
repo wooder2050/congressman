@@ -1,0 +1,79 @@
+// ====== 국회 대수 ======
+export interface AssemblyTerm {
+  id: number;
+  name: string;
+  startDate: string;
+  endDate: string;
+  isCurrent: boolean;
+}
+
+// ====== 정당 ======
+export interface Party {
+  id: string;
+  name: string;
+  shortName: string;
+  color: string;
+}
+
+// ====== 의원 (사람) ======
+export interface Member {
+  id: string;
+  name: string;
+  photoUrl: string;
+  birthDate?: string;
+  electedCount: number;
+}
+
+// ====== 의원 대수별 활동 ======
+export interface MemberTerm {
+  memberId: string;
+  termId: number;
+  party: Party;
+  district: string;
+  proportional: boolean;
+  committees: string[];
+}
+
+// ====== 출석 ======
+export interface AttendanceRecord {
+  memberId: string;
+  termId: number;
+  totalSessions: number;
+  attended: number;
+  absent: number;
+  leave: number;
+  travel: number;
+  rate: number;
+}
+
+export interface AbsenceDetail {
+  type: "무단결석" | "청가" | "출장" | "질병";
+  count: number;
+}
+
+// ====== 법안 ======
+export interface Bill {
+  id: string;
+  title: string;
+  proposerIds: string[];
+  proposerName: string;
+  coProposerCount: number;
+  status: "passed" | "pending" | "discarded" | "committee";
+  proposedDate: string;
+  termId: number;
+  committee?: string;
+}
+
+// ====== 역대 활동 비교 ======
+export interface TermActivity {
+  termId: number;
+  termName: string;
+  attendanceRate: number;
+  billsProposed: number;
+  billsPassed: number;
+}
+
+// ====== 의원 + 대수 정보 결합 ======
+export interface MemberWithTerm extends Member {
+  term: MemberTerm;
+}
