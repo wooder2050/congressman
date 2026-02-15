@@ -11,8 +11,23 @@ export class HealthController {
 
   @Get()
   async check() {
-    await this.prisma.$queryRaw`SELECT 1`;
-    const redisPing = await this.redis.ping();
-    return { status: 'ok', redis: redisPing === 'PONG' ? 'ok' : 'error' };
+    let dbStatus = 'ok';
+    let redisStatus = 'ok';
+
+    try {
+      await this.prisma.$queryRaw`SELECT 1`;
+    } catch {
+      dbStatus = 'error';
+    }
+
+    try {
+      const redisPing = await this.redis.ping();
+      redisStatus = redisPing === 'PONG' ? 'ok' : 'error';
+    } catch {
+      redisStatus = 'error';
+    }
+
+    const status = dbStatus === 'ok' ? 'ok' : 'error';
+    return { status, db: dbStatus, redis: redisStatus };
   }
 }
