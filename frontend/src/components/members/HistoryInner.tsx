@@ -51,7 +51,7 @@ export default function HistoryInner({ id, termId }: HistoryInnerProps) {
                 return (
                   <div
                     key={activity.termId}
-                    className="rounded-xl border border-(--color-bg-tertiary) p-4"
+                    className="rounded-xl border border-(--color-border-primary) p-4"
                   >
                     <div className="mb-2 flex items-center gap-2">
                       <span className="text-lg font-bold">{activity.termName}</span>
@@ -64,18 +64,18 @@ export default function HistoryInner({ id, termId }: HistoryInnerProps) {
                         {mt.proportional ? "비례대표" : mt.district}
                       </p>
                     )}
-                    <div className="grid grid-cols-3 gap-2 text-center">
-                      <div className="rounded-lg bg-(--color-bg-secondary) p-2">
+                    <div className="grid grid-cols-3 divide-x divide-(--color-border-primary) overflow-hidden rounded-xl border border-(--color-border-primary) text-center">
+                      <div className="p-2">
                         <p className="text-lg font-bold">
                           {formatPercent(activity.attendanceRate)}
                         </p>
                         <p className="text-xs text-(--color-text-tertiary)">출석률</p>
                       </div>
-                      <div className="rounded-lg bg-(--color-bg-secondary) p-2">
+                      <div className="p-2">
                         <p className="text-lg font-bold">{activity.billsProposed}건</p>
                         <p className="text-xs text-(--color-text-tertiary)">발의</p>
                       </div>
-                      <div className="rounded-lg bg-(--color-bg-secondary) p-2">
+                      <div className="p-2">
                         <p className="text-lg font-bold">{activity.billsPassed}건</p>
                         <p className="text-xs text-(--color-text-tertiary)">가결</p>
                       </div>

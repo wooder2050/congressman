@@ -14,7 +14,7 @@ export default function MemberCard({ member }: MemberCardProps) {
   return (
     <Link
       href={`/members/${member.id}?term=${term.termId}`}
-      className="flex items-center gap-4 rounded-xl border-l-4 bg-(--color-bg-primary) p-4 no-underline shadow-(--shadow-card) transition-shadow hover:shadow-(--shadow-card-hover)"
+      className="flex items-center gap-4 rounded-xl border border-l-4 border-(--color-border-primary) bg-(--color-bg-primary) p-4 no-underline transition-colors hover:bg-(--color-bg-hover)"
       style={{ borderLeftColor: term.party.color }}
     >
       {/* 프로필 이미지 / 이니셜 */}

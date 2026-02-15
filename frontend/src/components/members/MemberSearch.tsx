@@ -17,7 +17,7 @@ export default function MemberSearch({ value, onChange }: MemberSearchProps) {
         value={value}
         onChange={(e) => onChange(e.target.value)}
         aria-label="의원 검색"
-        className="h-12 rounded-lg border-2 border-(--color-bg-tertiary) pl-10 text-base"
+        className="h-12 rounded-xl border border-(--color-border-primary) pl-10 text-base"
       />
     </div>
   );

@@ -13,7 +13,7 @@ export default function PartyFilter({ parties, selected, onChange }: PartyFilter
   return (
     <div className="flex flex-wrap gap-2">
       <Button
-        variant={selected === null ? "default" : "secondary"}
+        variant={selected === null ? "default" : "outline"}
         size="sm"
         onClick={() => onChange(null)}
         className="rounded-full px-4 text-sm font-semibold"
@@ -23,7 +23,7 @@ export default function PartyFilter({ parties, selected, onChange }: PartyFilter
       {parties.map((party) => (
         <Button
           key={party.id}
-          variant={selected === party.id ? "default" : "secondary"}
+          variant={selected === party.id ? "default" : "outline"}
           size="sm"
           onClick={() => onChange(party.id)}
           className="rounded-full px-4 text-sm font-semibold"

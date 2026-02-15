@@ -11,7 +11,7 @@ export default function BillListItem({ bill }: BillListItemProps) {
   const statusInfo = BILL_STATUS_MAP[bill.status];
 
   return (
-    <div className="rounded-xl border border-(--color-bg-tertiary) bg-(--color-bg-primary) p-4 shadow-(--shadow-card)">
+    <div className="rounded-xl border border-(--color-border-primary) bg-(--color-bg-primary) p-4 transition-colors hover:bg-(--color-bg-hover)">
       <div className="mb-2 flex items-start justify-between gap-2">
         <h3 className="line-clamp-2 text-base font-semibold text-(--color-text-primary)">
           {bill.title}

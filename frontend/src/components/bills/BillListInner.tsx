@@ -32,7 +32,7 @@ export default function BillListInner({ termId }: BillListInnerProps) {
         {statusOptions.map((opt) => (
           <Button
             key={opt.id ?? "all"}
-            variant={selectedStatus === opt.id ? "default" : "secondary"}
+            variant={selectedStatus === opt.id ? "default" : "outline"}
             size="sm"
             onClick={() => setSelectedStatus(opt.id)}
             className="rounded-full px-4 text-sm font-semibold"

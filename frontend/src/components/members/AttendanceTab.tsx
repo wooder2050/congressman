@@ -49,14 +49,14 @@ export default function AttendanceTab({ attendance, absenceDetails }: Attendance
       </div>
 
       {/* 요약 */}
-      <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+      <div className="grid grid-cols-2 divide-x divide-y divide-(--color-border-primary) overflow-hidden rounded-xl border border-(--color-border-primary) sm:grid-cols-4">
         {[
           { label: "전체 회의", value: attendance.totalSessions },
           { label: "출석", value: attendance.attended },
           { label: "결석", value: attendance.absent },
           { label: "청가/출장", value: attendance.leave + attendance.travel },
         ].map((item) => (
-          <div key={item.label} className="rounded-lg bg-(--color-bg-secondary) p-3 text-center">
+          <div key={item.label} className="p-3 text-center">
             <p className="text-xl font-bold">{item.value}</p>
             <p className="text-xs text-(--color-text-tertiary)">{item.label}</p>
           </div>
@@ -67,12 +67,9 @@ export default function AttendanceTab({ attendance, absenceDetails }: Attendance
       {absenceDetails.length > 0 && (
         <div>
           <h3 className="mb-2 text-sm font-semibold text-(--color-text-tertiary)">결석 유형별</h3>
-          <div className="space-y-2">
+          <div className="divide-y divide-(--color-border-primary) overflow-hidden rounded-xl border border-(--color-border-primary)">
             {absenceDetails.map((detail) => (
-              <div
-                key={detail.type}
-                className="flex items-center justify-between rounded-lg bg-(--color-bg-secondary) px-4 py-3"
-              >
+              <div key={detail.type} className="flex items-center justify-between px-4 py-3">
                 <span className="text-base">{detail.type}</span>
                 <span className="text-lg font-bold">{detail.count}회</span>
               </div>

@@ -40,7 +40,7 @@ export default function RootLayout({
         <Providers>
           <Header />
           <TermSelector />
-          <main className="min-h-screen px-4 py-4">{children}</main>
+          <main className="min-h-screen px-4 py-6">{children}</main>
           <BottomNav />
         </Providers>
       </body>
