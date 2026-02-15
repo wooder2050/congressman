@@ -18,7 +18,8 @@
     "sync": "tsx src/sync/sync-runner.ts",
     "sync:members": "tsx src/sync/sync-runner.ts members",
     "sync:bills": "tsx src/sync/sync-runner.ts bills",
-    "sync:votes": "tsx src/sync/sync-runner.ts votes"
+    "sync:votes": "tsx src/sync/sync-runner.ts votes",
+    "sync:photos": "tsx src/sync/sync-runner.ts photos"
   },
   "dependencies": {
     "@nestjs/common": "^11.0.0",

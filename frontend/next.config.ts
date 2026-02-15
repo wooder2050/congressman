@@ -7,7 +7,7 @@ const nextConfig: NextConfig = {
       {
         protocol: "https",
         hostname: "www.assembly.go.kr",
-        pathname: "/photo/**",
+        pathname: "/static/portal/img/**",
       },
     ],
   },
