@@ -1,26 +1,98 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+/* ============================================
+   고령자 친화 디자인 토큰
+   타겟: 50~80대 Android 모바일 사용자
+   WCAG AAA (7:1 명도대비)
+   ============================================ */
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  /* ---- 타이포그래피 (Tailwind v4 font-size 유틸리티) ---- */
+  --text-xs: 0.875rem;
+  --text-sm: 1rem;
+  --text-base: 1.125rem;
+  --text-lg: 1.25rem;
+  --text-xl: 1.5rem;
+  --text-2xl: 1.75rem;
+  --text-3xl: 2.25rem;
+
+  /* ---- 색상 ---- */
+  /* 배경 */
+  --color-bg-primary: #FFFFFF;
+  --color-bg-secondary: #F5F5F5;
+  --color-bg-tertiary: #EEEEEE;
+
+  /* 텍스트 (WCAG AAA 7:1 on white) */
+  --color-text-primary: #1A1A1A;
+  --color-text-secondary: #404040;
+  --color-text-tertiary: #595959;
+  --color-text-inverse: #FFFFFF;
+
+  /* 정당 컬러 */
+  --color-party-democratic: #1B56DB;
+  --color-party-ppp: #E61E2B;
+  --color-party-rebuilding: #003DA5;
+  --color-party-reform: #F37924;
+  --color-party-justice: #FFCC00;
+  --color-party-progressive: #D91656;
+  --color-party-independent: #999999;
+  --color-party-default: #6B7280;
+
+  /* 상태 컬러 */
+  --color-status-passed: #16A34A;
+  --color-status-pending: #CA8A04;
+  --color-status-discarded: #6B7280;
+  --color-status-present: #16A34A;
+  --color-status-absent: #DC2626;
+
+  /* 인터랙티브 */
+  --color-primary: #1B56DB;
+  --color-primary-hover: #1544B0;
+  --color-primary-active: #103590;
+
+  /* 그림자 */
+  --shadow-card: 0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.06);
+  --shadow-card-hover: 0 4px 6px rgba(0, 0, 0, 0.1), 0 2px 4px rgba(0, 0, 0, 0.06);
+  --shadow-sticky: 0 2px 8px rgba(0, 0, 0, 0.12);
+
+  /* 폰트 */
+  --font-sans: "Pretendard Variable", Pretendard, -apple-system,
+    BlinkMacSystemFont, system-ui, Roboto, "Helvetica Neue", "Segoe UI",
+    "Apple SD Gothic Neo", "Noto Sans KR", "Malgun Gothic", sans-serif;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+/* ---- 기본 스타일 ---- */
+@layer base {
+  html {
+    font-size: 100%;
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
   }
-}
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  body {
+    font-family: var(--font-sans);
+    font-size: var(--text-base);
+    line-height: 1.6;
+    color: var(--color-text-primary);
+    background-color: var(--color-bg-primary);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    padding-bottom: 4.5rem;
+  }
+
+  button,
+  a,
+  input,
+  select,
+  [role="button"],
+  [role="tab"] {
+    min-height: 3rem;
+    min-width: 3rem;
+  }
+
+  :focus-visible {
+    outline: 3px solid var(--color-primary);
+    outline-offset: 2px;
+    border-radius: 0.5rem;
+  }
 }
