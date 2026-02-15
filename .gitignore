@@ -22,6 +22,12 @@ build/
 *.swp
 *.swo
 
+# Claude
+.claude/
+
+# Documents
+*.docx
+
 # OS
 .DS_Store
 Thumbs.db

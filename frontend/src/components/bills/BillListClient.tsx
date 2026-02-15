@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useMemo } from "react";
+import { Button } from "@/components/ui/button";
 import BillListItem from "./BillListItem";
 import { BILL_STATUS_MAP } from "@/lib/constants";
 import type { Bill } from "@/types";
@@ -27,17 +28,15 @@ export default function BillListClient({ bills }: BillListClientProps) {
       {/* 상태 필터 */}
       <div className="flex flex-wrap gap-2">
         {statusOptions.map((opt) => (
-          <button
+          <Button
             key={opt.id ?? "all"}
+            variant={selectedStatus === opt.id ? "default" : "outline"}
+            size="sm"
             onClick={() => setSelectedStatus(opt.id)}
-            className={`rounded-full px-4 py-2 text-sm font-semibold transition-colors ${
-              selectedStatus === opt.id
-                ? "bg-(--color-primary) text-(--color-text-inverse)"
-                : "bg-(--color-bg-secondary) text-(--color-text-secondary)"
-            }`}
+            className="rounded-full px-4 text-sm font-semibold"
           >
             {opt.label}
-          </button>
+          </Button>
         ))}
       </div>
 

@@ -77,7 +77,7 @@ export default function BottomNav() {
   };
 
   return (
-    <nav className="fixed right-0 bottom-0 left-0 z-50 border-t border-(--color-bg-tertiary) bg-(--color-bg-primary) pb-[env(safe-area-inset-bottom)] shadow-[0_-2px_8px_rgba(0,0,0,0.08)]">
+    <nav className="fixed right-0 bottom-0 left-0 z-50 bg-(--color-bg-primary) pb-[env(safe-area-inset-bottom)] shadow-(--shadow-bottom-nav)">
       <div className="mx-auto flex max-w-5xl">
         {navItems.map((item) => {
           const active = isActive(item.href);

@@ -7,7 +7,9 @@
     "prettier-plugin-tailwindcss",
     "tailwindcss",
     "recharts",
-    "postcss"
+    "postcss",
+    "shadcn",
+    "tw-animate-css"
   ],
   "ignore": [
     "src/mocks/**",

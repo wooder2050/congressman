@@ -1,7 +1,6 @@
 "use client";
 
-import { useState } from "react";
-import Tabs from "@/components/ui/Tabs";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import AttendanceTab from "./AttendanceTab";
 import BillsTab from "./BillsTab";
 import type { AttendanceRecord, AbsenceDetail, Bill } from "@/types";
@@ -13,26 +12,28 @@ interface MemberDetailClientProps {
   defaultTab?: string;
 }
 
-const tabs = [
-  { id: "attendance", label: "출석" },
-  { id: "bills", label: "법안" },
-];
-
 export default function MemberDetailClient({
   attendance,
   absenceDetails,
   bills,
   defaultTab = "attendance",
 }: MemberDetailClientProps) {
-  const [activeTab, setActiveTab] = useState(defaultTab);
-
   return (
-    <div>
-      <Tabs tabs={tabs} activeTab={activeTab} onChange={setActiveTab} />
-      {activeTab === "attendance" && (
+    <Tabs defaultValue={defaultTab}>
+      <TabsList variant="line" className="w-full">
+        <TabsTrigger value="attendance" className="text-base font-semibold">
+          출석
+        </TabsTrigger>
+        <TabsTrigger value="bills" className="text-base font-semibold">
+          법안
+        </TabsTrigger>
+      </TabsList>
+      <TabsContent value="attendance">
         <AttendanceTab attendance={attendance} absenceDetails={absenceDetails} />
-      )}
-      {activeTab === "bills" && <BillsTab bills={bills} />}
-    </div>
+      </TabsContent>
+      <TabsContent value="bills">
+        <BillsTab bills={bills} />
+      </TabsContent>
+    </Tabs>
   );
 }

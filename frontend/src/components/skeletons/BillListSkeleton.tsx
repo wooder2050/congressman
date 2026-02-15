@@ -1,6 +1,6 @@
 function SkeletonBillItem() {
   return (
-    <div className="animate-pulse rounded-xl border border-(--color-bg-tertiary) bg-(--color-bg-primary) p-4 shadow-(--shadow-card)">
+    <div className="animate-pulse rounded-xl border border-(--color-border-primary) bg-(--color-bg-primary) p-4">
       <div className="mb-2 flex items-start justify-between gap-2">
         <div className="h-5 flex-1 rounded bg-(--color-bg-tertiary)" />
         <div className="h-5 w-14 shrink-0 rounded-full bg-(--color-bg-tertiary)" />

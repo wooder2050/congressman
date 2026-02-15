@@ -3,15 +3,8 @@ export default function MemberDetailSkeleton() {
     <div className="mx-auto max-w-5xl animate-pulse space-y-6">
       <div className="h-4 w-20 rounded bg-(--color-bg-tertiary)" />
 
-      {/* 프로필 */}
-      <div className="flex items-start gap-4">
-        <div className="h-20 w-20 shrink-0 rounded-full bg-(--color-bg-tertiary)" />
-        <div className="flex-1 space-y-2">
-          <div className="h-7 w-28 rounded bg-(--color-bg-tertiary)" />
-          <div className="h-5 w-40 rounded bg-(--color-bg-tertiary)" />
-          <div className="h-4 w-32 rounded bg-(--color-bg-tertiary)" />
-        </div>
-      </div>
+      {/* 프로필 배너 */}
+      <div className="h-32 rounded-xl bg-(--color-bg-tertiary)" />
 
       {/* 위원회 */}
       <div className="space-y-2">
@@ -38,9 +31,9 @@ export default function MemberDetailSkeleton() {
         </div>
       </div>
 
-      <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+      <div className="grid grid-cols-2 divide-x divide-y divide-(--color-border-primary) overflow-hidden rounded-xl border border-(--color-border-primary) sm:grid-cols-4">
         {Array.from({ length: 4 }).map((_, i) => (
-          <div key={i} className="h-16 rounded-lg bg-(--color-bg-tertiary)" />
+          <div key={i} className="h-16 bg-(--color-bg-primary)" />
         ))}
       </div>
     </div>
