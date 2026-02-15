@@ -1,5 +1,11 @@
+import type { Metadata } from "next";
 import { getMembers } from "@/lib/api";
 import MemberListClient from "@/components/members/MemberListClient";
+
+export const metadata: Metadata = {
+  title: "의원 목록",
+  description: "대수별 국회의원 목록을 검색하고 정당별로 필터링하세요.",
+};
 
 interface MembersPageProps {
   searchParams: Promise<{ term?: string }>;

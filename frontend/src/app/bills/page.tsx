@@ -1,5 +1,11 @@
+import type { Metadata } from "next";
 import { getBills } from "@/lib/api";
 import BillListClient from "@/components/bills/BillListClient";
+
+export const metadata: Metadata = {
+  title: "법안 목록",
+  description: "대수별 국회의원 발의 법안 목록을 확인하세요.",
+};
 
 interface BillsPageProps {
   searchParams: Promise<{ term?: string }>;

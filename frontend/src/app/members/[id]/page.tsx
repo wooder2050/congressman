@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { getMember, getMemberTerms, getAttendance, getAbsenceDetails, getBills } from "@/lib/api";
@@ -7,6 +8,16 @@ import MemberDetailClient from "@/components/members/MemberDetailClient";
 interface MemberDetailPageProps {
   params: Promise<{ id: string }>;
   searchParams: Promise<{ term?: string; tab?: string }>;
+}
+
+export async function generateMetadata({ params }: MemberDetailPageProps): Promise<Metadata> {
+  const { id } = await params;
+  const member = await getMember(id);
+  if (!member) return { title: "의원 정보 없음" };
+  return {
+    title: `${member.name} 의원`,
+    description: `${member.name} 국회의원의 출석, 법안 발의 등 의정활동 정보`,
+  };
 }
 
 export default async function MemberDetailPage({ params, searchParams }: MemberDetailPageProps) {
