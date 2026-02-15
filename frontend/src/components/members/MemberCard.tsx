@@ -1,5 +1,6 @@
 import Link from "next/link";
 import ColorBadge from "@/components/ui/color-badge";
+import MemberAvatar from "./MemberAvatar";
 import { getElectedLabel } from "@/lib/utils";
 import type { MemberWithTerm } from "@/types";
 
@@ -9,7 +10,6 @@ interface MemberCardProps {
 
 export default function MemberCard({ member }: MemberCardProps) {
   const { term } = member;
-  const initials = member.name.slice(0, 1);
 
   return (
     <Link
@@ -17,13 +17,13 @@ export default function MemberCard({ member }: MemberCardProps) {
       className="flex items-center gap-4 rounded-xl border border-l-4 border-(--color-border-primary) bg-(--color-bg-primary) p-4 no-underline transition-colors hover:bg-(--color-bg-hover)"
       style={{ borderLeftColor: term.party.color }}
     >
-      {/* 프로필 이미지 / 이니셜 */}
-      <div
-        className="flex h-16 w-16 shrink-0 items-center justify-center rounded-full text-xl font-bold text-(--color-text-inverse)"
-        style={{ backgroundColor: term.party.color }}
-      >
-        {initials}
-      </div>
+      {/* 프로필 이미지 */}
+      <MemberAvatar
+        name={member.name}
+        photoUrl={member.photoUrl}
+        size={64}
+        bgColor={term.party.color}
+      />
 
       {/* 정보 */}
       <div className="min-w-0 flex-1">

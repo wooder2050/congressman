@@ -1,5 +1,6 @@
 import Link from "next/link";
 import ColorBadge from "@/components/ui/color-badge";
+import MemberAvatar from "./MemberAvatar";
 import { getElectedLabel, getContrastColor } from "@/lib/utils";
 import type { Member, MemberTerm } from "@/types";
 
@@ -10,7 +11,6 @@ interface MemberProfileProps {
 }
 
 export default function MemberProfile({ member, memberTerm, allTermIds }: MemberProfileProps) {
-  const initials = member.name.slice(0, 1);
   const contrastColor = getContrastColor(memberTerm.party.color);
 
   return (
@@ -21,15 +21,14 @@ export default function MemberProfile({ member, memberTerm, allTermIds }: Member
         style={{ backgroundColor: memberTerm.party.color }}
       >
         <div className="flex items-start gap-4 bg-black/20 p-5">
-          <div
-            className="flex h-20 w-20 shrink-0 items-center justify-center rounded-full text-2xl font-bold"
-            style={{
-              backgroundColor: "rgba(255,255,255,0.2)",
-              color: contrastColor,
-            }}
-          >
-            {initials}
-          </div>
+          <MemberAvatar
+            name={member.name}
+            photoUrl={member.photoUrl}
+            size={80}
+            bgColor="rgba(255,255,255,0.2)"
+            textColor={contrastColor}
+            className="border-2 border-white/30"
+          />
           <div className="min-w-0 flex-1">
             <h1 className="text-2xl font-bold" style={{ color: contrastColor }}>
               {member.name}
