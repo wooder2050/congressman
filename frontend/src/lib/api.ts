@@ -2,6 +2,7 @@ import { mockTerms } from "@/mocks/terms";
 import { mockMembers, mockMemberTerms } from "@/mocks/members";
 import { mockAttendance, mockAbsenceDetails } from "@/mocks/attendance";
 import { mockBills } from "@/mocks/bills";
+import { mockVotes, mockVoteSummary } from "@/mocks/votes";
 import type {
   AssemblyTerm,
   Member,
@@ -11,6 +12,8 @@ import type {
   AbsenceDetail,
   TermActivity,
   MemberWithTerm,
+  Vote,
+  VoteSummary,
 } from "@/types";
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL;
@@ -120,6 +123,35 @@ export async function getMemberHistory(memberId: string): Promise<TermActivity[]
   return fetchApi(`/api/members/${memberId}/history`);
 }
 
+export async function getVotes(params: {
+  termId?: number;
+  resultCode?: string;
+  page?: number;
+  limit?: number;
+}): Promise<{ votes: Vote[]; total: number }> {
+  if (useMock) {
+    let filtered = [...mockVotes];
+    if (params.termId) filtered = filtered.filter((v) => v.termId === params.termId);
+    if (params.resultCode) filtered = filtered.filter((v) => v.resultCode === params.resultCode);
+    const total = filtered.length;
+    const page = params.page ?? 1;
+    const limit = params.limit ?? 20;
+    const start = (page - 1) * limit;
+    return { votes: filtered.slice(start, start + limit), total };
+  }
+  const searchParams = new URLSearchParams();
+  if (params.termId) searchParams.set("termId", String(params.termId));
+  if (params.resultCode) searchParams.set("resultCode", params.resultCode);
+  if (params.page) searchParams.set("page", String(params.page));
+  if (params.limit) searchParams.set("limit", String(params.limit));
+  return fetchApi(`/api/votes?${searchParams.toString()}`);
+}
+
+export async function getVoteSummary(termId: number): Promise<VoteSummary> {
+  if (useMock) return mockVoteSummary;
+  return fetchApi(`/api/votes/summary?termId=${termId}`);
+}
+
 // Query Keys
 Object.defineProperty(getTerms, "queryKey", { value: "terms" });
 Object.defineProperty(getMembers, "queryKey", { value: "members" });
@@ -129,3 +161,5 @@ Object.defineProperty(getAttendance, "queryKey", { value: "attendance" });
 Object.defineProperty(getAbsenceDetails, "queryKey", { value: "absenceDetails" });
 Object.defineProperty(getBills, "queryKey", { value: "bills" });
 Object.defineProperty(getMemberHistory, "queryKey", { value: "memberHistory" });
+Object.defineProperty(getVotes, "queryKey", { value: "votes" });
+Object.defineProperty(getVoteSummary, "queryKey", { value: "voteSummary" });
