@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
+import Providers from "@/lib/providers";
 import Header from "@/components/layout/Header";
 import TermSelector from "@/components/layout/TermSelector";
 import BottomNav from "@/components/layout/BottomNav";
@@ -36,10 +37,12 @@ export default function RootLayout({
   return (
     <html lang="ko" className={pretendard.variable}>
       <body className="font-sans antialiased">
-        <Header />
-        <TermSelector />
-        <main className="min-h-screen px-4 py-4">{children}</main>
-        <BottomNav />
+        <Providers>
+          <Header />
+          <TermSelector />
+          <main className="min-h-screen px-4 py-4">{children}</main>
+          <BottomNav />
+        </Providers>
       </body>
     </html>
   );

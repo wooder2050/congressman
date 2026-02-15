@@ -1,6 +1,7 @@
 import Link from "next/link";
-import { getMembers } from "@/lib/api";
-import MemberListClient from "@/components/members/MemberListClient";
+import CongressWrapper from "@/common/CongressWrapper";
+import MemberListInner from "@/components/members/MemberListInner";
+import MemberListSkeleton from "@/components/skeletons/MemberListSkeleton";
 
 interface HomePageProps {
   searchParams: Promise<{ term?: string }>;
@@ -9,7 +10,6 @@ interface HomePageProps {
 export default async function HomePage({ searchParams }: HomePageProps) {
   const params = await searchParams;
   const termId = Number(params.term) || 22;
-  const members = await getMembers(termId);
 
   return (
     <div className="mx-auto max-w-5xl space-y-6">
@@ -32,7 +32,9 @@ export default async function HomePage({ searchParams }: HomePageProps) {
             전체 보기 →
           </Link>
         </div>
-        <MemberListClient members={members} />
+        <CongressWrapper fallback={<MemberListSkeleton />}>
+          <MemberListInner termId={termId} />
+        </CongressWrapper>
       </section>
     </div>
   );
