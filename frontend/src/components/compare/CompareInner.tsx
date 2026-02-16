@@ -27,15 +27,22 @@ export default function CompareInner({ termId, initialMemberIds }: CompareInnerP
     return map;
   }, [allMembers]);
 
+  // raw selectedIds — 대수가 바뀌면 무효 ID가 포함될 수 있음
   const [selectedIds, setSelectedIds] = useState<string[]>(() =>
     initialMemberIds.filter((id) => memberMap.has(id)).slice(0, MAX_MEMBERS),
   );
 
-  // URL sync
+  // 항상 현재 대수에 유효한 ID만 사용 (파생 값)
+  const validIds = useMemo(
+    () => selectedIds.filter((id) => memberMap.has(id)),
+    [selectedIds, memberMap],
+  );
+
+  // URL sync — validIds 기반으로 URL 갱신
   useEffect(() => {
     const params = new URLSearchParams(searchParams.toString());
-    if (selectedIds.length > 0) {
-      params.set("members", selectedIds.join(","));
+    if (validIds.length > 0) {
+      params.set("members", validIds.join(","));
     } else {
       params.delete("members");
     }
@@ -44,19 +51,20 @@ export default function CompareInner({ termId, initialMemberIds }: CompareInnerP
     if (newUrl !== currentUrl) {
       router.replace(newUrl, { scroll: false });
     }
-  }, [selectedIds, searchParams, router]);
+  }, [validIds, searchParams, router]);
 
-  const selectedMembers = selectedIds
+  const selectedMembers = validIds
     .map((id) => memberMap.get(id))
     .filter((m): m is MemberWithTerm => !!m);
 
   const handleSelect = useCallback((member: MemberWithTerm) => {
     setSelectedIds((prev) => {
-      if (prev.includes(member.id)) return prev;
-      if (prev.length >= MAX_MEMBERS) return prev;
-      return [...prev, member.id];
+      const current = prev.filter((id) => memberMap.has(id));
+      if (current.includes(member.id)) return prev;
+      if (current.length >= MAX_MEMBERS) return prev;
+      return [...current, member.id];
     });
-  }, []);
+  }, [memberMap]);
 
   const handleRemove = useCallback((memberId: string) => {
     setSelectedIds((prev) => prev.filter((id) => id !== memberId));
@@ -66,7 +74,7 @@ export default function CompareInner({ termId, initialMemberIds }: CompareInnerP
     <div className="space-y-5">
       <MemberSearch
         members={allMembers}
-        selectedIds={selectedIds}
+        selectedIds={validIds}
         onSelect={handleSelect}
         maxMembers={MAX_MEMBERS}
       />
@@ -82,7 +90,7 @@ export default function CompareInner({ termId, initialMemberIds }: CompareInnerP
         <>
           <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
             {selectedMembers.map((m) => (
-              <CompareCard key={m.id} member={m} onRemove={handleRemove} />
+              <CompareCard key={m.id} member={m} termId={termId} onRemove={handleRemove} />
             ))}
           </div>
 

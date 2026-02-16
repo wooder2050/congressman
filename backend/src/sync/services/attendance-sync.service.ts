@@ -48,14 +48,29 @@ export class AttendanceSyncService {
 
       console.log(`[AttendanceSync] Found stats for ${stats.length} members`);
 
-      let count = 0;
+      // 표결 기록이 있는 의원 집계를 Map으로 변환
+      const statsMap = new Map<string, { yes: bigint; no: bigint; abstain: bigint; absent: bigint }>();
       for (const row of stats) {
-        const attended = Number(row.yes) + Number(row.no) + Number(row.abstain);
-        const absent = Number(row.absent);
+        statsMap.set(row.memberId, row);
+      }
+
+      // 해당 대수의 모든 의원 조회 (표결 이력이 없는 의원 포함)
+      const allMembers = await this.prisma.memberTerm.findMany({
+        where: { termId },
+        select: { memberId: true },
+      });
+
+      console.log(`[AttendanceSync] Total members for term ${termId}: ${allMembers.length}`);
+
+      let count = 0;
+      for (const { memberId } of allMembers) {
+        const row = statsMap.get(memberId);
+        const attended = row ? Number(row.yes) + Number(row.no) + Number(row.abstain) : 0;
+        const absent = row ? Number(row.absent) : 0;
         const rate = totalVotes > 0 ? Math.round((attended / totalVotes) * 10000) / 100 : 0;
 
         await this.prisma.attendance.upsert({
-          where: { memberId_termId: { memberId: row.memberId, termId } },
+          where: { memberId_termId: { memberId, termId } },
           update: {
             totalSessions: totalVotes,
             attended,
@@ -65,7 +80,7 @@ export class AttendanceSyncService {
             rate,
           },
           create: {
-            memberId: row.memberId,
+            memberId,
             termId,
             totalSessions: totalVotes,
             attended,
@@ -78,7 +93,7 @@ export class AttendanceSyncService {
 
         count++;
         if (count % 50 === 0) {
-          console.log(`[AttendanceSync]   Processed ${count}/${stats.length} members`);
+          console.log(`[AttendanceSync]   Processed ${count}/${allMembers.length} members`);
         }
       }
 

@@ -8,10 +8,11 @@ import type { MemberWithTerm } from "@/types";
 
 interface CompareCardProps {
   member: MemberWithTerm;
+  termId: number;
   onRemove: (id: string) => void;
 }
 
-export default function CompareCard({ member, onRemove }: CompareCardProps) {
+export default function CompareCard({ member, termId, onRemove }: CompareCardProps) {
   return (
     <div className="relative flex flex-col items-center rounded-xl border border-(--color-border-primary) p-4">
       {/* Remove button */}
@@ -40,7 +41,7 @@ export default function CompareCard({ member, onRemove }: CompareCardProps) {
         bgColor={member.term.party.color}
       />
       <Link
-        href={`/members/${member.id}`}
+        href={`/members/${member.id}?term=${termId}`}
         className="mt-2 text-base font-bold text-(--color-text-primary) no-underline hover:underline"
       >
         {member.name}
