@@ -8,7 +8,10 @@ export class VotesController {
   constructor(private readonly votesService: VotesService) {}
 
   @Get()
-  @ApiOperation({ summary: '표결 목록', description: '본회의 표결 목록을 반환합니다 (페이지네이션)' })
+  @ApiOperation({
+    summary: '표결 목록',
+    description: '본회의 표결 목록을 반환합니다 (페이지네이션)',
+  })
   @ApiQuery({ name: 'termId', required: false, type: Number, description: '국회 대수' })
   @ApiQuery({ name: 'resultCode', required: false, description: '표결 결과 코드' })
   @ApiQuery({ name: 'page', required: false, type: Number, description: '페이지 번호 (기본: 1)' })
