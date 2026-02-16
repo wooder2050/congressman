@@ -127,6 +127,31 @@ export interface TermActivity {
   billsPassed: number;
 }
 
+// ====== 재산 ======
+export interface AssetCategory {
+  category: string;
+  amount: number;
+}
+
+export interface AssetYear {
+  year: number;
+  total: number;
+  categories: AssetCategory[];
+}
+
+export interface AssetDetail {
+  year: number;
+  category: string;
+  item: string;
+  amount: number;
+  relation: string;
+}
+
+export interface AssetResponse {
+  years: AssetYear[];
+  details: AssetDetail[];
+}
+
 // ====== 의원 + 대수 정보 결합 ======
 export interface MemberWithTerm extends Member {
   term: MemberTerm;

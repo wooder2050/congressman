@@ -9,6 +9,7 @@ import { VoteSyncService } from './services/vote-sync.service';
 import { PhotoSyncService } from './services/photo-sync.service';
 import { MemberVoteSyncService } from './services/member-vote-sync.service';
 import { AttendanceSyncService } from './services/attendance-sync.service';
+import { AssetSyncService } from './services/asset-sync.service';
 
 async function invalidateCache(command: string) {
   const url = process.env.UPSTASH_REDIS_REST_URL;
@@ -39,6 +40,9 @@ async function invalidateCache(command: string) {
   if (command === 'attendance') {
     prefixes.push('attendance:');
   }
+  if (command === 'assets') {
+    prefixes.push('member:assets:');
+  }
 
   for (const prefix of prefixes) {
     const scanAndDelete = async (cur: number): Promise<number> => {
@@ -61,46 +65,47 @@ async function main() {
   const prisma = new PrismaClient();
   await prisma.$connect();
 
-  const api = new AssemblyApiService();
   const syncLog = new SyncLogService(prisma);
-  const memberSync = new MemberSyncService(prisma, api, syncLog);
-  const billSync = new BillSyncService(prisma, api, syncLog);
-  const voteSync = new VoteSyncService(prisma, api, syncLog);
-  const photoSync = new PhotoSyncService(prisma, api);
-  const memberVoteSync = new MemberVoteSyncService(prisma, api, syncLog);
-  const attendanceSync = new AttendanceSyncService(prisma, syncLog);
-
   const command = process.argv[2] ?? 'all';
   const termId = parseInt(process.argv[3] ?? '22', 10);
 
   console.log(`[SyncRunner] Running sync: "${command}" for term ${termId}`);
 
+  // API 키가 필요 없는 명령은 AssemblyApiService를 생성하지 않음
+  const needsApi = !['assets', 'attendance'].includes(command);
+  const api = needsApi ? new AssemblyApiService() : (null as unknown as AssemblyApiService);
+
   try {
     switch (command) {
       case 'members':
-        await memberSync.syncMembers(termId);
+        await new MemberSyncService(prisma, api, syncLog).syncMembers(termId);
         break;
       case 'bills':
-        await billSync.syncBills(termId);
+        await new BillSyncService(prisma, api, syncLog).syncBills(termId);
         break;
       case 'votes':
-        await voteSync.syncVotes(termId);
+        await new VoteSyncService(prisma, api, syncLog).syncVotes(termId);
         break;
       case 'photos':
-        await photoSync.syncPhotos(termId);
+        await new PhotoSyncService(prisma, api).syncPhotos(termId);
         break;
       case 'member-votes':
-        await memberVoteSync.syncMemberVotes(termId);
+        await new MemberVoteSyncService(prisma, api, syncLog).syncMemberVotes(termId);
         break;
       case 'attendance':
-        await attendanceSync.syncAttendance(termId);
+        await new AttendanceSyncService(prisma, syncLog).syncAttendance(termId);
+        break;
+      case 'assets':
+        await new AssetSyncService(prisma, syncLog).syncAssets();
         break;
       case 'all':
-      default:
-        await memberSync.syncMembers(termId);
-        await billSync.syncBills(termId);
-        await voteSync.syncVotes(termId);
+      default: {
+        const allApi = new AssemblyApiService();
+        await new MemberSyncService(prisma, allApi, syncLog).syncMembers(termId);
+        await new BillSyncService(prisma, allApi, syncLog).syncBills(termId);
+        await new VoteSyncService(prisma, allApi, syncLog).syncVotes(termId);
         break;
+      }
     }
 
     await invalidateCache(command);

@@ -1,11 +1,14 @@
 "use client";
 
+import { useState, Suspense } from "react";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { useCongressSuspenseQuery } from "@/hooks/useCongressQuery";
-import { getMember, getMemberTerms, getAttendance, getAbsenceDetails, getBills } from "@/lib/api";
+import { getMember, getMemberTerms } from "@/lib/api";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import MemberProfile from "./MemberProfile";
-import MemberDetailClient from "./MemberDetailClient";
+import MemberDetailTabContent from "./MemberDetailTabs";
+import TabContentSkeleton from "@/components/skeletons/TabSkeleton";
 
 interface MemberDetailInnerProps {
   id: string;
@@ -13,18 +16,17 @@ interface MemberDetailInnerProps {
   defaultTab: string;
 }
 
+const TAB_OPTIONS = [
+  { value: "attendance", label: "출석" },
+  { value: "bills", label: "법안" },
+  { value: "votes", label: "표결" },
+  { value: "assets", label: "재산" },
+] as const;
+
 export default function MemberDetailInner({ id, termId, defaultTab }: MemberDetailInnerProps) {
+  const [activeTab, setActiveTab] = useState(defaultTab);
   const { data: member } = useCongressSuspenseQuery(getMember, id);
   const { data: memberTerms } = useCongressSuspenseQuery(getMemberTerms, id);
-  const { data: attendance } = useCongressSuspenseQuery(getAttendance, {
-    memberId: id,
-    termId,
-  });
-  const { data: absenceDetails } = useCongressSuspenseQuery(getAbsenceDetails, {
-    memberId: id,
-    termId,
-  });
-  const { data: billsResult } = useCongressSuspenseQuery(getBills, { memberId: id, termId });
 
   if (!member) return notFound();
 
@@ -44,14 +46,21 @@ export default function MemberDetailInner({ id, termId, defaultTab }: MemberDeta
 
       <MemberProfile member={member} memberTerm={currentMemberTerm} allTermIds={allTermIds} />
 
-      <MemberDetailClient
-        attendance={attendance}
-        absenceDetails={absenceDetails}
-        bills={billsResult.bills}
-        memberId={id}
-        termId={termId}
-        defaultTab={defaultTab}
-      />
+      {/* 탭 헤더 — 항상 즉시 렌더 */}
+      <Tabs value={activeTab} onValueChange={setActiveTab}>
+        <TabsList variant="line" className="w-full">
+          {TAB_OPTIONS.map((tab) => (
+            <TabsTrigger key={tab.value} value={tab.value} className="text-base font-semibold">
+              {tab.label}
+            </TabsTrigger>
+          ))}
+        </TabsList>
+      </Tabs>
+
+      {/* 탭 콘텐츠 — Suspense 경계 */}
+      <Suspense fallback={<TabContentSkeleton />}>
+        <MemberDetailTabContent memberId={id} termId={termId} activeTab={activeTab} />
+      </Suspense>
     </div>
   );
 }
