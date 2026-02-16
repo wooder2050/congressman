@@ -1,19 +1,19 @@
 "use client";
 
 import DonutChart from "@/components/charts/DonutChart";
-import { VOTE_RESULT_MAP } from "@/lib/constants";
-import type { VoteSummary } from "@/types";
+import { BILL_STATUS_MAP } from "@/lib/constants";
+import type { BillSummary } from "@/types";
 
-interface VoteSummaryCardProps {
-  summary: VoteSummary;
+interface BillSummaryCardProps {
+  summary: BillSummary;
 }
 
-export default function VoteSummaryCard({ summary }: VoteSummaryCardProps) {
+export default function BillSummaryCard({ summary }: BillSummaryCardProps) {
   const chartData = [
-    { name: "원안가결", value: summary.passed, color: VOTE_RESULT_MAP.passed.color },
-    { name: "수정가결", value: summary.amended, color: VOTE_RESULT_MAP.amended.color },
-    { name: "부결", value: summary.rejected, color: VOTE_RESULT_MAP.rejected.color },
-    { name: "폐기", value: summary.discarded, color: VOTE_RESULT_MAP.discarded.color },
+    { name: "가결", value: summary.passed, color: BILL_STATUS_MAP.passed.color },
+    { name: "계류", value: summary.pending, color: BILL_STATUS_MAP.pending.color },
+    { name: "폐기", value: summary.discarded, color: BILL_STATUS_MAP.discarded.color },
+    { name: "위원회 심사", value: summary.committee, color: BILL_STATUS_MAP.committee.color },
   ];
 
   return (

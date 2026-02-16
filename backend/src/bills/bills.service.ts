@@ -62,4 +62,72 @@ export class BillsService {
     await this.redis.set(key, result, TTL_HOUR);
     return result;
   }
+
+  async getSummary(termId: number) {
+    const key = `bills:summary:${termId}`;
+    const cached = await this.redis.get(key);
+    if (cached) return cached;
+
+    const [total, passed, pending, discarded, committee] = await Promise.all([
+      this.prisma.bill.count({ where: { termId } }),
+      this.prisma.bill.count({ where: { termId, status: 'passed' } }),
+      this.prisma.bill.count({ where: { termId, status: 'pending' } }),
+      this.prisma.bill.count({ where: { termId, status: 'discarded' } }),
+      this.prisma.bill.count({ where: { termId, status: 'committee' } }),
+    ]);
+
+    const result = { total, passed, pending, discarded, committee };
+    await this.redis.set(key, result, TTL_HOUR);
+    return result;
+  }
+
+  async findById(id: string) {
+    const key = `bill:${id}`;
+    const cached = await this.redis.get(key);
+    if (cached) return cached;
+
+    const bill = await this.prisma.bill.findUnique({ where: { id } });
+    if (!bill) return null;
+
+    const proposers = await this.prisma.billProposer.findMany({
+      where: { billId: id },
+      include: {
+        member: {
+          include: {
+            memberTerms: {
+              where: { termId: bill.termId },
+              include: { party: true },
+              take: 1,
+            },
+          },
+        },
+      },
+    });
+
+    const result = {
+      id: bill.id,
+      title: bill.title,
+      proposerName: bill.proposerName,
+      coProposerCount: bill.coProposerCount,
+      status: bill.status,
+      proposedDate: bill.proposedDate,
+      termId: bill.termId,
+      committee: bill.committee,
+      proposers: proposers.map((p) => {
+        const term = p.member.memberTerms[0];
+        return {
+          memberId: p.memberId,
+          memberName: p.member.name,
+          photoUrl: p.member.photoUrl,
+          partyId: term?.party.id ?? 'independent',
+          partyName: term?.party.name ?? '무소속',
+          partyColor: term?.party.color ?? '#999999',
+          district: term?.district ?? '',
+        };
+      }),
+    };
+
+    await this.redis.set(key, result, TTL_HOUR);
+    return result;
+  }
 }

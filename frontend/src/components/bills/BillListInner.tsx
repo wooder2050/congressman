@@ -1,9 +1,10 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import { useCongressInfiniteQuery } from "@/hooks/useCongressQuery";
-import { getBills } from "@/lib/api";
+import { useCongressInfiniteQuery, useCongressSuspenseQuery } from "@/hooks/useCongressQuery";
+import { getBills, getBillSummary } from "@/lib/api";
 import { Button } from "@/components/ui/button";
+import BillSummaryCard from "./BillSummaryCard";
 import BillListItem from "./BillListItem";
 import { BILL_STATUS_MAP } from "@/lib/constants";
 import { SkeletonBillItem } from "@/components/skeletons/BillListSkeleton";
@@ -20,6 +21,7 @@ const statusOptions = [
 ];
 
 export default function BillListInner({ termId }: BillListInnerProps) {
+  const { data: summary } = useCongressSuspenseQuery(getBillSummary, termId);
   const [selectedStatus, setSelectedStatus] = useState<string | null>(null);
   const sentinelRef = useRef<HTMLDivElement>(null);
 
@@ -60,6 +62,8 @@ export default function BillListInner({ termId }: BillListInnerProps) {
 
   return (
     <div className="space-y-4">
+      <BillSummaryCard summary={summary} />
+
       {/* 상태 필터 */}
       <div className="flex flex-wrap gap-2">
         {statusOptions.map((opt) => (

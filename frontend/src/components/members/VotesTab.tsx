@@ -100,7 +100,11 @@ export default function VotesTab({ memberId, termId }: VotesTabProps) {
             const memberResultInfo = MEMBER_VOTE_RESULT_MAP[vote.memberResult];
             const billResultInfo = VOTE_RESULT_MAP[vote.resultCode] ?? VOTE_RESULT_MAP.other;
             return (
-              <div key={vote.voteId} className="bg-(--color-bg-primary) p-4">
+              <Link
+                key={vote.voteId}
+                href={`/votes/${vote.voteId}`}
+                className="block bg-(--color-bg-primary) p-4 no-underline transition-colors hover:bg-(--color-bg-hover)"
+              >
                 <div className="mb-2 flex items-start justify-between gap-2">
                   <h4 className="line-clamp-2 text-sm leading-snug font-semibold">
                     {vote.billName}
@@ -122,7 +126,7 @@ export default function VotesTab({ memberId, termId }: VotesTabProps) {
                   <span>{formatDate(vote.procDate)}</span>
                   {vote.committee && <span>{vote.committee}</span>}
                 </div>
-              </div>
+              </Link>
             );
           })}
         </div>

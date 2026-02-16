@@ -6,12 +6,15 @@ import { mockVotes, mockVoteSummary } from "@/mocks/votes";
 import { mockMemberVotesResponse } from "@/mocks/member-votes";
 import { mockAssetResponse } from "@/mocks/assets";
 import { mockVoteWithMemberVotes } from "@/mocks/vote-member-votes";
+import { mockBillDetail } from "@/mocks/bill-detail";
 import type {
   AssemblyTerm,
   Member,
   MemberTerm,
   AttendanceRecord,
   Bill,
+  BillDetail,
+  BillSummary,
   AbsenceDetail,
   TermActivity,
   MemberWithTerm,
@@ -111,6 +114,20 @@ export async function getBills(params: {
   return fetchApi(`/api/bills?${searchParams.toString()}`);
 }
 
+export async function getBillSummary(termId: number): Promise<BillSummary> {
+  if (useMock) {
+    const filtered = mockBills.filter((b) => b.termId === termId);
+    return {
+      total: filtered.length,
+      passed: filtered.filter((b) => b.status === "passed").length,
+      pending: filtered.filter((b) => b.status === "pending").length,
+      discarded: filtered.filter((b) => b.status === "discarded").length,
+      committee: filtered.filter((b) => b.status === "committee").length,
+    };
+  }
+  return fetchApi(`/api/bills/summary?termId=${termId}`);
+}
+
 export async function getMemberHistory(memberId: string): Promise<TermActivity[]> {
   if (useMock) {
     const memberTerms = mockMemberTerms.filter((mt) => mt.memberId === memberId);
@@ -181,6 +198,11 @@ export async function getAssets(memberId: string): Promise<AssetResponse> {
   return fetchApi(`/api/members/${memberId}/assets`);
 }
 
+export async function getBill(id: string): Promise<BillDetail | null> {
+  if (useMock) return mockBillDetail;
+  return fetchApi(`/api/bills/${id}`);
+}
+
 export async function getVoteMemberVotes(voteId: string): Promise<VoteWithMemberVotes | null> {
   if (useMock) return mockVoteWithMemberVotes;
   return fetchApi(`/api/votes/${voteId}/member-votes`);
@@ -194,9 +216,11 @@ Object.defineProperty(getMemberTerms, "queryKey", { value: "memberTerms" });
 Object.defineProperty(getAttendance, "queryKey", { value: "attendance" });
 Object.defineProperty(getAbsenceDetails, "queryKey", { value: "absenceDetails" });
 Object.defineProperty(getBills, "queryKey", { value: "bills" });
+Object.defineProperty(getBillSummary, "queryKey", { value: "billSummary" });
 Object.defineProperty(getMemberHistory, "queryKey", { value: "memberHistory" });
 Object.defineProperty(getVotes, "queryKey", { value: "votes" });
 Object.defineProperty(getVoteSummary, "queryKey", { value: "voteSummary" });
 Object.defineProperty(getMemberVotes, "queryKey", { value: "memberVotes" });
 Object.defineProperty(getAssets, "queryKey", { value: "assets" });
+Object.defineProperty(getBill, "queryKey", { value: "bill" });
 Object.defineProperty(getVoteMemberVotes, "queryKey", { value: "voteMemberVotes" });

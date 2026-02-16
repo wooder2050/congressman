@@ -1,3 +1,4 @@
+import Link from "next/link";
 import ColorBadge from "@/components/ui/color-badge";
 import { formatDate } from "@/lib/utils";
 import { BILL_STATUS_MAP } from "@/lib/constants";
@@ -11,7 +12,10 @@ export default function BillListItem({ bill }: BillListItemProps) {
   const statusInfo = BILL_STATUS_MAP[bill.status];
 
   return (
-    <div className="rounded-xl border border-(--color-border-primary) bg-(--color-bg-primary) p-4 transition-colors hover:bg-(--color-bg-hover)">
+    <Link
+      href={`/bills/${bill.id}`}
+      className="block rounded-xl border border-(--color-border-primary) bg-(--color-bg-primary) p-4 no-underline transition-colors hover:bg-(--color-bg-hover)"
+    >
       <div className="mb-2 flex items-start justify-between gap-2">
         <h3 className="line-clamp-2 text-base font-semibold text-(--color-text-primary)">
           {bill.title}
@@ -25,6 +29,6 @@ export default function BillListItem({ bill }: BillListItemProps) {
         <span>{formatDate(bill.proposedDate)}</span>
         {bill.committee && <span>{bill.committee}</span>}
       </div>
-    </div>
+    </Link>
   );
 }
