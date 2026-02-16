@@ -1,15 +1,18 @@
 "use client";
 
-import { useState, useMemo } from "react";
-import { useCongressSuspenseQuery } from "@/hooks/useCongressQuery";
+import { useState, useEffect, useRef } from "react";
+import { useCongressInfiniteQuery } from "@/hooks/useCongressQuery";
 import { getBills } from "@/lib/api";
 import { Button } from "@/components/ui/button";
 import BillListItem from "./BillListItem";
 import { BILL_STATUS_MAP } from "@/lib/constants";
+import { SkeletonBillItem } from "@/components/skeletons/BillListSkeleton";
 
 interface BillListInnerProps {
   termId: number;
 }
+
+const SKELETON_COUNT = 4;
 
 const statusOptions = [
   { id: null, label: "전체" },
@@ -17,13 +20,43 @@ const statusOptions = [
 ];
 
 export default function BillListInner({ termId }: BillListInnerProps) {
-  const { data } = useCongressSuspenseQuery(getBills, { termId });
   const [selectedStatus, setSelectedStatus] = useState<string | null>(null);
+  const sentinelRef = useRef<HTMLDivElement>(null);
 
-  const filtered = useMemo(() => {
-    if (!selectedStatus) return data.bills;
-    return data.bills.filter((b) => b.status === selectedStatus);
-  }, [data.bills, selectedStatus]);
+  const queryParams = {
+    termId,
+    ...(selectedStatus ? { status: selectedStatus } : {}),
+  };
+
+  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading, isError, error } =
+    useCongressInfiniteQuery(getBills, queryParams, {
+      limit: 30,
+      getItemCount: (page) => page.bills.length,
+    });
+
+  useEffect(() => {
+    const sentinel = sentinelRef.current;
+    if (!sentinel) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0]?.isIntersecting && hasNextPage && !isFetchingNextPage) {
+          fetchNextPage();
+        }
+      },
+      { rootMargin: "400px" },
+    );
+    observer.observe(sentinel);
+
+    return () => observer.disconnect();
+  }, [fetchNextPage, hasNextPage, isFetchingNextPage]);
+
+  const allBills = data?.pages.flatMap((page) => page.bills) ?? [];
+  const total = data?.pages[0]?.total ?? 0;
+
+  if (isError) {
+    throw error;
+  }
 
   return (
     <div className="space-y-4">
@@ -42,16 +75,26 @@ export default function BillListInner({ termId }: BillListInnerProps) {
         ))}
       </div>
 
-      <p className="text-sm text-(--color-text-tertiary)">총 {filtered.length}건</p>
+      <p className="text-sm text-(--color-text-tertiary)">
+        {isLoading ? "\u00A0" : `총 ${total.toLocaleString()}건`}
+      </p>
 
       {/* 법안 목록 */}
-      {filtered.length === 0 ? (
+      {!isLoading && allBills.length === 0 ? (
         <div className="py-8 text-center text-(--color-text-tertiary)">해당 법안이 없습니다.</div>
       ) : (
         <div className="grid grid-cols-1 gap-3 lg:grid-cols-2">
-          {filtered.map((bill) => (
+          {allBills.map((bill) => (
             <BillListItem key={bill.id} bill={bill} />
           ))}
+        </div>
+      )}
+
+      {/* Sentinel + 로딩 스켈레톤 */}
+      {(isLoading || hasNextPage) && (
+        <div ref={sentinelRef} className="grid grid-cols-1 gap-3 lg:grid-cols-2">
+          {(isLoading || isFetchingNextPage) &&
+            Array.from({ length: SKELETON_COUNT }).map((_, i) => <SkeletonBillItem key={i} />)}
         </div>
       )}
     </div>

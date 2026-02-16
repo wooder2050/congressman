@@ -26,7 +26,11 @@ export default function MemberDetailTabContent({
     memberId,
     termId,
   });
-  const { data: billsResult } = useCongressSuspenseQuery(getBills, { memberId, termId });
+  const { data: billsResult } = useCongressSuspenseQuery(getBills, {
+    memberId,
+    termId,
+    limit: 100,
+  });
   const { data: assets } = useCongressSuspenseQuery(getAssets, memberId);
 
   return (
