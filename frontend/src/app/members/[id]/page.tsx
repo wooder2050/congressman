@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { getMember } from "@/lib/api";
+import { getMember, getMemberTerms } from "@/lib/api";
 import CongressWrapper from "@/common/CongressWrapper";
 import MemberDetailInner from "@/components/members/MemberDetailInner";
 import MemberDetailSkeleton from "@/components/skeletons/MemberDetailSkeleton";
@@ -11,11 +11,22 @@ interface MemberDetailPageProps {
 
 export async function generateMetadata({ params }: MemberDetailPageProps): Promise<Metadata> {
   const { id } = await params;
-  const member = await getMember(id);
+  const [member, terms] = await Promise.all([getMember(id), getMemberTerms(id)]);
   if (!member) return { title: "의원 정보 없음" };
+
+  const currentTerm = terms.find((t) => t.termId === 22) ?? terms[0];
+  const partyName = currentTerm?.party.name ?? "";
+  const district = currentTerm?.district ?? "";
+  const description = `${member.name} ${partyName} 국회의원${district ? ` (${district})` : ""}의 출석, 법안 발의, 표결, 재산 등 의정활동 정보`;
+
   return {
     title: `${member.name} 의원`,
-    description: `${member.name} 국회의원의 출석, 법안 발의 등 의정활동 정보`,
+    description,
+    openGraph: {
+      title: `${member.name} 의원 | 국회의원 의정활동 정보`,
+      description,
+      type: "profile",
+    },
   };
 }
 
