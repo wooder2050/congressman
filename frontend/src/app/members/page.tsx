@@ -17,7 +17,7 @@ export default async function MembersPage({ searchParams }: MembersPageProps) {
   const termId = Number(params.term) || 22;
 
   return (
-    <div className="mx-auto max-w-5xl">
+    <div className="mx-auto max-w-7xl">
       <h1 className="mb-4 text-2xl font-bold">의원 목록</h1>
       <CongressWrapper fallback={<MemberListSkeleton />}>
         <MemberListInner termId={termId} />

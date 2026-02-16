@@ -1,6 +1,6 @@
 export default function MemberDetailSkeleton() {
   return (
-    <div className="mx-auto max-w-5xl animate-pulse space-y-6">
+    <div className="mx-auto max-w-7xl animate-pulse space-y-6">
       <div className="h-4 w-20 rounded bg-(--color-bg-tertiary)" />
 
       {/* 프로필 배너 */}

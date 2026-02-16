@@ -52,7 +52,7 @@ export default function VoteListInner({ termId }: VoteListInnerProps) {
       {filtered.length === 0 ? (
         <div className="py-8 text-center text-(--color-text-tertiary)">표결 데이터가 없습니다.</div>
       ) : (
-        <div className="space-y-3">
+        <div className="grid grid-cols-1 gap-3 lg:grid-cols-2">
           {filtered.map((vote) => (
             <VoteListItem key={vote.id} vote={vote} />
           ))}

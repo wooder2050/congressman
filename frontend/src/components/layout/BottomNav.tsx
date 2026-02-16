@@ -116,7 +116,7 @@ export default function BottomNav() {
   };
 
   return (
-    <nav className="fixed right-0 bottom-0 left-0 z-50 bg-(--color-bg-primary) pb-[env(safe-area-inset-bottom)] shadow-(--shadow-bottom-nav)">
+    <nav className="fixed right-0 bottom-0 left-0 z-50 bg-(--color-bg-primary) pb-[env(safe-area-inset-bottom)] shadow-(--shadow-bottom-nav) lg:hidden">
       <div className="mx-auto flex max-w-5xl">
         {navItems.map((item) => {
           const active = isActive(item.href);

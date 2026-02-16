@@ -12,7 +12,7 @@ export default async function HomePage({ searchParams }: HomePageProps) {
   const termId = Number(params.term) || 22;
 
   return (
-    <div className="mx-auto max-w-5xl space-y-6">
+    <div className="mx-auto max-w-7xl space-y-6">
       {/* 헤더 섹션 */}
       <section>
         <h1 className="text-2xl font-bold">국회의원 의정활동 정보</h1>

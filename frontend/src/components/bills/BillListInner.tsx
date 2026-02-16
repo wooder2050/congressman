@@ -48,7 +48,7 @@ export default function BillListInner({ termId }: BillListInnerProps) {
       {filtered.length === 0 ? (
         <div className="py-8 text-center text-(--color-text-tertiary)">해당 법안이 없습니다.</div>
       ) : (
-        <div className="space-y-3">
+        <div className="grid grid-cols-1 gap-3 lg:grid-cols-2">
           {filtered.map((bill) => (
             <BillListItem key={bill.id} bill={bill} />
           ))}
