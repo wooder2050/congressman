@@ -13,6 +13,7 @@
 | 본회의 표결 | `ncocpgfiaoituanbr` | 월 2~5회 (본회의 시) | 1~3 영업일 | **매일** |
 | 의원별 표결 | `nojepdqqaweusdfbi` | 본회의 표결과 동시 | 1~3 영업일 | **매일** |
 | 출석 통계 | (의원별 표결에서 계산) | 본회의 표결과 동시 | - | **매일** |
+| 법안 본문 | 의안정보시스템 크롤링 | 법안 발의 시 확정 (불변) | - | **매일** (신규분만) |
 | 재산 정보 | 뉴스타파 CSV (수동) | 연 1회 | - | **수동** |
 
 ## 국회 회기 패턴
@@ -44,7 +45,7 @@ pnpm sync:daily 21     # 21대 지정
 ```
 
 - 스크립트: `src/sync/sync-daily.ts`
-- 대상: bills → votes → member-votes → attendance
+- 대상: bills → extra-bills → votes → member-votes → bill-content → attendance
 - 실행 후 관련 Redis 캐시 자동 무효화
 - 실패한 작업이 있으면 exit code 1 반환 (CI/cron 연동 용이)
 - 권장 시간: **매일 04:00 KST**
@@ -74,6 +75,7 @@ pnpm sync:votes          # 본회의 표결
 pnpm sync:photos         # 의원 사진
 pnpm sync:member-votes   # 의원별 표결 (35만건+, 오래 걸림)
 pnpm sync:attendance     # 출석 통계
+pnpm sync:bill-content   # 법안 본문 크롤링 (의안정보시스템)
 pnpm sync:assets         # 재산 정보 (CSV 수동)
 pnpm sync                # 전체 (members + bills + votes)
 ```
@@ -167,7 +169,16 @@ jobs:
 | 본회의 표결 | ~1,225건 | ~10초 |
 | 의원별 표결 | ~359,000건 | ~5분 |
 | 출석 통계 | 296건 (계산) | ~10초 |
+| 법안 본문 | ~16,600건 | ~55분 (초회), 이후 신규분만 수 초 |
 | 의원 사진 | 296건 | ~20초 |
 
-매일 동기화 전체 소요: 약 **6~7분**
+매일 동기화 전체 소요: 약 **6~7분** (bill-content는 신규분만 처리하므로 수 초 추가)
 주간 동기화 전체 소요: 약 **30초**
+
+### 법안 본문 크롤링 참고
+
+- 데이터 소스: 의안정보시스템 (`likms.assembly.go.kr/bill/bi/bill/detail/billInfo.do`) POST
+- 추출 항목: 제안이유 및 주요내용 텍스트, 의안원문 PDF bookId
+- 한 번 수집된 본문은 변하지 않음 (incremental: `summary IS NULL`인 법안만 대상)
+- rate limit: 요청 간 200ms 딜레이
+- 초회 전체 크롤링 완료 (2026-02-17): 16,612건 중 16,612건 성공, PDF bookId 16,522건 확보

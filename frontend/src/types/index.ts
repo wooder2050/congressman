@@ -88,6 +88,7 @@ export interface Vote {
   abstainCount: number;
   linkUrl: string;
   termId: number;
+  hasBill?: boolean;
 }
 
 export interface VoteSummary {
@@ -191,6 +192,10 @@ export interface BillProposerInfo {
 // ====== 법안 상세 ======
 export interface BillDetail extends Omit<Bill, "proposerIds"> {
   proposers: BillProposerInfo[];
+  hasVote?: boolean;
+  summary?: string | null;
+  pdfUrl?: string | null;
+  detailLink?: string | null;
 }
 
 // ====== 홈 통계 ======

@@ -11,9 +11,11 @@ import { Redis } from '@upstash/redis';
 import { AssemblyApiService } from './services/assembly-api.service';
 import { SyncLogService } from './services/sync-log.service';
 import { BillSyncService } from './services/bill-sync.service';
+import { ExtraBillSyncService } from './services/extra-bill-sync.service';
 import { VoteSyncService } from './services/vote-sync.service';
 import { MemberVoteSyncService } from './services/member-vote-sync.service';
 import { AttendanceSyncService } from './services/attendance-sync.service';
+import { BillContentSyncService } from './services/bill-content-sync.service';
 
 async function invalidateCache(prefixes: string[]) {
   const url = process.env.UPSTASH_REDIS_REST_URL;
@@ -50,10 +52,18 @@ async function main() {
 
   const tasks: { name: string; run: () => Promise<void> }[] = [
     { name: 'bills', run: () => new BillSyncService(prisma, api, syncLog).syncBills(termId) },
+    {
+      name: 'extra-bills',
+      run: () => new ExtraBillSyncService(prisma, api, syncLog).syncExtraBills(termId),
+    },
     { name: 'votes', run: () => new VoteSyncService(prisma, api, syncLog).syncVotes(termId) },
     {
       name: 'member-votes',
       run: () => new MemberVoteSyncService(prisma, api, syncLog).syncMemberVotes(termId),
+    },
+    {
+      name: 'bill-content',
+      run: () => new BillContentSyncService(prisma, syncLog).syncBillContent(termId),
     },
     {
       name: 'attendance',
