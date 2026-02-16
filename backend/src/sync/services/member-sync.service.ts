@@ -1,7 +1,7 @@
 import { PrismaClient } from '@prisma/client';
 import { AssemblyApiService } from './assembly-api.service';
 import { SyncLogService } from './sync-log.service';
-import { getPartyId } from '../constants/party-map';
+import { getPartyId, getPartyColor } from '../constants/party-map';
 import { parseElectedCount } from '../constants/elected-count-map';
 
 /** 국회의원 인적사항 API 응답 row */
@@ -71,9 +71,12 @@ export class MemberSyncService {
       const existing = await this.prisma.party.findUnique({ where: { id: partyId } });
 
       if (!existing) {
-        console.warn(`[MemberSync] Unknown party "${partyName}" → auto-creating "${partyId}"`);
+        const color = getPartyColor(partyId);
+        console.warn(
+          `[MemberSync] Unknown party "${partyName}" → auto-creating "${partyId}" (${color})`,
+        );
         await this.prisma.party.create({
-          data: { id: partyId, name: partyName, shortName: partyName, color: '#888888' },
+          data: { id: partyId, name: partyName, shortName: partyName, color },
         });
       }
     }

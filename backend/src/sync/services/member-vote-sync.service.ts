@@ -86,7 +86,9 @@ export class MemberVoteSyncService {
       }
 
       await this.syncLog.complete(log.id, totalInserted);
-      console.log(`[MemberVoteSync] Completed: ${totalInserted} records from ${votes.length} votes`);
+      console.log(
+        `[MemberVoteSync] Completed: ${totalInserted} records from ${votes.length} votes`,
+      );
     } catch (error) {
       const msg = error instanceof Error ? error.message : String(error);
       await this.syncLog.fail(log.id, msg);

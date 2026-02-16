@@ -25,6 +25,30 @@ export const PARTIES: Record<string, Party> = {
     shortName: "개혁신당",
     color: "#F37924",
   },
+  progressive: {
+    id: "progressive",
+    name: "진보당",
+    shortName: "진보당",
+    color: "#D6001C",
+  },
+  "basic-income": {
+    id: "basic-income",
+    name: "기본소득당",
+    shortName: "기본소득당",
+    color: "#00D2C3",
+  },
+  "social-democratic": {
+    id: "social-democratic",
+    name: "사회민주당",
+    shortName: "사민당",
+    color: "#F58400",
+  },
+  "new-future": {
+    id: "new-future",
+    name: "새로운미래",
+    shortName: "새미래",
+    color: "#45BABD",
+  },
   independent: {
     id: "independent",
     name: "무소속",

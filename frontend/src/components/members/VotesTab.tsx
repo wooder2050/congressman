@@ -100,7 +100,7 @@ export default function VotesTab({ memberId, termId }: VotesTabProps) {
             return (
               <div key={vote.voteId} className="bg-(--color-bg-primary) p-4">
                 <div className="mb-2 flex items-start justify-between gap-2">
-                  <h4 className="line-clamp-2 text-sm font-semibold leading-snug">
+                  <h4 className="line-clamp-2 text-sm leading-snug font-semibold">
                     {vote.billName}
                   </h4>
                   <div className="flex shrink-0 gap-1">
