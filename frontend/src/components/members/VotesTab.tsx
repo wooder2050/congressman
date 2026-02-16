@@ -60,10 +60,10 @@ export default function VotesTab({ memberId, termId }: VotesTabProps) {
                   className="h-2.5 w-2.5 shrink-0 rounded-full sm:h-3 sm:w-3"
                   style={{ backgroundColor: d.color }}
                 />
-                <span className="whitespace-nowrap text-xs text-(--color-text-secondary) sm:text-sm">
+                <span className="text-xs whitespace-nowrap text-(--color-text-secondary) sm:text-sm">
                   {d.name}
                 </span>
-                <span className="whitespace-nowrap text-xs font-bold sm:text-sm">{d.value}건</span>
+                <span className="text-xs font-bold whitespace-nowrap sm:text-sm">{d.value}건</span>
               </div>
             ))}
           </div>
