@@ -67,7 +67,8 @@ async function main() {
 
   const syncLog = new SyncLogService(prisma);
   const command = process.argv[2] ?? 'all';
-  const termId = parseInt(process.argv[3] ?? '22', 10);
+  const parsed = parseInt(process.argv[3] ?? '22', 10);
+  const termId = Number.isInteger(parsed) && parsed > 0 ? parsed : 22;
 
   console.log(`[SyncRunner] Running sync: "${command}" for term ${termId}`);
 
