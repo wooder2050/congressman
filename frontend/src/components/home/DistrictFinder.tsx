@@ -23,10 +23,7 @@ export default function DistrictFinder({ termId }: DistrictFinderProps) {
   const [selectedSido, setSelectedSido] = useState("");
   const [selectedDistrict, setSelectedDistrict] = useState("");
 
-  const localMembers = useMemo(
-    () => members.filter((m) => !m.term.proportional),
-    [members],
-  );
+  const localMembers = useMemo(() => members.filter((m) => !m.term.proportional), [members]);
 
   const districtsBySido = useMemo(() => {
     const map = new Map<string, string[]>();
@@ -43,7 +40,7 @@ export default function DistrictFinder({ termId }: DistrictFinderProps) {
     return map;
   }, [localMembers]);
 
-  const districts = selectedSido ? districtsBySido.get(selectedSido) ?? [] : [];
+  const districts = selectedSido ? (districtsBySido.get(selectedSido) ?? []) : [];
 
   const matchedMembers = useMemo(() => {
     if (!selectedSido || !selectedDistrict) return [];

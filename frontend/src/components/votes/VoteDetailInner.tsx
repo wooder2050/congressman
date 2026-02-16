@@ -39,13 +39,29 @@ export default function VoteDetailInner({ id }: VoteDetailInnerProps) {
     if (!data) return [];
     const groupMap = new Map<
       string,
-      { partyName: string; partyColor: string; total: number; yes: number; no: number; abstain: number; absent: number }
+      {
+        partyName: string;
+        partyColor: string;
+        total: number;
+        yes: number;
+        no: number;
+        abstain: number;
+        absent: number;
+      }
     >();
 
     for (const mv of data.memberVotes) {
       const key = mv.partyName;
       if (!groupMap.has(key)) {
-        groupMap.set(key, { partyName: mv.partyName, partyColor: mv.partyColor, total: 0, yes: 0, no: 0, abstain: 0, absent: 0 });
+        groupMap.set(key, {
+          partyName: mv.partyName,
+          partyColor: mv.partyColor,
+          total: 0,
+          yes: 0,
+          no: 0,
+          abstain: 0,
+          absent: 0,
+        });
       }
       const g = groupMap.get(key)!;
       g.total++;
@@ -139,16 +155,28 @@ export default function VoteDetailInner({ id }: VoteDetailInnerProps) {
                 {pg.total > 0 && (
                   <>
                     {pg.yes > 0 && (
-                      <div className="bg-green-500" style={{ width: `${(pg.yes / pg.total) * 100}%` }} />
+                      <div
+                        className="bg-green-500"
+                        style={{ width: `${(pg.yes / pg.total) * 100}%` }}
+                      />
                     )}
                     {pg.no > 0 && (
-                      <div className="bg-red-500" style={{ width: `${(pg.no / pg.total) * 100}%` }} />
+                      <div
+                        className="bg-red-500"
+                        style={{ width: `${(pg.no / pg.total) * 100}%` }}
+                      />
                     )}
                     {pg.abstain > 0 && (
-                      <div className="bg-yellow-500" style={{ width: `${(pg.abstain / pg.total) * 100}%` }} />
+                      <div
+                        className="bg-yellow-500"
+                        style={{ width: `${(pg.abstain / pg.total) * 100}%` }}
+                      />
                     )}
                     {pg.absent > 0 && (
-                      <div className="bg-gray-400" style={{ width: `${(pg.absent / pg.total) * 100}%` }} />
+                      <div
+                        className="bg-gray-400"
+                        style={{ width: `${(pg.absent / pg.total) * 100}%` }}
+                      />
                     )}
                   </>
                 )}
