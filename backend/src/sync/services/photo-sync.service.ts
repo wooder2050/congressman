@@ -3,6 +3,13 @@ import { AssemblyApiService } from './assembly-api.service';
 
 const BASE_URL = 'https://www.assembly.go.kr';
 
+const FETCH_HEADERS = {
+  'User-Agent':
+    'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+  Accept: 'text/html',
+  Cookie: 'NAHOME_SUCCESS=true',
+};
+
 interface MemberApiRow {
   MONA_CD: string;
   HG_NM: string;
@@ -27,14 +34,19 @@ export class PhotoSyncService {
 
     for (const row of rows) {
       const engName = row.ENG_NM?.replace(/\s+/g, '');
-      if (!engName) {
-        console.warn(`[PhotoSync] No ENG_NM for ${row.HG_NM} (${row.MONA_CD}), skipping`);
-        failed++;
-        continue;
-      }
 
       try {
-        const photoUrl = await this.fetchPhotoUrl(termId, engName);
+        // Primary: /members/{ordinal}/{ENG_NM} page
+        let photoUrl = engName
+          ? await this.fetchPhotoFromMemberPage(termId, engName)
+          : null;
+
+        // Fallback: /portal/assm/assmMemb/member.do?monaCd={MONA_CD} page
+        if (!photoUrl) {
+          console.log(`[PhotoSync] Primary failed for ${row.HG_NM}, trying fallback (monaCd=${row.MONA_CD})`);
+          photoUrl = await this.fetchPhotoFromPortal(row.MONA_CD, termId);
+        }
+
         if (photoUrl) {
           await this.prisma.member.update({
             where: { id: row.MONA_CD },
@@ -45,7 +57,7 @@ export class PhotoSyncService {
             console.log(`[PhotoSync]   Updated ${updated}/${rows.length} photos`);
           }
         } else {
-          console.warn(`[PhotoSync] No photo found for ${row.HG_NM} (${engName})`);
+          console.warn(`[PhotoSync] No photo found for ${row.HG_NM} (${row.MONA_CD})`);
           failed++;
         }
       } catch (error) {
@@ -61,21 +73,36 @@ export class PhotoSyncService {
     console.log(`[PhotoSync] Completed: ${updated} updated, ${failed} failed`);
   }
 
-  private async fetchPhotoUrl(termId: number, engName: string): Promise<string | null> {
+  /**
+   * Primary method: fetch from /members/{ordinal}/{ENG_NM} page
+   */
+  private async fetchPhotoFromMemberPage(termId: number, engName: string): Promise<string | null> {
     const ordinal = this.getOrdinal(termId);
     const url = `${BASE_URL}/members/${ordinal}/${engName}`;
 
-    const res = await fetch(url, {
-      headers: {
-        'User-Agent':
-          'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko)',
-        Accept: 'text/html',
-      },
-    });
-
+    const res = await fetch(url, { headers: FETCH_HEADERS });
     if (!res.ok) return null;
 
-    const html = await res.text();
+    return this.extractPhotoUrl(await res.text());
+  }
+
+  /**
+   * Fallback method: fetch from /portal/assm/assmMemb/member.do?monaCd={MONA_CD}
+   * This works even when the /members/{ordinal}/{ENG_NM} page doesn't exist.
+   */
+  private async fetchPhotoFromPortal(monaCd: string, termId: number): Promise<string | null> {
+    const url = `${BASE_URL}/portal/assm/assmMemb/member.do?monaCd=${monaCd}&st=${termId}&viewType=CONTBODY`;
+
+    const res = await fetch(url, { headers: FETCH_HEADERS });
+    if (!res.ok) return null;
+
+    return this.extractPhotoUrl(await res.text());
+  }
+
+  /**
+   * Extract photo URL from HTML background-image pattern
+   */
+  private extractPhotoUrl(html: string): string | null {
     // Pattern: background-image: url('/static/portal/img/openassm/new/{hash}.jpg')
     const match = html.match(
       /background-image:\s*url\(['"]?(\/static\/portal\/img\/openassm\/[^'")\s]+)['"]?\)/,
