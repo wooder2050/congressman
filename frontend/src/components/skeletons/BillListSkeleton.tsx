@@ -1,4 +1,4 @@
-function SkeletonBillItem() {
+export function SkeletonBillItem() {
   return (
     <div className="animate-pulse rounded-xl border border-(--color-border-primary) bg-(--color-bg-primary) p-4">
       <div className="mb-2 flex items-start justify-between gap-2">

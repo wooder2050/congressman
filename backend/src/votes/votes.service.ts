@@ -80,6 +80,62 @@ export class VotesService {
     return result;
   }
 
+  async findMemberVotesByVoteId(voteId: string) {
+    const key = `votes:member-votes:${voteId}`;
+    const cached = await this.redis.get(key);
+    if (cached) return cached;
+
+    const vote = await this.prisma.vote.findUnique({ where: { id: voteId } });
+    if (!vote) return null;
+
+    const memberVotes = await this.prisma.memberVote.findMany({
+      where: { voteId },
+      include: {
+        member: {
+          include: {
+            memberTerms: {
+              where: { termId: vote.termId },
+              include: { party: true },
+              take: 1,
+            },
+          },
+        },
+      },
+    });
+
+    const result = {
+      vote: {
+        id: vote.id,
+        billNo: vote.billNo,
+        billName: vote.billName,
+        procDate: vote.procDate,
+        procResult: vote.procResult,
+        resultCode: vote.resultCode,
+        yesCount: vote.yesCount,
+        noCount: vote.noCount,
+        abstainCount: vote.abstainCount,
+        voteTotal: vote.voteTotal,
+        memberTotal: vote.memberTotal,
+      },
+      memberVotes: memberVotes.map((mv) => {
+        const term = mv.member.memberTerms[0];
+        return {
+          memberId: mv.memberId,
+          memberName: mv.member.name,
+          photoUrl: mv.member.photoUrl,
+          result: mv.result,
+          partyId: term?.party.id ?? 'independent',
+          partyName: term?.party.name ?? '무소속',
+          partyColor: term?.party.color ?? '#999999',
+          district: term?.district ?? '',
+        };
+      }),
+    };
+
+    await this.redis.set(key, result, TTL_HOUR);
+    return result;
+  }
+
   async findByBillId(billId: string) {
     const key = `votes:bill:${billId}`;
     const cached = await this.redis.get(key);

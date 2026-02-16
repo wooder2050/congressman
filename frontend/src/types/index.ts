@@ -152,6 +152,23 @@ export interface AssetResponse {
   details: AssetDetail[];
 }
 
+// ====== 표결별 의원 투표 (좌석 시각화용) ======
+export interface VoteMemberResult {
+  memberId: string;
+  memberName: string;
+  photoUrl: string;
+  result: MemberVoteResult;
+  partyId: string;
+  partyName: string;
+  partyColor: string;
+  district: string;
+}
+
+export interface VoteWithMemberVotes {
+  vote: Vote;
+  memberVotes: VoteMemberResult[];
+}
+
 // ====== 의원 + 대수 정보 결합 ======
 export interface MemberWithTerm extends Member {
   term: MemberTerm;
