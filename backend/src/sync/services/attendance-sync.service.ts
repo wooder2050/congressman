@@ -49,7 +49,10 @@ export class AttendanceSyncService {
       console.log(`[AttendanceSync] Found stats for ${stats.length} members`);
 
       // 표결 기록이 있는 의원 집계를 Map으로 변환
-      const statsMap = new Map<string, { yes: bigint; no: bigint; abstain: bigint; absent: bigint }>();
+      const statsMap = new Map<
+        string,
+        { yes: bigint; no: bigint; abstain: bigint; absent: bigint }
+      >();
       for (const row of stats) {
         statsMap.set(row.memberId, row);
       }

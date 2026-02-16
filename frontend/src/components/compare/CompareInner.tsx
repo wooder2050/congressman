@@ -57,14 +57,17 @@ export default function CompareInner({ termId, initialMemberIds }: CompareInnerP
     .map((id) => memberMap.get(id))
     .filter((m): m is MemberWithTerm => !!m);
 
-  const handleSelect = useCallback((member: MemberWithTerm) => {
-    setSelectedIds((prev) => {
-      const current = prev.filter((id) => memberMap.has(id));
-      if (current.includes(member.id)) return prev;
-      if (current.length >= MAX_MEMBERS) return prev;
-      return [...current, member.id];
-    });
-  }, [memberMap]);
+  const handleSelect = useCallback(
+    (member: MemberWithTerm) => {
+      setSelectedIds((prev) => {
+        const current = prev.filter((id) => memberMap.has(id));
+        if (current.includes(member.id)) return prev;
+        if (current.length >= MAX_MEMBERS) return prev;
+        return [...current, member.id];
+      });
+    },
+    [memberMap],
+  );
 
   const handleRemove = useCallback((memberId: string) => {
     setSelectedIds((prev) => prev.filter((id) => id !== memberId));
