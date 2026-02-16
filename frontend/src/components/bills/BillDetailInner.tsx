@@ -78,7 +78,9 @@ export default function BillDetailInner({ id }: BillDetailInnerProps) {
                   </span>
                   <span className="text-xs text-(--color-text-tertiary)">{proposer.partyName}</span>
                 </div>
-                <p className="truncate text-xs text-(--color-text-tertiary)">{formatDistrict(proposer.district)}</p>
+                <p className="truncate text-xs text-(--color-text-tertiary)">
+                  {formatDistrict(proposer.district)}
+                </p>
               </div>
             </Link>
           ))}

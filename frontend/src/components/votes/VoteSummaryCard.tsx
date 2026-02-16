@@ -24,7 +24,9 @@ export default function VoteSummaryCard({ summary }: VoteSummaryCardProps) {
           {chartData.map((d) => (
             <div key={d.name} className="flex items-center gap-2">
               <div className="h-3 w-3 shrink-0 rounded-full" style={{ backgroundColor: d.color }} />
-              <span className="text-sm text-(--color-text-secondary) whitespace-nowrap">{d.name}</span>
+              <span className="text-sm whitespace-nowrap text-(--color-text-secondary)">
+                {d.name}
+              </span>
               <span className="text-sm font-bold">{d.value.toLocaleString()}건</span>
             </div>
           ))}

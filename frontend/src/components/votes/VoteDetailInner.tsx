@@ -144,7 +144,9 @@ export default function VoteDetailInner({ id }: VoteDetailInnerProps) {
                     </span>
                     <span className="text-xs text-(--color-text-tertiary)">{mv.partyName}</span>
                   </div>
-                  <p className="truncate text-xs text-(--color-text-tertiary)">{formatDistrict(mv.district)}</p>
+                  <p className="truncate text-xs text-(--color-text-tertiary)">
+                    {formatDistrict(mv.district)}
+                  </p>
                 </div>
                 <ColorBadge
                   label={memberResultInfo.label}
