@@ -28,14 +28,14 @@ export default function DistrictPopup({
         aria-hidden="true"
       />
 
-      {/* Bottom sheet — BottomNav(4.5rem) 위에 표시 */}
-      <div className="fixed right-0 bottom-18 left-0 z-50 animate-slide-up rounded-t-2xl bg-(--color-bg-primary) pb-[env(safe-area-inset-bottom)] shadow-lg">
+      {/* Bottom sheet */}
+      <div className="fixed right-0 bottom-0 left-0 z-50 animate-slide-up rounded-t-2xl bg-(--color-bg-primary) pb-[env(safe-area-inset-bottom)] shadow-lg">
         {/* Handle */}
         <div className="flex justify-center pt-2 pb-1">
           <div className="h-1 w-10 rounded-full bg-(--color-bg-tertiary)" />
         </div>
 
-        <div className="px-4 pb-4">
+        <div className="px-4 pb-20">
           {/* District name */}
           <p className="mb-2 text-sm text-(--color-text-tertiary)">
             {dbDistrict}
