@@ -193,6 +193,16 @@ export interface BillDetail extends Omit<Bill, "proposerIds"> {
   proposers: BillProposerInfo[];
 }
 
+// ====== 홈 통계 ======
+export interface HomeStats {
+  memberCount: number;
+  billCount: number;
+  voteCount: number;
+  avgAttendanceRate: number;
+  recentVotes: Vote[];
+  recentBills: Bill[];
+}
+
 // ====== 의원 + 대수 정보 결합 ======
 export interface MemberWithTerm extends Member {
   term: MemberTerm;

@@ -21,15 +21,18 @@ export class VotesController {
     type: Number,
     description: '페이지당 건수 (기본: 20)',
   })
+  @ApiQuery({ name: 'search', required: false, description: '법안명 검색어' })
   findAll(
     @Query('termId') termId?: string,
     @Query('resultCode') resultCode?: string,
+    @Query('search') search?: string,
     @Query('page') page?: string,
     @Query('limit') limit?: string,
   ) {
     return this.votesService.findAll({
       termId: termId ? parseInt(termId, 10) || undefined : undefined,
       resultCode,
+      search: search || undefined,
       page: Math.max(parseInt(page ?? '', 10) || 1, 1),
       limit: Math.min(Math.max(parseInt(limit ?? '', 10) || 20, 1), 100),
     });

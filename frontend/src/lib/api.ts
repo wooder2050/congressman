@@ -23,6 +23,7 @@ import type {
   MemberVotesResponse,
   AssetResponse,
   VoteWithMemberVotes,
+  HomeStats,
 } from "@/types";
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL;
@@ -90,6 +91,7 @@ export async function getBills(params: {
   termId?: number;
   memberId?: string;
   status?: string;
+  search?: string;
   page?: number;
   limit?: number;
 }): Promise<{ bills: Bill[]; total: number }> {
@@ -99,6 +101,10 @@ export async function getBills(params: {
     if (params.memberId)
       filtered = filtered.filter((b) => b.proposerIds.includes(params.memberId!));
     if (params.status) filtered = filtered.filter((b) => b.status === params.status);
+    if (params.search) {
+      const q = params.search.toLowerCase();
+      filtered = filtered.filter((b) => b.title.toLowerCase().includes(q));
+    }
     const total = filtered.length;
     const page = params.page ?? 1;
     const limit = params.limit ?? 20;
@@ -109,6 +115,7 @@ export async function getBills(params: {
   if (params.termId) searchParams.set("termId", String(params.termId));
   if (params.memberId) searchParams.set("memberId", params.memberId);
   if (params.status) searchParams.set("status", params.status);
+  if (params.search) searchParams.set("search", params.search);
   if (params.page) searchParams.set("page", String(params.page));
   if (params.limit) searchParams.set("limit", String(params.limit));
   return fetchApi(`/api/bills?${searchParams.toString()}`);
@@ -151,6 +158,7 @@ export async function getMemberHistory(memberId: string): Promise<TermActivity[]
 export async function getVotes(params: {
   termId?: number;
   resultCode?: string;
+  search?: string;
   page?: number;
   limit?: number;
 }): Promise<{ votes: Vote[]; total: number }> {
@@ -158,6 +166,10 @@ export async function getVotes(params: {
     let filtered = [...mockVotes];
     if (params.termId) filtered = filtered.filter((v) => v.termId === params.termId);
     if (params.resultCode) filtered = filtered.filter((v) => v.resultCode === params.resultCode);
+    if (params.search) {
+      const q = params.search.toLowerCase();
+      filtered = filtered.filter((v) => v.billName.toLowerCase().includes(q));
+    }
     const total = filtered.length;
     const page = params.page ?? 1;
     const limit = params.limit ?? 20;
@@ -167,6 +179,7 @@ export async function getVotes(params: {
   const searchParams = new URLSearchParams();
   if (params.termId) searchParams.set("termId", String(params.termId));
   if (params.resultCode) searchParams.set("resultCode", params.resultCode);
+  if (params.search) searchParams.set("search", params.search);
   if (params.page) searchParams.set("page", String(params.page));
   if (params.limit) searchParams.set("limit", String(params.limit));
   return fetchApi(`/api/votes?${searchParams.toString()}`);
@@ -208,6 +221,22 @@ export async function getVoteMemberVotes(voteId: string): Promise<VoteWithMember
   return fetchApi(`/api/votes/${voteId}/member-votes`);
 }
 
+export async function getHomeStats(termId: number): Promise<HomeStats> {
+  if (useMock) {
+    const bills = mockBills.filter((b) => b.termId === termId);
+    const votes = mockVotes.filter((v) => v.termId === termId);
+    return {
+      memberCount: 300,
+      billCount: bills.length,
+      voteCount: votes.length,
+      avgAttendanceRate: 92.5,
+      recentVotes: votes.slice(0, 3),
+      recentBills: bills.slice(0, 3),
+    };
+  }
+  return fetchApi(`/api/stats/home?termId=${termId}`);
+}
+
 // Query Keys
 Object.defineProperty(getTerms, "queryKey", { value: "terms" });
 Object.defineProperty(getMembers, "queryKey", { value: "members" });
@@ -224,3 +253,4 @@ Object.defineProperty(getMemberVotes, "queryKey", { value: "memberVotes" });
 Object.defineProperty(getAssets, "queryKey", { value: "assets" });
 Object.defineProperty(getBill, "queryKey", { value: "bill" });
 Object.defineProperty(getVoteMemberVotes, "queryKey", { value: "voteMemberVotes" });
+Object.defineProperty(getHomeStats, "queryKey", { value: "homeStats" });
