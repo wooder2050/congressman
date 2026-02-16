@@ -26,4 +26,20 @@ export class MembersController {
   getHistory(@Param('id') id: string) {
     return this.membersService.getHistory(id);
   }
+
+  @Get(':id/votes')
+  findMemberVotes(
+    @Param('id') id: string,
+    @Query('termId', ParseIntPipe) termId: number,
+    @Query('page') page?: string,
+    @Query('limit') limit?: string,
+    @Query('result') result?: string,
+  ) {
+    return this.membersService.findMemberVotes(id, {
+      termId,
+      page: page ? parseInt(page, 10) : 1,
+      limit: limit ? parseInt(limit, 10) : 20,
+      result: result || undefined,
+    });
+  }
 }

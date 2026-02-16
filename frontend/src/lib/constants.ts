@@ -41,6 +41,13 @@ export const VOTE_RESULT_MAP = {
   other: { label: "기타", color: "#9CA3AF" },
 } as const;
 
+export const MEMBER_VOTE_RESULT_MAP = {
+  yes: { label: "찬성", color: "#16A34A" },
+  no: { label: "반대", color: "#DC2626" },
+  abstain: { label: "기권", color: "#CA8A04" },
+  absent: { label: "불참", color: "#6B7280" },
+} as const;
+
 export const BILL_STATUS_MAP = {
   passed: { label: "가결", color: "#16A34A" },
   pending: { label: "계류", color: "#CA8A04" },

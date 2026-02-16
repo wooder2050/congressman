@@ -140,4 +140,64 @@ export class MembersService {
     await this.redis.set(key, result, TTL_HOUR);
     return result;
   }
+
+  async findMemberVotes(
+    memberId: string,
+    params: { termId: number; page: number; limit: number; result?: string },
+  ) {
+    const key = `member:votes:${memberId}:${params.termId}:${params.result ?? ''}:${params.page}:${params.limit}`;
+    const cached = await this.redis.get(key);
+    if (cached) return cached;
+
+    const where = {
+      memberId,
+      vote: { termId: params.termId },
+      ...(params.result ? { result: params.result } : {}),
+    };
+
+    const [memberVotes, total, summary] = await Promise.all([
+      this.prisma.memberVote.findMany({
+        where,
+        include: { vote: true },
+        orderBy: { vote: { procDate: 'desc' } },
+        skip: (params.page - 1) * params.limit,
+        take: params.limit,
+      }),
+      this.prisma.memberVote.count({ where }),
+      this.prisma.memberVote.groupBy({
+        by: ['result'],
+        where: { memberId, vote: { termId: params.termId } },
+        _count: true,
+      }),
+    ]);
+
+    const summaryMap: Record<string, number> = { yes: 0, no: 0, abstain: 0, absent: 0 };
+    for (const s of summary) {
+      summaryMap[s.result] = s._count;
+    }
+
+    const result = {
+      votes: memberVotes.map((mv) => ({
+        voteId: mv.voteId,
+        billName: mv.vote.billName,
+        billNo: mv.vote.billNo,
+        procDate: mv.vote.procDate,
+        procResult: mv.vote.procResult,
+        resultCode: mv.vote.resultCode,
+        memberResult: mv.result,
+        committee: mv.vote.committee,
+      })),
+      summary: {
+        yes: summaryMap.yes,
+        no: summaryMap.no,
+        abstain: summaryMap.abstain,
+        absent: summaryMap.absent,
+        total: summaryMap.yes + summaryMap.no + summaryMap.abstain + summaryMap.absent,
+      },
+      total,
+    };
+
+    await this.redis.set(key, result, TTL_HOUR);
+    return result;
+  }
 }

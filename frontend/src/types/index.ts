@@ -90,6 +90,34 @@ export interface VoteSummary {
   discarded: number;
 }
 
+// ====== 의원별 표결 ======
+export type MemberVoteResult = "yes" | "no" | "abstain" | "absent";
+
+export interface MemberVoteRecord {
+  voteId: string;
+  billName: string;
+  billNo: string;
+  procDate: string;
+  procResult: string;
+  resultCode: "passed" | "amended" | "rejected" | "discarded" | "other";
+  memberResult: MemberVoteResult;
+  committee?: string;
+}
+
+export interface MemberVoteSummary {
+  yes: number;
+  no: number;
+  abstain: number;
+  absent: number;
+  total: number;
+}
+
+export interface MemberVotesResponse {
+  votes: MemberVoteRecord[];
+  summary: MemberVoteSummary;
+  total: number;
+}
+
 // ====== 역대 활동 비교 ======
 export interface TermActivity {
   termId: number;
