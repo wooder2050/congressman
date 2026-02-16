@@ -17,7 +17,7 @@ export default async function BillsPage({ searchParams }: BillsPageProps) {
   const termId = Number(params.term) || 22;
 
   return (
-    <div className="mx-auto max-w-5xl">
+    <div className="mx-auto max-w-7xl">
       <h1 className="mb-4 text-2xl font-bold">법안 목록</h1>
       <CongressWrapper fallback={<BillListSkeleton />}>
         <BillListInner termId={termId} />

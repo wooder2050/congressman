@@ -105,6 +105,26 @@ const navItems = [
       </svg>
     ),
   },
+  {
+    href: "/compare",
+    label: "비교",
+    icon: (
+      <svg
+        width="24"
+        height="24"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      >
+        <line x1="18" y1="20" x2="18" y2="10" />
+        <line x1="12" y1="20" x2="12" y2="4" />
+        <line x1="6" y1="20" x2="6" y2="14" />
+      </svg>
+    ),
+  },
 ];
 
 export default function BottomNav() {
@@ -116,7 +136,7 @@ export default function BottomNav() {
   };
 
   return (
-    <nav className="fixed right-0 bottom-0 left-0 z-50 bg-(--color-bg-primary) pb-[env(safe-area-inset-bottom)] shadow-(--shadow-bottom-nav)">
+    <nav className="fixed right-0 bottom-0 left-0 z-50 bg-(--color-bg-primary) pb-[env(safe-area-inset-bottom)] shadow-(--shadow-bottom-nav) lg:hidden">
       <div className="mx-auto flex max-w-5xl">
         {navItems.map((item) => {
           const active = isActive(item.href);

@@ -4,6 +4,7 @@ import Link from "next/link";
 import MemberAvatar from "@/components/members/MemberAvatar";
 import ColorBadge from "@/components/ui/color-badge";
 import { DISTRICT_MAP } from "@/lib/geo/district-mapping";
+import { formatDistrict } from "@/lib/utils";
 import type { MemberWithTerm } from "@/types";
 
 interface DistrictPopupProps {
@@ -29,7 +30,7 @@ export default function DistrictPopup({ sidoSgg, member, onClose }: DistrictPopu
 
         <div className="px-4 pb-20">
           {/* District name */}
-          <p className="mb-2 text-sm text-(--color-text-tertiary)">{dbDistrict}</p>
+          <p className="mb-2 text-sm text-(--color-text-tertiary)">{formatDistrict(dbDistrict)}</p>
 
           {member ? (
             <div className="flex items-center gap-4">
@@ -47,7 +48,7 @@ export default function DistrictPopup({ sidoSgg, member, onClose }: DistrictPopu
                   <ColorBadge label={member.term.party.shortName} color={member.term.party.color} />
                 </div>
                 <p className="text-sm text-(--color-text-secondary)">
-                  {member.electedCount}선 · {member.term.district.trim()}
+                  {member.electedCount}선 · {formatDistrict(member.term.district)}
                 </p>
                 <Link
                   href={`/members/${member.id}`}

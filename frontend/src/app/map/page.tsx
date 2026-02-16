@@ -17,7 +17,7 @@ export default async function MapPage({ searchParams }: MapPageProps) {
   const termId = Number(params.term) || 22;
 
   return (
-    <div className="-mx-4 -my-6">
+    <div className="-mx-4 -my-4 lg:-my-6">
       <CongressWrapper fallback={<MapSkeleton />}>
         <MapPageInner termId={termId} initialSido={params.sido} initialDistrict={params.district} />
       </CongressWrapper>

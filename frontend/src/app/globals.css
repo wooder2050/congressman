@@ -116,6 +116,10 @@
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     padding-bottom: 4.5rem;
+
+    @media (min-width: 1024px) {
+      padding-bottom: 0;
+    }
   }
 
   button,
@@ -126,6 +130,11 @@
   [role="tab"] {
     min-height: 3rem;
     min-width: 3rem;
+
+    @media (min-width: 1024px) {
+      min-height: unset;
+      min-width: unset;
+    }
   }
 
   :focus-visible {
