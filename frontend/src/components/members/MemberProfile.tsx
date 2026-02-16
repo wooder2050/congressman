@@ -1,7 +1,7 @@
 import Link from "next/link";
 import ColorBadge from "@/components/ui/color-badge";
 import MemberAvatar from "./MemberAvatar";
-import { getElectedLabel, getContrastColor } from "@/lib/utils";
+import { getElectedLabel, getContrastColor, formatDistrict } from "@/lib/utils";
 import type { Member, MemberTerm } from "@/types";
 
 interface MemberProfileProps {
@@ -40,7 +40,7 @@ export default function MemberProfile({ member, memberTerm, allTermIds }: Member
               </span>
             </div>
             <p className="mt-1 text-base" style={{ color: contrastColor, opacity: 0.9 }}>
-              {memberTerm.proportional ? "비례대표" : memberTerm.district}
+              {memberTerm.proportional ? "비례대표" : formatDistrict(memberTerm.district)}
             </p>
           </div>
         </div>

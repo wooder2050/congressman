@@ -6,7 +6,7 @@ import { useCongressSuspenseQuery } from "@/hooks/useCongressQuery";
 import { getMember, getMemberHistory, getMemberTerms } from "@/lib/api";
 import HistoryCharts from "./HistoryCharts";
 import ColorBadge from "@/components/ui/color-badge";
-import { formatPercent } from "@/lib/utils";
+import { formatPercent, formatDistrict } from "@/lib/utils";
 
 interface HistoryInnerProps {
   id: string;
@@ -21,7 +21,7 @@ export default function HistoryInner({ id, termId }: HistoryInnerProps) {
   if (!member || activities.length === 0) return notFound();
 
   return (
-    <div className="mx-auto max-w-5xl space-y-6">
+    <div className="mx-auto max-w-7xl space-y-6">
       <Link
         href={`/members/${id}?term=${termId}`}
         className="inline-flex items-center gap-1 text-sm text-(--color-text-tertiary) no-underline hover:text-(--color-text-secondary)"
@@ -61,7 +61,7 @@ export default function HistoryInner({ id, termId }: HistoryInnerProps) {
                     </div>
                     {mt && (
                       <p className="mb-2 text-sm text-(--color-text-secondary)">
-                        {mt.proportional ? "비례대표" : mt.district}
+                        {mt.proportional ? "비례대표" : formatDistrict(mt.district)}
                       </p>
                     )}
                     <div className="grid grid-cols-3 divide-x divide-(--color-border-primary) overflow-hidden rounded-xl border border-(--color-border-primary) text-center">

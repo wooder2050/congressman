@@ -8,6 +8,7 @@ import { BillSyncService } from './services/bill-sync.service';
 import { VoteSyncService } from './services/vote-sync.service';
 import { PhotoSyncService } from './services/photo-sync.service';
 import { MemberVoteSyncService } from './services/member-vote-sync.service';
+import { AttendanceSyncService } from './services/attendance-sync.service';
 
 async function invalidateCache(command: string) {
   const url = process.env.UPSTASH_REDIS_REST_URL;
@@ -34,6 +35,9 @@ async function invalidateCache(command: string) {
   }
   if (command === 'member-votes') {
     prefixes.push('member:votes:');
+  }
+  if (command === 'attendance') {
+    prefixes.push('attendance:');
   }
 
   for (const prefix of prefixes) {
@@ -64,6 +68,7 @@ async function main() {
   const voteSync = new VoteSyncService(prisma, api, syncLog);
   const photoSync = new PhotoSyncService(prisma, api);
   const memberVoteSync = new MemberVoteSyncService(prisma, api, syncLog);
+  const attendanceSync = new AttendanceSyncService(prisma, syncLog);
 
   const command = process.argv[2] ?? 'all';
   const termId = parseInt(process.argv[3] ?? '22', 10);
@@ -86,6 +91,9 @@ async function main() {
         break;
       case 'member-votes':
         await memberVoteSync.syncMemberVotes(termId);
+        break;
+      case 'attendance':
+        await attendanceSync.syncAttendance(termId);
         break;
       case 'all':
       default:
