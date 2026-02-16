@@ -5,6 +5,15 @@ import { RedisService } from '../redis/redis.service';
 const TTL_DAY = 60 * 60 * 24; // 24h
 const TTL_HOUR = 60 * 60; // 1h
 
+/** BigInt → Number 안전 변환 (MAX_SAFE_INTEGER 초과 시 0 반환 + 경고) */
+function safeBigIntToNumber(value: bigint): number {
+  if (value > BigInt(Number.MAX_SAFE_INTEGER) || value < BigInt(-Number.MAX_SAFE_INTEGER)) {
+    console.warn(`[MembersService] BigInt overflow: ${value}`);
+    return 0;
+  }
+  return Number(value);
+}
+
 @Injectable()
 export class MembersService {
   constructor(
@@ -167,17 +176,17 @@ export class MembersService {
       .sort((a, b) => b[0] - a[0])
       .map(([year, data]) => ({
         year,
-        total: Number(data.total),
+        total: safeBigIntToNumber(data.total),
         categories: [...data.categories.entries()]
           .sort((a, b) => Number(b[1]) - Number(a[1]))
-          .map(([category, amount]) => ({ category, amount: Number(amount) })),
+          .map(([category, amount]) => ({ category, amount: safeBigIntToNumber(amount) })),
       }));
 
     const details = assets.map((a) => ({
       year: a.year,
       category: a.category,
       item: a.item,
-      amount: Number(a.amount),
+      amount: safeBigIntToNumber(a.amount),
       relation: a.relation,
     }));
 

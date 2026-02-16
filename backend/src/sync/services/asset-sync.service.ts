@@ -99,6 +99,12 @@ export class AssetSyncService {
             continue;
           }
 
+          // 동명이인이 2명 이상이면 정확한 매핑 불가 → 스킵
+          if (candidates.length > 1) {
+            unmatchedNames.add(`${name}(동명이인 ${candidates.length}명)`);
+            continue;
+          }
+
           const memberId = candidates[0].id;
 
           const category = (row['재산 대분류'] ?? '').trim() || '기타';
