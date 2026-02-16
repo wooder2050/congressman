@@ -88,7 +88,12 @@ export default function ChamberPageInner({ termId, initialVoteId }: ChamberPageI
             <div className="min-h-0 flex-1 px-2">
               <TransformComponent
                 wrapperStyle={{ width: "100%", height: "100%" }}
-                contentStyle={{ width: "100%", height: "100%", display: "flex", alignItems: "center" }}
+                contentStyle={{
+                  width: "100%",
+                  height: "100%",
+                  display: "flex",
+                  alignItems: "center",
+                }}
               >
                 <HemicycleSVG
                   seats={seats}
