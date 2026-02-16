@@ -35,6 +35,26 @@ export default function VoteDetailInner({ id }: VoteDetailInnerProps) {
     return data.memberVotes.filter((mv) => mv.result === selectedFilter);
   }, [data, selectedFilter]);
 
+  const partyGroups = useMemo(() => {
+    if (!data) return [];
+    const groupMap = new Map<
+      string,
+      { partyName: string; partyColor: string; total: number; yes: number; no: number; abstain: number; absent: number }
+    >();
+
+    for (const mv of data.memberVotes) {
+      const key = mv.partyName;
+      if (!groupMap.has(key)) {
+        groupMap.set(key, { partyName: mv.partyName, partyColor: mv.partyColor, total: 0, yes: 0, no: 0, abstain: 0, absent: 0 });
+      }
+      const g = groupMap.get(key)!;
+      g.total++;
+      g[mv.result]++;
+    }
+
+    return Array.from(groupMap.values()).sort((a, b) => b.total - a.total);
+  }, [data]);
+
   if (!data) return notFound();
 
   const { vote, memberVotes } = data;
@@ -96,6 +116,60 @@ export default function VoteDetailInner({ id }: VoteDetailInnerProps) {
         >
           법안 상세 보기 →
         </Link>
+      </div>
+
+      {/* 정당별 투표 현황 */}
+      <div className="space-y-3">
+        <h2 className="text-lg font-bold">정당별 투표 현황</h2>
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+          {partyGroups.map((pg) => (
+            <div
+              key={pg.partyName}
+              className="rounded-xl border border-(--color-border-primary) bg-(--color-bg-primary) p-4"
+            >
+              <div className="mb-2 flex items-center gap-2">
+                <span
+                  className="inline-block h-3 w-3 shrink-0 rounded-full"
+                  style={{ backgroundColor: pg.partyColor }}
+                />
+                <span className="font-semibold text-(--color-text-primary)">{pg.partyName}</span>
+                <span className="text-sm text-(--color-text-tertiary)">{pg.total}명</span>
+              </div>
+              <div className="mb-2 flex h-3 w-full overflow-hidden rounded-full bg-(--color-bg-tertiary)">
+                {pg.total > 0 && (
+                  <>
+                    {pg.yes > 0 && (
+                      <div className="bg-green-500" style={{ width: `${(pg.yes / pg.total) * 100}%` }} />
+                    )}
+                    {pg.no > 0 && (
+                      <div className="bg-red-500" style={{ width: `${(pg.no / pg.total) * 100}%` }} />
+                    )}
+                    {pg.abstain > 0 && (
+                      <div className="bg-yellow-500" style={{ width: `${(pg.abstain / pg.total) * 100}%` }} />
+                    )}
+                    {pg.absent > 0 && (
+                      <div className="bg-gray-400" style={{ width: `${(pg.absent / pg.total) * 100}%` }} />
+                    )}
+                  </>
+                )}
+              </div>
+              <div className="flex flex-wrap gap-x-3 gap-y-1 text-xs text-(--color-text-tertiary)">
+                <span>
+                  찬성 <strong className="text-green-600">{pg.yes}</strong>
+                </span>
+                <span>
+                  반대 <strong className="text-red-600">{pg.no}</strong>
+                </span>
+                <span>
+                  기권 <strong className="text-yellow-600">{pg.abstain}</strong>
+                </span>
+                <span>
+                  불참 <strong className="text-gray-500">{pg.absent}</strong>
+                </span>
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
 
       <div className="space-y-4">
