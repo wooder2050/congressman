@@ -14,24 +14,16 @@ interface MemberGridProps {
 export default function MemberGrid({ members }: MemberGridProps) {
   const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
   const sentinelRef = useRef<HTMLDivElement>(null);
-  const membersRef = useRef(members);
-  membersRef.current = members;
-
-  // 필터/검색으로 실제 목록이 바뀔 때만 리셋 (배열 참조가 아닌 내용 기반)
-  const membersKey = members.map((m) => m.id).join(",");
-  useEffect(() => {
-    setVisibleCount(PAGE_SIZE);
-  }, [membersKey]);
 
   useEffect(() => {
     const sentinel = sentinelRef.current;
     if (!sentinel) return;
 
+    const total = members.length;
     const observer = new IntersectionObserver(
       (entries) => {
         if (entries[0]?.isIntersecting) {
           setVisibleCount((prev) => {
-            const total = membersRef.current.length;
             if (prev >= total) return prev;
             return Math.min(prev + PAGE_SIZE, total);
           });
@@ -42,7 +34,7 @@ export default function MemberGrid({ members }: MemberGridProps) {
     observer.observe(sentinel);
 
     return () => observer.disconnect();
-  }, [membersKey]);
+  }, [members.length]);
 
   if (members.length === 0) {
     return (
