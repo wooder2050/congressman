@@ -2,6 +2,7 @@
 
 import { useState, useMemo, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+import { TransformWrapper, TransformComponent } from "react-zoom-pan-pinch";
 import { useCongressSuspenseQuery, useCongressQuery } from "@/hooks/useCongressQuery";
 import { getMembers, getVoteMemberVotes } from "@/lib/api";
 import { generateHemicycleLayout } from "@/lib/chamber/hemicycle";
@@ -72,15 +73,60 @@ export default function ChamberPageInner({ termId, initialVoteId }: ChamberPageI
         />
       </div>
 
-      {/* Hemicycle SVG */}
-      <div className="px-2">
-        <HemicycleSVG
-          seats={seats}
-          memberVoteMap={memberVoteMap}
-          isVoteMode={isVoteMode}
-          selectedSeatIndex={selectedSeatIndex}
-          onSeatClick={setSelectedSeatIndex}
-        />
+      {/* Hemicycle SVG — pinch zoom + drag */}
+      <div className="relative px-2">
+        <TransformWrapper
+          initialScale={1}
+          minScale={1}
+          maxScale={4}
+          centerOnInit
+          wheel={{ step: 0.1 }}
+          pinch={{ step: 5 }}
+          panning={{ disabled: false }}
+        >
+          {({ zoomIn, zoomOut, resetTransform }) => (
+            <>
+              <div className="absolute right-4 top-2 z-10 flex flex-col gap-1">
+                <button
+                  type="button"
+                  onClick={() => zoomIn()}
+                  className="flex h-8 w-8 items-center justify-center rounded-md border bg-white text-lg font-bold shadow-sm"
+                  aria-label="확대"
+                >
+                  +
+                </button>
+                <button
+                  type="button"
+                  onClick={() => zoomOut()}
+                  className="flex h-8 w-8 items-center justify-center rounded-md border bg-white text-lg font-bold shadow-sm"
+                  aria-label="축소"
+                >
+                  −
+                </button>
+                <button
+                  type="button"
+                  onClick={() => resetTransform()}
+                  className="flex h-8 w-8 items-center justify-center rounded-md border bg-white text-sm shadow-sm"
+                  aria-label="원래 크기"
+                >
+                  ↺
+                </button>
+              </div>
+              <TransformComponent
+                wrapperStyle={{ width: "100%" }}
+                contentStyle={{ width: "100%" }}
+              >
+                <HemicycleSVG
+                  seats={seats}
+                  memberVoteMap={memberVoteMap}
+                  isVoteMode={isVoteMode}
+                  selectedSeatIndex={selectedSeatIndex}
+                  onSeatClick={setSelectedSeatIndex}
+                />
+              </TransformComponent>
+            </>
+          )}
+        </TransformWrapper>
       </div>
 
       {/* Legend */}
