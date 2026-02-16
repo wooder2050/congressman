@@ -5,9 +5,10 @@ import type { Bill } from "@/types";
 
 interface BillsTabProps {
   bills: Bill[];
+  total: number;
 }
 
-export default function BillsTab({ bills }: BillsTabProps) {
+export default function BillsTab({ bills, total }: BillsTabProps) {
   if (bills.length === 0) {
     return (
       <div className="py-8 text-center text-(--color-text-tertiary)">발의 법안이 없습니다.</div>
@@ -16,7 +17,7 @@ export default function BillsTab({ bills }: BillsTabProps) {
 
   return (
     <div className="space-y-4 py-4" role="tabpanel">
-      <p className="text-sm text-(--color-text-tertiary)">대표발의 {bills.length}건</p>
+      <p className="text-sm text-(--color-text-tertiary)">대표발의 {total}건</p>
       <div className="divide-y divide-(--color-border-primary) overflow-hidden rounded-xl border border-(--color-border-primary)">
         {bills.map((bill) => {
           const statusInfo = BILL_STATUS_MAP[bill.status];

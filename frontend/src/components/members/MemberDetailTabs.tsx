@@ -38,7 +38,7 @@ export default function MemberDetailTabContent({
       {activeTab === "attendance" && (
         <AttendanceTab attendance={attendance} absenceDetails={absenceDetails} />
       )}
-      {activeTab === "bills" && <BillsTab bills={billsResult.bills} />}
+      {activeTab === "bills" && <BillsTab bills={billsResult.bills} total={billsResult.total} />}
       {activeTab === "votes" && <VotesTab memberId={memberId} termId={termId} />}
       {activeTab === "assets" && <AssetsTab assets={assets} />}
     </div>
