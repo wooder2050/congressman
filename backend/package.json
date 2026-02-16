@@ -22,7 +22,9 @@
     "sync:photos": "tsx src/sync/sync-runner.ts photos",
     "sync:member-votes": "tsx src/sync/sync-runner.ts member-votes",
     "sync:attendance": "tsx src/sync/sync-runner.ts attendance",
-    "sync:assets": "tsx src/sync/sync-runner.ts assets"
+    "sync:assets": "tsx src/sync/sync-runner.ts assets",
+    "sync:daily": "tsx src/sync/sync-daily.ts",
+    "sync:weekly": "tsx src/sync/sync-weekly.ts"
   },
   "dependencies": {
     "@nestjs/common": "^11.0.0",
