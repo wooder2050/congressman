@@ -1,4 +1,4 @@
-function SkeletonCard() {
+export function SkeletonCard() {
   return (
     <div className="flex animate-pulse items-center gap-4 rounded-xl border border-l-4 border-(--color-border-primary) bg-(--color-bg-primary) p-4">
       <div className="h-16 w-16 shrink-0 rounded-full bg-(--color-bg-tertiary)" />
