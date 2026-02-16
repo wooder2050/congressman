@@ -139,6 +139,20 @@
   }
 }
 
+/* ---- 지도 바텀시트 애니메이션 ---- */
+@keyframes slide-up {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+.animate-slide-up {
+  animation: slide-up 0.3s ease-out;
+}
+
 :root {
   --radius: 0.625rem;
   --background: oklch(1 0 0);
