@@ -44,6 +44,7 @@ model Member {
   electedCount Int     @default(1)
 
   memberTerms MemberTerm[]
+  memberVotes MemberVote[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -140,7 +141,8 @@ model Vote {
   linkUrl      String  @default("")
   termId       Int
 
-  term Term @relation(fields: [termId], references: [id])
+  term        Term         @relation(fields: [termId], references: [id])
+  memberVotes MemberVote[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -148,6 +150,23 @@ model Vote {
   @@index([termId])
   @@index([procDate])
   @@index([resultCode])
+}
+
+model MemberVote {
+  id       Int    @id @default(autoincrement())
+  memberId String
+  voteId   String
+  result   String // "yes", "no", "abstain", "absent"
+
+  member Member @relation(fields: [memberId], references: [id])
+  vote   Vote   @relation(fields: [voteId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+
+  @@unique([memberId, voteId])
+  @@index([memberId])
+  @@index([voteId])
+  @@index([result])
 }
 
 model SyncLog {

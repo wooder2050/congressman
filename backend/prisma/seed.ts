@@ -9,6 +9,10 @@ async function main() {
     { id: 'ppp', name: '국민의힘', shortName: '국민의힘', color: '#E61E2B' },
     { id: 'rebuilding', name: '조국혁신당', shortName: '혁신당', color: '#003DA5' },
     { id: 'reform', name: '개혁신당', shortName: '개혁신당', color: '#F37924' },
+    { id: 'progressive', name: '진보당', shortName: '진보당', color: '#D6001C' },
+    { id: 'basic-income', name: '기본소득당', shortName: '기본소득당', color: '#00D2C3' },
+    { id: 'social-democratic', name: '사회민주당', shortName: '사민당', color: '#F58400' },
+    { id: 'new-future', name: '새로운미래', shortName: '새미래', color: '#45BABD' },
     { id: 'independent', name: '무소속', shortName: '무소속', color: '#999999' },
   ];
 

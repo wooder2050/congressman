@@ -7,6 +7,7 @@ import { MemberSyncService } from './services/member-sync.service';
 import { BillSyncService } from './services/bill-sync.service';
 import { VoteSyncService } from './services/vote-sync.service';
 import { PhotoSyncService } from './services/photo-sync.service';
+import { MemberVoteSyncService } from './services/member-vote-sync.service';
 
 async function invalidateCache(command: string) {
   const url = process.env.UPSTASH_REDIS_REST_URL;
@@ -30,6 +31,9 @@ async function invalidateCache(command: string) {
   }
   if (command === 'photos') {
     prefixes.push('members:', 'member:');
+  }
+  if (command === 'member-votes') {
+    prefixes.push('member:votes:');
   }
 
   for (const prefix of prefixes) {
@@ -59,6 +63,7 @@ async function main() {
   const billSync = new BillSyncService(prisma, api, syncLog);
   const voteSync = new VoteSyncService(prisma, api, syncLog);
   const photoSync = new PhotoSyncService(prisma, api);
+  const memberVoteSync = new MemberVoteSyncService(prisma, api, syncLog);
 
   const command = process.argv[2] ?? 'all';
   const termId = parseInt(process.argv[3] ?? '22', 10);
@@ -78,6 +83,9 @@ async function main() {
         break;
       case 'photos':
         await photoSync.syncPhotos(termId);
+        break;
+      case 'member-votes':
+        await memberVoteSync.syncMemberVotes(termId);
         break;
       case 'all':
       default:

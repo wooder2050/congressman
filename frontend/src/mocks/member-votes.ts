@@ -1,0 +1,58 @@
+import type { MemberVotesResponse } from "@/types";
+
+export const mockMemberVotesResponse: MemberVotesResponse = {
+  votes: [
+    {
+      voteId: "PRC_V1",
+      billName: "국가재정법 일부개정법률안",
+      billNo: "2200001",
+      procDate: "2024-12-15",
+      procResult: "원안가결",
+      resultCode: "passed",
+      memberResult: "yes",
+      committee: "기획재정위원회",
+    },
+    {
+      voteId: "PRC_V2",
+      billName: "형법 일부개정법률안",
+      billNo: "2200002",
+      procDate: "2024-12-10",
+      procResult: "수정가결",
+      resultCode: "amended",
+      memberResult: "no",
+      committee: "법제사법위원회",
+    },
+    {
+      voteId: "PRC_V3",
+      billName: "교육기본법 일부개정법률안",
+      billNo: "2200003",
+      procDate: "2024-12-05",
+      procResult: "원안가결",
+      resultCode: "passed",
+      memberResult: "yes",
+      committee: "교육위원회",
+    },
+    {
+      voteId: "PRC_V4",
+      billName: "지방자치법 일부개정법률안",
+      billNo: "2200004",
+      procDate: "2024-11-28",
+      procResult: "부결",
+      resultCode: "rejected",
+      memberResult: "abstain",
+      committee: "행정안전위원회",
+    },
+    {
+      voteId: "PRC_V5",
+      billName: "환경정책기본법 일부개정법률안",
+      billNo: "2200005",
+      procDate: "2024-11-20",
+      procResult: "원안가결",
+      resultCode: "passed",
+      memberResult: "absent",
+      committee: "환경노동위원회",
+    },
+  ],
+  summary: { yes: 2, no: 1, abstain: 1, absent: 1, total: 5 },
+  total: 5,
+};

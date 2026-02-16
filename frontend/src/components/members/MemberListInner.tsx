@@ -46,7 +46,7 @@ export default function MemberListInner({ termId }: MemberListInnerProps) {
       <MemberSearch value={searchQuery} onChange={setSearchQuery} />
       <PartyFilter parties={parties} selected={selectedParty} onChange={setSelectedParty} />
       <p className="text-sm text-(--color-text-tertiary)">총 {filtered.length}명</p>
-      <MemberGrid members={filtered} />
+      <MemberGrid key={`${selectedParty ?? "all"}-${searchQuery}`} members={filtered} />
     </div>
   );
 }

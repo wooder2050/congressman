@@ -1,6 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
+import { getContrastColor } from "@/lib/utils";
 import type { Party } from "@/types";
 
 interface PartyFilterProps {
@@ -30,9 +31,14 @@ export default function PartyFilter({ parties, selected, onChange }: PartyFilter
           style={selected === party.id ? { backgroundColor: party.color } : undefined}
         >
           <span
-            className="inline-block h-3 w-3 rounded-full"
-            style={{ backgroundColor: party.color }}
-          />
+            className="inline-flex h-5 w-5 items-center justify-center rounded-full text-[0.625rem] leading-none font-bold"
+            style={{
+              backgroundColor: party.color,
+              color: getContrastColor(party.color),
+            }}
+          >
+            {party.shortName[0]}
+          </span>
           {party.shortName}
         </Button>
       ))}

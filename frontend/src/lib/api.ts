@@ -3,6 +3,7 @@ import { mockMembers, mockMemberTerms } from "@/mocks/members";
 import { mockAttendance, mockAbsenceDetails } from "@/mocks/attendance";
 import { mockBills } from "@/mocks/bills";
 import { mockVotes, mockVoteSummary } from "@/mocks/votes";
+import { mockMemberVotesResponse } from "@/mocks/member-votes";
 import type {
   AssemblyTerm,
   Member,
@@ -14,6 +15,7 @@ import type {
   MemberWithTerm,
   Vote,
   VoteSummary,
+  MemberVotesResponse,
 } from "@/types";
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL;
@@ -154,6 +156,22 @@ export async function getVoteSummary(termId: number): Promise<VoteSummary> {
   return fetchApi(`/api/votes/summary?termId=${termId}`);
 }
 
+export async function getMemberVotes(params: {
+  memberId: string;
+  termId: number;
+  page?: number;
+  limit?: number;
+  result?: string;
+}): Promise<MemberVotesResponse> {
+  if (useMock) return mockMemberVotesResponse;
+  const searchParams = new URLSearchParams();
+  searchParams.set("termId", String(params.termId));
+  if (params.page) searchParams.set("page", String(params.page));
+  if (params.limit) searchParams.set("limit", String(params.limit));
+  if (params.result) searchParams.set("result", params.result);
+  return fetchApi(`/api/members/${params.memberId}/votes?${searchParams.toString()}`);
+}
+
 // Query Keys
 Object.defineProperty(getTerms, "queryKey", { value: "terms" });
 Object.defineProperty(getMembers, "queryKey", { value: "members" });
@@ -165,3 +183,4 @@ Object.defineProperty(getBills, "queryKey", { value: "bills" });
 Object.defineProperty(getMemberHistory, "queryKey", { value: "memberHistory" });
 Object.defineProperty(getVotes, "queryKey", { value: "votes" });
 Object.defineProperty(getVoteSummary, "queryKey", { value: "voteSummary" });
+Object.defineProperty(getMemberVotes, "queryKey", { value: "memberVotes" });

@@ -4,14 +4,13 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import AttendanceTab from "./AttendanceTab";
 import BillsTab from "./BillsTab";
 import VotesTab from "./VotesTab";
-import type { AttendanceRecord, AbsenceDetail, Bill, Vote, VoteSummary } from "@/types";
+import type { AttendanceRecord, AbsenceDetail, Bill } from "@/types";
 
 interface MemberDetailClientProps {
   attendance: AttendanceRecord | null;
   absenceDetails: AbsenceDetail[];
   bills: Bill[];
-  voteSummary: VoteSummary;
-  recentVotes: Vote[];
+  memberId: string;
   termId: number;
   defaultTab?: string;
 }
@@ -20,8 +19,7 @@ export default function MemberDetailClient({
   attendance,
   absenceDetails,
   bills,
-  voteSummary,
-  recentVotes,
+  memberId,
   termId,
   defaultTab = "attendance",
 }: MemberDetailClientProps) {
@@ -45,7 +43,7 @@ export default function MemberDetailClient({
         <BillsTab bills={bills} />
       </TabsContent>
       <TabsContent value="votes">
-        <VotesTab summary={voteSummary} recentVotes={recentVotes} termId={termId} />
+        <VotesTab memberId={memberId} termId={termId} />
       </TabsContent>
     </Tabs>
   );
