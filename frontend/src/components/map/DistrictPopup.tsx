@@ -1,6 +1,5 @@
 "use client";
 
-import { useEffect } from "react";
 import Link from "next/link";
 import MemberAvatar from "@/components/members/MemberAvatar";
 import ColorBadge from "@/components/ui/color-badge";
@@ -19,13 +18,6 @@ export default function DistrictPopup({
   onClose,
 }: DistrictPopupProps) {
   const dbDistrict = DISTRICT_MAP[sidoSgg] ?? sidoSgg;
-
-  useEffect(() => {
-    document.body.style.overflow = "hidden";
-    return () => {
-      document.body.style.overflow = "";
-    };
-  }, []);
 
   return (
     <>

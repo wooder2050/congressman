@@ -58,11 +58,18 @@ export default function MapPageInner({
     [memberByDistrict],
   );
 
-  // 지도 페이지에서는 스크롤 방지
+  // main의 min-h-screen과 body의 padding-bottom 무효화하여
+  // 지도 페이지가 정확히 뷰포트에 맞도록 함
   useEffect(() => {
-    document.body.style.overflow = "hidden";
+    const main = document.querySelector("main");
+    if (!main) return;
+    const prevMinHeight = main.style.minHeight;
+    const prevBodyPb = document.body.style.paddingBottom;
+    main.style.minHeight = "0";
+    document.body.style.paddingBottom = "0";
     return () => {
-      document.body.style.overflow = "";
+      main.style.minHeight = prevMinHeight;
+      document.body.style.paddingBottom = prevBodyPb;
     };
   }, []);
 
