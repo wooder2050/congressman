@@ -58,6 +58,14 @@ export default function MapPageInner({
     [memberByDistrict],
   );
 
+  // 지도 페이지에서는 스크롤 방지
+  useEffect(() => {
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, []);
+
   // URL sync
   useEffect(() => {
     const params = new URLSearchParams(searchParams.toString());
@@ -109,7 +117,7 @@ export default function MapPageInner({
     : undefined;
 
   return (
-    <div className="flex h-[calc(100vh-120px)] flex-col">
+    <div className="flex h-[calc(100dvh-13rem)] flex-col overflow-hidden">
       <MapBreadcrumb
         sido={selectedSido}
         district={selectedDistrict}
