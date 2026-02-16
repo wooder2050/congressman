@@ -46,20 +46,6 @@ export default function ChamberPageInner({ termId, initialVoteId }: ChamberPageI
   const selectedSeat =
     selectedSeatIndex !== null ? seats.find((s) => s.index === selectedSeatIndex) : undefined;
 
-  // Disable min-height on main for full viewport layout
-  useEffect(() => {
-    const main = document.querySelector("main");
-    if (!main) return;
-    const prevMinHeight = main.style.minHeight;
-    const prevBodyPb = document.body.style.paddingBottom;
-    main.style.minHeight = "0";
-    document.body.style.paddingBottom = "0";
-    return () => {
-      main.style.minHeight = prevMinHeight;
-      document.body.style.paddingBottom = prevBodyPb;
-    };
-  }, []);
-
   // URL sync
   useEffect(() => {
     const params = new URLSearchParams(searchParams.toString());
@@ -76,9 +62,9 @@ export default function ChamberPageInner({ termId, initialVoteId }: ChamberPageI
   }, [selectedVoteId, searchParams, router]);
 
   return (
-    <div className="flex h-[calc(100dvh-13rem)] flex-col overflow-hidden">
+    <div className="pb-4">
       {/* Vote selector */}
-      <div className="px-4 py-3">
+      <div className="px-4 py-2">
         <VoteSelector
           termId={termId}
           selectedVoteId={selectedVoteId}
@@ -87,7 +73,7 @@ export default function ChamberPageInner({ termId, initialVoteId }: ChamberPageI
       </div>
 
       {/* Hemicycle SVG */}
-      <div className="flex flex-1 items-center justify-center px-2">
+      <div className="px-2">
         <HemicycleSVG
           seats={seats}
           memberVoteMap={memberVoteMap}

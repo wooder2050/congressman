@@ -27,14 +27,14 @@ export default function HemicycleSVG({
 }: HemicycleSVGProps) {
   return (
     <svg
-      viewBox="0 0 1000 600"
-      className="h-full w-full"
+      viewBox="50 65 900 465"
+      className="mx-auto block w-full"
       role="img"
       aria-label="본회의장 좌석 배치도"
     >
       {/* Podium */}
-      <rect x={440} y={568} width={120} height={28} rx={6} fill="#374151" />
-      <text x={500} y={586} textAnchor="middle" fill="#ffffff" fontSize={13} fontWeight={700}>
+      <rect x={440} y={490} width={120} height={28} rx={6} fill="#374151" />
+      <text x={500} y={508} textAnchor="middle" fill="#ffffff" fontSize={13} fontWeight={700}>
         의장석
       </text>
 
@@ -53,7 +53,7 @@ export default function HemicycleSVG({
             key={seat.index}
             cx={seat.x}
             cy={seat.y}
-            r={9}
+            r={7}
             fill={fillColor}
             fillOpacity={hasMember ? 0.9 : 0.2}
             stroke={isSelected ? "#ffffff" : "transparent"}

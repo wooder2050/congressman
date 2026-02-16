@@ -22,11 +22,11 @@ export const DEFAULT_HEMICYCLE_CONFIG: HemicycleConfig = {
   totalSeats: 300,
   rows: 17,
   centerX: 500,
-  centerY: 580,
-  innerRadius: 150,
-  outerRadius: 540,
-  startAngle: Math.PI,
-  endAngle: 0,
+  centerY: 500,
+  innerRadius: 100,
+  outerRadius: 420,
+  startAngle: Math.PI * 0.95,
+  endAngle: Math.PI * 0.05,
 };
 
 export function generateHemicycleLayout(
