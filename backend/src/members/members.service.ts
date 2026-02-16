@@ -141,6 +141,51 @@ export class MembersService {
     return result;
   }
 
+  async getAssets(memberId: string) {
+    const key = `member:assets:${memberId}`;
+    const cached = await this.redis.get(key);
+    if (cached) return cached;
+
+    const assets = await this.prisma.asset.findMany({
+      where: { memberId },
+      orderBy: [{ year: 'desc' }, { category: 'asc' }],
+    });
+
+    // 연도별 그룹핑
+    const yearMap = new Map<number, { total: bigint; categories: Map<string, bigint> }>();
+    for (const a of assets) {
+      if (!yearMap.has(a.year)) {
+        yearMap.set(a.year, { total: 0n, categories: new Map() });
+      }
+      const entry = yearMap.get(a.year)!;
+      entry.total += a.amount;
+      const prev = entry.categories.get(a.category) ?? 0n;
+      entry.categories.set(a.category, prev + a.amount);
+    }
+
+    const years = [...yearMap.entries()]
+      .sort((a, b) => b[0] - a[0])
+      .map(([year, data]) => ({
+        year,
+        total: Number(data.total),
+        categories: [...data.categories.entries()]
+          .sort((a, b) => Number(b[1]) - Number(a[1]))
+          .map(([category, amount]) => ({ category, amount: Number(amount) })),
+      }));
+
+    const details = assets.map((a) => ({
+      year: a.year,
+      category: a.category,
+      item: a.item,
+      amount: Number(a.amount),
+      relation: a.relation,
+    }));
+
+    const result = { years, details };
+    await this.redis.set(key, result, TTL_DAY);
+    return result;
+  }
+
   async findMemberVotes(
     memberId: string,
     params: { termId: number; page: number; limit: number; result?: string },

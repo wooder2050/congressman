@@ -45,6 +45,7 @@ model Member {
 
   memberTerms MemberTerm[]
   memberVotes MemberVote[]
+  assets      Asset[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -167,6 +168,25 @@ model MemberVote {
   @@index([memberId])
   @@index([voteId])
   @@index([result])
+}
+
+model Asset {
+  id       Int    @id @default(autoincrement())
+  memberId String
+  year     Int
+  category String
+  item     String
+  amount   BigInt @default(0)
+  relation String @default("본인")
+
+  member Member @relation(fields: [memberId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([memberId, year, category, item, relation])
+  @@index([memberId])
+  @@index([year])
 }
 
 model SyncLog {

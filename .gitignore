@@ -29,9 +29,18 @@ build/
 # Documents
 *.docx
 
+# Data (manual CSV imports)
+backend/data/
+
 # OS
 .DS_Store
 Thumbs.db
+
+# Screenshots
+*.png
+
+# Playwright
+.playwright-mcp/
 
 # Debug
 npm-debug.log*

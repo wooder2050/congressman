@@ -27,6 +27,11 @@ export class MembersController {
     return this.membersService.getHistory(id);
   }
 
+  @Get(':id/assets')
+  getAssets(@Param('id') id: string) {
+    return this.membersService.getAssets(id);
+  }
+
   @Get(':id/votes')
   findMemberVotes(
     @Param('id') id: string,

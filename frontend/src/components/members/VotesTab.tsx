@@ -51,17 +51,19 @@ export default function VotesTab({ memberId, termId }: VotesTabProps) {
     <div className="space-y-4 py-4" role="tabpanel">
       {/* 요약 도넛 차트 */}
       <div className="rounded-xl border border-(--color-border-primary) bg-(--color-bg-primary) p-4">
-        <div className="flex items-center gap-6">
+        <div className="flex items-center gap-4 sm:gap-6">
           <DonutChart data={chartData} centerLabel={String(data.summary.total)} size={140} />
-          <div className="grid grid-cols-2 gap-x-6 gap-y-2">
+          <div className="grid grid-cols-2 gap-x-4 gap-y-2 sm:gap-x-6">
             {chartData.map((d) => (
-              <div key={d.name} className="flex items-center gap-2">
+              <div key={d.name} className="flex items-center gap-1.5 sm:gap-2">
                 <div
-                  className="h-3 w-3 shrink-0 rounded-full"
+                  className="h-2.5 w-2.5 shrink-0 rounded-full sm:h-3 sm:w-3"
                   style={{ backgroundColor: d.color }}
                 />
-                <span className="text-sm text-(--color-text-secondary)">{d.name}</span>
-                <span className="text-sm font-bold">{d.value}건</span>
+                <span className="whitespace-nowrap text-xs text-(--color-text-secondary) sm:text-sm">
+                  {d.name}
+                </span>
+                <span className="whitespace-nowrap text-xs font-bold sm:text-sm">{d.value}건</span>
               </div>
             ))}
           </div>

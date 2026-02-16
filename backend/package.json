@@ -21,7 +21,8 @@
     "sync:votes": "tsx src/sync/sync-runner.ts votes",
     "sync:photos": "tsx src/sync/sync-runner.ts photos",
     "sync:member-votes": "tsx src/sync/sync-runner.ts member-votes",
-    "sync:attendance": "tsx src/sync/sync-runner.ts attendance"
+    "sync:attendance": "tsx src/sync/sync-runner.ts attendance",
+    "sync:assets": "tsx src/sync/sync-runner.ts assets"
   },
   "dependencies": {
     "@nestjs/common": "^11.0.0",
@@ -30,6 +31,7 @@
     "@nestjs/platform-express": "^11.0.0",
     "@prisma/client": "^6.0.0",
     "@upstash/redis": "^1.34.0",
+    "csv-parse": "^6.1.0",
     "dotenv": "^16.4.0",
     "reflect-metadata": "^0.2.2",
     "rxjs": "^7.8.0"
@@ -41,8 +43,8 @@
     "@types/express": "^5.0.0",
     "@types/node": "^22.0.0",
     "eslint": "^9.0.0",
-    "knip": "^5.0.0",
     "eslint-config-prettier": "^10.0.0",
+    "knip": "^5.0.0",
     "prettier": "^3.8.0",
     "prisma": "^6.0.0",
     "tsx": "^4.0.0",
