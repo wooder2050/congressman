@@ -1,9 +1,11 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useDeferredValue, useRef } from "react";
+import { SearchIcon } from "lucide-react";
 import { useCongressInfiniteQuery, useCongressSuspenseQuery } from "@/hooks/useCongressQuery";
 import { getBills, getBillSummary } from "@/lib/api";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import BillSummaryCard from "./BillSummaryCard";
 import BillListItem from "./BillListItem";
 import { BILL_STATUS_MAP } from "@/lib/constants";
@@ -23,11 +25,14 @@ const statusOptions = [
 export default function BillListInner({ termId }: BillListInnerProps) {
   const { data: summary } = useCongressSuspenseQuery(getBillSummary, termId);
   const [selectedStatus, setSelectedStatus] = useState<string | null>(null);
+  const [searchInput, setSearchInput] = useState("");
+  const debouncedSearch = useDeferredValue(searchInput);
   const sentinelRef = useRef<HTMLDivElement>(null);
 
   const queryParams = {
     termId,
     ...(selectedStatus ? { status: selectedStatus } : {}),
+    ...(debouncedSearch ? { search: debouncedSearch } : {}),
   };
 
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading, isError, error } =
@@ -63,6 +68,18 @@ export default function BillListInner({ termId }: BillListInnerProps) {
   return (
     <div className="space-y-4">
       <BillSummaryCard summary={summary} />
+
+      {/* 검색 */}
+      <div className="relative">
+        <SearchIcon className="pointer-events-none absolute top-1/2 left-3 h-5 w-5 -translate-y-1/2 text-(--color-text-tertiary)" />
+        <Input
+          placeholder="법안 제목 검색"
+          value={searchInput}
+          onChange={(e) => setSearchInput(e.target.value)}
+          aria-label="법안 검색"
+          className="h-12 rounded-xl border border-(--color-border-primary) pl-10 text-base"
+        />
+      </div>
 
       {/* 상태 필터 */}
       <div className="flex flex-wrap gap-2">

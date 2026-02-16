@@ -7,6 +7,7 @@ interface FindAllParams {
   termId?: number;
   memberId?: string;
   status?: string;
+  search?: string;
   page: number;
   limit: number;
 }
@@ -21,7 +22,7 @@ export class BillsService {
   ) {}
 
   async findAll(params: FindAllParams) {
-    const key = `bills:${params.termId ?? ''}:${params.memberId ?? ''}:${params.status ?? ''}:${params.page}:${params.limit}`;
+    const key = `bills:${params.termId ?? ''}:${params.memberId ?? ''}:${params.status ?? ''}:${params.search ?? ''}:${params.page}:${params.limit}`;
     const cached = await this.redis.get(key);
     if (cached) return cached;
 
@@ -29,6 +30,7 @@ export class BillsService {
 
     if (params.termId) where.termId = params.termId;
     if (params.status) where.status = params.status;
+    if (params.search) where.title = { contains: params.search, mode: 'insensitive' };
     if (params.memberId) {
       where.proposers = { some: { memberId: params.memberId } };
     }

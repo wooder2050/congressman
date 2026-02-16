@@ -19,10 +19,12 @@ export class BillsController {
     type: Number,
     description: '페이지당 건수 (기본: 20)',
   })
+  @ApiQuery({ name: 'search', required: false, description: '법안 제목 검색어' })
   findAll(
     @Query('termId') termId?: string,
     @Query('memberId') memberId?: string,
     @Query('status') status?: string,
+    @Query('search') search?: string,
     @Query('page') page?: string,
     @Query('limit') limit?: string,
   ) {
@@ -30,6 +32,7 @@ export class BillsController {
       termId: termId ? parseInt(termId, 10) || undefined : undefined,
       memberId,
       status,
+      search: search || undefined,
       page: Math.max(parseInt(page ?? '', 10) || 1, 1),
       limit: Math.min(Math.max(parseInt(limit ?? '', 10) || 20, 1), 100),
     });
