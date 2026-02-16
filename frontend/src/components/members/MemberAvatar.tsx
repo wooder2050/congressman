@@ -40,7 +40,7 @@ export default function MemberAvatar({
           width={size}
           height={size}
           className="h-full w-full object-cover"
-          unoptimized
+          loading="lazy"
           onError={() => setImgError(true)}
         />
       ) : (

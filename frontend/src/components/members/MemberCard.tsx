@@ -1,7 +1,7 @@
 import Link from "next/link";
 import ColorBadge from "@/components/ui/color-badge";
 import MemberAvatar from "./MemberAvatar";
-import { getElectedLabel } from "@/lib/utils";
+import { getElectedLabel, formatDistrict } from "@/lib/utils";
 import type { MemberWithTerm } from "@/types";
 
 interface MemberCardProps {
@@ -15,7 +15,11 @@ export default function MemberCard({ member }: MemberCardProps) {
     <Link
       href={`/members/${member.id}?term=${term.termId}`}
       className="flex items-center gap-4 rounded-xl border border-l-4 border-(--color-border-primary) bg-(--color-bg-primary) p-4 no-underline transition-colors hover:bg-(--color-bg-hover)"
-      style={{ borderLeftColor: term.party.color }}
+      style={{
+        borderLeftColor: term.party.color,
+        contentVisibility: "auto",
+        containIntrinsicSize: "0 88px",
+      }}
     >
       {/* 프로필 이미지 */}
       <MemberAvatar
@@ -32,7 +36,7 @@ export default function MemberCard({ member }: MemberCardProps) {
           <ColorBadge label={term.party.shortName} color={term.party.color} size="sm" />
         </div>
         <p className="text-sm text-(--color-text-secondary)">
-          {term.proportional ? "비례대표" : term.district}
+          {term.proportional ? "비례대표" : formatDistrict(term.district)}
         </p>
         <p className="text-xs text-(--color-text-tertiary)">
           {getElectedLabel(member.electedCount)}

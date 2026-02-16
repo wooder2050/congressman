@@ -1,11 +1,12 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import MemberCard from "./MemberCard";
 import { SkeletonCard } from "@/components/skeletons/MemberListSkeleton";
 import type { MemberWithTerm } from "@/types";
 
-const PAGE_SIZE = 30;
+const PAGE_SIZE = 40;
+const SKELETON_COUNT = 8;
 
 interface MemberGridProps {
   members: MemberWithTerm[];
@@ -15,26 +16,29 @@ export default function MemberGrid({ members }: MemberGridProps) {
   const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
   const sentinelRef = useRef<HTMLDivElement>(null);
 
+  const loadMore = useCallback(() => {
+    setVisibleCount((prev) => {
+      if (prev >= members.length) return prev;
+      return Math.min(prev + PAGE_SIZE, members.length);
+    });
+  }, [members.length]);
+
   useEffect(() => {
     const sentinel = sentinelRef.current;
     if (!sentinel) return;
 
-    const total = members.length;
     const observer = new IntersectionObserver(
       (entries) => {
         if (entries[0]?.isIntersecting) {
-          setVisibleCount((prev) => {
-            if (prev >= total) return prev;
-            return Math.min(prev + PAGE_SIZE, total);
-          });
+          loadMore();
         }
       },
-      { rootMargin: "200px" },
+      { rootMargin: "600px" },
     );
     observer.observe(sentinel);
 
     return () => observer.disconnect();
-  }, [members.length]);
+  }, [loadMore]);
 
   if (members.length === 0) {
     return (
@@ -49,17 +53,18 @@ export default function MemberGrid({ members }: MemberGridProps) {
 
   return (
     <>
-      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
         {visible.map((member) => (
           <MemberCard key={`${member.id}-${member.term.termId}`} member={member} />
         ))}
       </div>
+      {/* Sentinel — always rendered while there are more items */}
       {hasMore && (
         <div
           ref={sentinelRef}
-          className="mt-3 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3"
+          className="mt-3 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
         >
-          {Array.from({ length: 3 }).map((_, i) => (
+          {Array.from({ length: SKELETON_COUNT }).map((_, i) => (
             <SkeletonCard key={i} />
           ))}
         </div>
