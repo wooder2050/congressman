@@ -64,6 +64,14 @@ export interface Bill {
   committee?: string;
 }
 
+export interface BillSummary {
+  total: number;
+  passed: number;
+  pending: number;
+  discarded: number;
+  committee: number;
+}
+
 // ====== 표결 ======
 export interface Vote {
   id: string;
@@ -167,6 +175,22 @@ export interface VoteMemberResult {
 export interface VoteWithMemberVotes {
   vote: Vote;
   memberVotes: VoteMemberResult[];
+}
+
+// ====== 법안 발의자 (상세용) ======
+export interface BillProposerInfo {
+  memberId: string;
+  memberName: string;
+  photoUrl: string;
+  partyId: string;
+  partyName: string;
+  partyColor: string;
+  district: string;
+}
+
+// ====== 법안 상세 ======
+export interface BillDetail extends Omit<Bill, "proposerIds"> {
+  proposers: BillProposerInfo[];
 }
 
 // ====== 의원 + 대수 정보 결합 ======

@@ -108,6 +108,7 @@ export class VotesService {
         id: vote.id,
         billNo: vote.billNo,
         billName: vote.billName,
+        committee: vote.committee,
         procDate: vote.procDate,
         procResult: vote.procResult,
         resultCode: vote.resultCode,
@@ -116,6 +117,8 @@ export class VotesService {
         abstainCount: vote.abstainCount,
         voteTotal: vote.voteTotal,
         memberTotal: vote.memberTotal,
+        linkUrl: vote.linkUrl,
+        termId: vote.termId,
       },
       memberVotes: memberVotes.map((mv) => {
         const term = mv.member.memberTerms[0];

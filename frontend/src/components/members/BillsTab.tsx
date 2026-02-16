@@ -1,3 +1,4 @@
+import Link from "next/link";
 import ColorBadge from "@/components/ui/color-badge";
 import { formatDate } from "@/lib/utils";
 import { BILL_STATUS_MAP } from "@/lib/constants";
@@ -22,7 +23,11 @@ export default function BillsTab({ bills, total }: BillsTabProps) {
         {bills.map((bill) => {
           const statusInfo = BILL_STATUS_MAP[bill.status];
           return (
-            <div key={bill.id} className="bg-(--color-bg-primary) p-4">
+            <Link
+              key={bill.id}
+              href={`/bills/${bill.id}`}
+              className="block bg-(--color-bg-primary) p-4 no-underline transition-colors hover:bg-(--color-bg-hover)"
+            >
               <div className="mb-2 flex items-start justify-between gap-2">
                 <h4 className="line-clamp-2 text-base font-semibold">{bill.title}</h4>
                 <ColorBadge label={statusInfo.label} color={statusInfo.color} size="sm" />
@@ -32,7 +37,7 @@ export default function BillsTab({ bills, total }: BillsTabProps) {
                 {bill.committee && <span>{bill.committee}</span>}
                 <span>외 {bill.coProposerCount}인</span>
               </div>
-            </div>
+            </Link>
           );
         })}
       </div>
