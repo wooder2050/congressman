@@ -5,6 +5,7 @@ import { mockBills } from "@/mocks/bills";
 import { mockVotes, mockVoteSummary } from "@/mocks/votes";
 import { mockMemberVotesResponse } from "@/mocks/member-votes";
 import { mockAssetResponse } from "@/mocks/assets";
+import { mockVoteWithMemberVotes } from "@/mocks/vote-member-votes";
 import type {
   AssemblyTerm,
   Member,
@@ -18,6 +19,7 @@ import type {
   VoteSummary,
   MemberVotesResponse,
   AssetResponse,
+  VoteWithMemberVotes,
 } from "@/types";
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL;
@@ -179,6 +181,11 @@ export async function getAssets(memberId: string): Promise<AssetResponse> {
   return fetchApi(`/api/members/${memberId}/assets`);
 }
 
+export async function getVoteMemberVotes(voteId: string): Promise<VoteWithMemberVotes | null> {
+  if (useMock) return mockVoteWithMemberVotes;
+  return fetchApi(`/api/votes/${voteId}/member-votes`);
+}
+
 // Query Keys
 Object.defineProperty(getTerms, "queryKey", { value: "terms" });
 Object.defineProperty(getMembers, "queryKey", { value: "members" });
@@ -192,3 +199,4 @@ Object.defineProperty(getVotes, "queryKey", { value: "votes" });
 Object.defineProperty(getVoteSummary, "queryKey", { value: "voteSummary" });
 Object.defineProperty(getMemberVotes, "queryKey", { value: "memberVotes" });
 Object.defineProperty(getAssets, "queryKey", { value: "assets" });
+Object.defineProperty(getVoteMemberVotes, "queryKey", { value: "voteMemberVotes" });

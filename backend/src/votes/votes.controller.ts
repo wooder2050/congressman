@@ -42,6 +42,16 @@ export class VotesController {
     return this.votesService.getSummary(parseInt(termId, 10) || 22);
   }
 
+  @Get(':id/member-votes')
+  @ApiOperation({
+    summary: '표결별 의원 투표 내역',
+    description: '특정 표결의 모든 의원별 투표 결과를 반환합니다',
+  })
+  @ApiParam({ name: 'id', description: '표결 ID' })
+  findMemberVotesByVoteId(@Param('id') id: string) {
+    return this.votesService.findMemberVotesByVoteId(id);
+  }
+
   @Get(':billId')
   @ApiOperation({
     summary: '법안별 표결 상세',

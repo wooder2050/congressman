@@ -106,8 +106,8 @@ const navItems = [
     ),
   },
   {
-    href: "/compare",
-    label: "비교",
+    href: "/chamber",
+    label: "본회의장",
     icon: (
       <svg
         width="24"
@@ -119,9 +119,13 @@ const navItems = [
         strokeLinecap="round"
         strokeLinejoin="round"
       >
-        <line x1="18" y1="20" x2="18" y2="10" />
-        <line x1="12" y1="20" x2="12" y2="4" />
-        <line x1="6" y1="20" x2="6" y2="14" />
+        <path d="M3 21h18" />
+        <path d="M5 21V7l7-4 7 4v14" />
+        <path d="M9 21v-4h6v4" />
+        <path d="M9 9h1" />
+        <path d="M14 9h1" />
+        <path d="M9 13h1" />
+        <path d="M14 13h1" />
       </svg>
     ),
   },
