@@ -29,21 +29,13 @@ function buildDistrictMemberMap(members: MemberWithTerm[]) {
   return map;
 }
 
-export default function MapPageInner({
-  termId,
-  initialSido,
-  initialDistrict,
-}: MapPageInnerProps) {
+export default function MapPageInner({ termId, initialSido, initialDistrict }: MapPageInnerProps) {
   const { data: members } = useCongressSuspenseQuery(getMembers, termId);
   const router = useRouter();
   const searchParams = useSearchParams();
 
-  const [selectedSido, setSelectedSido] = useState<string | null>(
-    initialSido ?? null,
-  );
-  const [selectedDistrict, setSelectedDistrict] = useState<string | null>(
-    initialDistrict ?? null,
-  );
+  const [selectedSido, setSelectedSido] = useState<string | null>(initialSido ?? null);
+  const [selectedDistrict, setSelectedDistrict] = useState<string | null>(initialDistrict ?? null);
 
   // Build lookup: DB district → member
   const memberByDistrict = buildDistrictMemberMap(members);
@@ -119,9 +111,7 @@ export default function MapPageInner({
   const sidoPartyStats = getSidoPartyStats(members);
 
   // Selected member for popup
-  const selectedMember = selectedDistrict
-    ? getMemberForGeo(selectedDistrict)
-    : undefined;
+  const selectedMember = selectedDistrict ? getMemberForGeo(selectedDistrict) : undefined;
 
   return (
     <div className="flex h-[calc(100dvh-13rem)] flex-col overflow-hidden">

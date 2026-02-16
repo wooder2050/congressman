@@ -27,12 +27,11 @@ const LABEL_OFFSETS: Record<string, [number, number]> = {
   제주: [0, 0],
 };
 
-export default function NationalMap({
-  sidoPartyStats,
-  onSidoClick,
-}: NationalMapProps) {
-  const [provinces, setProvinces] =
-    useState<FeatureCollection<Geometry, ProvinceProperties> | null>(null);
+export default function NationalMap({ sidoPartyStats, onSidoClick }: NationalMapProps) {
+  const [provinces, setProvinces] = useState<FeatureCollection<
+    Geometry,
+    ProvinceProperties
+  > | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
 
@@ -100,9 +99,7 @@ export default function NationalMap({
             if (!d) return null;
 
             const partyStats = sidoPartyStats[sido] ?? {};
-            const dominantParty = Object.entries(partyStats).sort(
-              (a, b) => b[1] - a[1],
-            )[0]?.[0];
+            const dominantParty = Object.entries(partyStats).sort((a, b) => b[1] - a[1])[0]?.[0];
             const fillColor = dominantParty
               ? (PARTIES[dominantParty]?.color ?? "#D1D5DB")
               : "#D1D5DB";
@@ -132,7 +129,7 @@ export default function NationalMap({
                     y={centroid[1]}
                     textAnchor="middle"
                     dominantBaseline="central"
-                    className="pointer-events-none select-none fill-white text-[11px] font-bold"
+                    className="pointer-events-none fill-white text-[11px] font-bold select-none"
                     style={{
                       paintOrder: "stroke",
                       stroke: "rgba(0,0,0,0.5)",

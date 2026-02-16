@@ -21,8 +21,10 @@ export default function ProvinceMap({
   onDistrictClick,
   selectedDistrict,
 }: ProvinceMapProps) {
-  const [districts, setDistricts] =
-    useState<FeatureCollection<Geometry, DistrictProperties> | null>(null);
+  const [districts, setDistricts] = useState<FeatureCollection<
+    Geometry,
+    DistrictProperties
+  > | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
 
@@ -86,9 +88,7 @@ export default function ProvinceMap({
               : "#D1D5DB";
             const isSelected = selectedDistrict === sidoSgg;
 
-            const label = sidoSgg.includes(" ")
-              ? sidoSgg.split(" ")[1]
-              : sidoSgg;
+            const label = sidoSgg.includes(" ") ? sidoSgg.split(" ")[1] : sidoSgg;
 
             const centroid = pathGenerator.centroid(feature);
 
@@ -106,8 +106,7 @@ export default function ProvinceMap({
                   tabIndex={0}
                   aria-label={`${sidoSgg} ${member ? member.name : "공석"}`}
                   onKeyDown={(e) => {
-                    if (e.key === "Enter" || e.key === " ")
-                      onDistrictClick(sidoSgg);
+                    if (e.key === "Enter" || e.key === " ") onDistrictClick(sidoSgg);
                   }}
                 />
                 {centroid && (
@@ -116,7 +115,7 @@ export default function ProvinceMap({
                     y={centroid[1]}
                     textAnchor="middle"
                     dominantBaseline="central"
-                    className="pointer-events-none select-none fill-white text-[9px] font-semibold"
+                    className="pointer-events-none fill-white text-[9px] font-semibold select-none"
                     style={{
                       paintOrder: "stroke",
                       stroke: "rgba(0,0,0,0.4)",

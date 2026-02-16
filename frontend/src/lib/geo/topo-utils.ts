@@ -1,11 +1,6 @@
 import { feature } from "topojson-client";
 import type { Topology, GeometryCollection } from "topojson-specification";
-import type {
-  FeatureCollection,
-  Geometry,
-  MultiPolygon,
-  Polygon,
-} from "geojson";
+import type { FeatureCollection, Geometry, MultiPolygon, Polygon } from "geojson";
 
 export interface DistrictProperties {
   SGG_Code: string;
@@ -51,14 +46,10 @@ function reverseGeometryRings(geom: Geometry): Geometry {
   return geom;
 }
 
-let districtCache: FeatureCollection<Geometry, DistrictProperties> | null =
-  null;
-let provinceCache: FeatureCollection<Geometry, ProvinceProperties> | null =
-  null;
+let districtCache: FeatureCollection<Geometry, DistrictProperties> | null = null;
+let provinceCache: FeatureCollection<Geometry, ProvinceProperties> | null = null;
 
-export async function loadDistricts(): Promise<
-  FeatureCollection<Geometry, DistrictProperties>
-> {
+export async function loadDistricts(): Promise<FeatureCollection<Geometry, DistrictProperties>> {
   if (districtCache) return districtCache;
   const res = await fetch("/geo/districts.topo.json");
   const topo: Topology = await res.json();
@@ -71,9 +62,7 @@ export async function loadDistricts(): Promise<
   return districtCache;
 }
 
-export async function loadProvinces(): Promise<
-  FeatureCollection<Geometry, ProvinceProperties>
-> {
+export async function loadProvinces(): Promise<FeatureCollection<Geometry, ProvinceProperties>> {
   if (provinceCache) return provinceCache;
   const res = await fetch("/geo/provinces.topo.json");
   const topo: Topology = await res.json();
