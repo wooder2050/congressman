@@ -9,11 +9,12 @@ import type { AssignedSeat } from "@/lib/chamber/seat-assignment";
 
 interface SeatPopupProps {
   seat: AssignedSeat;
+  termId: number;
   voteResult?: string;
   onClose: () => void;
 }
 
-export default function SeatPopup({ seat, voteResult, onClose }: SeatPopupProps) {
+export default function SeatPopup({ seat, termId, voteResult, onClose }: SeatPopupProps) {
   const voteInfo = voteResult
     ? MEMBER_VOTE_RESULT_MAP[voteResult as keyof typeof MEMBER_VOTE_RESULT_MAP]
     : undefined;
@@ -50,7 +51,7 @@ export default function SeatPopup({ seat, voteResult, onClose }: SeatPopupProps)
                 {seat.proportional ? "비례대표" : formatDistrict(seat.district)}
               </p>
               <Link
-                href={`/members/${seat.memberId}`}
+                href={`/members/${seat.memberId}?term=${termId}`}
                 className="mt-2 inline-block text-sm font-semibold text-(--color-primary) no-underline"
               >
                 상세 보기 →

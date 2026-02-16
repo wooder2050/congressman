@@ -145,6 +145,7 @@ export default function ChamberPageInner({ termId, initialVoteId }: ChamberPageI
       {selectedSeat && selectedSeat.memberId && (
         <SeatPopup
           seat={selectedSeat}
+          termId={termId}
           voteResult={isVoteMode ? memberVoteMap.get(selectedSeat.memberId) : undefined}
           onClose={() => setSelectedSeatIndex(null)}
         />

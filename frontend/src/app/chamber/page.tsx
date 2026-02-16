@@ -19,7 +19,7 @@ export default async function ChamberPage({ searchParams }: ChamberPageProps) {
   return (
     <div className="-mx-4 -my-4 lg:-my-6">
       <CongressWrapper fallback={<ChamberSkeleton />}>
-        <ChamberPageInner termId={termId} initialVoteId={params.voteId} />
+        <ChamberPageInner key={termId} termId={termId} initialVoteId={params.voteId} />
       </CongressWrapper>
     </div>
   );
