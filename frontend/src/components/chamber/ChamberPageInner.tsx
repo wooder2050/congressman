@@ -63,9 +63,9 @@ export default function ChamberPageInner({ termId, initialVoteId }: ChamberPageI
   }, [selectedVoteId, searchParams, router]);
 
   return (
-    <div className="pb-4">
+    <div className="flex h-[calc(100dvh-12rem)] flex-col">
       {/* Vote selector */}
-      <div className="px-4 py-2">
+      <div className="shrink-0 px-4 py-2">
         <VoteSelector
           termId={termId}
           selectedVoteId={selectedVoteId}
@@ -74,47 +74,21 @@ export default function ChamberPageInner({ termId, initialVoteId }: ChamberPageI
       </div>
 
       {/* Hemicycle SVG — pinch zoom + drag */}
-      <div className="relative px-2">
-        <TransformWrapper
-          initialScale={1}
-          minScale={1}
-          maxScale={4}
-          centerOnInit
-          wheel={{ step: 0.1 }}
-          pinch={{ step: 5 }}
-          panning={{ disabled: false }}
-        >
-          {({ zoomIn, zoomOut, resetTransform }) => (
-            <>
-              <div className="absolute right-4 top-2 z-10 flex flex-col gap-1">
-                <button
-                  type="button"
-                  onClick={() => zoomIn()}
-                  className="flex h-8 w-8 items-center justify-center rounded-md border bg-white text-lg font-bold shadow-sm"
-                  aria-label="확대"
-                >
-                  +
-                </button>
-                <button
-                  type="button"
-                  onClick={() => zoomOut()}
-                  className="flex h-8 w-8 items-center justify-center rounded-md border bg-white text-lg font-bold shadow-sm"
-                  aria-label="축소"
-                >
-                  −
-                </button>
-                <button
-                  type="button"
-                  onClick={() => resetTransform()}
-                  className="flex h-8 w-8 items-center justify-center rounded-md border bg-white text-sm shadow-sm"
-                  aria-label="원래 크기"
-                >
-                  ↺
-                </button>
-              </div>
+      <TransformWrapper
+        initialScale={1}
+        minScale={1}
+        maxScale={4}
+        centerOnInit
+        wheel={{ step: 0.1 }}
+        pinch={{ step: 5 }}
+        panning={{ disabled: false }}
+      >
+        {({ zoomIn, zoomOut, resetTransform }) => (
+          <>
+            <div className="min-h-0 flex-1 px-2">
               <TransformComponent
-                wrapperStyle={{ width: "100%" }}
-                contentStyle={{ width: "100%" }}
+                wrapperStyle={{ width: "100%", height: "100%" }}
+                contentStyle={{ width: "100%", height: "100%", display: "flex", alignItems: "center" }}
               >
                 <HemicycleSVG
                   seats={seats}
@@ -124,13 +98,43 @@ export default function ChamberPageInner({ termId, initialVoteId }: ChamberPageI
                   onSeatClick={setSelectedSeatIndex}
                 />
               </TransformComponent>
-            </>
-          )}
-        </TransformWrapper>
-      </div>
+            </div>
 
-      {/* Legend */}
-      <ChamberLegend seats={seats} isVoteMode={isVoteMode} voteData={voteData} />
+            {/* Zoom controls + Legend */}
+            <div className="shrink-0 border-t border-(--color-border-primary) px-4 py-2">
+              <div className="flex items-center justify-between">
+                <ChamberLegend seats={seats} isVoteMode={isVoteMode} voteData={voteData} />
+                <div className="flex shrink-0 gap-1">
+                  <button
+                    type="button"
+                    onClick={() => zoomIn()}
+                    className="flex h-8 w-8 items-center justify-center rounded-md border bg-white text-lg font-bold shadow-sm"
+                    aria-label="확대"
+                  >
+                    +
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => zoomOut()}
+                    className="flex h-8 w-8 items-center justify-center rounded-md border bg-white text-lg font-bold shadow-sm"
+                    aria-label="축소"
+                  >
+                    −
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => resetTransform()}
+                    className="flex h-8 w-8 items-center justify-center rounded-md border bg-white text-sm shadow-sm"
+                    aria-label="원래 크기"
+                  >
+                    ↺
+                  </button>
+                </div>
+              </div>
+            </div>
+          </>
+        )}
+      </TransformWrapper>
 
       {/* Seat popup */}
       {selectedSeat && selectedSeat.memberId && (

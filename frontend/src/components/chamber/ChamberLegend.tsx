@@ -20,7 +20,7 @@ export default function ChamberLegend({ seats, isVoteMode, voteData }: ChamberLe
     };
 
     return (
-      <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5 border-t border-(--color-border-primary) px-4 py-2.5">
+      <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5">
         {(Object.keys(MEMBER_VOTE_RESULT_MAP) as Array<keyof typeof MEMBER_VOTE_RESULT_MAP>).map(
           (key) => (
             <div key={key} className="flex items-center gap-1.5">
@@ -57,7 +57,7 @@ export default function ChamberLegend({ seats, isVoteMode, voteData }: ChamberLe
   const sortedParties = [...partyCounts.entries()].sort((a, b) => b[1].count - a[1].count);
 
   return (
-    <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5 border-t border-(--color-border-primary) px-4 py-2.5">
+    <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5">
       {sortedParties.map(([id, party]) => (
         <div key={id} className="flex items-center gap-1.5">
           <div className="h-3 w-3 rounded-full" style={{ backgroundColor: party.color }} />
