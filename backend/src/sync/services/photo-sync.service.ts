@@ -37,13 +37,13 @@ export class PhotoSyncService {
 
       try {
         // Primary: /members/{ordinal}/{ENG_NM} page
-        let photoUrl = engName
-          ? await this.fetchPhotoFromMemberPage(termId, engName)
-          : null;
+        let photoUrl = engName ? await this.fetchPhotoFromMemberPage(termId, engName) : null;
 
         // Fallback: /portal/assm/assmMemb/member.do?monaCd={MONA_CD} page
         if (!photoUrl) {
-          console.log(`[PhotoSync] Primary failed for ${row.HG_NM}, trying fallback (monaCd=${row.MONA_CD})`);
+          console.log(
+            `[PhotoSync] Primary failed for ${row.HG_NM}, trying fallback (monaCd=${row.MONA_CD})`,
+          );
           photoUrl = await this.fetchPhotoFromPortal(row.MONA_CD, termId);
         }
 
