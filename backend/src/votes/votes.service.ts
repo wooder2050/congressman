@@ -6,6 +6,7 @@ import { Prisma } from '@prisma/client';
 interface FindAllParams {
   termId?: number;
   resultCode?: string;
+  search?: string;
   page: number;
   limit: number;
 }
@@ -20,13 +21,14 @@ export class VotesService {
   ) {}
 
   async findAll(params: FindAllParams) {
-    const key = `votes:${params.termId ?? ''}:${params.resultCode ?? ''}:${params.page}:${params.limit}`;
+    const key = `votes:${params.termId ?? ''}:${params.resultCode ?? ''}:${params.search ?? ''}:${params.page}:${params.limit}`;
     const cached = await this.redis.get(key);
     if (cached) return cached;
 
     const where: Prisma.VoteWhereInput = {};
     if (params.termId) where.termId = params.termId;
     if (params.resultCode) where.resultCode = params.resultCode;
+    if (params.search) where.billName = { contains: params.search, mode: 'insensitive' };
 
     const [votes, total] = await Promise.all([
       this.prisma.vote.findMany({
