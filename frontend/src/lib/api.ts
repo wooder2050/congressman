@@ -31,6 +31,7 @@ const useMock = !API_BASE;
 
 async function fetchApi<T>(path: string): Promise<T> {
   const res = await fetch(`${API_BASE}${path}`);
+  if (res.status === 404) return null as T;
   if (!res.ok) throw new Error(`API error: ${res.status}`);
   const text = await res.text();
   if (!text) return null as T;

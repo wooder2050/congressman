@@ -87,7 +87,10 @@ export class VotesService {
     const cached = await this.redis.get(key);
     if (cached) return cached;
 
-    const vote = await this.prisma.vote.findUnique({ where: { id: voteId } });
+    const [vote, billExists] = await Promise.all([
+      this.prisma.vote.findUnique({ where: { id: voteId } }),
+      this.prisma.bill.findUnique({ where: { id: voteId }, select: { id: true } }),
+    ]);
     if (!vote) return null;
 
     const memberVotes = await this.prisma.memberVote.findMany({
@@ -121,6 +124,7 @@ export class VotesService {
         memberTotal: vote.memberTotal,
         linkUrl: vote.linkUrl,
         termId: vote.termId,
+        hasBill: !!billExists,
       },
       memberVotes: memberVotes.map((mv) => {
         const term = mv.member.memberTerms[0];

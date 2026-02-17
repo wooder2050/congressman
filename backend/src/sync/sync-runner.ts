@@ -5,11 +5,13 @@ import { AssemblyApiService } from './services/assembly-api.service';
 import { SyncLogService } from './services/sync-log.service';
 import { MemberSyncService } from './services/member-sync.service';
 import { BillSyncService } from './services/bill-sync.service';
+import { ExtraBillSyncService } from './services/extra-bill-sync.service';
 import { VoteSyncService } from './services/vote-sync.service';
 import { PhotoSyncService } from './services/photo-sync.service';
 import { MemberVoteSyncService } from './services/member-vote-sync.service';
 import { AttendanceSyncService } from './services/attendance-sync.service';
 import { AssetSyncService } from './services/asset-sync.service';
+import { BillContentSyncService } from './services/bill-content-sync.service';
 
 async function invalidateCache(command: string) {
   const url = process.env.UPSTASH_REDIS_REST_URL;
@@ -25,8 +27,13 @@ async function invalidateCache(command: string) {
   if (command === 'members' || command === 'all') {
     prefixes.push('terms:', 'members:', 'member:');
   }
-  if (command === 'bills' || command === 'all') {
-    prefixes.push('bills:', 'member:history:');
+  if (
+    command === 'bills' ||
+    command === 'extra-bills' ||
+    command === 'bill-content' ||
+    command === 'all'
+  ) {
+    prefixes.push('bills:', 'bill:', 'member:history:');
   }
   if (command === 'votes' || command === 'all') {
     prefixes.push('votes:');
@@ -35,7 +42,7 @@ async function invalidateCache(command: string) {
     prefixes.push('members:', 'member:');
   }
   if (command === 'member-votes') {
-    prefixes.push('member:votes:');
+    prefixes.push('member:votes:', 'votes:member-votes:');
   }
   if (command === 'attendance') {
     prefixes.push('attendance:');
@@ -73,7 +80,7 @@ async function main() {
   console.log(`[SyncRunner] Running sync: "${command}" for term ${termId}`);
 
   // API 키가 필요 없는 명령은 AssemblyApiService를 생성하지 않음
-  const needsApi = !['assets', 'attendance'].includes(command);
+  const needsApi = !['assets', 'attendance', 'bill-content'].includes(command);
   const api = needsApi ? new AssemblyApiService() : (null as unknown as AssemblyApiService);
 
   try {
@@ -83,6 +90,9 @@ async function main() {
         break;
       case 'bills':
         await new BillSyncService(prisma, api, syncLog).syncBills(termId);
+        break;
+      case 'extra-bills':
+        await new ExtraBillSyncService(prisma, api, syncLog).syncExtraBills(termId);
         break;
       case 'votes':
         await new VoteSyncService(prisma, api, syncLog).syncVotes(termId);
@@ -99,11 +109,15 @@ async function main() {
       case 'assets':
         await new AssetSyncService(prisma, syncLog).syncAssets();
         break;
+      case 'bill-content':
+        await new BillContentSyncService(prisma, syncLog).syncBillContent(termId);
+        break;
       case 'all':
       default: {
         const allApi = new AssemblyApiService();
         await new MemberSyncService(prisma, allApi, syncLog).syncMembers(termId);
         await new BillSyncService(prisma, allApi, syncLog).syncBills(termId);
+        await new ExtraBillSyncService(prisma, allApi, syncLog).syncExtraBills(termId);
         await new VoteSyncService(prisma, allApi, syncLog).syncVotes(termId);
         break;
       }

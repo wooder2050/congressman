@@ -23,6 +23,7 @@
     "sync:member-votes": "tsx src/sync/sync-runner.ts member-votes",
     "sync:attendance": "tsx src/sync/sync-runner.ts attendance",
     "sync:assets": "tsx src/sync/sync-runner.ts assets",
+    "sync:bill-content": "tsx src/sync/sync-runner.ts bill-content",
     "sync:daily": "tsx src/sync/sync-daily.ts",
     "sync:weekly": "tsx src/sync/sync-weekly.ts"
   },
@@ -34,6 +35,7 @@
     "@nestjs/swagger": "^11.2.6",
     "@prisma/client": "^6.0.0",
     "@upstash/redis": "^1.34.0",
+    "cheerio": "^1.2.0",
     "csv-parse": "^6.1.0",
     "dotenv": "^16.4.0",
     "reflect-metadata": "^0.2.2",

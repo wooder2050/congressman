@@ -88,7 +88,10 @@ export class BillsService {
     const cached = await this.redis.get(key);
     if (cached) return cached;
 
-    const bill = await this.prisma.bill.findUnique({ where: { id } });
+    const [bill, voteExists] = await Promise.all([
+      this.prisma.bill.findUnique({ where: { id } }),
+      this.prisma.vote.findUnique({ where: { id }, select: { id: true } }),
+    ]);
     if (!bill) return null;
 
     const proposers = await this.prisma.billProposer.findMany({
@@ -115,6 +118,13 @@ export class BillsService {
       proposedDate: bill.proposedDate,
       termId: bill.termId,
       committee: bill.committee,
+      hasVote: !!voteExists,
+      summary: bill.summary ?? null,
+      pdfUrl: bill.pdfBookId
+        ? `https://likms.assembly.go.kr/filegate/servlet/FileGate?bookId=${bill.pdfBookId}&type=1`
+        : null,
+      detailLink:
+        bill.detailLink ?? `https://likms.assembly.go.kr/bill/billDetail.do?billId=${bill.id}`,
       proposers: proposers.map((p) => {
         const term = p.member.memberTerms[0];
         return {
