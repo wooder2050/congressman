@@ -81,7 +81,7 @@ export default function BillDetailInner({ id }: BillDetailInnerProps) {
       {bill.summary && (
         <div className="space-y-3 rounded-xl border border-(--color-border-primary) bg-(--color-bg-primary) p-5">
           <h2 className="text-lg font-bold">제안이유 및 주요내용</h2>
-          <div className="whitespace-pre-line text-sm leading-relaxed text-(--color-text-secondary)">
+          <div className="text-sm leading-relaxed whitespace-pre-line text-(--color-text-secondary)">
             {bill.summary}
           </div>
         </div>

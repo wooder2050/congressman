@@ -24,7 +24,9 @@ export class BillContentSyncService {
         orderBy: { proposedDate: 'desc' },
       });
 
-      console.log(`[BillContentSync] Found ${bills.length} bills without content for term ${termId}`);
+      console.log(
+        `[BillContentSync] Found ${bills.length} bills without content for term ${termId}`,
+      );
 
       let processed = 0;
       let failed = 0;

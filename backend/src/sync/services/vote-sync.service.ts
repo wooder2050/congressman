@@ -110,7 +110,10 @@ export class VoteSyncService {
       title: row.BILL_NAME,
       proposerName: this.extractProposerFromBillName(row.BILL_NAME),
       coProposerCount: 0,
-      status: this.mapResultCode(row.PROC_RESULT_CD) === 'other' ? 'pending' : this.mapBillStatus(row.PROC_RESULT_CD),
+      status:
+        this.mapResultCode(row.PROC_RESULT_CD) === 'other'
+          ? 'pending'
+          : this.mapBillStatus(row.PROC_RESULT_CD),
       proposedDate: this.normalizeDate(row.PROC_DT),
       termId,
       committee: row.CURR_COMMITTEE || null,

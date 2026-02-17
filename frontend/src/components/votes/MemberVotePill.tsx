@@ -9,7 +9,12 @@ interface MemberVotePillProps {
   termId: number;
 }
 
-export default function MemberVotePill({ memberId, memberName, result, termId }: MemberVotePillProps) {
+export default function MemberVotePill({
+  memberId,
+  memberName,
+  result,
+  termId,
+}: MemberVotePillProps) {
   const { color } = MEMBER_VOTE_RESULT_MAP[result];
 
   return (

@@ -27,7 +27,12 @@ async function invalidateCache(command: string) {
   if (command === 'members' || command === 'all') {
     prefixes.push('terms:', 'members:', 'member:');
   }
-  if (command === 'bills' || command === 'extra-bills' || command === 'bill-content' || command === 'all') {
+  if (
+    command === 'bills' ||
+    command === 'extra-bills' ||
+    command === 'bill-content' ||
+    command === 'all'
+  ) {
     prefixes.push('bills:', 'bill:', 'member:history:');
   }
   if (command === 'votes' || command === 'all') {

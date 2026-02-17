@@ -123,7 +123,8 @@ export class BillsService {
       pdfUrl: bill.pdfBookId
         ? `https://likms.assembly.go.kr/filegate/servlet/FileGate?bookId=${bill.pdfBookId}&type=1`
         : null,
-      detailLink: bill.detailLink ?? `https://likms.assembly.go.kr/bill/billDetail.do?billId=${bill.id}`,
+      detailLink:
+        bill.detailLink ?? `https://likms.assembly.go.kr/bill/billDetail.do?billId=${bill.id}`,
       proposers: proposers.map((p) => {
         const term = p.member.memberTerms[0];
         return {

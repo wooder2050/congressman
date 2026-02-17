@@ -94,10 +94,7 @@ export default function PartyVoteGroup({
               />
             )}
             {counts.absent > 0 && (
-              <div
-                className="bg-gray-400"
-                style={{ width: `${(counts.absent / total) * 100}%` }}
-              />
+              <div className="bg-gray-400" style={{ width: `${(counts.absent / total) * 100}%` }} />
             )}
           </>
         )}
