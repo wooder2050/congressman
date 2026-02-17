@@ -11,6 +11,8 @@ import ColorBadge from "@/components/ui/color-badge";
 import { Button } from "@/components/ui/button";
 import { formatDate, formatPercent } from "@/lib/utils";
 import { MEMBER_VOTE_RESULT_MAP } from "@/lib/constants";
+import MetricHint from "@/components/ui/metric-hint";
+import { METRIC_DEFINITIONS } from "@/constants/metrics";
 import type { MemberVoteRecord } from "@/types";
 
 interface AttendanceTabProps {
@@ -95,21 +97,31 @@ export default function AttendanceTab({ memberId, termId }: AttendanceTabProps) 
           >
             {formatPercent(attendance.rate)}
           </p>
-          <p className="text-sm text-(--color-text-tertiary)">출석률</p>
+          <p className="text-sm text-(--color-text-tertiary)">
+            출석률
+            <MetricHint text={METRIC_DEFINITIONS.attendanceRate} />
+          </p>
         </div>
       </div>
 
       {/* 요약 */}
       <div className="grid grid-cols-2 divide-x divide-y divide-(--color-border-primary) overflow-hidden rounded-xl border border-(--color-border-primary) sm:grid-cols-4">
         {[
-          { label: "전체 회의", value: attendance.totalSessions },
+          {
+            label: "전체 회의",
+            value: attendance.totalSessions,
+            hint: METRIC_DEFINITIONS.totalSessions,
+          },
           { label: "출석", value: attendance.attended },
-          { label: "결석", value: attendance.absent },
+          { label: "결석", value: attendance.absent, hint: METRIC_DEFINITIONS.absent },
           { label: "청가/출장", value: attendance.leave + attendance.travel },
         ].map((item) => (
           <div key={item.label} className="p-3 text-center">
             <p className="text-xl font-bold">{item.value}</p>
-            <p className="text-xs text-(--color-text-tertiary)">{item.label}</p>
+            <p className="text-xs text-(--color-text-tertiary)">
+              {item.label}
+              {"hint" in item && item.hint && <MetricHint text={item.hint} />}
+            </p>
           </div>
         ))}
       </div>

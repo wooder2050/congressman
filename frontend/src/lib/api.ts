@@ -195,6 +195,10 @@ export async function getSchedules(params: {
   return fetchApi(`/api/schedules?${searchParams.toString()}`);
 }
 
+export async function getLastSync(): Promise<{ lastSyncAt: string | null }> {
+  return fetchApi("/api/health/last-sync");
+}
+
 // Query Keys
 Object.defineProperty(getTerms, "queryKey", { value: "terms" });
 Object.defineProperty(getMembers, "queryKey", { value: "members" });
@@ -218,3 +222,4 @@ Object.defineProperty(getVoteMemberVotes, "queryKey", { value: "voteMemberVotes"
 Object.defineProperty(getHomeStats, "queryKey", { value: "homeStats" });
 Object.defineProperty(getUpcomingSchedules, "queryKey", { value: "upcomingSchedules" });
 Object.defineProperty(getSchedules, "queryKey", { value: "schedules" });
+Object.defineProperty(getLastSync, "queryKey", { value: "lastSync" });
