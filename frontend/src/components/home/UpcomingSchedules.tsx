@@ -25,7 +25,7 @@ export default function UpcomingSchedules({ termId }: UpcomingSchedulesProps) {
       </div>
 
       {schedules.length === 0 ? (
-        <p className="py-8 text-center text-sm text-(--color-text-tertiary)">
+        <p className="flex min-h-30 items-center justify-center text-center text-sm text-(--color-text-tertiary)">
           예정된 일정이 없습니다.
         </p>
       ) : (

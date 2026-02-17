@@ -22,7 +22,7 @@ export default function DistrictPopup({ sidoSgg, member, onClose }: DistrictPopu
       <div className="fixed inset-0 z-40 bg-black/30" onClick={onClose} aria-hidden="true" />
 
       {/* Bottom sheet */}
-      <div className="animate-slide-up fixed right-0 bottom-0 left-0 z-50 rounded-t-2xl bg-(--color-bg-primary) pb-[env(safe-area-inset-bottom)] shadow-lg">
+      <div className="animate-slide-up fixed right-0 bottom-0 left-0 z-50 mx-auto max-w-7xl rounded-t-2xl bg-(--color-bg-primary) pb-[env(safe-area-inset-bottom)] shadow-lg">
         {/* Handle */}
         <div className="flex justify-center pt-2 pb-1">
           <div className="h-1 w-10 rounded-full bg-(--color-bg-tertiary)" />
