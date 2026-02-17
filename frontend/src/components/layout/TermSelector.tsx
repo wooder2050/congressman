@@ -32,7 +32,7 @@ function TermSelectorInner() {
       <div className="mx-auto max-w-7xl px-4 py-2">
         <Select value={currentTerm} onValueChange={handleChange}>
           <SelectTrigger
-            className="w-full rounded-lg border-2 border-(--color-bg-tertiary) bg-(--color-bg-primary) px-4 py-3 text-base font-semibold text-(--color-text-primary) lg:w-56"
+            className="h-12 w-full rounded-lg border-2 border-(--color-bg-tertiary) bg-(--color-bg-primary) px-4 text-base font-semibold text-(--color-text-primary) lg:w-56"
             aria-label="국회 대수 선택"
           >
             <SelectValue />

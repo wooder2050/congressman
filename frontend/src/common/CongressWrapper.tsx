@@ -1,6 +1,6 @@
 "use client";
 
-import { Suspense, useSyncExternalStore, type ReactNode } from "react";
+import { Suspense, type ReactNode } from "react";
 import { ErrorBoundary, type FallbackProps } from "react-error-boundary";
 
 function DefaultErrorHandler({ error, resetErrorBoundary }: FallbackProps) {
@@ -20,24 +20,6 @@ function DefaultErrorHandler({ error, resetErrorBoundary }: FallbackProps) {
   );
 }
 
-const emptySubscribe = () => () => {};
-
-function useIsMounted() {
-  return useSyncExternalStore(
-    emptySubscribe,
-    () => true,
-    () => false,
-  );
-}
-
-function CongressSuspense({ children, fallback }: { children: ReactNode; fallback: ReactNode }) {
-  const isMounted = useIsMounted();
-
-  if (!isMounted) return <>{fallback}</>;
-
-  return <Suspense fallback={fallback}>{children}</Suspense>;
-}
-
 interface CongressWrapperProps {
   children: ReactNode;
   fallback: ReactNode;
@@ -51,7 +33,7 @@ export default function CongressWrapper({
 }: CongressWrapperProps) {
   return (
     <ErrorBoundary FallbackComponent={errorFallback ?? DefaultErrorHandler}>
-      <CongressSuspense fallback={fallback}>{children}</CongressSuspense>
+      <Suspense fallback={fallback}>{children}</Suspense>
     </ErrorBoundary>
   );
 }
