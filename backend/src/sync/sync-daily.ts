@@ -112,6 +112,23 @@ async function main() {
     `[Daily] Total: ${(totalMs / 1000).toFixed(1)}s, Failed: ${failed.length}/${results.length}`,
   );
 
+  // GitHub Actions Summary
+  if (process.env.GITHUB_STEP_SUMMARY) {
+    const fs = await import('fs');
+    const lines = [
+      '## Daily Sync Summary',
+      '',
+      '| Task | Status | Duration |',
+      '|------|--------|----------|',
+      ...results.map(
+        (r) => `| ${r.task} | ${r.ok ? 'OK' : 'FAIL'} | ${(r.ms / 1000).toFixed(1)}s |`,
+      ),
+      '',
+      `**Total**: ${(totalMs / 1000).toFixed(1)}s | **Failed**: ${failed.length}/${results.length}`,
+    ];
+    fs.appendFileSync(process.env.GITHUB_STEP_SUMMARY, lines.join('\n'));
+  }
+
   await prisma.$disconnect();
 
   if (failed.length > 0) {
