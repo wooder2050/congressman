@@ -201,7 +201,11 @@ export default function AttendanceDetailInner({ id, termId }: AttendanceDetailIn
 
           <div className="grid grid-cols-2 divide-x divide-y divide-(--color-border-primary) overflow-hidden rounded-xl border border-(--color-border-primary) sm:grid-cols-4">
             {[
-              { label: "전체 회의", value: attendance.totalSessions, hint: METRIC_DEFINITIONS.totalSessions },
+              {
+                label: "전체 회의",
+                value: attendance.totalSessions,
+                hint: METRIC_DEFINITIONS.totalSessions,
+              },
               { label: "출석", value: attendance.attended },
               { label: "결석", value: attendance.absent, hint: METRIC_DEFINITIONS.absent },
               { label: "청가/출장", value: attendance.leave + attendance.travel },
