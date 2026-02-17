@@ -3,6 +3,7 @@ import type {
   Member,
   MemberTerm,
   AttendanceRecord,
+  AttendanceRanking,
   Bill,
   BillDetail,
   BillSummary,
@@ -173,6 +174,10 @@ export async function getVoteMemberVotes(voteId: string): Promise<VoteWithMember
   return fetchApi(`/api/votes/${voteId}/member-votes`);
 }
 
+export async function getAttendanceRanking(termId: number): Promise<AttendanceRanking> {
+  return fetchApi(`/api/stats/attendance-ranking?termId=${termId}`);
+}
+
 export async function getHomeStats(termId: number): Promise<HomeStats> {
   return fetchApi(`/api/stats/home?termId=${termId}`);
 }
@@ -219,6 +224,7 @@ Object.defineProperty(getCommitteeActivity, "queryKey", { value: "committeeActiv
 Object.defineProperty(getAssets, "queryKey", { value: "assets" });
 Object.defineProperty(getBill, "queryKey", { value: "bill" });
 Object.defineProperty(getVoteMemberVotes, "queryKey", { value: "voteMemberVotes" });
+Object.defineProperty(getAttendanceRanking, "queryKey", { value: "attendanceRanking" });
 Object.defineProperty(getHomeStats, "queryKey", { value: "homeStats" });
 Object.defineProperty(getUpcomingSchedules, "queryKey", { value: "upcomingSchedules" });
 Object.defineProperty(getSchedules, "queryKey", { value: "schedules" });
