@@ -30,7 +30,7 @@ export default function BillListClient({ bills }: BillListClientProps) {
         {statusOptions.map((opt) => (
           <Button
             key={opt.id ?? "all"}
-            variant={selectedStatus === opt.id ? "default" : "outline"}
+            variant={selectedStatus === opt.id ? "chipActive" : "chip"}
             size="sm"
             onClick={() => setSelectedStatus(opt.id)}
             className="rounded-full px-4 text-sm font-semibold"

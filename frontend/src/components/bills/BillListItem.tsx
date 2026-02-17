@@ -20,7 +20,12 @@ export default function BillListItem({ bill }: BillListItemProps) {
         <h3 className="line-clamp-2 text-base font-semibold text-(--color-text-primary)">
           {bill.title}
         </h3>
-        <ColorBadge label={statusInfo.label} color={statusInfo.color} size="sm" />
+        <ColorBadge
+          label={statusInfo.label}
+          color={statusInfo.color}
+          textColor={statusInfo.textColor}
+          size="sm"
+        />
       </div>
       <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-(--color-text-tertiary)">
         <span className="font-semibold text-(--color-text-secondary)">

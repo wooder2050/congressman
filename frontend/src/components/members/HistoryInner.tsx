@@ -73,7 +73,7 @@ export default function HistoryInner({ id, termId }: HistoryInnerProps) {
                       </div>
                       <div className="p-2">
                         <p className="text-lg font-bold">{activity.billsProposed}건</p>
-                        <p className="text-xs text-(--color-text-tertiary)">발의</p>
+                        <p className="text-xs text-(--color-text-tertiary)">대표발의</p>
                       </div>
                       <div className="p-2">
                         <p className="text-lg font-bold">{activity.billsPassed}건</p>

@@ -66,7 +66,7 @@ export default function PartyVoteGrid({ memberVotes, termId }: PartyVoteGridProp
         {resultFilters.map((opt) => (
           <Button
             key={opt.id}
-            variant={selectedFilter === opt.id ? "default" : "outline"}
+            variant={selectedFilter === opt.id ? "chipActive" : "chip"}
             size="sm"
             onClick={() => setSelectedFilter(opt.id)}
             className="rounded-full px-4 text-sm font-semibold"

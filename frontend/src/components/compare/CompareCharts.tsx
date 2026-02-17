@@ -190,9 +190,9 @@ function CompareVoteBreakdown({
           <thead>
             <tr className="border-b border-(--color-border-primary)">
               <th className="pb-2 text-left font-semibold text-(--color-text-tertiary)">의원</th>
-              <th className="pb-2 text-right font-semibold text-(--color-status-present)">찬성</th>
-              <th className="pb-2 text-right font-semibold text-(--color-status-absent)">반대</th>
-              <th className="pb-2 text-right font-semibold text-(--color-status-pending)">기권</th>
+              <th className="pb-2 text-right font-semibold text-(--color-vote-yes)">찬성</th>
+              <th className="pb-2 text-right font-semibold text-(--color-vote-no)">반대</th>
+              <th className="pb-2 text-right font-semibold text-(--color-vote-abstain)">기권</th>
               <th className="pb-2 text-right font-semibold text-(--color-text-tertiary)">불참</th>
             </tr>
           </thead>

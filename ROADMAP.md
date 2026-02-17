@@ -113,6 +113,14 @@
 - [ ] 의원 상세 표결 탭 → 해당 표결 좌석 배치도 링크
 - [ ] 홈페이지 콘텐츠 개선 (주요 통계 요약, 빠른 진입점)
 
+### 국회일정 연동
+- [ ] 국회일정 통합 API 인증키 발급 (data.go.kr/15126132)
+- [ ] Schedule DB 모델 추가 (Prisma: 본회의/위원회 일정, 날짜, 안건)
+- [ ] 일정 동기화 스크립트 (`pnpm sync:schedule`)
+- [ ] GET /api/schedule — 일정 목록 API (기간별 필터)
+- [ ] 홈화면 "다가오는 국회 일정" 섹션 추가
+- [ ] 일정 캘린더 뷰 (/schedule) 페이지
+
 ### 운영
 - [ ] 데이터 동기화 자동화 (cron 또는 Railway scheduled task)
 - [ ] 에러 모니터링 (Sentry 등)
@@ -152,6 +160,7 @@
 | 발의 법안 | 열린국회정보 API `nzmimeepazxkubdpn` | ~15,000건/22대 |
 | 본회의 표결 | 열린국회정보 API `ncocpgfiaoituanbr` | 1,225건/22대 |
 | 의원별 표결 | 열린국회정보 API `nojepdqqaweusdfbi` | 359,009건/22대 |
+| 국회일정 | 국회일정 통합 API (data.go.kr/15126132) | Phase 4 예정 |
 | 재산 정보 | 뉴스타파/정보공개센터 CSV | 수동 다운로드 |
 | 선거구 GeoJSON | OhmyNews/southkorea-maps GitHub | 대수별 경계 |
 | 행정동 경계 | vuski/admdongkor GitHub | 통계청 기준 |

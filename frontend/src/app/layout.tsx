@@ -5,6 +5,7 @@ import Providers from "@/lib/providers";
 import Header from "@/components/layout/Header";
 import TermSelector from "@/components/layout/TermSelector";
 import BottomNav from "@/components/layout/BottomNav";
+import ScrollToTop from "@/components/layout/ScrollToTop";
 
 const pretendard = localFont({
   src: "../../public/fonts/PretendardVariable.woff2",
@@ -43,6 +44,7 @@ export default function RootLayout({
     <html lang="ko" className={pretendard.variable}>
       <body className="font-sans antialiased">
         <Providers>
+          <ScrollToTop />
           <Header />
           <TermSelector />
           <main className="mx-auto min-h-screen max-w-7xl px-4 py-4 lg:py-6">{children}</main>

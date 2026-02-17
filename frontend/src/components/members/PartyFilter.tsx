@@ -12,22 +12,22 @@ interface PartyFilterProps {
 
 export default function PartyFilter({ parties, selected, onChange }: PartyFilterProps) {
   return (
-    <div className="flex flex-wrap gap-2">
+    <div className="scrollbar-none flex gap-2 overflow-x-auto">
       <Button
-        variant={selected === null ? "default" : "outline"}
+        variant={selected === null ? "chipActive" : "chip"}
         size="sm"
         onClick={() => onChange(null)}
-        className="rounded-full px-4 text-sm font-semibold"
+        className="shrink-0 rounded-full px-4 text-sm font-semibold"
       >
         전체
       </Button>
       {parties.map((party) => (
         <Button
           key={party.id}
-          variant={selected === party.id ? "default" : "outline"}
+          variant={selected === party.id ? "chipActive" : "chip"}
           size="sm"
           onClick={() => onChange(party.id)}
-          className="rounded-full px-4 text-sm font-semibold"
+          className="shrink-0 rounded-full px-4 text-sm font-semibold"
           style={selected === party.id ? { backgroundColor: party.color } : undefined}
         >
           <span

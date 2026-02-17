@@ -19,7 +19,12 @@ export default async function ComparePage({ searchParams }: ComparePageProps) {
 
   return (
     <div className="mx-auto max-w-7xl">
-      <h1 className="mb-4 text-2xl font-bold">의원 비교</h1>
+      <div className="mb-4">
+        <h1 className="text-2xl font-bold">의원 비교</h1>
+        <p className="mt-1 text-sm text-(--color-text-tertiary)">
+          의원의 의정활동을 나란히 비교해보세요.
+        </p>
+      </div>
       <CongressWrapper fallback={<CompareSkeleton />}>
         <CompareInner termId={termId} initialMemberIds={initialMemberIds} />
       </CongressWrapper>

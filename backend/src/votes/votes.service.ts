@@ -7,6 +7,7 @@ interface FindAllParams {
   termId?: number;
   resultCode?: string;
   search?: string;
+  month?: string; // YYYY-MM
   page: number;
   limit: number;
 }
@@ -21,7 +22,7 @@ export class VotesService {
   ) {}
 
   async findAll(params: FindAllParams) {
-    const key = `votes:${params.termId ?? ''}:${params.resultCode ?? ''}:${params.search ?? ''}:${params.page}:${params.limit}`;
+    const key = `votes:${params.termId ?? ''}:${params.resultCode ?? ''}:${params.search ?? ''}:${params.month ?? ''}:${params.page}:${params.limit}`;
     const cached = await this.redis.get(key);
     if (cached) return cached;
 
@@ -29,6 +30,7 @@ export class VotesService {
     if (params.termId) where.termId = params.termId;
     if (params.resultCode) where.resultCode = params.resultCode;
     if (params.search) where.billName = { contains: params.search, mode: 'insensitive' };
+    if (params.month) where.procDate = { startsWith: params.month };
 
     const [votes, total] = await Promise.all([
       this.prisma.vote.findMany({

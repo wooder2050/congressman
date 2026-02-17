@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, Suspense } from "react";
+import { useState } from "react";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { useCongressSuspenseQuery } from "@/hooks/useCongressQuery";
@@ -8,7 +8,6 @@ import { getMember, getMemberTerms } from "@/lib/api";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import MemberProfile from "./MemberProfile";
 import MemberDetailTabContent from "./MemberDetailTabs";
-import TabContentSkeleton from "@/components/skeletons/TabSkeleton";
 
 interface MemberDetailInnerProps {
   id: string;
@@ -20,6 +19,8 @@ const TAB_OPTIONS = [
   { value: "attendance", label: "출석" },
   { value: "bills", label: "법안" },
   { value: "votes", label: "표결" },
+  { value: "committee", label: "위원회" },
+  { value: "career", label: "경력" },
   { value: "assets", label: "재산" },
 ] as const;
 
@@ -57,10 +58,13 @@ export default function MemberDetailInner({ id, termId, defaultTab }: MemberDeta
         </TabsList>
       </Tabs>
 
-      {/* 탭 콘텐츠 — Suspense 경계 */}
-      <Suspense fallback={<TabContentSkeleton />}>
-        <MemberDetailTabContent memberId={id} termId={termId} activeTab={activeTab} />
-      </Suspense>
+      {/* 탭 콘텐츠 — 각 탭 내부에서 개별 Suspense */}
+      <MemberDetailTabContent
+        memberId={id}
+        termId={termId}
+        activeTab={activeTab}
+        career={member.career}
+      />
     </div>
   );
 }

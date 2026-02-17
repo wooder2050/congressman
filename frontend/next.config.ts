@@ -9,6 +9,11 @@ const nextConfig: NextConfig = {
         hostname: "www.assembly.go.kr",
         pathname: "/static/portal/img/**",
       },
+      {
+        protocol: "https",
+        hostname: "www.assembly.go.kr",
+        pathname: "/photo/**",
+      },
     ],
   },
 };

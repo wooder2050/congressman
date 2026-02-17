@@ -94,18 +94,19 @@ export class MemberSyncService {
           .map((c) => c.trim())
           .filter(Boolean)
       : [];
-    const photoUrl = `https://www.assembly.go.kr/photo/9771/${memberId}.jpg`;
+    const committeeRole = row.JOB_RES_NM || '위원';
+    const career = row.MEM_TITLE?.trim() || null;
 
     await this.prisma.member.upsert({
       where: { id: memberId },
-      update: { name: row.HG_NM, photoUrl, birthDate, electedCount },
-      create: { id: memberId, name: row.HG_NM, photoUrl, birthDate, electedCount },
+      update: { name: row.HG_NM, birthDate, electedCount, career },
+      create: { id: memberId, name: row.HG_NM, photoUrl: '', birthDate, electedCount, career },
     });
 
     await this.prisma.memberTerm.upsert({
       where: { memberId_termId: { memberId, termId } },
-      update: { partyId, district, proportional, committees },
-      create: { memberId, termId, partyId, district, proportional, committees },
+      update: { partyId, district, proportional, committees, committeeRole },
+      create: { memberId, termId, partyId, district, proportional, committees, committeeRole },
     });
   }
 

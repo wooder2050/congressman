@@ -31,9 +31,14 @@ export default function MemberCard({ member }: MemberCardProps) {
 
       {/* 정보 */}
       <div className="min-w-0 flex-1">
-        <div className="mb-1 flex items-center gap-2">
+        <div className="mb-1 flex flex-wrap items-center gap-1.5">
           <span className="text-lg font-bold text-(--color-text-primary)">{member.name}</span>
           <ColorBadge label={term.party.shortName} color={term.party.color} size="sm" />
+          {term.committeeRole && term.committeeRole !== "위원" && (
+            <span className="rounded-full bg-amber-100 px-2 py-0.5 text-[11px] font-semibold text-amber-800 dark:bg-amber-900/30 dark:text-amber-300">
+              {term.committeeRole}
+            </span>
+          )}
         </div>
         <p className="text-sm text-(--color-text-secondary)">
           {term.proportional ? "비례대표" : formatDistrict(term.district)}

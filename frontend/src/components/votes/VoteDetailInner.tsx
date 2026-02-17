@@ -37,7 +37,11 @@ export default function VoteDetailInner({ id }: VoteDetailInnerProps) {
           <h1 className="text-xl font-bold text-(--color-text-primary) sm:text-2xl">
             {vote.billName}
           </h1>
-          <ColorBadge label={resultInfo.label} color={resultInfo.color} />
+          <ColorBadge
+            label={resultInfo.label}
+            color={resultInfo.color}
+            textColor={resultInfo.textColor}
+          />
         </div>
 
         <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-(--color-text-tertiary)">
@@ -55,19 +59,19 @@ export default function VoteDetailInner({ id }: VoteDetailInnerProps) {
 
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
           <div className="rounded-lg bg-(--color-bg-secondary) p-3 text-center">
-            <p className="text-2xl font-bold text-green-600">{vote.yesCount}</p>
+            <p className="text-2xl font-bold text-(--color-vote-yes)">{vote.yesCount}</p>
             <p className="text-xs text-(--color-text-tertiary)">찬성</p>
           </div>
           <div className="rounded-lg bg-(--color-bg-secondary) p-3 text-center">
-            <p className="text-2xl font-bold text-red-600">{vote.noCount}</p>
+            <p className="text-2xl font-bold text-(--color-vote-no)">{vote.noCount}</p>
             <p className="text-xs text-(--color-text-tertiary)">반대</p>
           </div>
           <div className="rounded-lg bg-(--color-bg-secondary) p-3 text-center">
-            <p className="text-2xl font-bold text-yellow-600">{vote.abstainCount}</p>
+            <p className="text-2xl font-bold text-(--color-vote-abstain)">{vote.abstainCount}</p>
             <p className="text-xs text-(--color-text-tertiary)">기권</p>
           </div>
           <div className="rounded-lg bg-(--color-bg-secondary) p-3 text-center">
-            <p className="text-2xl font-bold text-gray-500">{absentCount}</p>
+            <p className="text-2xl font-bold text-(--color-vote-absent)">{absentCount}</p>
             <p className="text-xs text-(--color-text-tertiary)">불참</p>
           </div>
         </div>

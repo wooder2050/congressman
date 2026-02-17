@@ -116,6 +116,7 @@ async function main() {
       default: {
         const allApi = new AssemblyApiService();
         await new MemberSyncService(prisma, allApi, syncLog).syncMembers(termId);
+        await new PhotoSyncService(prisma, allApi).syncPhotos(termId);
         await new BillSyncService(prisma, allApi, syncLog).syncBills(termId);
         await new ExtraBillSyncService(prisma, allApi, syncLog).syncExtraBills(termId);
         await new VoteSyncService(prisma, allApi, syncLog).syncVotes(termId);

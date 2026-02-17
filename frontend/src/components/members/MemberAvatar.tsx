@@ -41,6 +41,8 @@ export default function MemberAvatar({
           height={size}
           className="h-full w-full object-cover"
           loading="lazy"
+          placeholder="empty"
+          style={{ backgroundColor: bgColor }}
           onError={() => setImgError(true)}
         />
       ) : (

@@ -22,6 +22,7 @@ export interface Member {
   photoUrl: string;
   birthDate?: string;
   electedCount: number;
+  career?: string | null;
 }
 
 // ====== 의원 대수별 활동 ======
@@ -32,6 +33,7 @@ export interface MemberTerm {
   district: string;
   proportional: boolean;
   committees: string[];
+  committeeRole: string; // "위원장", "간사", "위원"
 }
 
 // ====== 출석 ======
@@ -125,6 +127,7 @@ export interface MemberVotesResponse {
   votes: MemberVoteRecord[];
   summary: MemberVoteSummary;
   total: number;
+  months?: { month: string; count: number }[];
 }
 
 // ====== 역대 활동 비교 ======
@@ -183,6 +186,7 @@ export interface BillProposerInfo {
   memberId: string;
   memberName: string;
   photoUrl: string;
+  role: "representative" | "co";
   partyId: string;
   partyName: string;
   partyColor: string;
@@ -198,6 +202,38 @@ export interface BillDetail extends Omit<Bill, "proposerIds"> {
   detailLink?: string | null;
 }
 
+// ====== 월별 출석 ======
+export interface MonthlyAttendance {
+  month: string;
+  attended: number;
+  absent: number;
+}
+
+// ====== 위원회별 법안 ======
+export interface CommitteeBillCount {
+  committee: string;
+  count: number;
+}
+
+export interface CommitteeActivity {
+  committee: string;
+  totalVotes: number;
+  yes: number;
+  no: number;
+  abstain: number;
+  absent: number;
+  billCount: number;
+}
+
+// ====== 최다 발의 의원 ======
+export interface TopProposer {
+  memberId: string;
+  name: string;
+  photoUrl: string;
+  billCount: number;
+  party: Party;
+}
+
 // ====== 홈 통계 ======
 export interface HomeStats {
   memberCount: number;
@@ -206,6 +242,9 @@ export interface HomeStats {
   avgAttendanceRate: number;
   recentVotes: Vote[];
   recentBills: Bill[];
+  closeVotes: Vote[];
+  topProposers: TopProposer[];
+  rejectedVotes: Vote[];
 }
 
 // ====== 의원 + 대수 정보 결합 ======
