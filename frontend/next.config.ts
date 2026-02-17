@@ -17,7 +17,12 @@ const nextConfig: NextConfig = {
     ],
   },
   experimental: {
-    optimizePackageImports: ["recharts", "lucide-react"],
+    optimizePackageImports: [
+      "recharts",
+      "lucide-react",
+      "@radix-ui/react-select",
+      "@radix-ui/react-tabs",
+    ],
   },
 };
 
