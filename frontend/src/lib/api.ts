@@ -27,6 +27,7 @@ import type {
   MonthlyAttendance,
   CommitteeBillCount,
   CommitteeActivity,
+  Schedule,
 } from "@/types";
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL;
@@ -290,6 +291,26 @@ export async function getHomeStats(termId: number): Promise<HomeStats> {
   return fetchApi(`/api/stats/home?termId=${termId}`);
 }
 
+export async function getUpcomingSchedules(termId: number): Promise<Schedule[]> {
+  if (useMock) return [];
+  return fetchApi(`/api/schedules/upcoming?termId=${termId}`);
+}
+
+export async function getSchedules(params: {
+  termId: number;
+  type?: string;
+  page?: number;
+  limit?: number;
+}): Promise<{ schedules: Schedule[]; total: number }> {
+  if (useMock) return { schedules: [], total: 0 };
+  const searchParams = new URLSearchParams();
+  searchParams.set("termId", String(params.termId));
+  if (params.type) searchParams.set("type", params.type);
+  if (params.page) searchParams.set("page", String(params.page));
+  if (params.limit) searchParams.set("limit", String(params.limit));
+  return fetchApi(`/api/schedules?${searchParams.toString()}`);
+}
+
 // Query Keys
 Object.defineProperty(getTerms, "queryKey", { value: "terms" });
 Object.defineProperty(getMembers, "queryKey", { value: "members" });
@@ -311,3 +332,5 @@ Object.defineProperty(getAssets, "queryKey", { value: "assets" });
 Object.defineProperty(getBill, "queryKey", { value: "bill" });
 Object.defineProperty(getVoteMemberVotes, "queryKey", { value: "voteMemberVotes" });
 Object.defineProperty(getHomeStats, "queryKey", { value: "homeStats" });
+Object.defineProperty(getUpcomingSchedules, "queryKey", { value: "upcomingSchedules" });
+Object.defineProperty(getSchedules, "queryKey", { value: "schedules" });

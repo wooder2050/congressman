@@ -24,6 +24,7 @@
     "sync:attendance": "tsx src/sync/sync-runner.ts attendance",
     "sync:assets": "tsx src/sync/sync-runner.ts assets",
     "sync:bill-content": "tsx src/sync/sync-runner.ts bill-content",
+    "sync:schedules": "tsx src/sync/sync-runner.ts schedules",
     "sync:daily": "tsx src/sync/sync-daily.ts",
     "sync:weekly": "tsx src/sync/sync-weekly.ts"
   },

@@ -19,6 +19,7 @@ model Term {
   attendances Attendance[]
   bills       Bill[]
   votes       Vote[]
+  schedules   Schedule[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -196,6 +197,30 @@ model Asset {
   @@unique([memberId, year, category, item, relation])
   @@index([memberId])
   @@index([year])
+}
+
+model Schedule {
+  id            Int      @id @default(autoincrement())
+  type          String // "plenary" (본회의) | "committee" (위원회)
+  title         String
+  meetingDate   String // YYYY-MM-DD
+  meetingTime   String   @default("")
+  session       String   @default("")
+  degree        String   @default("")
+  committeeName String   @default("")
+  agenda        String   @default("")
+  linkUrl       String   @default("")
+  termId        Int
+
+  term Term @relation(fields: [termId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([type, meetingDate, meetingTime, committeeName, degree])
+  @@index([termId])
+  @@index([meetingDate])
+  @@index([type])
 }
 
 model SyncLog {

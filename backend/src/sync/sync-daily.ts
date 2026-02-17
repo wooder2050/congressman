@@ -16,6 +16,7 @@ import { VoteSyncService } from './services/vote-sync.service';
 import { MemberVoteSyncService } from './services/member-vote-sync.service';
 import { AttendanceSyncService } from './services/attendance-sync.service';
 import { BillContentSyncService } from './services/bill-content-sync.service';
+import { ScheduleSyncService } from './services/schedule-sync.service';
 
 async function invalidateCache(prefixes: string[]) {
   const url = process.env.UPSTASH_REDIS_REST_URL;
@@ -69,6 +70,10 @@ async function main() {
       name: 'attendance',
       run: () => new AttendanceSyncService(prisma, syncLog).syncAttendance(termId),
     },
+    {
+      name: 'schedules',
+      run: () => new ScheduleSyncService(prisma, api, syncLog).syncSchedules(termId),
+    },
   ];
 
   for (const task of tasks) {
@@ -91,6 +96,7 @@ async function main() {
     'member:votes:',
     'member:history:',
     'attendance:',
+    'schedules:',
   ]);
 
   const totalMs = Date.now() - start;
