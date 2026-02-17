@@ -42,6 +42,7 @@ model Member {
   photoUrl     String  @default("")
   birthDate    String?
   electedCount Int     @default(1)
+  career       String? // MEM_TITLE: 경력사항 텍스트 (줄바꿈 구분)
 
   memberTerms   MemberTerm[]
   memberVotes   MemberVote[]
@@ -61,7 +62,8 @@ model MemberTerm {
   partyId      String
   district     String   @default("")
   proportional Boolean  @default(false)
-  committees   String[] @default([])
+  committees     String[] @default([])
+  committeeRole  String   @default("위원") // "위원장", "간사", "위원"
 
   member Member @relation(fields: [memberId], references: [id])
   term   Term   @relation(fields: [termId], references: [id])
@@ -122,12 +124,14 @@ model BillProposer {
   id       Int    @id @default(autoincrement())
   billId   String
   memberId String
+  role     String @default("co") // "representative" = 대표발의, "co" = 공동발의
 
   bill   Bill   @relation(fields: [billId], references: [id])
   member Member @relation(fields: [memberId], references: [id])
 
   @@unique([billId, memberId])
   @@index([memberId])
+  @@index([role])
 }
 
 model Vote {

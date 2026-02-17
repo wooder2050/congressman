@@ -147,7 +147,7 @@ export default function BottomNav() {
               key={item.href}
               href={item.href}
               className={`flex flex-1 flex-col items-center justify-center py-2 no-underline transition-colors ${
-                active ? "font-bold text-(--color-primary)" : "text-(--color-text-tertiary)"
+                active ? "font-bold text-(--color-text-primary)" : "text-(--color-text-tertiary)"
               }`}
               aria-current={active ? "page" : undefined}
             >

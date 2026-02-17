@@ -137,9 +137,10 @@ export default function MapPageInner({ termId, initialSido, initialDistrict }: M
             selectedDistrict={selectedDistrict}
           />
         )}
-      </div>
 
-      <MapLegend members={members} />
+        {/* 범례 — 지도 위 오버레이 */}
+        <MapLegend members={members} />
+      </div>
 
       {selectedDistrict && (
         <DistrictPopup

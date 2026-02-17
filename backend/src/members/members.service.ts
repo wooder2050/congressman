@@ -49,6 +49,7 @@ export class MembersService {
         district: mt.district,
         proportional: mt.proportional,
         committees: mt.committees,
+        committeeRole: mt.committeeRole,
       },
     }));
 
@@ -70,6 +71,7 @@ export class MembersService {
       photoUrl: member.photoUrl,
       birthDate: member.birthDate,
       electedCount: member.electedCount,
+      career: member.career ?? null,
     };
 
     await this.redis.set(key, result, TTL_DAY);
@@ -99,6 +101,7 @@ export class MembersService {
       district: mt.district,
       proportional: mt.proportional,
       committees: mt.committees,
+      committeeRole: mt.committeeRole,
     }));
 
     await this.redis.set(key, result, TTL_DAY);
@@ -125,6 +128,7 @@ export class MembersService {
         const billsProposed = await this.prisma.billProposer.count({
           where: {
             memberId,
+            role: 'representative',
             bill: { termId: mt.termId },
           },
         });
@@ -132,6 +136,7 @@ export class MembersService {
         const billsPassed = await this.prisma.billProposer.count({
           where: {
             memberId,
+            role: 'representative',
             bill: { termId: mt.termId, status: 'passed' },
           },
         });
@@ -195,21 +200,156 @@ export class MembersService {
     return result;
   }
 
-  async findMemberVotes(
-    memberId: string,
-    params: { termId: number; page: number; limit: number; result?: string },
-  ) {
-    const key = `member:votes:${memberId}:${params.termId}:${params.result ?? ''}:${params.page}:${params.limit}`;
+  async getMonthlyAttendance(memberId: string, termId: number) {
+    const key = `member:monthly-attendance:${memberId}:${termId}`;
     const cached = await this.redis.get(key);
     if (cached) return cached;
 
+    const rows = await this.prisma.$queryRaw<{ month: string; attended: bigint; absent: bigint }[]>`
+      SELECT TO_CHAR(v."procDate"::date, 'YYYY-MM') as month,
+             COUNT(*) FILTER (WHERE mv.result != 'absent') as attended,
+             COUNT(*) FILTER (WHERE mv.result = 'absent') as absent
+      FROM "MemberVote" mv
+      JOIN "Vote" v ON mv."voteId" = v.id
+      WHERE mv."memberId" = ${memberId} AND v."termId" = ${termId}
+      GROUP BY month
+      ORDER BY month
+    `;
+
+    const result = rows.map((r) => ({
+      month: r.month,
+      attended: Number(r.attended),
+      absent: Number(r.absent),
+    }));
+
+    await this.redis.set(key, result, TTL_HOUR);
+    return result;
+  }
+
+  async getCommitteeBills(memberId: string, termId: number) {
+    const key = `member:committee-bills:${memberId}:${termId}`;
+    const cached = await this.redis.get(key);
+    if (cached) return cached;
+
+    const rows = await this.prisma.$queryRaw<{ committee: string; count: bigint }[]>`
+      SELECT b.committee, COUNT(*)::bigint as count
+      FROM "BillProposer" bp
+      JOIN "Bill" b ON bp."billId" = b.id
+      WHERE bp."memberId" = ${memberId} AND bp.role = 'representative' AND b."termId" = ${termId} AND b.committee IS NOT NULL
+      GROUP BY b.committee
+      ORDER BY count DESC
+    `;
+
+    const result = rows.map((r) => ({
+      committee: r.committee,
+      count: Number(r.count),
+    }));
+
+    await this.redis.set(key, result, TTL_HOUR);
+    return result;
+  }
+
+  async getCommitteeActivity(memberId: string, termId: number) {
+    const key = `member:committee-activity:${memberId}:${termId}`;
+    const cached = await this.redis.get(key);
+    if (cached) return cached;
+
+    // 소속 위원회 목록 가져오기
+    const memberTerm = await this.prisma.memberTerm.findUnique({
+      where: { memberId_termId: { memberId, termId } },
+      select: { committees: true },
+    });
+    const committees = memberTerm?.committees ?? [];
+    if (committees.length === 0) return [];
+
+    // 위원회별 표결 참여 통계 + 발의 법안 수를 한 번에 가져오기
+    const rows = await this.prisma.$queryRaw<
+      {
+        committee: string;
+        total_votes: bigint;
+        yes_count: bigint;
+        no_count: bigint;
+        abstain_count: bigint;
+        absent_count: bigint;
+        bill_count: bigint;
+      }[]
+    >`
+      WITH committee_list AS (
+        SELECT unnest(${committees}::text[]) AS committee
+      ),
+      vote_stats AS (
+        SELECT
+          v.committee,
+          COUNT(mv.id) AS total_votes,
+          COUNT(CASE WHEN mv.result = 'yes' THEN 1 END) AS yes_count,
+          COUNT(CASE WHEN mv.result = 'no' THEN 1 END) AS no_count,
+          COUNT(CASE WHEN mv.result = 'abstain' THEN 1 END) AS abstain_count,
+          COUNT(CASE WHEN mv.result = 'absent' THEN 1 END) AS absent_count
+        FROM "Vote" v
+        LEFT JOIN "MemberVote" mv ON mv."voteId" = v.id AND mv."memberId" = ${memberId}
+        WHERE v."termId" = ${termId} AND v.committee IN (SELECT committee FROM committee_list)
+        GROUP BY v.committee
+      ),
+      bill_stats AS (
+        SELECT b.committee, COUNT(*) AS bill_count
+        FROM "BillProposer" bp
+        JOIN "Bill" b ON bp."billId" = b.id
+        WHERE bp."memberId" = ${memberId} AND b."termId" = ${termId}
+          AND bp.role = 'representative'
+          AND b.committee IN (SELECT committee FROM committee_list)
+        GROUP BY b.committee
+      )
+      SELECT
+        cl.committee,
+        COALESCE(vs.total_votes, 0)::bigint AS total_votes,
+        COALESCE(vs.yes_count, 0)::bigint AS yes_count,
+        COALESCE(vs.no_count, 0)::bigint AS no_count,
+        COALESCE(vs.abstain_count, 0)::bigint AS abstain_count,
+        COALESCE(vs.absent_count, 0)::bigint AS absent_count,
+        COALESCE(bs.bill_count, 0)::bigint AS bill_count
+      FROM committee_list cl
+      LEFT JOIN vote_stats vs ON vs.committee = cl.committee
+      LEFT JOIN bill_stats bs ON bs.committee = cl.committee
+      ORDER BY total_votes DESC
+    `;
+
+    const result = rows.map((r) => ({
+      committee: r.committee,
+      totalVotes: safeBigIntToNumber(r.total_votes),
+      yes: safeBigIntToNumber(r.yes_count),
+      no: safeBigIntToNumber(r.no_count),
+      abstain: safeBigIntToNumber(r.abstain_count),
+      absent: safeBigIntToNumber(r.absent_count),
+      billCount: safeBigIntToNumber(r.bill_count),
+    }));
+
+    await this.redis.set(key, result, TTL_HOUR);
+    return result;
+  }
+
+  async findMemberVotes(
+    memberId: string,
+    params: { termId: number; page: number; limit: number; result?: string; month?: string },
+  ) {
+    const key = `member:votes:${memberId}:${params.termId}:${params.result ?? ''}:${params.month ?? ''}:${params.page}:${params.limit}`;
+    const cached = await this.redis.get(key);
+    if (cached) return cached;
+
+    const voteFilter: Record<string, unknown> = { termId: params.termId };
+    if (params.month) {
+      const [y, m] = params.month.split('-').map(Number);
+      const start = `${y}-${String(m).padStart(2, '0')}-01`;
+      const nextMonth = m === 12 ? `${y + 1}-01-01` : `${y}-${String(m + 1).padStart(2, '0')}-01`;
+      voteFilter.procDate = { gte: start, lt: nextMonth };
+    }
+
     const where = {
       memberId,
-      vote: { termId: params.termId },
+      vote: voteFilter,
       ...(params.result ? { result: params.result } : {}),
     };
 
-    const [memberVotes, total, summary] = await Promise.all([
+    const [memberVotes, total, summary, monthlyRows] = await Promise.all([
       this.prisma.memberVote.findMany({
         where,
         include: { vote: true },
@@ -223,6 +363,14 @@ export class MembersService {
         where: { memberId, vote: { termId: params.termId } },
         _count: true,
       }),
+      this.prisma.$queryRaw<{ month: string; count: bigint }[]>`
+        SELECT TO_CHAR(v."procDate"::date, 'YYYY-MM') AS month, COUNT(*)::bigint AS count
+        FROM "MemberVote" mv
+        JOIN "Vote" v ON v.id = mv."voteId"
+        WHERE mv."memberId" = ${memberId} AND v."termId" = ${params.termId}
+        GROUP BY month
+        ORDER BY month DESC
+      `,
     ]);
 
     const summaryMap: Record<string, number> = { yes: 0, no: 0, abstain: 0, absent: 0 };
@@ -249,6 +397,7 @@ export class MembersService {
         total: summaryMap.yes + summaryMap.no + summaryMap.abstain + summaryMap.absent,
       },
       total,
+      months: monthlyRows.map((r) => ({ month: r.month, count: Number(r.count) })),
     };
 
     await this.redis.set(key, result, TTL_HOUR);

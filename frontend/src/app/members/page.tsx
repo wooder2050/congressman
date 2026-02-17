@@ -1,7 +1,9 @@
 import type { Metadata } from "next";
 import CongressWrapper from "@/common/CongressWrapper";
+import DistrictFinder from "@/components/members/DistrictFinder";
 import MemberListInner from "@/components/members/MemberListInner";
 import MemberListSkeleton from "@/components/skeletons/MemberListSkeleton";
+import { DistrictFinderSkeleton } from "@/components/skeletons/HomeSkeleton";
 
 export const metadata: Metadata = {
   title: "의원 목록",
@@ -17,8 +19,18 @@ export default async function MembersPage({ searchParams }: MembersPageProps) {
   const termId = Number(params.term) || 22;
 
   return (
-    <div className="mx-auto max-w-7xl">
-      <h1 className="mb-4 text-2xl font-bold">의원 목록</h1>
+    <div className="mx-auto max-w-7xl space-y-6">
+      <h1 className="text-2xl font-bold">의원 목록</h1>
+
+      {/* 내 지역구 의원 찾기 */}
+      <section className="space-y-3">
+        <h2 className="text-lg font-bold">내 지역구 의원 찾기</h2>
+        <CongressWrapper fallback={<DistrictFinderSkeleton />}>
+          <DistrictFinder termId={termId} />
+        </CongressWrapper>
+      </section>
+
+      {/* 전체 의원 목록 */}
       <CongressWrapper fallback={<MemberListSkeleton />}>
         <MemberListInner termId={termId} />
       </CongressWrapper>

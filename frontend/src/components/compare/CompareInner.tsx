@@ -84,10 +84,44 @@ export default function CompareInner({ termId, initialMemberIds }: CompareInnerP
 
       {selectedMembers.length === 0 ? (
         <div className="py-12 text-center">
-          <p className="text-lg text-(--color-text-tertiary)">
-            비교할 의원을 검색하여 추가해주세요
+          <div className="mx-auto mb-4 flex size-16 items-center justify-center rounded-full bg-(--color-bg-tertiary)">
+            <svg
+              width="32"
+              height="32"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              className="text-(--color-text-tertiary)"
+            >
+              <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+              <circle cx="9" cy="7" r="4" />
+              <line x1="19" y1="8" x2="19" y2="14" />
+              <line x1="22" y1="11" x2="16" y2="11" />
+            </svg>
+          </div>
+          <p className="text-lg font-semibold text-(--color-text-secondary)">
+            의원을 추가하여 비교하세요
           </p>
-          <p className="mt-1 text-sm text-(--color-text-tertiary)">최대 {MAX_MEMBERS}명</p>
+          <p className="mt-1 text-sm text-(--color-text-tertiary)">
+            위 검색창에서 최대 {MAX_MEMBERS}명까지 선택할 수 있습니다.
+          </p>
+          <div className="mx-auto mt-6 max-w-xs space-y-2 text-left text-sm text-(--color-text-tertiary)">
+            <div className="flex items-center gap-2">
+              <span className="flex size-6 shrink-0 items-center justify-center rounded-full bg-(--color-bg-tertiary) text-xs font-bold">
+                1
+              </span>
+              <span>의원 이름을 검색하세요</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="flex size-6 shrink-0 items-center justify-center rounded-full bg-(--color-bg-tertiary) text-xs font-bold">
+                2
+              </span>
+              <span>2명 이상 선택하면 비교 차트가 표시됩니다</span>
+            </div>
+          </div>
         </div>
       ) : (
         <>

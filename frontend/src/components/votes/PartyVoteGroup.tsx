@@ -64,16 +64,16 @@ export default function PartyVoteGroup({
       {/* 투표 수치 */}
       <div className="mt-1.5 flex flex-wrap gap-x-3 gap-y-1 text-xs text-(--color-text-tertiary)">
         <span>
-          찬성 <strong className="text-green-600">{counts.yes}</strong>
+          찬성 <strong className="text-(--color-vote-yes)">{counts.yes}</strong>
         </span>
         <span>
-          반대 <strong className="text-red-600">{counts.no}</strong>
+          반대 <strong className="text-(--color-vote-no)">{counts.no}</strong>
         </span>
         <span>
-          기권 <strong className="text-yellow-600">{counts.abstain}</strong>
+          기권 <strong className="text-(--color-vote-abstain)">{counts.abstain}</strong>
         </span>
         <span>
-          불참 <strong className="text-gray-500">{counts.absent}</strong>
+          불참 <strong className="text-(--color-vote-absent)">{counts.absent}</strong>
         </span>
       </div>
 
@@ -82,19 +82,28 @@ export default function PartyVoteGroup({
         {total > 0 && (
           <>
             {counts.yes > 0 && (
-              <div className="bg-green-500" style={{ width: `${(counts.yes / total) * 100}%` }} />
+              <div
+                className="bg-(--color-vote-yes)"
+                style={{ width: `${(counts.yes / total) * 100}%` }}
+              />
             )}
             {counts.no > 0 && (
-              <div className="bg-red-500" style={{ width: `${(counts.no / total) * 100}%` }} />
+              <div
+                className="bg-(--color-vote-no)"
+                style={{ width: `${(counts.no / total) * 100}%` }}
+              />
             )}
             {counts.abstain > 0 && (
               <div
-                className="bg-yellow-500"
+                className="bg-(--color-vote-abstain)"
                 style={{ width: `${(counts.abstain / total) * 100}%` }}
               />
             )}
             {counts.absent > 0 && (
-              <div className="bg-gray-400" style={{ width: `${(counts.absent / total) * 100}%` }} />
+              <div
+                className="bg-(--color-vote-absent)"
+                style={{ width: `${(counts.absent / total) * 100}%` }}
+              />
             )}
           </>
         )}
@@ -102,7 +111,7 @@ export default function PartyVoteGroup({
 
       {/* 멤버 그리드 — 모바일에서 접힘 가능 */}
       <div className={`mt-3 ${expanded ? "block" : "hidden"} sm:block`}>
-        <div className="grid grid-cols-3 gap-1.5 sm:grid-cols-5 md:grid-cols-8 lg:grid-cols-10">
+        <div className="grid grid-cols-4 gap-1.5 sm:grid-cols-5 md:grid-cols-8 lg:grid-cols-10">
           {sortedMembers.map((m) => (
             <MemberVotePill
               key={m.memberId}

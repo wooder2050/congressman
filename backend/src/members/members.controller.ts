@@ -50,6 +50,39 @@ export class MembersController {
     return this.membersService.getAssets(id);
   }
 
+  @Get(':id/monthly-attendance')
+  @ApiOperation({
+    summary: '월별 출석 통계',
+    description: '의원의 월별 본회의 출석/결석 통계를 반환합니다',
+  })
+  @ApiParam({ name: 'id', description: '의원 ID' })
+  @ApiQuery({ name: 'termId', type: Number, description: '국회 대수' })
+  getMonthlyAttendance(@Param('id') id: string, @Query('termId', ParseIntPipe) termId: number) {
+    return this.membersService.getMonthlyAttendance(id, termId);
+  }
+
+  @Get(':id/committee-bills')
+  @ApiOperation({
+    summary: '위원회별 발의 법안',
+    description: '의원이 발의한 법안을 위원회별로 집계하여 반환합니다',
+  })
+  @ApiParam({ name: 'id', description: '의원 ID' })
+  @ApiQuery({ name: 'termId', type: Number, description: '국회 대수' })
+  getCommitteeBills(@Param('id') id: string, @Query('termId', ParseIntPipe) termId: number) {
+    return this.membersService.getCommitteeBills(id, termId);
+  }
+
+  @Get(':id/committee-activity')
+  @ApiOperation({
+    summary: '소속 위원회별 활동 통계',
+    description: '의원의 소속 위원회별 표결 참여 현황과 발의 법안 수를 반환합니다',
+  })
+  @ApiParam({ name: 'id', description: '의원 ID' })
+  @ApiQuery({ name: 'termId', type: Number, description: '국회 대수' })
+  getCommitteeActivity(@Param('id') id: string, @Query('termId', ParseIntPipe) termId: number) {
+    return this.membersService.getCommitteeActivity(id, termId);
+  }
+
   @Get(':id/votes')
   @ApiOperation({ summary: '의원 표결 이력', description: '의원의 본회의 표결 이력을 반환합니다' })
   @ApiParam({ name: 'id', description: '의원 ID' })
@@ -66,18 +99,25 @@ export class MembersController {
     required: false,
     description: '표결 결과 필터 (yes, no, abstain, absent)',
   })
+  @ApiQuery({
+    name: 'month',
+    required: false,
+    description: '월 필터 (YYYY-MM 형식, 예: 2024-06)',
+  })
   findMemberVotes(
     @Param('id') id: string,
     @Query('termId', ParseIntPipe) termId: number,
     @Query('page') page?: string,
     @Query('limit') limit?: string,
     @Query('result') result?: string,
+    @Query('month') month?: string,
   ) {
     return this.membersService.findMemberVotes(id, {
       termId,
       page: Math.max(parseInt(page ?? '', 10) || 1, 1),
       limit: Math.min(Math.max(parseInt(limit ?? '', 10) || 20, 1), 100),
       result: result || undefined,
+      month: month || undefined,
     });
   }
 }

@@ -37,7 +37,7 @@ export default function HistoryCharts({ activities }: HistoryChartsProps) {
           xKey="term"
           bars={[
             { dataKey: "발의", color: "var(--color-primary)", label: "대표발의" },
-            { dataKey: "가결", color: "var(--color-status-passed)", label: "가결" },
+            { dataKey: "가결", color: "#0F766E", label: "가결" },
           ]}
         />
       </section>

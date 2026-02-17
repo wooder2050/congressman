@@ -40,7 +40,7 @@ export default function Header() {
                 href={item.href}
                 className={`rounded-lg px-3 py-2 text-sm font-medium no-underline transition-colors ${
                   active
-                    ? "bg-(--color-bg-secondary) font-bold text-(--color-primary)"
+                    ? "bg-(--color-text-primary) font-bold text-white"
                     : "text-(--color-text-secondary) hover:bg-(--color-bg-secondary) hover:text-(--color-text-primary)"
                 }`}
               >

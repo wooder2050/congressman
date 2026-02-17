@@ -58,23 +58,23 @@ export const PARTIES: Record<string, Party> = {
 };
 
 export const VOTE_RESULT_MAP = {
-  passed: { label: "원안가결", color: "#16A34A" },
-  amended: { label: "수정가결", color: "#2563EB" },
-  rejected: { label: "부결", color: "#DC2626" },
-  discarded: { label: "폐기", color: "#6B7280" },
-  other: { label: "기타", color: "#9CA3AF" },
+  passed: { label: "원안가결", color: "#111111", textColor: "#FFFFFF" },
+  amended: { label: "수정가결", color: "#6B7280", textColor: "#FFFFFF" },
+  rejected: { label: "부결", color: "#DC2626", textColor: "#FFFFFF" },
+  discarded: { label: "폐기", color: "#E5E5E5", textColor: "#595959" },
+  other: { label: "기타", color: "#F5F5F5", textColor: "#595959" },
 } as const;
 
 export const MEMBER_VOTE_RESULT_MAP = {
-  yes: { label: "찬성", color: "#16A34A" },
-  no: { label: "반대", color: "#DC2626" },
-  abstain: { label: "기권", color: "#CA8A04" },
-  absent: { label: "불참", color: "#6B7280" },
+  yes: { label: "찬성", color: "#16A34A", textColor: "#FFFFFF" },
+  no: { label: "반대", color: "#DC2626", textColor: "#FFFFFF" },
+  abstain: { label: "기권", color: "#404040", textColor: "#FFFFFF" },
+  absent: { label: "불참", color: "#D4D4D4", textColor: "#595959" },
 } as const;
 
 export const BILL_STATUS_MAP = {
-  passed: { label: "가결", color: "#16A34A" },
-  pending: { label: "계류", color: "#CA8A04" },
-  discarded: { label: "폐기", color: "#6B7280" },
-  committee: { label: "위원회 심사", color: "#1B56DB" },
+  passed: { label: "가결", color: "#0F766E", textColor: "#FFFFFF" },
+  pending: { label: "계류", color: "#737373", textColor: "#FFFFFF" },
+  discarded: { label: "폐기", color: "#D4D4D4", textColor: "#595959" },
+  committee: { label: "위원회 심사", color: "#111111", textColor: "#FFFFFF" },
 } as const;

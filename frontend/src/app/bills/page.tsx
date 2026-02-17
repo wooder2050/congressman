@@ -18,7 +18,12 @@ export default async function BillsPage({ searchParams }: BillsPageProps) {
 
   return (
     <div className="mx-auto max-w-7xl">
-      <h1 className="mb-4 text-2xl font-bold">법안 목록</h1>
+      <div className="mb-4">
+        <h1 className="text-2xl font-bold">법안 목록</h1>
+        <p className="mt-1 text-sm text-(--color-text-tertiary)">
+          발의된 법안을 검색하고 필터링하세요.
+        </p>
+      </div>
       <CongressWrapper fallback={<BillListSkeleton />}>
         <BillListInner termId={termId} />
       </CongressWrapper>

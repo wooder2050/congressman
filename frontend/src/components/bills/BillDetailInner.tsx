@@ -34,7 +34,11 @@ export default function BillDetailInner({ id }: BillDetailInnerProps) {
           <h1 className="text-xl font-bold text-(--color-text-primary) sm:text-2xl">
             {bill.title}
           </h1>
-          <ColorBadge label={statusInfo.label} color={statusInfo.color} />
+          <ColorBadge
+            label={statusInfo.label}
+            color={statusInfo.color}
+            textColor={statusInfo.textColor}
+          />
         </div>
 
         <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-(--color-text-tertiary)">
@@ -87,41 +91,58 @@ export default function BillDetailInner({ id }: BillDetailInnerProps) {
         </div>
       )}
 
-      {bill.proposers.length > 0 && (
-        <div className="space-y-4">
-          <h2 className="text-lg font-bold">발의자 ({bill.proposers.length}명)</h2>
+      {bill.proposers.length > 0 &&
+        (() => {
+          const reps = bill.proposers.filter((p) => p.role === "representative");
+          const coProps = bill.proposers.filter((p) => p.role !== "representative");
 
-          <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3">
-            {bill.proposers.map((proposer) => (
-              <Link
-                key={proposer.memberId}
-                href={`/members/${proposer.memberId}?term=${bill.termId}`}
-                className="flex items-center gap-3 rounded-xl border border-(--color-border-primary) bg-(--color-bg-primary) p-3 no-underline transition-colors hover:bg-(--color-bg-hover)"
-              >
-                <MemberAvatar
-                  name={proposer.memberName}
-                  photoUrl={proposer.photoUrl}
-                  size={40}
-                  bgColor={proposer.partyColor}
-                />
-                <div className="min-w-0 flex-1">
-                  <div className="flex items-center gap-2">
-                    <span className="text-sm font-bold text-(--color-text-primary)">
-                      {proposer.memberName}
-                    </span>
-                    <span className="text-xs text-(--color-text-tertiary)">
-                      {proposer.partyName}
-                    </span>
-                  </div>
-                  <p className="truncate text-xs text-(--color-text-tertiary)">
-                    {formatDistrict(proposer.district)}
-                  </p>
+          const renderProposerCard = (proposer: (typeof bill.proposers)[0]) => (
+            <Link
+              key={proposer.memberId}
+              href={`/members/${proposer.memberId}?term=${bill.termId}`}
+              className="flex items-center gap-3 rounded-xl border border-(--color-border-primary) bg-(--color-bg-primary) p-3 no-underline transition-colors hover:bg-(--color-bg-hover)"
+            >
+              <MemberAvatar
+                name={proposer.memberName}
+                photoUrl={proposer.photoUrl}
+                size={40}
+                bgColor={proposer.partyColor}
+              />
+              <div className="min-w-0 flex-1">
+                <div className="flex items-center gap-2">
+                  <span className="text-sm font-bold text-(--color-text-primary)">
+                    {proposer.memberName}
+                  </span>
+                  <span className="text-xs text-(--color-text-tertiary)">{proposer.partyName}</span>
                 </div>
-              </Link>
-            ))}
-          </div>
-        </div>
-      )}
+                <p className="truncate text-xs text-(--color-text-tertiary)">
+                  {formatDistrict(proposer.district)}
+                </p>
+              </div>
+            </Link>
+          );
+
+          return (
+            <div className="space-y-4">
+              {reps.length > 0 && (
+                <>
+                  <h2 className="text-lg font-bold">대표발의 ({reps.length}명)</h2>
+                  <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3">
+                    {reps.map(renderProposerCard)}
+                  </div>
+                </>
+              )}
+              {coProps.length > 0 && (
+                <>
+                  <h2 className="text-lg font-bold">공동발의 ({coProps.length}명)</h2>
+                  <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3">
+                    {coProps.map(renderProposerCard)}
+                  </div>
+                </>
+              )}
+            </div>
+          );
+        })()}
     </div>
   );
 }

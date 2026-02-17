@@ -21,7 +21,7 @@ export default function MemberVotePill({
     <Link
       href={`/members/${memberId}?term=${termId}`}
       prefetch={false}
-      className="flex h-7 items-center rounded border-l-3 px-2 text-xs font-medium text-(--color-text-primary) no-underline transition-opacity hover:opacity-80"
+      className="flex h-8 items-center justify-center rounded border-l-3 px-1.5 text-xs font-medium text-(--color-text-primary) no-underline transition-opacity hover:opacity-80"
       style={{
         backgroundColor: `${color}1A`,
         borderLeftColor: color,

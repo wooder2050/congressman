@@ -44,12 +44,16 @@
   --color-party-independent: #999999;
   --color-party-default: #6b7280;
 
-  /* 상태 컬러 */
-  --color-status-passed: #16a34a;
-  --color-status-pending: #ca8a04;
-  --color-status-discarded: #6b7280;
+  /* 의원 투표 컬러 */
+  --color-vote-yes: #16a34a;
+  --color-vote-no: #dc2626;
+  --color-vote-abstain: #404040;
+  --color-vote-absent: #9ca3af;
+
+  /* 출석 컬러 */
   --color-status-present: #16a34a;
   --color-status-absent: #dc2626;
+  --color-status-pending: #404040;
 
   /* 인터랙티브 */
   --color-primary: #1b56db;
@@ -138,7 +142,7 @@
   }
 
   :focus-visible {
-    outline: 3px solid var(--color-primary);
+    outline: 3px solid var(--color-text-primary);
     outline-offset: 2px;
     border-radius: 0.5rem;
   }
@@ -146,6 +150,15 @@
   * {
     @apply border-border outline-ring/50;
   }
+}
+
+/* ---- 스크롤바 숨기기 ---- */
+.scrollbar-none {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.scrollbar-none::-webkit-scrollbar {
+  display: none;
 }
 
 /* ---- 지도 바텀시트 애니메이션 ---- */

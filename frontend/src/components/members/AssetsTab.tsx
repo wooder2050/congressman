@@ -1,10 +1,12 @@
 "use client";
 
 import { useState } from "react";
-import type { AssetResponse, AssetYear, AssetDetail } from "@/types";
+import { useCongressSuspenseQuery } from "@/hooks/useCongressQuery";
+import { getAssets } from "@/lib/api";
+import type { AssetYear, AssetDetail } from "@/types";
 
 interface AssetsTabProps {
-  assets: AssetResponse;
+  memberId: string;
 }
 
 /** 천원 단위 → 읽기 좋은 한국어 금액 */
@@ -212,7 +214,9 @@ function DetailAccordion({ years, details }: { years: AssetYear[]; details: Asse
   );
 }
 
-export default function AssetsTab({ assets }: AssetsTabProps) {
+export default function AssetsTab({ memberId }: AssetsTabProps) {
+  const { data: assets } = useCongressSuspenseQuery(getAssets, memberId);
+
   if (assets.years.length === 0) {
     return (
       <div className="py-12 text-center">

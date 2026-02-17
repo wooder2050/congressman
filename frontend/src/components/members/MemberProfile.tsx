@@ -10,12 +10,16 @@ interface MemberProfileProps {
   allTermIds: number[];
 }
 
+const isSpecialCommittee = (name: string) => name.includes("특별위원회");
+
 export default function MemberProfile({ member, memberTerm, allTermIds }: MemberProfileProps) {
   const contrastColor = getContrastColor(memberTerm.party.color);
+  const standingCommittees = memberTerm.committees.filter((c) => !isSpecialCommittee(c));
+  const specialCommittees = memberTerm.committees.filter(isSpecialCommittee);
 
   return (
     <div className="space-y-4">
-      {/* 프로필 카드 — 정당 컬러 배너 */}
+      {/* 프로필 카드 — 정당 컬러 배너 + 위원회 통합 */}
       <div
         className="overflow-hidden rounded-xl"
         style={{ backgroundColor: memberTerm.party.color }}
@@ -42,23 +46,69 @@ export default function MemberProfile({ member, memberTerm, allTermIds }: Member
             <p className="mt-1 text-base" style={{ color: contrastColor, opacity: 0.9 }}>
               {memberTerm.proportional ? "비례대표" : formatDistrict(memberTerm.district)}
             </p>
+            {standingCommittees.length > 0 && (
+              <p className="mt-1 text-sm" style={{ color: contrastColor, opacity: 0.7 }}>
+                {standingCommittees[0]}
+                {memberTerm.committeeRole && memberTerm.committeeRole !== "위원" && (
+                  <span
+                    className="ml-1.5 inline-block rounded-full px-2 py-0.5 text-[11px] font-semibold"
+                    style={{ backgroundColor: "rgba(255,255,255,0.25)", color: contrastColor }}
+                  >
+                    {memberTerm.committeeRole}
+                  </span>
+                )}
+              </p>
+            )}
           </div>
         </div>
-      </div>
 
-      {/* 위원회 */}
-      <div>
-        <h3 className="mb-1 text-sm font-semibold text-(--color-text-tertiary)">소속위원회</h3>
-        <div className="flex flex-wrap gap-2">
-          {memberTerm.committees.map((c) => (
-            <span
-              key={c}
-              className="rounded-lg bg-(--color-bg-secondary) px-3 py-1.5 text-sm text-(--color-text-secondary)"
-            >
-              {c}
-            </span>
-          ))}
-        </div>
+        {/* 위원회 정보 — 프로필 카드 내부 */}
+        {(standingCommittees.length > 0 || specialCommittees.length > 0) && (
+          <div className="space-y-2 border-t border-white/15 bg-black/10 px-5 py-3">
+            {standingCommittees.length > 0 && (
+              <div className="flex flex-wrap items-center gap-2">
+                <span
+                  className="text-xs font-semibold"
+                  style={{ color: contrastColor, opacity: 0.6 }}
+                >
+                  상임위
+                </span>
+                {standingCommittees.map((c) => (
+                  <span
+                    key={c}
+                    className="rounded-md px-2 py-0.5 text-xs"
+                    style={{ backgroundColor: "rgba(255,255,255,0.15)", color: contrastColor }}
+                  >
+                    {c}
+                  </span>
+                ))}
+              </div>
+            )}
+            {specialCommittees.length > 0 && (
+              <div className="flex flex-wrap items-center gap-2">
+                <span
+                  className="text-xs font-semibold"
+                  style={{ color: contrastColor, opacity: 0.6 }}
+                >
+                  특별위
+                </span>
+                {specialCommittees.map((c) => (
+                  <span
+                    key={c}
+                    className="rounded-md px-2 py-0.5 text-xs"
+                    style={{
+                      backgroundColor: "rgba(255,255,255,0.1)",
+                      color: contrastColor,
+                      opacity: 0.8,
+                    }}
+                  >
+                    {c}
+                  </span>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
       </div>
 
       {/* 역대 활동 링크 */}

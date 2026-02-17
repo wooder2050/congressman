@@ -25,6 +25,7 @@ export const mockMemberTerms: MemberTerm[] = [
     district: "서울 종로구",
     proportional: false,
     committees: ["법제사법위원회", "국방위원회"],
+    committeeRole: "위원장",
   },
   {
     memberId: "m2",
@@ -33,6 +34,7 @@ export const mockMemberTerms: MemberTerm[] = [
     district: "서울 강남구갑",
     proportional: false,
     committees: ["기획재정위원회"],
+    committeeRole: "간사",
   },
   {
     memberId: "m3",
@@ -41,6 +43,7 @@ export const mockMemberTerms: MemberTerm[] = [
     district: "부산 해운대구갑",
     proportional: false,
     committees: ["외교통일위원회", "국방위원회"],
+    committeeRole: "위원",
   },
   {
     memberId: "m4",
@@ -49,6 +52,7 @@ export const mockMemberTerms: MemberTerm[] = [
     district: "경기 성남시분당구갑",
     proportional: false,
     committees: ["교육위원회"],
+    committeeRole: "위원",
   },
   {
     memberId: "m5",
@@ -57,6 +61,7 @@ export const mockMemberTerms: MemberTerm[] = [
     district: "대구 수성구갑",
     proportional: false,
     committees: ["국방위원회"],
+    committeeRole: "위원",
   },
   {
     memberId: "m6",
@@ -65,6 +70,7 @@ export const mockMemberTerms: MemberTerm[] = [
     district: "인천 남동구갑",
     proportional: false,
     committees: ["보건복지위원회"],
+    committeeRole: "위원",
   },
   {
     memberId: "m7",
@@ -73,6 +79,7 @@ export const mockMemberTerms: MemberTerm[] = [
     district: "",
     proportional: true,
     committees: ["과학기술정보방송통신위원회"],
+    committeeRole: "위원",
   },
   {
     memberId: "m8",
@@ -81,6 +88,7 @@ export const mockMemberTerms: MemberTerm[] = [
     district: "경기 용인시수지구",
     proportional: false,
     committees: ["행정안전위원회", "법제사법위원회"],
+    committeeRole: "위원",
   },
   {
     memberId: "m9",
@@ -89,6 +97,7 @@ export const mockMemberTerms: MemberTerm[] = [
     district: "광주 서구갑",
     proportional: false,
     committees: ["환경노동위원회"],
+    committeeRole: "위원",
   },
   {
     memberId: "m10",
@@ -97,6 +106,7 @@ export const mockMemberTerms: MemberTerm[] = [
     district: "",
     proportional: true,
     committees: ["여성가족위원회"],
+    committeeRole: "위원",
   },
   {
     memberId: "m11",
@@ -105,6 +115,7 @@ export const mockMemberTerms: MemberTerm[] = [
     district: "서울 송파구갑",
     proportional: false,
     committees: ["국토교통위원회"],
+    committeeRole: "위원",
   },
   {
     memberId: "m12",
@@ -113,6 +124,7 @@ export const mockMemberTerms: MemberTerm[] = [
     district: "제주 제주시갑",
     proportional: false,
     committees: ["농림축산식품해양수산위원회"],
+    committeeRole: "위원",
   },
 
   // 21대 (일부 의원만)
@@ -123,6 +135,7 @@ export const mockMemberTerms: MemberTerm[] = [
     district: "서울 종로구",
     proportional: false,
     committees: ["법제사법위원회"],
+    committeeRole: "위원",
   },
   {
     memberId: "m2",
@@ -131,6 +144,7 @@ export const mockMemberTerms: MemberTerm[] = [
     district: "서울 강남구갑",
     proportional: false,
     committees: ["기획재정위원회", "외교통일위원회"],
+    committeeRole: "위원",
   },
   {
     memberId: "m3",
@@ -139,6 +153,7 @@ export const mockMemberTerms: MemberTerm[] = [
     district: "부산 해운대구갑",
     proportional: false,
     committees: ["국방위원회"],
+    committeeRole: "위원",
   },
   {
     memberId: "m5",
@@ -147,6 +162,7 @@ export const mockMemberTerms: MemberTerm[] = [
     district: "대구 수성구갑",
     proportional: false,
     committees: ["행정안전위원회"],
+    committeeRole: "위원",
   },
   {
     memberId: "m8",
@@ -155,6 +171,7 @@ export const mockMemberTerms: MemberTerm[] = [
     district: "경기 용인시수지구",
     proportional: false,
     committees: ["법제사법위원회"],
+    committeeRole: "위원",
   },
   {
     memberId: "m9",
@@ -163,6 +180,7 @@ export const mockMemberTerms: MemberTerm[] = [
     district: "광주 서구갑",
     proportional: false,
     committees: ["보건복지위원회"],
+    committeeRole: "위원",
   },
   {
     memberId: "m11",
@@ -171,5 +189,6 @@ export const mockMemberTerms: MemberTerm[] = [
     district: "서울 송파구갑",
     proportional: false,
     committees: ["기획재정위원회", "국토교통위원회"],
+    committeeRole: "위원",
   },
 ];

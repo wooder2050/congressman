@@ -22,10 +22,12 @@ export class VotesController {
     description: '페이지당 건수 (기본: 20)',
   })
   @ApiQuery({ name: 'search', required: false, description: '법안명 검색어' })
+  @ApiQuery({ name: 'month', required: false, description: '월 필터 (YYYY-MM)' })
   findAll(
     @Query('termId') termId?: string,
     @Query('resultCode') resultCode?: string,
     @Query('search') search?: string,
+    @Query('month') month?: string,
     @Query('page') page?: string,
     @Query('limit') limit?: string,
   ) {
@@ -33,6 +35,7 @@ export class VotesController {
       termId: termId ? parseInt(termId, 10) || undefined : undefined,
       resultCode,
       search: search || undefined,
+      month: month || undefined,
       page: Math.max(parseInt(page ?? '', 10) || 1, 1),
       limit: Math.min(Math.max(parseInt(limit ?? '', 10) || 20, 1), 100),
     });

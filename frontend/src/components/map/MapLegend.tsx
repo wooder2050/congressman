@@ -27,7 +27,7 @@ export default function MapLegend({ members }: MapLegendProps) {
   }, [members]);
 
   return (
-    <div className="flex flex-wrap items-center gap-x-3 gap-y-1 border-t border-(--color-border-primary) px-4 py-3">
+    <div className="absolute right-2 bottom-2 left-2 flex flex-wrap items-center justify-center gap-x-3 gap-y-1 rounded-lg bg-(--color-bg-primary)/85 px-3 py-2 backdrop-blur-sm">
       {partyStats.map((party) => (
         <div key={party.id} className="flex items-center gap-1.5">
           <span

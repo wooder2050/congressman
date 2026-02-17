@@ -84,18 +84,35 @@ export class BillSyncService {
     const memberMap = await this.buildMemberNameMap(termId);
     console.log(`[BillSync] Linking proposers (${memberMap.size} members in lookup)...`);
 
-    const allProposers: { billId: string; memberId: string }[] = [];
+    const allProposers: { billId: string; memberId: string; role: string }[] = [];
 
     for (const row of rows) {
-      if (!row.PUBL_PROPOSER) continue;
-      const names = row.PUBL_PROPOSER.split(',')
-        .map((n) => n.trim())
+      // 1) 대표발의자: RST_PROPOSER 또는 PROPOSER에서 추출한 이름
+      const repName = row.RST_PROPOSER ?? this.extractProposerName(row.PROPOSER);
+      const repNames = repName
+        .split(',')
+        .map((n) => n.replace(/의원.*$/, '').trim())
         .filter(Boolean);
-
-      for (const name of names) {
+      const repMemberIds = new Set<string>();
+      for (const name of repNames) {
         const memberId = memberMap.get(name);
         if (memberId) {
-          allProposers.push({ billId: row.BILL_ID, memberId });
+          repMemberIds.add(memberId);
+          allProposers.push({ billId: row.BILL_ID, memberId, role: 'representative' });
+        }
+      }
+
+      // 2) 공동발의자: PUBL_PROPOSER (대표발의자는 제외)
+      if (row.PUBL_PROPOSER) {
+        const names = row.PUBL_PROPOSER.split(',')
+          .map((n) => n.trim())
+          .filter(Boolean);
+
+        for (const name of names) {
+          const memberId = memberMap.get(name);
+          if (memberId && !repMemberIds.has(memberId)) {
+            allProposers.push({ billId: row.BILL_ID, memberId, role: 'co' });
+          }
         }
       }
     }

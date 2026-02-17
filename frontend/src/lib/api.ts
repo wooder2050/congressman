@@ -24,6 +24,9 @@ import type {
   AssetResponse,
   VoteWithMemberVotes,
   HomeStats,
+  MonthlyAttendance,
+  CommitteeBillCount,
+  CommitteeActivity,
 } from "@/types";
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL;
@@ -91,8 +94,11 @@ export async function getAbsenceDetails(params: {
 export async function getBills(params: {
   termId?: number;
   memberId?: string;
+  role?: string;
   status?: string;
   search?: string;
+  month?: string;
+  committee?: string;
   page?: number;
   limit?: number;
 }): Promise<{ bills: Bill[]; total: number }> {
@@ -102,6 +108,7 @@ export async function getBills(params: {
     if (params.memberId)
       filtered = filtered.filter((b) => b.proposerIds.includes(params.memberId!));
     if (params.status) filtered = filtered.filter((b) => b.status === params.status);
+    if (params.month) filtered = filtered.filter((b) => b.proposedDate.startsWith(params.month!));
     if (params.search) {
       const q = params.search.toLowerCase();
       filtered = filtered.filter((b) => b.title.toLowerCase().includes(q));
@@ -115,8 +122,11 @@ export async function getBills(params: {
   const searchParams = new URLSearchParams();
   if (params.termId) searchParams.set("termId", String(params.termId));
   if (params.memberId) searchParams.set("memberId", params.memberId);
+  if (params.role) searchParams.set("role", params.role);
   if (params.status) searchParams.set("status", params.status);
+  if (params.month) searchParams.set("month", params.month);
   if (params.search) searchParams.set("search", params.search);
+  if (params.committee) searchParams.set("committee", params.committee);
   if (params.page) searchParams.set("page", String(params.page));
   if (params.limit) searchParams.set("limit", String(params.limit));
   return fetchApi(`/api/bills?${searchParams.toString()}`);
@@ -134,6 +144,13 @@ export async function getBillSummary(termId: number): Promise<BillSummary> {
     };
   }
   return fetchApi(`/api/bills/summary?termId=${termId}`);
+}
+
+export async function getBillCommittees(termId: number): Promise<string[]> {
+  if (useMock) {
+    return [...new Set(mockBills.filter((b) => b.committee).map((b) => b.committee!))].sort();
+  }
+  return fetchApi(`/api/bills/committees?termId=${termId}`);
 }
 
 export async function getMemberHistory(memberId: string): Promise<TermActivity[]> {
@@ -160,6 +177,7 @@ export async function getVotes(params: {
   termId?: number;
   resultCode?: string;
   search?: string;
+  month?: string;
   page?: number;
   limit?: number;
 }): Promise<{ votes: Vote[]; total: number }> {
@@ -167,6 +185,7 @@ export async function getVotes(params: {
     let filtered = [...mockVotes];
     if (params.termId) filtered = filtered.filter((v) => v.termId === params.termId);
     if (params.resultCode) filtered = filtered.filter((v) => v.resultCode === params.resultCode);
+    if (params.month) filtered = filtered.filter((v) => v.procDate.startsWith(params.month!));
     if (params.search) {
       const q = params.search.toLowerCase();
       filtered = filtered.filter((v) => v.billName.toLowerCase().includes(q));
@@ -180,6 +199,7 @@ export async function getVotes(params: {
   const searchParams = new URLSearchParams();
   if (params.termId) searchParams.set("termId", String(params.termId));
   if (params.resultCode) searchParams.set("resultCode", params.resultCode);
+  if (params.month) searchParams.set("month", params.month);
   if (params.search) searchParams.set("search", params.search);
   if (params.page) searchParams.set("page", String(params.page));
   if (params.limit) searchParams.set("limit", String(params.limit));
@@ -197,6 +217,7 @@ export async function getMemberVotes(params: {
   page?: number;
   limit?: number;
   result?: string;
+  month?: string;
 }): Promise<MemberVotesResponse> {
   if (useMock) return mockMemberVotesResponse;
   const searchParams = new URLSearchParams();
@@ -204,7 +225,32 @@ export async function getMemberVotes(params: {
   if (params.page) searchParams.set("page", String(params.page));
   if (params.limit) searchParams.set("limit", String(params.limit));
   if (params.result) searchParams.set("result", params.result);
+  if (params.month) searchParams.set("month", params.month);
   return fetchApi(`/api/members/${params.memberId}/votes?${searchParams.toString()}`);
+}
+
+export async function getMonthlyAttendance(params: {
+  memberId: string;
+  termId: number;
+}): Promise<MonthlyAttendance[]> {
+  if (useMock) return [];
+  return fetchApi(`/api/members/${params.memberId}/monthly-attendance?termId=${params.termId}`);
+}
+
+export async function getCommitteeBills(params: {
+  memberId: string;
+  termId: number;
+}): Promise<CommitteeBillCount[]> {
+  if (useMock) return [];
+  return fetchApi(`/api/members/${params.memberId}/committee-bills?termId=${params.termId}`);
+}
+
+export async function getCommitteeActivity(params: {
+  memberId: string;
+  termId: number;
+}): Promise<CommitteeActivity[]> {
+  if (useMock) return [];
+  return fetchApi(`/api/members/${params.memberId}/committee-activity?termId=${params.termId}`);
 }
 
 export async function getAssets(memberId: string): Promise<AssetResponse> {
@@ -233,6 +279,12 @@ export async function getHomeStats(termId: number): Promise<HomeStats> {
       avgAttendanceRate: 92.5,
       recentVotes: votes.slice(0, 3),
       recentBills: bills.slice(0, 3),
+      closeVotes: votes
+        .filter((v) => v.noCount > 0)
+        .sort((a, b) => Math.abs(a.yesCount - a.noCount) - Math.abs(b.yesCount - b.noCount))
+        .slice(0, 3),
+      topProposers: [],
+      rejectedVotes: votes.filter((v) => v.resultCode === "rejected").slice(0, 3),
     };
   }
   return fetchApi(`/api/stats/home?termId=${termId}`);
@@ -247,10 +299,14 @@ Object.defineProperty(getAttendance, "queryKey", { value: "attendance" });
 Object.defineProperty(getAbsenceDetails, "queryKey", { value: "absenceDetails" });
 Object.defineProperty(getBills, "queryKey", { value: "bills" });
 Object.defineProperty(getBillSummary, "queryKey", { value: "billSummary" });
+Object.defineProperty(getBillCommittees, "queryKey", { value: "billCommittees" });
 Object.defineProperty(getMemberHistory, "queryKey", { value: "memberHistory" });
 Object.defineProperty(getVotes, "queryKey", { value: "votes" });
 Object.defineProperty(getVoteSummary, "queryKey", { value: "voteSummary" });
 Object.defineProperty(getMemberVotes, "queryKey", { value: "memberVotes" });
+Object.defineProperty(getMonthlyAttendance, "queryKey", { value: "monthlyAttendance" });
+Object.defineProperty(getCommitteeBills, "queryKey", { value: "committeeBills" });
+Object.defineProperty(getCommitteeActivity, "queryKey", { value: "committeeActivity" });
 Object.defineProperty(getAssets, "queryKey", { value: "assets" });
 Object.defineProperty(getBill, "queryKey", { value: "bill" });
 Object.defineProperty(getVoteMemberVotes, "queryKey", { value: "voteMemberVotes" });

@@ -1,46 +1,51 @@
 "use client";
 
-import { useCongressSuspenseQuery } from "@/hooks/useCongressQuery";
-import { getAttendance, getAbsenceDetails, getBills, getAssets } from "@/lib/api";
+import { Suspense } from "react";
+import TabContentSkeleton from "@/components/skeletons/TabSkeleton";
 import AttendanceTab from "./AttendanceTab";
 import BillsTab from "./BillsTab";
 import VotesTab from "./VotesTab";
+import CommitteeTab from "./CommitteeTab";
+import CareerTab from "./CareerTab";
 import AssetsTab from "./AssetsTab";
 
 interface MemberDetailTabContentProps {
   memberId: string;
   termId: number;
   activeTab: string;
+  career?: string | null;
 }
 
 export default function MemberDetailTabContent({
   memberId,
   termId,
   activeTab,
+  career,
 }: MemberDetailTabContentProps) {
-  const { data: attendance } = useCongressSuspenseQuery(getAttendance, {
-    memberId,
-    termId,
-  });
-  const { data: absenceDetails } = useCongressSuspenseQuery(getAbsenceDetails, {
-    memberId,
-    termId,
-  });
-  const { data: billsResult } = useCongressSuspenseQuery(getBills, {
-    memberId,
-    termId,
-    limit: 100,
-  });
-  const { data: assets } = useCongressSuspenseQuery(getAssets, memberId);
-
   return (
     <div>
       {activeTab === "attendance" && (
-        <AttendanceTab attendance={attendance} absenceDetails={absenceDetails} />
+        <Suspense fallback={<TabContentSkeleton />}>
+          <AttendanceTab memberId={memberId} termId={termId} />
+        </Suspense>
       )}
-      {activeTab === "bills" && <BillsTab bills={billsResult.bills} total={billsResult.total} />}
+      {activeTab === "bills" && (
+        <Suspense fallback={<TabContentSkeleton />}>
+          <BillsTab memberId={memberId} termId={termId} />
+        </Suspense>
+      )}
       {activeTab === "votes" && <VotesTab memberId={memberId} termId={termId} />}
-      {activeTab === "assets" && <AssetsTab assets={assets} />}
+      {activeTab === "committee" && (
+        <Suspense fallback={<TabContentSkeleton />}>
+          <CommitteeTab memberId={memberId} termId={termId} />
+        </Suspense>
+      )}
+      {activeTab === "career" && <CareerTab career={career} />}
+      {activeTab === "assets" && (
+        <Suspense fallback={<TabContentSkeleton />}>
+          <AssetsTab memberId={memberId} />
+        </Suspense>
+      )}
     </div>
   );
 }

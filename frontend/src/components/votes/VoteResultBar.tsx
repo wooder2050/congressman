@@ -22,13 +22,17 @@ export default function VoteResultBar({
   return (
     <div className="flex h-3 w-full overflow-hidden rounded-full bg-(--color-bg-tertiary)">
       <div
-        className="bg-green-500"
+        className="bg-(--color-vote-yes)"
         style={{ width: `${yesPercent}%` }}
         title={`찬성 ${yesCount}`}
       />
-      <div className="bg-red-500" style={{ width: `${noPercent}%` }} title={`반대 ${noCount}`} />
       <div
-        className="bg-gray-400"
+        className="bg-(--color-vote-no)"
+        style={{ width: `${noPercent}%` }}
+        title={`반대 ${noCount}`}
+      />
+      <div
+        className="bg-(--color-vote-abstain)"
         style={{ width: `${abstainPercent}%` }}
         title={`기권 ${abstainCount}`}
       />
