@@ -262,6 +262,22 @@ export interface Schedule {
   termId: number;
 }
 
+// ====== 출석 랭킹 ======
+export interface AttendanceRankItem {
+  memberId: string;
+  name: string;
+  photoUrl: string;
+  party: Party;
+  rate: number;
+  attended: number;
+  totalSessions: number;
+}
+
+export interface AttendanceRanking {
+  top: AttendanceRankItem[];
+  bottom: AttendanceRankItem[];
+}
+
 // ====== 의원 + 대수 정보 결합 ======
 export interface MemberWithTerm extends Member {
   term: MemberTerm;

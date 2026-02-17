@@ -11,6 +11,96 @@ export class StatsService {
     private readonly redis: RedisService,
   ) {}
 
+  async getAttendanceRanking(termId: number, limit = 5) {
+    const key = `stats:attendance-ranking:${termId}:${limit}`;
+    const cached = await this.redis.get(key);
+    if (cached) return cached;
+
+    const [topRaw, bottomRaw] = await Promise.all([
+      this.prisma.$queryRaw<
+        {
+          memberId: string;
+          name: string;
+          photoUrl: string;
+          rate: number;
+          attended: number;
+          totalSessions: number;
+        }[]
+      >`
+        SELECT a."memberId", m.name, m."photoUrl",
+               a.rate, a.attended, a."totalSessions"
+        FROM "Attendance" a
+        JOIN "Member" m ON a."memberId" = m.id
+        WHERE a."termId" = ${termId} AND a."totalSessions" > 0
+        ORDER BY a.rate DESC, a.attended DESC
+        LIMIT ${limit}
+      `,
+      this.prisma.$queryRaw<
+        {
+          memberId: string;
+          name: string;
+          photoUrl: string;
+          rate: number;
+          attended: number;
+          totalSessions: number;
+        }[]
+      >`
+        SELECT a."memberId", m.name, m."photoUrl",
+               a.rate, a.attended, a."totalSessions"
+        FROM "Attendance" a
+        JOIN "Member" m ON a."memberId" = m.id
+        WHERE a."termId" = ${termId} AND a."totalSessions" > 0
+        ORDER BY a.rate ASC, a.absent DESC
+        LIMIT ${limit}
+      `,
+    ]);
+
+    const allIds = [...topRaw, ...bottomRaw].map((r) => r.memberId);
+    const memberTerms =
+      allIds.length > 0
+        ? await this.prisma.memberTerm.findMany({
+            where: { memberId: { in: allIds }, termId },
+            include: { party: true },
+          })
+        : [];
+    const partyMap = new Map(
+      memberTerms.map((mt) => [
+        mt.memberId,
+        {
+          id: mt.party.id,
+          name: mt.party.name,
+          shortName: mt.party.shortName,
+          color: mt.party.color,
+        },
+      ]),
+    );
+
+    const defaultParty = {
+      id: 'independent',
+      name: '무소속',
+      shortName: '무소속',
+      color: '#999999',
+    };
+
+    const mapItem = (r: (typeof topRaw)[0]) => ({
+      memberId: r.memberId,
+      name: r.name,
+      photoUrl: r.photoUrl,
+      rate: r.rate,
+      attended: r.attended,
+      totalSessions: r.totalSessions,
+      party: partyMap.get(r.memberId) ?? defaultParty,
+    });
+
+    const result = {
+      top: topRaw.map(mapItem),
+      bottom: bottomRaw.map(mapItem),
+    };
+
+    await this.redis.set(key, result, TTL_HOUR);
+    return result;
+  }
+
   async getHomeStats(termId: number) {
     const key = `stats:home:${termId}`;
     const cached = await this.redis.get(key);

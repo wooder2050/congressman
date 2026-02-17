@@ -2,9 +2,11 @@ import CongressWrapper from "@/common/CongressWrapper";
 import HomeStats from "@/components/home/HomeStats";
 import UpcomingSchedules from "@/components/home/UpcomingSchedules";
 import RecentActivity from "@/components/home/RecentActivity";
+import AttendanceRanking from "@/components/home/AttendanceRanking";
 import ActivityHighlights from "@/components/home/ActivityHighlights";
 import {
   HomeStatsSkeleton,
+  AttendanceRankingSkeleton,
   RecentActivitySkeleton,
   ActivityHighlightsSkeleton,
 } from "@/components/skeletons/HomeSkeleton";
@@ -43,6 +45,14 @@ export default async function HomePage({ searchParams }: HomePageProps) {
         <h2 className="text-xl font-bold">최근 활동</h2>
         <CongressWrapper fallback={<RecentActivitySkeleton />}>
           <RecentActivity termId={termId} />
+        </CongressWrapper>
+      </section>
+
+      {/* 출석 랭킹 */}
+      <section className="space-y-3">
+        <h2 className="text-xl font-bold">출석 랭킹</h2>
+        <CongressWrapper fallback={<AttendanceRankingSkeleton />}>
+          <AttendanceRanking termId={termId} />
         </CongressWrapper>
       </section>
 

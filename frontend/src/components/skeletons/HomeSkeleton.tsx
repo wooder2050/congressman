@@ -49,6 +49,33 @@ export function RecentActivitySkeleton() {
   );
 }
 
+export function AttendanceRankingSkeleton() {
+  return (
+    <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+      {Array.from({ length: 2 }).map((_, col) => (
+        <div key={col} className="space-y-3">
+          <div className="h-6 w-28 animate-pulse rounded bg-(--color-bg-tertiary)" />
+          <div className="h-4 w-52 animate-pulse rounded bg-(--color-bg-tertiary)" />
+          {Array.from({ length: 5 }).map((_, i) => (
+            <div
+              key={i}
+              className="flex animate-pulse items-center gap-3 rounded-xl border border-(--color-border-primary) bg-(--color-bg-primary) p-3"
+            >
+              <div className="h-6 w-6 rounded bg-(--color-bg-tertiary)" />
+              <div className="h-10 w-10 rounded-full bg-(--color-bg-tertiary)" />
+              <div className="flex-1 space-y-1">
+                <div className="h-4 w-20 rounded bg-(--color-bg-tertiary)" />
+                <div className="h-3 w-16 rounded bg-(--color-bg-tertiary)" />
+              </div>
+              <div className="h-6 w-12 rounded bg-(--color-bg-tertiary)" />
+            </div>
+          ))}
+        </div>
+      ))}
+    </div>
+  );
+}
+
 export function ActivityHighlightsSkeleton() {
   return (
     <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
