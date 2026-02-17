@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" fill="none">
+  <!-- 기둥 -->
+  <rect x="5" y="14" width="3" height="12" rx="0.5" fill="#1E3A5F"/>
+  <rect x="11" y="14" width="3" height="12" rx="0.5" fill="#1E3A5F"/>
+  <rect x="18" y="14" width="3" height="12" rx="0.5" fill="#1E3A5F"/>
+  <rect x="24" y="14" width="3" height="12" rx="0.5" fill="#1E3A5F"/>
+  <!-- 지붕 (삼각형) -->
+  <path d="M2 14.5 L16 4 L30 14.5 Z" fill="#1E3A5F"/>
+  <!-- 돔 -->
+  <ellipse cx="16" cy="6" rx="4" ry="3" fill="#2C5282"/>
+  <rect x="15" y="2" width="2" height="4" rx="1" fill="#2C5282"/>
+  <!-- 바닥 -->
+  <rect x="3" y="26" width="26" height="3" rx="1" fill="#1E3A5F"/>
+</svg>
