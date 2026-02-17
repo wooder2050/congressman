@@ -7,6 +7,7 @@ import { AttendanceModule } from './attendance/attendance.module';
 import { BillsModule } from './bills/bills.module';
 import { VotesModule } from './votes/votes.module';
 import { StatsModule } from './stats/stats.module';
+import { SchedulesModule } from './schedules/schedules.module';
 import { HealthModule } from './health/health.module';
 import { RedisModule } from './redis/redis.module';
 
@@ -22,6 +23,7 @@ import { RedisModule } from './redis/redis.module';
     BillsModule,
     VotesModule,
     StatsModule,
+    SchedulesModule,
   ],
 })
 export class AppModule {}

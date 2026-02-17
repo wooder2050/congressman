@@ -12,6 +12,7 @@ import { MemberVoteSyncService } from './services/member-vote-sync.service';
 import { AttendanceSyncService } from './services/attendance-sync.service';
 import { AssetSyncService } from './services/asset-sync.service';
 import { BillContentSyncService } from './services/bill-content-sync.service';
+import { ScheduleSyncService } from './services/schedule-sync.service';
 
 async function invalidateCache(command: string) {
   const url = process.env.UPSTASH_REDIS_REST_URL;
@@ -49,6 +50,9 @@ async function invalidateCache(command: string) {
   }
   if (command === 'assets') {
     prefixes.push('member:assets:');
+  }
+  if (command === 'schedules') {
+    prefixes.push('schedules:');
   }
 
   for (const prefix of prefixes) {
@@ -111,6 +115,9 @@ async function main() {
         break;
       case 'bill-content':
         await new BillContentSyncService(prisma, syncLog).syncBillContent(termId);
+        break;
+      case 'schedules':
+        await new ScheduleSyncService(prisma, api, syncLog).syncSchedules(termId);
         break;
       case 'all':
       default: {

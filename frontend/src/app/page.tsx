@@ -1,5 +1,6 @@
 import CongressWrapper from "@/common/CongressWrapper";
 import HomeStats from "@/components/home/HomeStats";
+import UpcomingSchedules from "@/components/home/UpcomingSchedules";
 import RecentActivity from "@/components/home/RecentActivity";
 import ActivityHighlights from "@/components/home/ActivityHighlights";
 import {
@@ -7,6 +8,7 @@ import {
   RecentActivitySkeleton,
   ActivityHighlightsSkeleton,
 } from "@/components/skeletons/HomeSkeleton";
+import { UpcomingSchedulesSkeleton } from "@/components/skeletons/ScheduleSkeleton";
 
 interface HomePageProps {
   searchParams: Promise<{ term?: string }>;
@@ -29,6 +31,11 @@ export default async function HomePage({ searchParams }: HomePageProps) {
       {/* 통계 요약 */}
       <CongressWrapper fallback={<HomeStatsSkeleton />}>
         <HomeStats termId={termId} />
+      </CongressWrapper>
+
+      {/* 다가오는 일정 */}
+      <CongressWrapper fallback={<UpcomingSchedulesSkeleton />}>
+        <UpcomingSchedules termId={termId} />
       </CongressWrapper>
 
       {/* 최근 활동 */}

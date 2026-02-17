@@ -247,6 +247,21 @@ export interface HomeStats {
   rejectedVotes: Vote[];
 }
 
+// ====== 일정 ======
+export interface Schedule {
+  id: number;
+  type: "plenary" | "committee";
+  title: string;
+  meetingDate: string;
+  meetingTime: string;
+  session: string;
+  degree: string;
+  committeeName: string;
+  agenda: string;
+  linkUrl: string;
+  termId: number;
+}
+
 // ====== 의원 + 대수 정보 결합 ======
 export interface MemberWithTerm extends Member {
   term: MemberTerm;
