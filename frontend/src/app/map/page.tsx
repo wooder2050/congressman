@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import CongressWrapper from "@/common/CongressWrapper";
-import MapPageInner from "@/components/map/MapPageInner";
 import MapSkeleton from "@/components/skeletons/MapSkeleton";
+import MapPageInner from "@/components/map/MapDynamic";
 
 export const metadata: Metadata = {
   title: "선거구 지도",
