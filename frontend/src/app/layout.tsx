@@ -57,7 +57,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
       </Script>
       <Script
         src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6439388251426570"
-        strategy="afterInteractive"
+        strategy="beforeInteractive"
         crossOrigin="anonymous"
       />
       <body className="font-sans antialiased">
