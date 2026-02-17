@@ -22,11 +22,11 @@ import type {
 } from "@/types";
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL;
-if (!API_BASE) {
-  throw new Error("NEXT_PUBLIC_API_URL 환경변수가 설정되지 않았습니다.");
-}
 
 async function fetchApi<T>(path: string): Promise<T> {
+  if (!API_BASE) {
+    throw new Error("NEXT_PUBLIC_API_URL 환경변수가 설정되지 않았습니다.");
+  }
   const res = await fetch(`${API_BASE}${path}`);
   if (res.status === 404) return null as T;
   if (!res.ok) throw new Error(`API error: ${res.status}`);
