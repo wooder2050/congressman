@@ -1,12 +1,3 @@
-import { mockTerms } from "@/mocks/terms";
-import { mockMembers, mockMemberTerms } from "@/mocks/members";
-import { mockAttendance, mockAbsenceDetails } from "@/mocks/attendance";
-import { mockBills } from "@/mocks/bills";
-import { mockVotes, mockVoteSummary } from "@/mocks/votes";
-import { mockMemberVotesResponse } from "@/mocks/member-votes";
-import { mockAssetResponse } from "@/mocks/assets";
-import { mockVoteWithMemberVotes } from "@/mocks/vote-member-votes";
-import { mockBillDetail } from "@/mocks/bill-detail";
 import type {
   AssemblyTerm,
   Member,
@@ -31,7 +22,9 @@ import type {
 } from "@/types";
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL;
-const useMock = !API_BASE;
+if (!API_BASE) {
+  throw new Error("NEXT_PUBLIC_API_URL 환경변수가 설정되지 않았습니다.");
+}
 
 async function fetchApi<T>(path: string): Promise<T> {
   const res = await fetch(`${API_BASE}${path}`);
@@ -43,31 +36,18 @@ async function fetchApi<T>(path: string): Promise<T> {
 }
 
 export async function getTerms(): Promise<AssemblyTerm[]> {
-  if (useMock) return mockTerms;
   return fetchApi("/api/terms");
 }
 
 export async function getMembers(termId: number): Promise<MemberWithTerm[]> {
-  if (useMock) {
-    const termMembers = mockMemberTerms.filter((mt) => mt.termId === termId);
-    return termMembers
-      .map((mt) => {
-        const member = mockMembers.find((m) => m.id === mt.memberId);
-        if (!member) return null;
-        return { ...member, term: mt };
-      })
-      .filter((m): m is MemberWithTerm => m !== null);
-  }
   return fetchApi(`/api/members?termId=${termId}`);
 }
 
 export async function getMember(id: string): Promise<Member | null> {
-  if (useMock) return mockMembers.find((m) => m.id === id) ?? null;
   return fetchApi(`/api/members/${id}`);
 }
 
 export async function getMemberTerms(memberId: string): Promise<MemberTerm[]> {
-  if (useMock) return mockMemberTerms.filter((mt) => mt.memberId === memberId);
   return fetchApi(`/api/members/${memberId}/terms`);
 }
 
@@ -75,12 +55,6 @@ export async function getAttendance(params: {
   memberId: string;
   termId: number;
 }): Promise<AttendanceRecord | null> {
-  if (useMock) {
-    return (
-      mockAttendance.find((a) => a.memberId === params.memberId && a.termId === params.termId) ??
-      null
-    );
-  }
   return fetchApi(`/api/attendance?memberId=${params.memberId}&termId=${params.termId}`);
 }
 
@@ -88,7 +62,6 @@ export async function getAbsenceDetails(params: {
   memberId: string;
   termId: number;
 }): Promise<AbsenceDetail[]> {
-  if (useMock) return mockAbsenceDetails[`${params.memberId}_${params.termId}`] ?? [];
   return fetchApi(`/api/attendance/absence?memberId=${params.memberId}&termId=${params.termId}`);
 }
 
@@ -103,23 +76,6 @@ export async function getBills(params: {
   page?: number;
   limit?: number;
 }): Promise<{ bills: Bill[]; total: number }> {
-  if (useMock) {
-    let filtered = [...mockBills];
-    if (params.termId) filtered = filtered.filter((b) => b.termId === params.termId);
-    if (params.memberId)
-      filtered = filtered.filter((b) => b.proposerIds.includes(params.memberId!));
-    if (params.status) filtered = filtered.filter((b) => b.status === params.status);
-    if (params.month) filtered = filtered.filter((b) => b.proposedDate.startsWith(params.month!));
-    if (params.search) {
-      const q = params.search.toLowerCase();
-      filtered = filtered.filter((b) => b.title.toLowerCase().includes(q));
-    }
-    const total = filtered.length;
-    const page = params.page ?? 1;
-    const limit = params.limit ?? 20;
-    const start = (page - 1) * limit;
-    return { bills: filtered.slice(start, start + limit), total };
-  }
   const searchParams = new URLSearchParams();
   if (params.termId) searchParams.set("termId", String(params.termId));
   if (params.memberId) searchParams.set("memberId", params.memberId);
@@ -134,43 +90,14 @@ export async function getBills(params: {
 }
 
 export async function getBillSummary(termId: number): Promise<BillSummary> {
-  if (useMock) {
-    const filtered = mockBills.filter((b) => b.termId === termId);
-    return {
-      total: filtered.length,
-      passed: filtered.filter((b) => b.status === "passed").length,
-      pending: filtered.filter((b) => b.status === "pending").length,
-      discarded: filtered.filter((b) => b.status === "discarded").length,
-      committee: filtered.filter((b) => b.status === "committee").length,
-    };
-  }
   return fetchApi(`/api/bills/summary?termId=${termId}`);
 }
 
 export async function getBillCommittees(termId: number): Promise<string[]> {
-  if (useMock) {
-    return [...new Set(mockBills.filter((b) => b.committee).map((b) => b.committee!))].sort();
-  }
   return fetchApi(`/api/bills/committees?termId=${termId}`);
 }
 
 export async function getMemberHistory(memberId: string): Promise<TermActivity[]> {
-  if (useMock) {
-    const memberTerms = mockMemberTerms.filter((mt) => mt.memberId === memberId);
-    return memberTerms.map((mt) => {
-      const att = mockAttendance.find((a) => a.memberId === memberId && a.termId === mt.termId);
-      const bills = mockBills.filter(
-        (b) => b.proposerIds.includes(memberId) && b.termId === mt.termId,
-      );
-      return {
-        termId: mt.termId,
-        termName: `제${mt.termId}대`,
-        attendanceRate: att?.rate ?? 0,
-        billsProposed: bills.length,
-        billsPassed: bills.filter((b) => b.status === "passed").length,
-      };
-    });
-  }
   return fetchApi(`/api/members/${memberId}/history`);
 }
 
@@ -182,21 +109,6 @@ export async function getVotes(params: {
   page?: number;
   limit?: number;
 }): Promise<{ votes: Vote[]; total: number }> {
-  if (useMock) {
-    let filtered = [...mockVotes];
-    if (params.termId) filtered = filtered.filter((v) => v.termId === params.termId);
-    if (params.resultCode) filtered = filtered.filter((v) => v.resultCode === params.resultCode);
-    if (params.month) filtered = filtered.filter((v) => v.procDate.startsWith(params.month!));
-    if (params.search) {
-      const q = params.search.toLowerCase();
-      filtered = filtered.filter((v) => v.billName.toLowerCase().includes(q));
-    }
-    const total = filtered.length;
-    const page = params.page ?? 1;
-    const limit = params.limit ?? 20;
-    const start = (page - 1) * limit;
-    return { votes: filtered.slice(start, start + limit), total };
-  }
   const searchParams = new URLSearchParams();
   if (params.termId) searchParams.set("termId", String(params.termId));
   if (params.resultCode) searchParams.set("resultCode", params.resultCode);
@@ -208,7 +120,6 @@ export async function getVotes(params: {
 }
 
 export async function getVoteSummary(termId: number): Promise<VoteSummary> {
-  if (useMock) return mockVoteSummary;
   return fetchApi(`/api/votes/summary?termId=${termId}`);
 }
 
@@ -220,7 +131,6 @@ export async function getMemberVotes(params: {
   result?: string;
   month?: string;
 }): Promise<MemberVotesResponse> {
-  if (useMock) return mockMemberVotesResponse;
   const searchParams = new URLSearchParams();
   searchParams.set("termId", String(params.termId));
   if (params.page) searchParams.set("page", String(params.page));
@@ -234,7 +144,6 @@ export async function getMonthlyAttendance(params: {
   memberId: string;
   termId: number;
 }): Promise<MonthlyAttendance[]> {
-  if (useMock) return [];
   return fetchApi(`/api/members/${params.memberId}/monthly-attendance?termId=${params.termId}`);
 }
 
@@ -242,7 +151,6 @@ export async function getCommitteeBills(params: {
   memberId: string;
   termId: number;
 }): Promise<CommitteeBillCount[]> {
-  if (useMock) return [];
   return fetchApi(`/api/members/${params.memberId}/committee-bills?termId=${params.termId}`);
 }
 
@@ -250,49 +158,26 @@ export async function getCommitteeActivity(params: {
   memberId: string;
   termId: number;
 }): Promise<CommitteeActivity[]> {
-  if (useMock) return [];
   return fetchApi(`/api/members/${params.memberId}/committee-activity?termId=${params.termId}`);
 }
 
 export async function getAssets(memberId: string): Promise<AssetResponse> {
-  if (useMock) return mockAssetResponse;
   return fetchApi(`/api/members/${memberId}/assets`);
 }
 
 export async function getBill(id: string): Promise<BillDetail | null> {
-  if (useMock) return mockBillDetail;
   return fetchApi(`/api/bills/${id}`);
 }
 
 export async function getVoteMemberVotes(voteId: string): Promise<VoteWithMemberVotes | null> {
-  if (useMock) return mockVoteWithMemberVotes;
   return fetchApi(`/api/votes/${voteId}/member-votes`);
 }
 
 export async function getHomeStats(termId: number): Promise<HomeStats> {
-  if (useMock) {
-    const bills = mockBills.filter((b) => b.termId === termId);
-    const votes = mockVotes.filter((v) => v.termId === termId);
-    return {
-      memberCount: 300,
-      billCount: bills.length,
-      voteCount: votes.length,
-      avgAttendanceRate: 92.5,
-      recentVotes: votes.slice(0, 3),
-      recentBills: bills.slice(0, 3),
-      closeVotes: votes
-        .filter((v) => v.noCount > 0)
-        .sort((a, b) => Math.abs(a.yesCount - a.noCount) - Math.abs(b.yesCount - b.noCount))
-        .slice(0, 3),
-      topProposers: [],
-      rejectedVotes: votes.filter((v) => v.resultCode === "rejected").slice(0, 3),
-    };
-  }
   return fetchApi(`/api/stats/home?termId=${termId}`);
 }
 
 export async function getUpcomingSchedules(termId: number): Promise<Schedule[]> {
-  if (useMock) return [];
   return fetchApi(`/api/schedules/upcoming?termId=${termId}`);
 }
 
@@ -302,7 +187,6 @@ export async function getSchedules(params: {
   page?: number;
   limit?: number;
 }): Promise<{ schedules: Schedule[]; total: number }> {
-  if (useMock) return { schedules: [], total: 0 };
   const searchParams = new URLSearchParams();
   searchParams.set("termId", String(params.termId));
   if (params.type) searchParams.set("type", params.type);

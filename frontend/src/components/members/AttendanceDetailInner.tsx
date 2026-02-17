@@ -310,18 +310,18 @@ export default function AttendanceDetailInner({ id, termId }: AttendanceDetailIn
             ))}
           </div>
 
-          <div className="flex items-center justify-between">
+          <div className="flex items-baseline justify-between">
             <p className="text-sm text-(--color-text-tertiary)">
               {votesLoading
                 ? "\u00A0"
                 : `${selectedResult ? MEMBER_VOTE_RESULT_MAP[selectedResult].label : "전체"} ${(votesData?.total ?? 0).toLocaleString()}건`}
             </p>
             {!votesLoading && votesByDate.length > 1 && (
-              <div className="flex gap-2">
+              <div className="flex items-baseline gap-2">
                 <button
                   type="button"
                   onClick={expandAll}
-                  className="text-xs text-(--color-text-tertiary) hover:text-(--color-text-secondary)"
+                  className="min-h-0 min-w-0 text-xs text-(--color-text-tertiary) hover:text-(--color-text-secondary)"
                 >
                   모두 펼치기
                 </button>
@@ -329,7 +329,7 @@ export default function AttendanceDetailInner({ id, termId }: AttendanceDetailIn
                 <button
                   type="button"
                   onClick={collapseAll}
-                  className="text-xs text-(--color-text-tertiary) hover:text-(--color-text-secondary)"
+                  className="min-h-0 min-w-0 text-xs text-(--color-text-tertiary) hover:text-(--color-text-secondary)"
                 >
                   모두 접기
                 </button>
