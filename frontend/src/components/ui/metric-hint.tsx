@@ -11,14 +11,26 @@ export default function MetricHint({ text }: MetricHintProps) {
   const [open, setOpen] = useState(false);
   const btnRef = useRef<HTMLButtonElement>(null);
   const tooltipRef = useRef<HTMLSpanElement>(null);
-  const [pos, setPos] = useState<{ top: number; left: number } | null>(null);
+  const [pos, setPos] = useState<{
+    top: number;
+    left: number;
+    width: number;
+    arrowOffset: number;
+  } | null>(null);
 
   const updatePosition = useCallback(() => {
     if (!btnRef.current) return;
     const rect = btnRef.current.getBoundingClientRect();
+    const centerX = rect.left + rect.width / 2;
+    const pad = 12;
+    const tooltipW = Math.min(224, window.innerWidth - pad * 2);
+    const halfW = tooltipW / 2;
+    const clampedLeft = Math.max(pad + halfW, Math.min(centerX, window.innerWidth - pad - halfW));
     setPos({
       top: rect.top - 8,
-      left: rect.left + rect.width / 2,
+      left: clampedLeft,
+      width: tooltipW,
+      arrowOffset: centerX - clampedLeft,
     });
   }, []);
 
@@ -51,7 +63,7 @@ export default function MetricHint({ text }: MetricHintProps) {
         ref={btnRef}
         type="button"
         onClick={() => setOpen((v) => !v)}
-        className="ml-0.5 inline-flex size-4 shrink-0 cursor-pointer items-center justify-center rounded-full bg-(--color-bg-tertiary) text-[10px] leading-none font-bold text-(--color-text-tertiary) transition-colors hover:bg-(--color-bg-hover) hover:text-(--color-text-secondary)"
+        className="ml-0.5 inline-flex size-3.5! min-h-0! min-w-0! shrink-0 cursor-pointer items-center justify-center rounded-full bg-(--color-bg-tertiary) text-[9px] leading-none font-bold text-(--color-text-tertiary) transition-colors hover:bg-(--color-bg-hover) hover:text-(--color-text-secondary)"
         aria-label="지표 설명"
       >
         ?
@@ -62,15 +74,19 @@ export default function MetricHint({ text }: MetricHintProps) {
           <span
             ref={tooltipRef}
             role="tooltip"
-            className="fixed z-9999 w-56 rounded-lg bg-(--color-text-primary) px-3 py-2 text-xs leading-relaxed font-normal text-(--color-bg-primary) shadow-lg"
+            className="fixed z-9999 rounded-lg bg-(--color-text-primary) px-3 py-2 text-xs leading-relaxed font-normal text-(--color-bg-primary) shadow-lg"
             style={{
               top: pos.top,
               left: pos.left,
+              width: pos.width,
               transform: "translate(-50%, -100%)",
             }}
           >
             {text}
-            <span className="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-(--color-text-primary)" />
+            <span
+              className="absolute top-full border-4 border-transparent border-t-(--color-text-primary)"
+              style={{ left: `calc(50% + ${pos.arrowOffset}px)`, transform: "translateX(-50%)" }}
+            />
           </span>,
           document.body,
         )}
