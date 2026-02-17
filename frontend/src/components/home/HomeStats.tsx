@@ -3,6 +3,8 @@
 import Link from "next/link";
 import { useCongressSuspenseQuery } from "@/hooks/useCongressQuery";
 import { getHomeStats } from "@/lib/api";
+import MetricHint from "@/components/ui/metric-hint";
+import { METRIC_DEFINITIONS } from "@/constants/metrics";
 
 interface HomeStatsProps {
   termId: number;
@@ -36,6 +38,7 @@ const statCards = [
     unit: "%",
     color: "text-amber-600",
     href: "",
+    hint: METRIC_DEFINITIONS.attendanceRate,
   },
 ];
 
@@ -51,7 +54,10 @@ export default function HomeStats({ termId }: HomeStatsProps) {
               {data[card.key].toLocaleString()}
               <span className="ml-0.5 text-sm font-medium">{card.unit}</span>
             </p>
-            <p className="mt-1 text-sm text-(--color-text-tertiary)">{card.label}</p>
+            <p className="mt-1 text-sm text-(--color-text-tertiary)">
+              {card.label}
+              {"hint" in card && card.hint && <MetricHint text={card.hint} />}
+            </p>
           </>
         );
 

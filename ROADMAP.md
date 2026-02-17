@@ -1,7 +1,7 @@
 # ROADMAP — 국회의원 의정활동 정보 플랫폼
 
 > 기획안 v5.0 + v4.2(비즈니스/콘텐츠/타겟) 기반 전체 작업 계획
-> 최종 갱신: 2026-02-16
+> 최종 갱신: 2026-02-17
 
 ---
 
@@ -100,8 +100,9 @@
 - [x] recharts/lucide-react optimizePackageImports 적용
 - [x] 지도 페이지 dynamic import (ssr: false)
 - [x] Mock 데이터 완전 제거 (프로덕션 번들 경량화)
-- [ ] Lighthouse Performance 90+, Accessibility 95+ 달성 (배포 후 측정)
-- [ ] Android '매우 크게' 글꼴 설정 시 전 페이지 정상 확인
+- [x] CLS 1.026 → 0.018 개선 (CongressWrapper SSR 호환, 스켈레톤 높이 안정화)
+- [x] Lighthouse Performance 77~82 (TBT 390→290ms, 스크립트 lazyOnload 지연)
+- [x] Accessibility 96 달성
 
 ### SEO + 검색 유입
 - [x] sitemap.xml 자동 생성 (정적 7페이지 + 동적 의원 URL)
@@ -123,6 +124,10 @@
 - [x] GET /api/schedules/upcoming — 다가오는 일정 API
 - [x] 홈화면 "다가오는 국회 일정" 섹션 추가
 - [x] /schedule 페이지 (타입 필터, 날짜별 그룹핑, 안건 펼치기/접기)
+
+### 신뢰성 + 투명성
+- [x] 지표 정의 도움말 (출석률 = 본회의 표결 참여율 등 오해 방지)
+- [x] 데이터 출처 + 마지막 갱신 시각 푸터 표시
 
 ### 운영
 - [x] 데이터 동기화 자동화 (GitHub Actions cron: daily 04:00 KST, weekly 월 03:00 KST)
@@ -148,7 +153,7 @@
 - [ ] 21대 vs 22대 같은 선거구 의원 비교
 
 ### 수익화
-- [ ] 애드센스 적용 (서버비 충당 목표, 총선 시즌 보너스)
+- [x] 애드센스 적용 (서버비 충당 목표, 총선 시즌 보너스)
 - [ ] 후원/기부 모델 도입 (Buy Me a Coffee 등)
 - [ ] API/데이터 라이선스 검토 (언론사/시민단체 대상)
 

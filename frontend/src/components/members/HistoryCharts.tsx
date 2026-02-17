@@ -1,6 +1,8 @@
 "use client";
 
 import BarChart from "@/components/charts/BarChart";
+import MetricHint from "@/components/ui/metric-hint";
+import { METRIC_DEFINITIONS } from "@/constants/metrics";
 import type { TermActivity } from "@/types";
 
 interface HistoryChartsProps {
@@ -22,7 +24,10 @@ export default function HistoryCharts({ activities }: HistoryChartsProps) {
   return (
     <div className="space-y-8">
       <section>
-        <h3 className="mb-3 text-lg font-bold">출석률 비교</h3>
+        <h3 className="mb-3 text-lg font-bold">
+          출석률 비교
+          <MetricHint text={METRIC_DEFINITIONS.attendanceRate} />
+        </h3>
         <BarChart
           data={attendanceData}
           xKey="term"

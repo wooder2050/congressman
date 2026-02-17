@@ -3,6 +3,8 @@
 import { useQueries } from "@tanstack/react-query";
 import { getAttendance, getBills, getMemberVotes } from "@/lib/api";
 import { formatPercent } from "@/lib/utils";
+import MetricHint from "@/components/ui/metric-hint";
+import { METRIC_DEFINITIONS } from "@/constants/metrics";
 import type { MemberWithTerm, AttendanceRecord, MemberVotesResponse } from "@/types";
 
 interface CompareChartsProps {
@@ -71,7 +73,7 @@ export default function CompareCharts({ members, termId }: CompareChartsProps) {
 
   return (
     <div className="space-y-6">
-      <CompareBarSection title="출석률" unit="%">
+      <CompareBarSection title="출석률" unit="%" hint={METRIC_DEFINITIONS.attendanceRate}>
         {attendanceData.map((d) => (
           <CompareBar
             key={d.member.id}
@@ -123,16 +125,19 @@ export default function CompareCharts({ members, termId }: CompareChartsProps) {
 function CompareBarSection({
   title,
   unit,
+  hint,
   children,
 }: {
   title: string;
   unit?: string;
+  hint?: string;
   children: React.ReactNode;
 }) {
   return (
     <div className="rounded-xl border border-(--color-border-primary) p-4">
       <h3 className="mb-3 text-sm font-semibold text-(--color-text-tertiary)">
         {title}
+        {hint && <MetricHint text={hint} />}
         {unit && <span className="ml-1 font-normal">({unit})</span>}
       </h3>
       <div className="space-y-3">{children}</div>

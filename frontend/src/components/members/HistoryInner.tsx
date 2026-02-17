@@ -7,6 +7,8 @@ import { getMember, getMemberHistory, getMemberTerms } from "@/lib/api";
 import HistoryCharts from "./HistoryCharts";
 import ColorBadge from "@/components/ui/color-badge";
 import { formatPercent, formatDistrict } from "@/lib/utils";
+import MetricHint from "@/components/ui/metric-hint";
+import { METRIC_DEFINITIONS } from "@/constants/metrics";
 
 interface HistoryInnerProps {
   id: string;
@@ -69,7 +71,10 @@ export default function HistoryInner({ id, termId }: HistoryInnerProps) {
                         <p className="text-lg font-bold">
                           {formatPercent(activity.attendanceRate)}
                         </p>
-                        <p className="text-xs text-(--color-text-tertiary)">출석률</p>
+                        <p className="text-xs text-(--color-text-tertiary)">
+                          출석률
+                          <MetricHint text={METRIC_DEFINITIONS.attendanceRate} />
+                        </p>
                       </div>
                       <div className="p-2">
                         <p className="text-lg font-bold">{activity.billsProposed}건</p>

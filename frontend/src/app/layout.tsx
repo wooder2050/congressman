@@ -5,6 +5,7 @@ import Providers from "@/lib/providers";
 import Header from "@/components/layout/Header";
 import TermSelector from "@/components/layout/TermSelector";
 import BottomNav from "@/components/layout/BottomNav";
+import Footer from "@/components/layout/Footer";
 import ScrollToTop from "@/components/layout/ScrollToTop";
 
 const GTM_ID = "GTM-5BXVCW6Z";
@@ -88,6 +89,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
           <main id="main-content" className="mx-auto min-h-screen max-w-7xl px-4 py-4 lg:py-6">
             {children}
           </main>
+          <Footer />
           <BottomNav />
         </Providers>
       </body>
