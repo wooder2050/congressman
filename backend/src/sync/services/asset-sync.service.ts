@@ -79,8 +79,14 @@ export class AssetSyncService {
         // 파일명에서 대수 힌트 추출: assets_2024_22nd.csv → 22
         const termHintMatch = file.match(/(\d{1,2})(?:st|nd|rd|th)/);
         // 대수 힌트가 없으면 연도로 추정
-        // 재산 공개는 3월이므로 2024년 파일(대수 미지정)은 21대 임기 중 공개분
-        const fileTerm = termHintMatch ? parseInt(termHintMatch[1], 10) : year <= 2024 ? 21 : 22;
+        // 재산 공개는 3월이므로 해당 연도 파일은 직전 대수 임기 중 공개분
+        const fileTerm = termHintMatch
+          ? parseInt(termHintMatch[1], 10)
+          : year <= 2020
+            ? 20
+            : year <= 2024
+              ? 21
+              : 22;
 
         console.log(`[AssetSync] Processing ${file} (year=${year}, term=${fileTerm ?? 'unknown'})`);
 

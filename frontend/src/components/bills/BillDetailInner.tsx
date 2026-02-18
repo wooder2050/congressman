@@ -91,7 +91,7 @@ export default function BillDetailInner({ id }: BillDetailInnerProps) {
         </div>
       )}
 
-      {bill.proposers.length > 0 &&
+      {bill.proposers.length > 0 ? (
         (() => {
           const reps = bill.proposers.filter((p) => p.role === "representative");
           const coProps = bill.proposers.filter((p) => p.role !== "representative");
@@ -142,7 +142,19 @@ export default function BillDetailInner({ id }: BillDetailInnerProps) {
               )}
             </div>
           );
-        })()}
+        })()
+      ) : (
+        <div className="rounded-xl border border-(--color-border-primary) bg-(--color-bg-primary) p-5">
+          <h2 className="text-lg font-bold">발의자 정보</h2>
+          <p className="mt-2 text-sm text-(--color-text-tertiary)">
+            {bill.proposerName?.includes("위원장")
+              ? "위원회 대안으로 발의된 법안으로, 개별 발의자 정보가 없습니다."
+              : bill.proposerName === "정부"
+                ? "정부 제출 법안으로, 개별 발의자 정보가 없습니다."
+                : "이 법안의 개별 발의자 정보가 제공되지 않습니다."}
+          </p>
+        </div>
+      )}
     </div>
   );
 }

@@ -16,13 +16,16 @@ function TermSelectorInner() {
   const searchParams = useSearchParams();
   const currentTerm = searchParams.get("term") || "22";
 
-  // 의원 상세 페이지(/members/[id], /members/[id]/history 등)에서는 숨김
+  // 상세 페이지에서는 숨김 (의원/법안/표결 — 대수 전환이 의미 없음)
   const isMemberDetail = /^\/members\/[^/]+/.test(pathname) && pathname !== "/members";
-  if (isMemberDetail) return null;
+  const isBillDetail = /^\/bills\/[^/]+/.test(pathname) && pathname !== "/bills";
+  const isVoteDetail = /^\/votes\/[^/]+/.test(pathname) && pathname !== "/votes";
+  if (isMemberDetail || isBillDetail || isVoteDetail) return null;
 
   const terms = [
     { id: "22", label: "제22대 (현재)" },
     { id: "21", label: "제21대" },
+    { id: "20", label: "제20대" },
   ];
 
   const handleChange = (value: string) => {
