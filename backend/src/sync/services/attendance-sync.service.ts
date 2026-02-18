@@ -4,11 +4,13 @@ import { SyncLogService } from './sync-log.service';
 /**
  * MemberVote 데이터에서 출석 통계를 계산하여 Attendance 테이블에 저장.
  * 국회 출석 전용 API가 없으므로, 본회의 표결 참여 데이터를 기반으로 계산:
- *   - totalSessions = 해당 대수의 전체 표결 수
+ *   - totalSessions = attended + absent (해당 의원의 MemberVote 건수)
  *   - attended = yes + no + abstain (투표에 참여한 횟수)
  *   - absent = absent (불참)
  *   - leave / travel = 0 (API에서 구분 불가)
  *   - rate = attended / totalSessions * 100
+ *
+ * totalSessions를 의원별로 계산하여 보궐/승계 의원도 정확한 출석률 산출.
  */
 export class AttendanceSyncService {
   constructor(
@@ -70,12 +72,13 @@ export class AttendanceSyncService {
         const row = statsMap.get(memberId);
         const attended = row ? Number(row.yes) + Number(row.no) + Number(row.abstain) : 0;
         const absent = row ? Number(row.absent) : 0;
-        const rate = totalVotes > 0 ? Math.round((attended / totalVotes) * 10000) / 100 : 0;
+        const memberTotal = attended + absent;
+        const rate = memberTotal > 0 ? Math.round((attended / memberTotal) * 10000) / 100 : 0;
 
         await this.prisma.attendance.upsert({
           where: { memberId_termId: { memberId, termId } },
           update: {
-            totalSessions: totalVotes,
+            totalSessions: memberTotal,
             attended,
             absent,
             leave: 0,
@@ -85,7 +88,7 @@ export class AttendanceSyncService {
           create: {
             memberId,
             termId,
-            totalSessions: totalVotes,
+            totalSessions: memberTotal,
             attended,
             absent,
             leave: 0,
