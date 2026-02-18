@@ -174,7 +174,9 @@ export class AssetSyncService {
 
           // 현재가액 사용 (천원 단위)
           const amountStr = (row['현재가액'] ?? '0').replace(/,/g, '').trim();
-          const amount = BigInt(Math.round(parseFloat(amountStr) || 0));
+          let amount = BigInt(Math.round(parseFloat(amountStr) || 0));
+          // 채무는 항상 음수로 저장 (CSV 연도별로 부호가 다를 수 있음)
+          if (category === '채무' && amount > 0n) amount = -amount;
 
           const relation = (row['본인과의 관계'] ?? '').trim() || '본인';
 

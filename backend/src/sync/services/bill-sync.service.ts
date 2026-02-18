@@ -18,6 +18,7 @@ interface BillApiRow {
 }
 
 const BATCH_SIZE = 500;
+const UPDATE_BATCH_SIZE = 50;
 
 export class BillSyncService {
   constructor(
@@ -53,31 +54,97 @@ export class BillSyncService {
   }
 
   private async batchUpsertBills(rows: BillApiRow[], termId: number): Promise<void> {
-    // Delete existing bills for this term and re-insert in bulk
-    // This is much faster than 15,000 individual upserts over network
-    console.log(`[BillSync] Deleting existing BillProposers and Bills for term ${termId}...`);
+    // Upsert 패턴: 기존 summary, pdfBookId, detailLink를 보존하면서 기본 정보만 갱신
+    console.log(`[BillSync] Upserting ${rows.length} bills in batches of ${BATCH_SIZE}...`);
+
+    // 기존 법안 ID 목록으로 신규/기존 구분
+    const existingBills = await this.prisma.bill.findMany({
+      where: { termId },
+      select: { id: true },
+    });
+    const existingIds = new Set(existingBills.map((b) => b.id));
+
+    const newRows: BillApiRow[] = [];
+    const updateRows: BillApiRow[] = [];
+    for (const row of rows) {
+      if (existingIds.has(row.BILL_ID)) {
+        updateRows.push(row);
+      } else {
+        newRows.push(row);
+      }
+    }
+
+    // 신규 법안: createMany (빠름)
+    if (newRows.length > 0) {
+      console.log(`[BillSync]   Creating ${newRows.length} new bills...`);
+      for (let i = 0; i < newRows.length; i += BATCH_SIZE) {
+        const batch = newRows.slice(i, i + BATCH_SIZE);
+        const data = batch.map((row) => ({
+          id: row.BILL_ID,
+          title: row.BILL_NAME,
+          proposerName: row.RST_PROPOSER ?? this.extractProposerName(row.PROPOSER),
+          coProposerCount: this.extractCoProposerCount(row.PROPOSER),
+          status: this.mapStatus(row.PROC_RESULT),
+          proposedDate: this.normalizeDate(row.PROPOSE_DT),
+          termId,
+          committee: row.COMMITTEE || null,
+        }));
+        await this.prisma.bill.createMany({ data, skipDuplicates: true });
+      }
+    }
+
+    // 기존 법안: update (summary/pdfBookId/detailLink 보존, UPDATE_BATCH_SIZE 단위 순차 처리)
+    if (updateRows.length > 0) {
+      console.log(`[BillSync]   Updating ${updateRows.length} existing bills...`);
+      for (let i = 0; i < updateRows.length; i += UPDATE_BATCH_SIZE) {
+        const batch = updateRows.slice(i, i + UPDATE_BATCH_SIZE);
+        for (const row of batch) {
+          await this.prisma.bill.update({
+            where: { id: row.BILL_ID },
+            data: {
+              title: row.BILL_NAME,
+              proposerName: row.RST_PROPOSER ?? this.extractProposerName(row.PROPOSER),
+              coProposerCount: this.extractCoProposerCount(row.PROPOSER),
+              status: this.mapStatus(row.PROC_RESULT),
+              proposedDate: this.normalizeDate(row.PROPOSE_DT),
+              committee: row.COMMITTEE || null,
+            },
+          });
+        }
+        if ((i + UPDATE_BATCH_SIZE) % 500 < UPDATE_BATCH_SIZE) {
+          console.log(
+            `[BillSync]   Bills: ${Math.min(i + UPDATE_BATCH_SIZE, updateRows.length)}/${updateRows.length}`,
+          );
+        }
+      }
+    }
+
+    // P1: API 응답에 없는 stale bill 정리 (철회·삭제된 법안)
+    const apiIds = new Set(rows.map((r) => r.BILL_ID));
+    const staleIds = [...existingIds].filter((id) => !apiIds.has(id));
+    if (staleIds.length > 0) {
+      const staleRatio = staleIds.length / existingIds.size;
+      if (staleRatio > 0.05) {
+        // 5% 초과 삭제는 API 응답 이상으로 판단 → 삭제 스킵
+        console.warn(
+          `[BillSync]   ⚠ Skipping stale bill removal: ${staleIds.length}/${existingIds.size} (${(staleRatio * 100).toFixed(1)}%) exceeds 5% threshold`,
+        );
+      } else {
+        console.log(`[BillSync]   Removing ${staleIds.length} stale bills...`);
+        await this.prisma.billProposer.deleteMany({
+          where: { billId: { in: staleIds } },
+        });
+        await this.prisma.bill.deleteMany({
+          where: { id: { in: staleIds } },
+        });
+      }
+    }
+
+    // BillProposer는 매번 재구축 (발의자 변경 반영)
+    console.log(`[BillSync]   Rebuilding proposer links...`);
     await this.prisma.billProposer.deleteMany({
       where: { bill: { termId } },
     });
-    await this.prisma.bill.deleteMany({ where: { termId } });
-
-    console.log(`[BillSync] Inserting ${rows.length} bills in batches of ${BATCH_SIZE}...`);
-    for (let i = 0; i < rows.length; i += BATCH_SIZE) {
-      const batch = rows.slice(i, i + BATCH_SIZE);
-      const data = batch.map((row) => ({
-        id: row.BILL_ID,
-        title: row.BILL_NAME,
-        proposerName: row.RST_PROPOSER ?? this.extractProposerName(row.PROPOSER),
-        coProposerCount: this.extractCoProposerCount(row.PROPOSER),
-        status: this.mapStatus(row.PROC_RESULT),
-        proposedDate: this.normalizeDate(row.PROPOSE_DT),
-        termId,
-        committee: row.COMMITTEE || null,
-      }));
-
-      await this.prisma.bill.createMany({ data, skipDuplicates: true });
-      console.log(`[BillSync]   Bills: ${Math.min(i + BATCH_SIZE, rows.length)}/${rows.length}`);
-    }
   }
 
   private async batchLinkProposers(rows: BillApiRow[], termId: number): Promise<void> {
