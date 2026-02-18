@@ -34,12 +34,9 @@ export default async function OgImage({ params }: { params: Promise<{ id: string
   const partyColor = currentTerm?.party.color ?? "#6B7280";
   const partyName = currentTerm?.party.name ?? "";
   const district = currentTerm?.district ?? "";
+  const electedCount = currentTerm?.electedCount ?? member.electedCount;
   const electedLabel =
-    member.electedCount === 1
-      ? "초선"
-      : member.electedCount === 2
-        ? "재선"
-        : `${member.electedCount}선`;
+    electedCount === 1 ? "초선" : electedCount === 2 ? "재선" : `${electedCount}선`;
 
   let fontData: ArrayBuffer | null = null;
   try {

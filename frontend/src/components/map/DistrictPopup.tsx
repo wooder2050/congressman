@@ -4,7 +4,7 @@ import Link from "next/link";
 import MemberAvatar from "@/components/members/MemberAvatar";
 import ColorBadge from "@/components/ui/color-badge";
 import { DISTRICT_MAP } from "@/lib/geo/district-mapping";
-import { formatDistrict } from "@/lib/utils";
+import { formatDistrict, getElectedLabel } from "@/lib/utils";
 import type { MemberWithTerm } from "@/types";
 
 interface DistrictPopupProps {
@@ -48,10 +48,11 @@ export default function DistrictPopup({ sidoSgg, member, onClose }: DistrictPopu
                   <ColorBadge label={member.term.party.shortName} color={member.term.party.color} />
                 </div>
                 <p className="text-sm text-(--color-text-secondary)">
-                  {member.electedCount}선 · {formatDistrict(member.term.district)}
+                  {getElectedLabel(member.term.electedCount)} ·{" "}
+                  {formatDistrict(member.term.district)}
                 </p>
                 <Link
-                  href={`/members/${member.id}`}
+                  href={`/members/${member.id}?term=${member.term.termId}`}
                   className="mt-2 inline-block text-sm font-semibold text-(--color-primary) no-underline"
                 >
                   상세 보기 →

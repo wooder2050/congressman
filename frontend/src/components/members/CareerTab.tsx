@@ -2,7 +2,10 @@
 
 interface CareerTabProps {
   career: string | null | undefined;
+  termId?: number;
 }
+
+const CURRENT_TERM = 22;
 
 function decodeHtmlEntities(text: string): string {
   return text
@@ -54,10 +57,16 @@ function parseCareer(raw: string): CareerSection[] {
   return sections;
 }
 
-export default function CareerTab({ career }: CareerTabProps) {
+export default function CareerTab({ career, termId }: CareerTabProps) {
   if (!career) {
+    const isPastTerm = termId !== undefined && termId < CURRENT_TERM;
     return (
-      <div className="py-8 text-center text-(--color-text-tertiary)">경력 정보가 없습니다.</div>
+      <div className="py-8 text-center text-(--color-text-tertiary)">
+        <p>경력 정보가 없습니다.</p>
+        {isPastTerm && (
+          <p className="mt-2 text-xs">역대 국회의원의 경력 정보는 국회에서 제공하지 않습니다.</p>
+        )}
+      </div>
     );
   }
 

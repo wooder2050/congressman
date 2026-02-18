@@ -24,7 +24,7 @@ export default async function SchedulePage({ searchParams }: SchedulePageProps) 
           본회의 및 위원회 일정을 확인하세요.
         </p>
       </div>
-      <CongressWrapper fallback={<ScheduleListSkeleton />}>
+      <CongressWrapper key={termId} fallback={<ScheduleListSkeleton />}>
         <ScheduleListInner termId={termId} />
       </CongressWrapper>
     </div>

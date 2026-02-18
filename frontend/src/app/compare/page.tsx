@@ -25,7 +25,7 @@ export default async function ComparePage({ searchParams }: ComparePageProps) {
           의원의 의정활동을 나란히 비교해보세요.
         </p>
       </div>
-      <CongressWrapper fallback={<CompareSkeleton />}>
+      <CongressWrapper key={termId} fallback={<CompareSkeleton />}>
         <CompareInner termId={termId} initialMemberIds={initialMemberIds} />
       </CongressWrapper>
     </div>

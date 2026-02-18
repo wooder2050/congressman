@@ -8,6 +8,7 @@ import { getMemberVotes } from "@/lib/api";
 import { Button } from "@/components/ui/button";
 import ColorBadge from "@/components/ui/color-badge";
 import DonutChart from "@/components/charts/DonutChart";
+import { VotesTabSkeleton } from "@/components/skeletons/TabSkeleton";
 import { formatDate } from "@/lib/utils";
 import { MEMBER_VOTE_RESULT_MAP, VOTE_RESULT_MAP } from "@/lib/constants";
 import type { MemberVoteResult, MemberVoteRecord } from "@/types";
@@ -67,7 +68,10 @@ export default function VotesTab({ memberId, termId }: VotesTabProps) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [data]);
 
-  if (!data || summary.total === 0) {
+  // 초기 로딩 중에는 스켈레톤 표시 (데이터 도착 전 "없습니다" 깜빡임 방지)
+  if (!data) return <VotesTabSkeleton />;
+
+  if (summary.total === 0) {
     return (
       <div className="py-8 text-center text-(--color-text-tertiary)">표결 이력이 없습니다.</div>
     );

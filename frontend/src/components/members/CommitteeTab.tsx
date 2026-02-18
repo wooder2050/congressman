@@ -4,7 +4,7 @@ import { useCongressSuspenseQuery } from "@/hooks/useCongressQuery";
 import { getCommitteeBills, getCommitteeActivity, getMemberTerms } from "@/lib/api";
 import BarChart from "@/components/charts/BarChart";
 import { MEMBER_VOTE_RESULT_MAP } from "@/lib/constants";
-import type { CommitteeActivity } from "@/types";
+import type { CommitteeActivity, CommitteeHistoryEntry } from "@/types";
 
 interface CommitteeTabProps {
   memberId: string;
@@ -31,6 +31,48 @@ const ROLE_INFO: Record<string, { label: string; description: string; color: str
 
 const isSpecialCommittee = (name: string) => name.includes("특별위원회");
 
+/** 날짜 포맷: "2020.07.06" → "2020.07" */
+function formatPeriod(start: string, end: string | null): string {
+  const s = start.slice(0, 7).replace(".", ".");
+  if (!end) return `${s} ~ 현재`;
+  const e = end.slice(0, 7).replace(".", ".");
+  return `${s} ~ ${e}`;
+}
+
+/** 대수별 임기 시작연도 (국회 대수와 연도는 선형 관계가 아님) */
+const TERM_START_YEAR: Record<number, number> = {
+  21: 2020,
+  22: 2024,
+};
+
+/**
+ * 위원회 이력을 전반기/후반기로 그룹화.
+ * 임기 시작 후 약 2년을 기준으로 분류.
+ * 21대: 2020.05.30 ~ 2024.05.29 → 전반기 ~2022.05, 후반기 2022.06~
+ * 22대: 2024.05.30 ~ 2028.05.29 → 전반기 ~2026.05, 후반기 2026.06~
+ */
+function groupByHalf(
+  history: CommitteeHistoryEntry[],
+  termId: number,
+): { first: CommitteeHistoryEntry[]; second: CommitteeHistoryEntry[] } {
+  const startYear = TERM_START_YEAR[termId];
+  if (!startYear) return { first: history, second: [] };
+  const midpoint = `${startYear + 2}.06.01`;
+
+  const first: CommitteeHistoryEntry[] = [];
+  const second: CommitteeHistoryEntry[] = [];
+
+  for (const entry of history) {
+    if (entry.startDate < midpoint) {
+      first.push(entry);
+    } else {
+      second.push(entry);
+    }
+  }
+
+  return { first, second };
+}
+
 export default function CommitteeTab({ memberId, termId }: CommitteeTabProps) {
   const { data: committeeBills } = useCongressSuspenseQuery(getCommitteeBills, {
     memberId,
@@ -43,12 +85,19 @@ export default function CommitteeTab({ memberId, termId }: CommitteeTabProps) {
   const { data: memberTerms } = useCongressSuspenseQuery(getMemberTerms, memberId);
   const currentTerm = memberTerms.find((mt) => mt.termId === termId);
   const committees = currentTerm?.committees ?? [];
+  const committeeHistory = currentTerm?.committeeHistory ?? [];
   const committeeRole = currentTerm?.committeeRole ?? "위원";
 
-  const hasCommittees = committees.length > 0;
-  const hasBills = committeeBills.length > 0;
+  // 전체 이력에서 고유 위원회 추출 (활동 카드용)
+  const allCommitteeNames = [
+    ...new Set(committeeHistory.length > 0 ? committeeHistory.map((h) => h.name) : committees),
+  ];
 
-  if (!hasCommittees && !hasBills) {
+  const hasCommittees = allCommitteeNames.length > 0;
+  const hasBills = committeeBills.length > 0;
+  const hasHistory = committeeHistory.length > 0;
+
+  if (!hasCommittees && !hasBills && !hasHistory) {
     return (
       <div className="py-8 text-center text-(--color-text-tertiary)">
         위원회 활동 데이터가 없습니다.
@@ -56,10 +105,13 @@ export default function CommitteeTab({ memberId, termId }: CommitteeTabProps) {
     );
   }
 
-  const standingCommittees = committees.filter((c) => !isSpecialCommittee(c));
-  const specialCommittees = committees.filter(isSpecialCommittee);
+  const standingCommittees = allCommitteeNames.filter((c) => !isSpecialCommittee(c));
+  const specialCommittees = allCommitteeNames.filter(isSpecialCommittee);
   const activityMap = new Map(committeeActivity.map((a) => [a.committee, a]));
   const roleInfo = ROLE_INFO[committeeRole] ?? ROLE_INFO["위원"];
+
+  // 전반기/후반기 그룹화
+  const { first, second } = groupByHalf(committeeHistory, termId);
 
   // 차트 데이터 (상위 10개만)
   const barData = committeeBills.slice(0, 10).map((cb) => ({
@@ -78,6 +130,22 @@ export default function CommitteeTab({ memberId, termId }: CommitteeTabProps) {
           <p className="text-sm text-(--color-text-secondary)">{roleInfo.description}</p>
         </div>
       </div>
+
+      {/* 위원회 이력 (전반기/후반기) */}
+      {hasHistory && (
+        <div>
+          <h3 className="mb-3 text-sm font-semibold text-(--color-text-tertiary)">위원회 이력</h3>
+          <div className="rounded-xl border border-(--color-border-primary) bg-(--color-bg-primary) p-4">
+            <div className="space-y-4">
+              {first.length > 0 && <CommitteeHistorySection label="전반기" entries={first} />}
+              {second.length > 0 && <CommitteeHistorySection label="후반기" entries={second} />}
+              {first.length === 0 && second.length === 0 && committeeHistory.length > 0 && (
+                <CommitteeHistorySection label="" entries={committeeHistory} />
+              )}
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* 상임위원회별 활동 */}
       {standingCommittees.length > 0 && (
@@ -131,6 +199,41 @@ export default function CommitteeTab({ memberId, termId }: CommitteeTabProps) {
           </div>
         </div>
       )}
+    </div>
+  );
+}
+
+function CommitteeHistorySection({
+  label,
+  entries,
+}: {
+  label: string;
+  entries: CommitteeHistoryEntry[];
+}) {
+  const standing = entries.filter((e) => !isSpecialCommittee(e.name));
+  const special = entries.filter((e) => isSpecialCommittee(e.name));
+
+  return (
+    <div>
+      {label && <p className="mb-2 text-xs font-semibold text-(--color-text-tertiary)">{label}</p>}
+      <div className="space-y-1.5">
+        {standing.map((entry, i) => (
+          <div key={`${entry.name}-${i}`} className="flex items-center justify-between text-sm">
+            <span className="font-medium text-(--color-text-primary)">{entry.name}</span>
+            <span className="text-xs text-(--color-text-tertiary)">
+              {formatPeriod(entry.startDate, entry.endDate)}
+            </span>
+          </div>
+        ))}
+        {special.map((entry, i) => (
+          <div key={`${entry.name}-${i}`} className="flex items-center justify-between text-sm">
+            <span className="text-(--color-text-secondary)">{entry.name}</span>
+            <span className="text-xs text-(--color-text-tertiary)">
+              {formatPeriod(entry.startDate, entry.endDate)}
+            </span>
+          </div>
+        ))}
+      </div>
     </div>
   );
 }

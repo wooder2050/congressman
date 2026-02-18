@@ -40,7 +40,7 @@ export default function MemberProfile({ member, memberTerm, allTermIds }: Member
             <div className="mt-1 flex items-center gap-2">
               <ColorBadge label={memberTerm.party.name} color={memberTerm.party.color} />
               <span className="text-sm" style={{ color: contrastColor, opacity: 0.8 }}>
-                {getElectedLabel(member.electedCount)}
+                {getElectedLabel(memberTerm.electedCount)}
               </span>
             </div>
             <p className="mt-1 text-base" style={{ color: contrastColor, opacity: 0.9 }}>
@@ -111,14 +111,39 @@ export default function MemberProfile({ member, memberTerm, allTermIds }: Member
         )}
       </div>
 
-      {/* 역대 활동 링크 */}
+      {/* 대수 전환 + 역대 활동 링크 */}
       {allTermIds.length > 1 && (
-        <Link
-          href={`/members/${member.id}/history?term=${memberTerm.termId}`}
-          className="inline-flex items-center gap-1 rounded-lg bg-(--color-bg-secondary) px-4 py-3 text-base font-semibold text-(--color-primary) no-underline transition-colors hover:bg-(--color-bg-tertiary)"
-        >
-          역대 활동 비교 →
-        </Link>
+        <div className="flex items-center gap-3">
+          <div className="flex gap-2">
+            {allTermIds
+              .sort((a, b) => b - a)
+              .map((t) => {
+                const isActive = t === memberTerm.termId;
+                return isActive ? (
+                  <span
+                    key={t}
+                    className="rounded-lg bg-(--color-primary) px-4 py-2 text-sm font-bold text-(--color-text-inverse)"
+                  >
+                    제{t}대{t === 22 ? " (현재)" : ""}
+                  </span>
+                ) : (
+                  <Link
+                    key={t}
+                    href={`/members/${member.id}?term=${t}`}
+                    className="rounded-lg border border-(--color-border-primary) bg-(--color-bg-secondary) px-4 py-2 text-sm font-medium text-(--color-text-secondary) no-underline transition-colors hover:bg-(--color-bg-tertiary)"
+                  >
+                    제{t}대{t === 22 ? " (현재)" : ""}
+                  </Link>
+                );
+              })}
+          </div>
+          <Link
+            href={`/members/${member.id}/history?term=${memberTerm.termId}`}
+            className="text-sm font-semibold text-(--color-primary) no-underline hover:underline"
+          >
+            역대 비교 →
+          </Link>
+        </div>
       )}
     </div>
   );

@@ -13,6 +13,7 @@ import { AttendanceSyncService } from './services/attendance-sync.service';
 import { AssetSyncService } from './services/asset-sync.service';
 import { BillContentSyncService } from './services/bill-content-sync.service';
 import { ScheduleSyncService } from './services/schedule-sync.service';
+import { CommitteeSyncService } from './services/committee-sync.service';
 
 async function invalidateCache(command: string) {
   const url = process.env.UPSTASH_REDIS_REST_URL;
@@ -51,6 +52,9 @@ async function invalidateCache(command: string) {
   if (command === 'assets') {
     prefixes.push('member:assets:');
   }
+  if (command === 'committees') {
+    prefixes.push('members:', 'member:');
+  }
   if (command === 'schedules') {
     prefixes.push('schedules:');
   }
@@ -84,7 +88,7 @@ async function main() {
   console.log(`[SyncRunner] Running sync: "${command}" for term ${termId}`);
 
   // API 키가 필요 없는 명령은 AssemblyApiService를 생성하지 않음
-  const needsApi = !['assets', 'attendance', 'bill-content'].includes(command);
+  const needsApi = !['assets', 'attendance', 'bill-content', 'committees'].includes(command);
   const api = needsApi ? new AssemblyApiService() : (null as unknown as AssemblyApiService);
 
   try {
@@ -118,6 +122,9 @@ async function main() {
         break;
       case 'schedules':
         await new ScheduleSyncService(prisma, api, syncLog).syncSchedules(termId);
+        break;
+      case 'committees':
+        await new CommitteeSyncService(prisma, syncLog).syncCommittees(termId);
         break;
       case 'all':
       default: {

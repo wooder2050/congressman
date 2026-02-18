@@ -24,7 +24,7 @@ export default async function BillsPage({ searchParams }: BillsPageProps) {
           발의된 법안을 검색하고 필터링하세요.
         </p>
       </div>
-      <CongressWrapper fallback={<BillListSkeleton />}>
+      <CongressWrapper key={termId} fallback={<BillListSkeleton />}>
         <BillListInner termId={termId} />
       </CongressWrapper>
     </div>

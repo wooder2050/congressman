@@ -31,19 +31,19 @@ export default async function HomePage({ searchParams }: HomePageProps) {
       </section>
 
       {/* 통계 요약 */}
-      <CongressWrapper fallback={<HomeStatsSkeleton />}>
+      <CongressWrapper key={`stats-${termId}`} fallback={<HomeStatsSkeleton />}>
         <HomeStats termId={termId} />
       </CongressWrapper>
 
       {/* 다가오는 일정 */}
-      <CongressWrapper fallback={<UpcomingSchedulesSkeleton />}>
+      <CongressWrapper key={`schedules-${termId}`} fallback={<UpcomingSchedulesSkeleton />}>
         <UpcomingSchedules termId={termId} />
       </CongressWrapper>
 
       {/* 최근 활동 */}
       <section className="space-y-3">
         <h2 className="text-xl font-bold">최근 활동</h2>
-        <CongressWrapper fallback={<RecentActivitySkeleton />}>
+        <CongressWrapper key={`recent-${termId}`} fallback={<RecentActivitySkeleton />}>
           <RecentActivity termId={termId} />
         </CongressWrapper>
       </section>
@@ -51,7 +51,7 @@ export default async function HomePage({ searchParams }: HomePageProps) {
       {/* 출석 랭킹 */}
       <section className="space-y-3">
         <h2 className="text-xl font-bold">출석 랭킹</h2>
-        <CongressWrapper fallback={<AttendanceRankingSkeleton />}>
+        <CongressWrapper key={`attendance-${termId}`} fallback={<AttendanceRankingSkeleton />}>
           <AttendanceRanking termId={termId} />
         </CongressWrapper>
       </section>
@@ -59,7 +59,7 @@ export default async function HomePage({ searchParams }: HomePageProps) {
       {/* 의정활동 하이라이트 */}
       <section className="space-y-3">
         <h2 className="text-xl font-bold">의정활동 하이라이트</h2>
-        <CongressWrapper fallback={<ActivityHighlightsSkeleton />}>
+        <CongressWrapper key={`highlights-${termId}`} fallback={<ActivityHighlightsSkeleton />}>
           <ActivityHighlights termId={termId} />
         </CongressWrapper>
       </section>
