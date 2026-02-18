@@ -35,10 +35,12 @@ export default async function HomePage({ searchParams }: HomePageProps) {
         <HomeStats termId={termId} />
       </CongressWrapper>
 
-      {/* 다가오는 일정 */}
-      <CongressWrapper key={`schedules-${termId}`} fallback={<UpcomingSchedulesSkeleton />}>
-        <UpcomingSchedules termId={termId} />
-      </CongressWrapper>
+      {/* 다가오는 일정 — 현재 대수(22대)만 표시 */}
+      {termId === 22 && (
+        <CongressWrapper key={`schedules-${termId}`} fallback={<UpcomingSchedulesSkeleton />}>
+          <UpcomingSchedules termId={termId} />
+        </CongressWrapper>
+      )}
 
       {/* 최근 활동 */}
       <section className="space-y-3">

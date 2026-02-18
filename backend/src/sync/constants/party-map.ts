@@ -21,6 +21,15 @@ const PARTY_NAME_TO_ID: Record<string, string> = {
   열린민주당: 'open-democratic',
   시대전환: 'transition',
   자유통일당: 'free-unification',
+  // 20대
+  새누리당: 'saenuri',
+  자유한국당: 'liberty-korea',
+  민생당: 'minsaeng',
+  우리공화당: 'our-republican',
+  민중당: 'minjung',
+  민주평화당: 'democratic-peace',
+  바른미래당: 'bareun-mirae',
+  친박신당: 'chinpark',
 };
 
 const PARTY_COLORS: Record<string, string> = {
@@ -42,6 +51,15 @@ const PARTY_COLORS: Record<string, string> = {
   'open-democratic': '#003DA5',
   transition: '#7A25CC',
   'free-unification': '#004EA2',
+  // 20대
+  saenuri: '#E61E2B',
+  'liberty-korea': '#E61E2B',
+  minsaeng: '#00AA6C',
+  'our-republican': '#E61E2B',
+  minjung: '#E5007D',
+  'democratic-peace': '#009944',
+  'bareun-mirae': '#00BFFF',
+  chinpark: '#FF0000',
 };
 
 export function getPartyId(partyName: string): string {

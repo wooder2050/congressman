@@ -79,8 +79,14 @@ export class AssetSyncService {
         // 파일명에서 대수 힌트 추출: assets_2024_22nd.csv → 22
         const termHintMatch = file.match(/(\d{1,2})(?:st|nd|rd|th)/);
         // 대수 힌트가 없으면 연도로 추정
-        // 재산 공개는 3월이므로 2024년 파일(대수 미지정)은 21대 임기 중 공개분
-        const fileTerm = termHintMatch ? parseInt(termHintMatch[1], 10) : year <= 2024 ? 21 : 22;
+        // 재산 공개는 3월이므로 해당 연도 파일은 직전 대수 임기 중 공개분
+        const fileTerm = termHintMatch
+          ? parseInt(termHintMatch[1], 10)
+          : year <= 2020
+            ? 20
+            : year <= 2024
+              ? 21
+              : 22;
 
         console.log(`[AssetSync] Processing ${file} (year=${year}, term=${fileTerm ?? 'unknown'})`);
 
@@ -168,7 +174,9 @@ export class AssetSyncService {
 
           // 현재가액 사용 (천원 단위)
           const amountStr = (row['현재가액'] ?? '0').replace(/,/g, '').trim();
-          const amount = BigInt(Math.round(parseFloat(amountStr) || 0));
+          let amount = BigInt(Math.round(parseFloat(amountStr) || 0));
+          // 채무는 항상 음수로 저장 (CSV 연도별로 부호가 다를 수 있음)
+          if (category === '채무' && amount > 0n) amount = -amount;
 
           const relation = (row['본인과의 관계'] ?? '').trim() || '본인';
 
