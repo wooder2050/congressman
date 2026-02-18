@@ -25,6 +25,13 @@ export interface Member {
   career?: string | null;
 }
 
+// ====== 위원회 이력 ======
+export interface CommitteeHistoryEntry {
+  name: string;
+  startDate: string; // "2020.07.06"
+  endDate: string | null; // "2022.05.29" 또는 null(현재 소속)
+}
+
 // ====== 의원 대수별 활동 ======
 export interface MemberTerm {
   memberId: string;
@@ -33,7 +40,9 @@ export interface MemberTerm {
   district: string;
   proportional: boolean;
   committees: string[];
+  committeeHistory: CommitteeHistoryEntry[];
   committeeRole: string; // "위원장", "간사", "위원"
+  electedCount: number; // 해당 대수 기준 선수
 }
 
 // ====== 출석 ======

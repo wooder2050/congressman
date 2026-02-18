@@ -55,6 +55,55 @@ export const PARTIES: Record<string, Party> = {
     shortName: "무소속",
     color: "#999999",
   },
+  // 21대
+  citizens: {
+    id: "citizens",
+    name: "더불어시민당",
+    shortName: "시민당",
+    color: "#1B56DB",
+  },
+  "united-future": {
+    id: "united-future",
+    name: "미래통합당",
+    shortName: "미래통합",
+    color: "#E61E2B",
+  },
+  "future-korea": {
+    id: "future-korea",
+    name: "미래한국당",
+    shortName: "미래한국",
+    color: "#E61E2B",
+  },
+  justice: {
+    id: "justice",
+    name: "정의당",
+    shortName: "정의당",
+    color: "#FFCC00",
+  },
+  peoples: {
+    id: "peoples",
+    name: "국민의당",
+    shortName: "국민의당",
+    color: "#EA5504",
+  },
+  "open-democratic": {
+    id: "open-democratic",
+    name: "열린민주당",
+    shortName: "열린민주",
+    color: "#003DA5",
+  },
+  transition: {
+    id: "transition",
+    name: "시대전환",
+    shortName: "시대전환",
+    color: "#7A25CC",
+  },
+  "free-unification": {
+    id: "free-unification",
+    name: "자유통일당",
+    shortName: "자유통일",
+    color: "#004EA2",
+  },
 };
 
 export const VOTE_RESULT_MAP = {

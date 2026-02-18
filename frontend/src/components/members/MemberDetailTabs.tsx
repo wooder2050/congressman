@@ -1,7 +1,12 @@
 "use client";
 
 import { Suspense } from "react";
-import TabContentSkeleton from "@/components/skeletons/TabSkeleton";
+import {
+  AttendanceTabSkeleton,
+  BillsTabSkeleton,
+  CommitteeTabSkeleton,
+  AssetsTabSkeleton,
+} from "@/components/skeletons/TabSkeleton";
 import AttendanceTab from "./AttendanceTab";
 import BillsTab from "./BillsTab";
 import VotesTab from "./VotesTab";
@@ -25,24 +30,24 @@ export default function MemberDetailTabContent({
   return (
     <div>
       {activeTab === "attendance" && (
-        <Suspense fallback={<TabContentSkeleton />}>
+        <Suspense fallback={<AttendanceTabSkeleton />}>
           <AttendanceTab memberId={memberId} termId={termId} />
         </Suspense>
       )}
       {activeTab === "bills" && (
-        <Suspense fallback={<TabContentSkeleton />}>
+        <Suspense fallback={<BillsTabSkeleton />}>
           <BillsTab memberId={memberId} termId={termId} />
         </Suspense>
       )}
       {activeTab === "votes" && <VotesTab memberId={memberId} termId={termId} />}
       {activeTab === "committee" && (
-        <Suspense fallback={<TabContentSkeleton />}>
+        <Suspense fallback={<CommitteeTabSkeleton />}>
           <CommitteeTab memberId={memberId} termId={termId} />
         </Suspense>
       )}
-      {activeTab === "career" && <CareerTab career={career} />}
+      {activeTab === "career" && <CareerTab career={career} termId={termId} />}
       {activeTab === "assets" && (
-        <Suspense fallback={<TabContentSkeleton />}>
+        <Suspense fallback={<AssetsTabSkeleton />}>
           <AssetsTab memberId={memberId} />
         </Suspense>
       )}

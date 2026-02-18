@@ -4,7 +4,7 @@ import { SyncLogService } from './sync-log.service';
 import { getPartyId, getPartyColor } from '../constants/party-map';
 import { parseElectedCount } from '../constants/elected-count-map';
 
-/** 국회의원 인적사항 API 응답 row */
+/** 현직 국회의원 인적사항 API 응답 row */
 interface MemberApiRow {
   MONA_CD: string;
   HG_NM: string;
@@ -25,6 +25,26 @@ interface MemberApiRow {
   JOB_RES_NM: string;
 }
 
+/** 역대 국회의원 인적사항 API 응답 row */
+interface HistoricalMemberApiRow {
+  MONA_CD: string;
+  HG_NM: string;
+  HJ_NM: string;
+  ENG_NM: string;
+  BTH_DATE: string;
+  SEX_GBN_NM: string;
+  REELE_GBN_NM: string;
+  UNITS: string;
+  UNIT_CD: string;
+  UNIT_NM: string;
+  POLY_NM: string;
+  ORIG_NM: string;
+  ELECT_GBN_NM: string;
+}
+
+/** 현재 국회 대수 — 현직 API는 이 대수에만 사용 */
+const CURRENT_TERM = 22;
+
 export class MemberSyncService {
   constructor(
     private readonly prisma: PrismaClient,
@@ -36,9 +56,29 @@ export class MemberSyncService {
     const log = await this.syncLog.start('members', termId);
 
     try {
-      const rows = await this.api.fetchAll<MemberApiRow>('nwvrqwxyaytdsfvhu', {
-        AGE: String(termId),
-      });
+      let rows: MemberApiRow[];
+
+      if (termId === CURRENT_TERM) {
+        // 현직 API: 현재 대수만 지원
+        rows = await this.api.fetchAll<MemberApiRow>('nwvrqwxyaytdsfvhu', {});
+      } else {
+        // 역대 API: UNIT_CD = 100000 + 대수
+        const historicalRows = await this.api.fetchAll<HistoricalMemberApiRow>(
+          'npffdutiapkzbfyvr',
+          { UNIT_CD: String(100000 + termId) },
+        );
+        // 역대 API 응답을 MemberApiRow 형태로 변환 (없는 필드는 빈 값)
+        rows = historicalRows.map((r) => ({
+          ...r,
+          BTH_GBN_NM: '',
+          CMITS: '',
+          E_MAIL: '',
+          TEL_NO: '',
+          ASSEM_ADDR: '',
+          MEM_TITLE: '',
+          JOB_RES_NM: '',
+        }));
+      }
 
       console.log(`[MemberSync] Fetched ${rows.length} member records for term ${termId}`);
 
@@ -52,6 +92,9 @@ export class MemberSyncService {
           console.log(`[MemberSync]   Processed ${count}/${rows.length} members`);
         }
       }
+
+      // API가 현재 시점 기준 누적 선수를 반환하므로, 과거 대수의 선수를 보정
+      await this.fixElectedCounts();
 
       await this.syncLog.complete(log.id, count);
       console.log(`[MemberSync] Completed: ${count} records`);
@@ -97,17 +140,64 @@ export class MemberSyncService {
     const committeeRole = row.JOB_RES_NM || '위원';
     const career = row.MEM_TITLE?.trim() || null;
 
+    // 역대 API에는 MEM_TITLE이 없으므로, career가 null이면 기존 값 보존
+    const memberUpdate: Record<string, unknown> = { name: row.HG_NM, birthDate, electedCount };
+    if (career) memberUpdate.career = career;
+
     await this.prisma.member.upsert({
       where: { id: memberId },
-      update: { name: row.HG_NM, birthDate, electedCount, career },
+      update: memberUpdate,
       create: { id: memberId, name: row.HG_NM, photoUrl: '', birthDate, electedCount, career },
     });
 
+    // 역대 API에는 CMITS, JOB_RES_NM이 없으므로, 빈 값이면 기존 값 보존
+    const termUpdate: Record<string, unknown> = { partyId, district, proportional, electedCount };
+    if (committees.length > 0) termUpdate.committees = committees;
+    if (row.JOB_RES_NM) termUpdate.committeeRole = committeeRole;
+
     await this.prisma.memberTerm.upsert({
       where: { memberId_termId: { memberId, termId } },
-      update: { partyId, district, proportional, committees, committeeRole },
-      create: { memberId, termId, partyId, district, proportional, committees, committeeRole },
+      update: termUpdate,
+      create: { memberId, termId, partyId, district, proportional, committees, committeeRole, electedCount },
     });
+  }
+
+  /**
+   * 역대 API의 REELE_GBN_NM은 현재 시점 기준 누적 선수를 반환하므로,
+   * 최신 대수의 API 값을 기준으로 과거 대수의 선수를 역산한다.
+   *
+   * 방식: 의원별로 MemberTerm을 대수 역순 정렬 후 순위를 매기고,
+   *       최신 대수의 electedCount에서 (순위 - 1)을 빼서 계산.
+   * 예: 김기현 — DB에 21대, 22대 / 22대 API값 = 5선
+   *   → 22대: rank=1 → 5-(1-1) = 5선
+   *   → 21대: rank=2 → 5-(2-1) = 4선
+   * 비연속 당선에도 정확 (16대→18대→21대 등 DB에 없는 대수는 건너뜀).
+   */
+  private async fixElectedCounts(): Promise<void> {
+    const result = await this.prisma.$executeRaw`
+      WITH ranked AS (
+        SELECT id,
+               "memberId",
+               ROW_NUMBER() OVER (PARTITION BY "memberId" ORDER BY "termId" DESC) AS rn
+        FROM "MemberTerm"
+      ),
+      latest AS (
+        SELECT r.id, r."memberId", mt."electedCount" AS latest_ec, r.rn
+        FROM ranked r
+        JOIN "MemberTerm" mt ON mt.id = r.id
+        WHERE r.rn = 1
+      )
+      UPDATE "MemberTerm" mt
+      SET "electedCount" = GREATEST(1, l.latest_ec - (r.rn - 1))
+      FROM ranked r
+      JOIN latest l ON l."memberId" = r."memberId"
+      WHERE mt.id = r.id
+        AND r.rn > 1
+        AND mt."electedCount" != GREATEST(1, l.latest_ec - (r.rn - 1))
+    `;
+    if (result > 0) {
+      console.log(`[MemberSync] Fixed electedCount for ${result} past-term records`);
+    }
   }
 
   private parseBirthDate(raw: string | null): string | null {

@@ -32,9 +32,40 @@ export default function MemberDetailInner({ id, termId, defaultTab }: MemberDeta
   if (!member) return notFound();
 
   const currentMemberTerm = memberTerms.find((mt) => mt.termId === termId);
-  if (!currentMemberTerm) return notFound();
-
   const allTermIds = memberTerms.map((mt) => mt.termId);
+
+  if (!currentMemberTerm) {
+    const availableTerms = memberTerms
+      .map((mt) => mt.termId)
+      .sort((a, b) => b - a);
+
+    return (
+      <div className="mx-auto max-w-7xl space-y-6">
+        <Link
+          href={`/members?term=${termId}`}
+          className="inline-flex items-center gap-1 text-sm text-(--color-text-tertiary) no-underline hover:text-(--color-text-secondary)"
+        >
+          ← 목록으로
+        </Link>
+        <div className="flex flex-col items-center justify-center rounded-xl border border-(--color-border-primary) bg-(--color-bg-secondary) py-16 text-center">
+          <p className="mb-2 text-lg font-bold text-(--color-text-primary)">
+            {member.name} 의원은 제{termId}대 국회 활동 기록이 없습니다.
+          </p>
+          <div className="mt-4 flex gap-3">
+            {availableTerms.map((t) => (
+              <Link
+                key={t}
+                href={`/members/${id}?term=${t}`}
+                className="rounded-lg bg-(--color-primary) px-5 py-2.5 text-sm font-semibold text-(--color-text-inverse) no-underline transition-colors hover:bg-(--color-primary-hover)"
+              >
+                제{t}대 활동 보기
+              </Link>
+            ))}
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="mx-auto max-w-7xl space-y-6">

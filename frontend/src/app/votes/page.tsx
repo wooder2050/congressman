@@ -22,7 +22,7 @@ export default async function VotesPage({ searchParams }: VotesPageProps) {
         <h1 className="text-2xl font-bold">표결 현황</h1>
         <p className="mt-1 text-sm text-(--color-text-tertiary)">본회의 표결 결과를 확인하세요.</p>
       </div>
-      <CongressWrapper fallback={<VoteListSkeleton />}>
+      <CongressWrapper key={termId} fallback={<VoteListSkeleton />}>
         <VoteListInner termId={termId} />
       </CongressWrapper>
     </div>

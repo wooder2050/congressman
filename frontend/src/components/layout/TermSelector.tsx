@@ -16,6 +16,10 @@ function TermSelectorInner() {
   const searchParams = useSearchParams();
   const currentTerm = searchParams.get("term") || "22";
 
+  // 의원 상세 페이지(/members/[id], /members/[id]/history 등)에서는 숨김
+  const isMemberDetail = /^\/members\/[^/]+/.test(pathname) && pathname !== "/members";
+  if (isMemberDetail) return null;
+
   const terms = [
     { id: "22", label: "제22대 (현재)" },
     { id: "21", label: "제21대" },

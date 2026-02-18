@@ -42,14 +42,25 @@ export class AssetSyncService {
         return;
       }
 
-      // 의원 이름 → ID 매핑
+      // 의원 이름 → ID 매핑 (지역구 + 임기 포함하여 동명이인 해소)
       const allMembers = await this.prisma.member.findMany({
         select: { id: true, name: true, birthDate: true },
       });
-      const nameMap = new Map<string, { id: string; birthDate: string | null }[]>();
+      const memberTerms = await this.prisma.memberTerm.findMany({
+        select: { memberId: true, termId: true, district: true },
+      });
+      const termInfoMap = new Map<string, { termIds: number[]; districts: string[] }>();
+      for (const mt of memberTerms) {
+        const info = termInfoMap.get(mt.memberId) ?? { termIds: [], districts: [] };
+        info.termIds.push(mt.termId);
+        if (mt.district) info.districts.push(mt.district);
+        termInfoMap.set(mt.memberId, info);
+      }
+      const nameMap = new Map<string, { id: string; birthDate: string | null; districts: string[]; termIds: number[] }[]>();
       for (const m of allMembers) {
         const list = nameMap.get(m.name) ?? [];
-        list.push({ id: m.id, birthDate: m.birthDate });
+        const info = termInfoMap.get(m.id) ?? { termIds: [], districts: [] };
+        list.push({ id: m.id, birthDate: m.birthDate, ...info });
         nameMap.set(m.name, list);
       }
 
@@ -62,7 +73,17 @@ export class AssetSyncService {
         if (!yearMatch) continue;
         const year = parseInt(yearMatch[1], 10);
 
-        console.log(`[AssetSync] Processing ${file} (year=${year})`);
+        // 파일명에서 대수 힌트 추출: assets_2024_22nd.csv → 22
+        const termHintMatch = file.match(/(\d{1,2})(?:st|nd|rd|th)/);
+        // 대수 힌트가 없으면 연도로 추정
+        // 재산 공개는 3월이므로 2024년 파일(대수 미지정)은 21대 임기 중 공개분
+        const fileTerm = termHintMatch
+          ? parseInt(termHintMatch[1], 10)
+          : year <= 2024
+            ? 21
+            : 22;
+
+        console.log(`[AssetSync] Processing ${file} (year=${year}, term=${fileTerm ?? 'unknown'})`);
 
         const content = fs.readFileSync(path.join(dataDir, file), 'utf-8');
         const rows: CsvRow[] = parse(content, {
@@ -90,8 +111,18 @@ export class AssetSyncService {
 
         for (const row of assemblyRows) {
           // 컬럼명이 연도별로 다름: "성명" (2024) vs "이름" (2023)
-          const name = (row['성명'] ?? row['이름'] ?? '').trim();
-          if (!name) continue;
+          const rawName = (row['성명'] ?? row['이름'] ?? '').trim();
+          if (!rawName) continue;
+
+          // 이름에 괄호가 있으면 지역구 힌트 추출: "김병욱(경기성남시분당구을)"
+          const nameParenMatch = rawName.match(/^(.+?)\((.+)\)$/);
+          const name = nameParenMatch ? nameParenMatch[1] : rawName;
+          // 직위에도 지역구 힌트가 있을 수 있음: "국회의원(경기 성남시분당구을)"
+          const positionRaw = (row['직위'] ?? '').match(/\((.+)\)/)?.[1] ?? '';
+          // "신규등록" 등 지역구가 아닌 힌트 무시
+          const nonDistrictHints = ['신규등록', '비례대표'];
+          const positionHint = nonDistrictHints.includes(positionRaw) ? '' : positionRaw;
+          const districtHint = nameParenMatch?.[2] ?? positionHint;
 
           const candidates = nameMap.get(name);
           if (!candidates || candidates.length === 0) {
@@ -99,13 +130,35 @@ export class AssetSyncService {
             continue;
           }
 
-          // 동명이인이 2명 이상이면 정확한 매핑 불가 → 스킵
-          if (candidates.length > 1) {
+          let memberId: string;
+          if (candidates.length === 1) {
+            memberId = candidates[0].id;
+          } else if (districtHint) {
+            // 동명이인: 지역구 힌트로 매칭 (공백/특수문자 제거 후 부분 매칭)
+            const hint = districtHint.replace(/\s+/g, '');
+            const matched = candidates.find((c) =>
+              c.districts.some((d) => {
+                const norm = d.replace(/\s+/g, '');
+                return norm.includes(hint) || hint.includes(norm);
+              }),
+            );
+            if (!matched) {
+              unmatchedNames.add(`${name}(지역구 불일치: ${districtHint})`);
+              continue;
+            }
+            memberId = matched.id;
+          } else if (fileTerm) {
+            // 동명이인: 임기(대수)로 매칭
+            const matched = candidates.find((c) => c.termIds.includes(fileTerm));
+            if (!matched) {
+              unmatchedNames.add(`${name}(동명이인 ${candidates.length}명, term=${fileTerm} 불일치)`);
+              continue;
+            }
+            memberId = matched.id;
+          } else {
             unmatchedNames.add(`${name}(동명이인 ${candidates.length}명)`);
             continue;
           }
-
-          const memberId = candidates[0].id;
 
           const category = (row['재산 대분류'] ?? '').trim() || '기타';
           const subType = (row['재산의 종류'] ?? '').trim();

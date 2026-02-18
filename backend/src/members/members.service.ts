@@ -38,6 +38,7 @@ export class MembersService {
       birthDate: mt.member.birthDate,
       electedCount: mt.member.electedCount,
       term: {
+        electedCount: mt.electedCount,
         memberId: mt.memberId,
         termId: mt.termId,
         party: {
@@ -101,7 +102,9 @@ export class MembersService {
       district: mt.district,
       proportional: mt.proportional,
       committees: mt.committees,
+      committeeHistory: mt.committeeHistory,
       committeeRole: mt.committeeRole,
+      electedCount: mt.electedCount,
     }));
 
     await this.redis.set(key, result, TTL_DAY);
@@ -254,12 +257,15 @@ export class MembersService {
     const cached = await this.redis.get(key);
     if (cached) return cached;
 
-    // 소속 위원회 목록 가져오기
+    // 전체 위원회 이력에서 고유 위원회명 추출
     const memberTerm = await this.prisma.memberTerm.findUnique({
       where: { memberId_termId: { memberId, termId } },
-      select: { committees: true },
+      select: { committeeHistory: true, committees: true },
     });
-    const committees = memberTerm?.committees ?? [];
+    const history = (memberTerm?.committeeHistory as { name: string }[] | null) ?? [];
+    const allCommitteeNames = [...new Set(history.map((h) => h.name))];
+    // committeeHistory가 비어있으면 기존 committees 사용 (fallback)
+    const committees = allCommitteeNames.length > 0 ? allCommitteeNames : (memberTerm?.committees ?? []);
     if (committees.length === 0) return [];
 
     // 위원회별 표결 참여 통계 + 발의 법안 수를 한 번에 가져오기

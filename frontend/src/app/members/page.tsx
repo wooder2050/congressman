@@ -25,13 +25,13 @@ export default async function MembersPage({ searchParams }: MembersPageProps) {
       {/* 내 지역구 의원 찾기 */}
       <section className="space-y-3">
         <h2 className="text-lg font-bold">내 지역구 의원 찾기</h2>
-        <CongressWrapper fallback={<DistrictFinderSkeleton />}>
+        <CongressWrapper key={`finder-${termId}`} fallback={<DistrictFinderSkeleton />}>
           <DistrictFinder termId={termId} />
         </CongressWrapper>
       </section>
 
       {/* 전체 의원 목록 */}
-      <CongressWrapper fallback={<MemberListSkeleton />}>
+      <CongressWrapper key={`list-${termId}`} fallback={<MemberListSkeleton />}>
         <MemberListInner termId={termId} />
       </CongressWrapper>
     </div>
