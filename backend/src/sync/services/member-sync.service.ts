@@ -158,7 +158,16 @@ export class MemberSyncService {
     await this.prisma.memberTerm.upsert({
       where: { memberId_termId: { memberId, termId } },
       update: termUpdate,
-      create: { memberId, termId, partyId, district, proportional, committees, committeeRole, electedCount },
+      create: {
+        memberId,
+        termId,
+        partyId,
+        district,
+        proportional,
+        committees,
+        committeeRole,
+        electedCount,
+      },
     });
   }
 

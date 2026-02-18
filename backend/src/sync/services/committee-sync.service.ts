@@ -81,9 +81,7 @@ export class CommitteeSyncService {
       }
 
       await this.syncLog.complete(log.id, updated);
-      console.log(
-        `[CommitteeSync] Completed: ${updated} updated, ${skipped} skipped`,
-      );
+      console.log(`[CommitteeSync] Completed: ${updated} updated, ${skipped} skipped`);
     } catch (error) {
       const msg = error instanceof Error ? error.message : String(error);
       await this.syncLog.fail(log.id, msg);
@@ -95,10 +93,7 @@ export class CommitteeSyncService {
   /**
    * 국회 웹사이트에서 특정 의원의 위원회 경력을 크롤링.
    */
-  private async fetchCommitteeHistory(
-    memberId: string,
-    termId: number,
-  ): Promise<CommitteeEntry[]> {
+  private async fetchCommitteeHistory(memberId: string, termId: number): Promise<CommitteeEntry[]> {
     const url =
       `https://www.assembly.go.kr/portal/assm/assmMemb/memberProfile.do` +
       `?monaCd=${memberId}&st=${termId}&viewType=CONTBODY&tabId=P13`;
@@ -125,10 +120,7 @@ export class CommitteeSyncService {
    *
    * 시작일 기준 오름차순 정렬하여 반환.
    */
-  private parseCommitteeHistory(
-    html: string,
-    termId: number,
-  ): CommitteeEntry[] {
+  private parseCommitteeHistory(html: string, termId: number): CommitteeEntry[] {
     const termPrefix = `제${termId}대`;
     const liRegex = /<strong>([^<]+)<\/strong>\s*<span>([^<]+)<\/span>/g;
     const entries: CommitteeEntry[] = [];

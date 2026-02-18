@@ -26,12 +26,9 @@ export function AttendanceTabSkeleton() {
         <div className="h-4 w-24 rounded bg-(--color-bg-tertiary)" />
         <div className="rounded-xl border border-(--color-border-primary) bg-(--color-bg-primary) p-4">
           <div className="flex items-end gap-2">
-            {Array.from({ length: 6 }).map((_, i) => (
+            {[70, 90, 55, 80, 60, 75].map((h, i) => (
               <div key={i} className="flex-1">
-                <div
-                  className="rounded-t bg-(--color-bg-tertiary)"
-                  style={{ height: `${40 + Math.random() * 60}px` }}
-                />
+                <div className="rounded-t bg-(--color-bg-tertiary)" style={{ height: `${h}px` }} />
               </div>
             ))}
           </div>

@@ -56,7 +56,10 @@ export class AssetSyncService {
         if (mt.district) info.districts.push(mt.district);
         termInfoMap.set(mt.memberId, info);
       }
-      const nameMap = new Map<string, { id: string; birthDate: string | null; districts: string[]; termIds: number[] }[]>();
+      const nameMap = new Map<
+        string,
+        { id: string; birthDate: string | null; districts: string[]; termIds: number[] }[]
+      >();
       for (const m of allMembers) {
         const list = nameMap.get(m.name) ?? [];
         const info = termInfoMap.get(m.id) ?? { termIds: [], districts: [] };
@@ -77,11 +80,7 @@ export class AssetSyncService {
         const termHintMatch = file.match(/(\d{1,2})(?:st|nd|rd|th)/);
         // 대수 힌트가 없으면 연도로 추정
         // 재산 공개는 3월이므로 2024년 파일(대수 미지정)은 21대 임기 중 공개분
-        const fileTerm = termHintMatch
-          ? parseInt(termHintMatch[1], 10)
-          : year <= 2024
-            ? 21
-            : 22;
+        const fileTerm = termHintMatch ? parseInt(termHintMatch[1], 10) : year <= 2024 ? 21 : 22;
 
         console.log(`[AssetSync] Processing ${file} (year=${year}, term=${fileTerm ?? 'unknown'})`);
 
@@ -151,7 +150,9 @@ export class AssetSyncService {
             // 동명이인: 임기(대수)로 매칭
             const matched = candidates.find((c) => c.termIds.includes(fileTerm));
             if (!matched) {
-              unmatchedNames.add(`${name}(동명이인 ${candidates.length}명, term=${fileTerm} 불일치)`);
+              unmatchedNames.add(
+                `${name}(동명이인 ${candidates.length}명, term=${fileTerm} 불일치)`,
+              );
               continue;
             }
             memberId = matched.id;
