@@ -48,7 +48,8 @@ export default function DistrictPopup({ sidoSgg, member, onClose }: DistrictPopu
                   <ColorBadge label={member.term.party.shortName} color={member.term.party.color} />
                 </div>
                 <p className="text-sm text-(--color-text-secondary)">
-                  {getElectedLabel(member.term.electedCount)} · {formatDistrict(member.term.district)}
+                  {getElectedLabel(member.term.electedCount)} ·{" "}
+                  {formatDistrict(member.term.district)}
                 </p>
                 <Link
                   href={`/members/${member.id}?term=${member.term.termId}`}

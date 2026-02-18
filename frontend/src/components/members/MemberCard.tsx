@@ -43,9 +43,7 @@ export default function MemberCard({ member }: MemberCardProps) {
         <p className="text-sm text-(--color-text-secondary)">
           {term.proportional ? "비례대표" : formatDistrict(term.district)}
         </p>
-        <p className="text-xs text-(--color-text-tertiary)">
-          {getElectedLabel(term.electedCount)}
-        </p>
+        <p className="text-xs text-(--color-text-tertiary)">{getElectedLabel(term.electedCount)}</p>
       </div>
     </Link>
   );

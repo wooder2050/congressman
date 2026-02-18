@@ -145,7 +145,7 @@ export function CommitteeTabSkeleton() {
       {/* 위원회 이력 */}
       <div>
         <div className="mb-3 h-4 w-20 rounded bg-(--color-bg-tertiary)" />
-        <div className="rounded-xl border border-(--color-border-primary) bg-(--color-bg-primary) p-4 space-y-4">
+        <div className="space-y-4 rounded-xl border border-(--color-border-primary) bg-(--color-bg-primary) p-4">
           {Array.from({ length: 2 }).map((_, si) => (
             <div key={si} className="space-y-2">
               <div className="h-3 w-12 rounded bg-(--color-bg-tertiary)" />
@@ -162,7 +162,7 @@ export function CommitteeTabSkeleton() {
       {/* 상임위원회 활동 */}
       <div>
         <div className="mb-3 h-4 w-28 rounded bg-(--color-bg-tertiary)" />
-        <div className="rounded-xl border border-(--color-border-primary) bg-(--color-bg-primary) p-4 space-y-3">
+        <div className="space-y-3 rounded-xl border border-(--color-border-primary) bg-(--color-bg-primary) p-4">
           <div className="flex items-center justify-between">
             <div className="h-5 w-24 rounded bg-(--color-bg-tertiary)" />
             <div className="h-4 w-16 rounded bg-(--color-bg-tertiary)" />
@@ -214,7 +214,10 @@ export function AssetsTabSkeleton() {
         <div className="h-4 w-20 rounded bg-(--color-bg-tertiary)" />
         <div className="divide-y divide-(--color-border-primary) overflow-hidden rounded-xl border border-(--color-border-primary)">
           {Array.from({ length: 2 }).map((_, i) => (
-            <div key={i} className="flex items-center justify-between bg-(--color-bg-primary) px-4 py-3">
+            <div
+              key={i}
+              className="flex items-center justify-between bg-(--color-bg-primary) px-4 py-3"
+            >
               <div className="h-5 w-16 rounded bg-(--color-bg-tertiary)" />
               <div className="h-4 w-20 rounded bg-(--color-bg-tertiary)" />
             </div>

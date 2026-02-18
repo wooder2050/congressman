@@ -137,12 +137,8 @@ export default function CommitteeTab({ memberId, termId }: CommitteeTabProps) {
           <h3 className="mb-3 text-sm font-semibold text-(--color-text-tertiary)">위원회 이력</h3>
           <div className="rounded-xl border border-(--color-border-primary) bg-(--color-bg-primary) p-4">
             <div className="space-y-4">
-              {first.length > 0 && (
-                <CommitteeHistorySection label="전반기" entries={first} />
-              )}
-              {second.length > 0 && (
-                <CommitteeHistorySection label="후반기" entries={second} />
-              )}
+              {first.length > 0 && <CommitteeHistorySection label="전반기" entries={first} />}
+              {second.length > 0 && <CommitteeHistorySection label="후반기" entries={second} />}
               {first.length === 0 && second.length === 0 && committeeHistory.length > 0 && (
                 <CommitteeHistorySection label="" entries={committeeHistory} />
               )}
@@ -219,15 +215,10 @@ function CommitteeHistorySection({
 
   return (
     <div>
-      {label && (
-        <p className="mb-2 text-xs font-semibold text-(--color-text-tertiary)">{label}</p>
-      )}
+      {label && <p className="mb-2 text-xs font-semibold text-(--color-text-tertiary)">{label}</p>}
       <div className="space-y-1.5">
         {standing.map((entry, i) => (
-          <div
-            key={`${entry.name}-${i}`}
-            className="flex items-center justify-between text-sm"
-          >
+          <div key={`${entry.name}-${i}`} className="flex items-center justify-between text-sm">
             <span className="font-medium text-(--color-text-primary)">{entry.name}</span>
             <span className="text-xs text-(--color-text-tertiary)">
               {formatPeriod(entry.startDate, entry.endDate)}
@@ -235,10 +226,7 @@ function CommitteeHistorySection({
           </div>
         ))}
         {special.map((entry, i) => (
-          <div
-            key={`${entry.name}-${i}`}
-            className="flex items-center justify-between text-sm"
-          >
+          <div key={`${entry.name}-${i}`} className="flex items-center justify-between text-sm">
             <span className="text-(--color-text-secondary)">{entry.name}</span>
             <span className="text-xs text-(--color-text-tertiary)">
               {formatPeriod(entry.startDate, entry.endDate)}

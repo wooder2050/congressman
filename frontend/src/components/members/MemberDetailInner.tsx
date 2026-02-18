@@ -35,9 +35,7 @@ export default function MemberDetailInner({ id, termId, defaultTab }: MemberDeta
   const allTermIds = memberTerms.map((mt) => mt.termId);
 
   if (!currentMemberTerm) {
-    const availableTerms = memberTerms
-      .map((mt) => mt.termId)
-      .sort((a, b) => b - a);
+    const availableTerms = memberTerms.map((mt) => mt.termId).sort((a, b) => b - a);
 
     return (
       <div className="mx-auto max-w-7xl space-y-6">

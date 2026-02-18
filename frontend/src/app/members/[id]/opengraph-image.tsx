@@ -36,11 +36,7 @@ export default async function OgImage({ params }: { params: Promise<{ id: string
   const district = currentTerm?.district ?? "";
   const electedCount = currentTerm?.electedCount ?? member.electedCount;
   const electedLabel =
-    electedCount === 1
-      ? "초선"
-      : electedCount === 2
-        ? "재선"
-        : `${electedCount}선`;
+    electedCount === 1 ? "초선" : electedCount === 2 ? "재선" : `${electedCount}선`;
 
   let fontData: ArrayBuffer | null = null;
   try {
