@@ -1,5 +1,6 @@
 import { ImageResponse } from "next/og";
 import { getMember, getMemberTerms } from "@/lib/api";
+import { getElectedLabel } from "@/lib/utils";
 
 export const runtime = "edge";
 export const alt = "의원 프로필";
@@ -35,8 +36,7 @@ export default async function OgImage({ params }: { params: Promise<{ id: string
   const partyName = currentTerm?.party.name ?? "";
   const district = currentTerm?.district ?? "";
   const electedCount = currentTerm?.electedCount ?? member.electedCount;
-  const electedLabel =
-    electedCount === 1 ? "초선" : electedCount === 2 ? "재선" : `${electedCount}선`;
+  const electedLabel = getElectedLabel(electedCount);
 
   let fontData: ArrayBuffer | null = null;
   try {
