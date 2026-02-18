@@ -39,12 +39,6 @@ export class MemberVoteSyncService {
       });
       const memberIds = new Set(memberTerms.map((mt) => mt.memberId));
 
-      // Delete existing member votes for this term
-      console.log(`[MemberVoteSync] Deleting existing member votes...`);
-      await this.prisma.memberVote.deleteMany({
-        where: { vote: { termId } },
-      });
-
       let totalInserted = 0;
 
       for (let i = 0; i < votes.length; i++) {
@@ -65,10 +59,14 @@ export class MemberVoteSyncService {
               result: this.mapResult(row.RESULT_VOTE_MOD),
             }));
 
-          for (let j = 0; j < data.length; j += BATCH_SIZE) {
-            const batch = data.slice(j, j + BATCH_SIZE);
-            await this.prisma.memberVote.createMany({ data: batch, skipDuplicates: true });
-          }
+          // Per-vote atomic delete + re-insert to prevent partial data
+          await this.prisma.$transaction(async (tx) => {
+            await tx.memberVote.deleteMany({ where: { voteId: vote.id } });
+            for (let j = 0; j < data.length; j += BATCH_SIZE) {
+              const batch = data.slice(j, j + BATCH_SIZE);
+              await tx.memberVote.createMany({ data: batch });
+            }
+          });
 
           totalInserted += data.length;
         } catch (err) {
