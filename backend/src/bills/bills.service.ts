@@ -16,6 +16,7 @@ interface FindAllParams {
 }
 
 const TTL_HOUR = 60 * 60; // 1h
+const TTL_DAY = 24 * 60 * 60; // 24h
 
 @Injectable()
 export class BillsService {
@@ -112,6 +113,21 @@ export class BillsService {
     const result = rows.map((r) => r.committee!).filter((c) => !c.includes('특별위원회'));
 
     await this.redis.set(key, result, TTL_HOUR);
+    return result;
+  }
+
+  async findAllIds() {
+    const key = 'bills:all-ids';
+    const cached = await this.redis.get(key);
+    if (cached) return cached;
+
+    const bills = await this.prisma.bill.findMany({
+      select: { id: true, proposedDate: true },
+      orderBy: { proposedDate: 'desc' },
+    });
+
+    const result = bills.map((b) => ({ id: b.id, proposedDate: b.proposedDate }));
+    await this.redis.set(key, result, TTL_DAY);
     return result;
   }
 

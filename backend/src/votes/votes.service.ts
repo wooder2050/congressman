@@ -13,6 +13,7 @@ interface FindAllParams {
 }
 
 const TTL_HOUR = 60 * 60;
+const TTL_DAY = 24 * 60 * 60;
 
 @Injectable()
 export class VotesService {
@@ -81,6 +82,21 @@ export class VotesService {
 
     const result = { total, passed, amended, rejected, discarded };
     await this.redis.set(key, result, TTL_HOUR);
+    return result;
+  }
+
+  async findAllIds() {
+    const key = 'votes:all-ids';
+    const cached = await this.redis.get(key);
+    if (cached) return cached;
+
+    const votes = await this.prisma.vote.findMany({
+      select: { id: true, procDate: true },
+      orderBy: { procDate: 'desc' },
+    });
+
+    const result = votes.map((v) => ({ id: v.id, procDate: v.procDate }));
+    await this.redis.set(key, result, TTL_DAY);
     return result;
   }
 
