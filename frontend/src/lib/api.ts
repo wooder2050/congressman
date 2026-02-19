@@ -166,6 +166,14 @@ export async function getAssets(memberId: string): Promise<AssetResponse> {
   return fetchApi(`/api/members/${memberId}/assets`);
 }
 
+export async function getBillIds(): Promise<{ id: string; proposedDate: string }[]> {
+  return fetchApi("/api/bills/ids");
+}
+
+export async function getVoteIds(): Promise<{ id: string; procDate: string }[]> {
+  return fetchApi("/api/votes/ids");
+}
+
 export async function getBill(id: string): Promise<BillDetail | null> {
   return fetchApi(`/api/bills/${id}`);
 }

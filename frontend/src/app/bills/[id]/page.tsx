@@ -3,6 +3,8 @@ import { getBill } from "@/lib/api";
 import CongressWrapper from "@/common/CongressWrapper";
 import BillDetailInner from "@/components/bills/BillDetailInner";
 import BillDetailSkeleton from "@/components/skeletons/BillDetailSkeleton";
+import BillJsonLd from "@/components/seo/BillJsonLd";
+import BreadcrumbJsonLd from "@/components/seo/BreadcrumbJsonLd";
 
 interface BillDetailPageProps {
   params: Promise<{ id: string }>;
@@ -29,8 +31,18 @@ export default async function BillDetailPage({ params }: BillDetailPageProps) {
   const { id } = await params;
 
   return (
-    <CongressWrapper fallback={<BillDetailSkeleton />}>
-      <BillDetailInner id={id} />
-    </CongressWrapper>
+    <>
+      <BillJsonLd id={id} />
+      <BreadcrumbJsonLd
+        items={[
+          { name: "홈", href: "/" },
+          { name: "법안 목록", href: "/bills" },
+          { name: "법안 상세", href: `/bills/${id}` },
+        ]}
+      />
+      <CongressWrapper fallback={<BillDetailSkeleton />}>
+        <BillDetailInner id={id} />
+      </CongressWrapper>
+    </>
   );
 }

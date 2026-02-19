@@ -48,6 +48,12 @@ export class VotesController {
     return this.votesService.getSummary(parseInt(termId, 10) || 22);
   }
 
+  @Get('ids')
+  @ApiOperation({ summary: '표결 ID 목록', description: 'sitemap용 전체 표결 ID + 처리일 목록' })
+  findAllIds() {
+    return this.votesService.findAllIds();
+  }
+
   @Get(':id/member-votes')
   @ApiOperation({
     summary: '표결별 의원 투표 내역',

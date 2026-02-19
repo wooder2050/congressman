@@ -7,6 +7,7 @@ import TermSelector from "@/components/layout/TermSelector";
 import BottomNav from "@/components/layout/BottomNav";
 import Footer from "@/components/layout/Footer";
 import ScrollToTop from "@/components/layout/ScrollToTop";
+import JsonLd from "@/components/seo/JsonLd";
 
 const GTM_ID = "GTM-5BXVCW6Z";
 
@@ -53,6 +54,28 @@ export default function RootLayout({
         <link
           rel="stylesheet"
           href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css"
+        />
+        <JsonLd
+          data={{
+            "@context": "https://schema.org",
+            "@type": "Organization",
+            name: "국회의원 의정활동 정보",
+            url: "https://www.lawmake.kr",
+            logo: "https://www.lawmake.kr/icon.svg",
+          }}
+        />
+        <JsonLd
+          data={{
+            "@context": "https://schema.org",
+            "@type": "WebSite",
+            name: "국회의원 의정활동 정보",
+            url: "https://www.lawmake.kr",
+            potentialAction: {
+              "@type": "SearchAction",
+              target: "https://www.lawmake.kr/members?search={search_term_string}",
+              "query-input": "required name=search_term_string",
+            },
+          }}
         />
       </head>
       <Script

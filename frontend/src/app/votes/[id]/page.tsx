@@ -3,6 +3,8 @@ import { getVoteMemberVotes } from "@/lib/api";
 import CongressWrapper from "@/common/CongressWrapper";
 import VoteDetailInner from "@/components/votes/VoteDetailInner";
 import VoteDetailSkeleton from "@/components/skeletons/VoteDetailSkeleton";
+import VoteJsonLd from "@/components/seo/VoteJsonLd";
+import BreadcrumbJsonLd from "@/components/seo/BreadcrumbJsonLd";
 
 interface VoteDetailPageProps {
   params: Promise<{ id: string }>;
@@ -30,8 +32,18 @@ export default async function VoteDetailPage({ params }: VoteDetailPageProps) {
   const { id } = await params;
 
   return (
-    <CongressWrapper fallback={<VoteDetailSkeleton />}>
-      <VoteDetailInner id={id} />
-    </CongressWrapper>
+    <>
+      <VoteJsonLd id={id} />
+      <BreadcrumbJsonLd
+        items={[
+          { name: "홈", href: "/" },
+          { name: "표결 목록", href: "/votes" },
+          { name: "표결 상세", href: `/votes/${id}` },
+        ]}
+      />
+      <CongressWrapper fallback={<VoteDetailSkeleton />}>
+        <VoteDetailInner id={id} />
+      </CongressWrapper>
+    </>
   );
 }
