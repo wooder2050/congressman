@@ -104,6 +104,55 @@ export const PARTIES: Record<string, Party> = {
     shortName: "자유통일",
     color: "#004EA2",
   },
+  // 20대
+  saenuri: {
+    id: "saenuri",
+    name: "새누리당",
+    shortName: "새누리",
+    color: "#E61E2B",
+  },
+  "liberty-korea": {
+    id: "liberty-korea",
+    name: "자유한국당",
+    shortName: "한국당",
+    color: "#E61E2B",
+  },
+  minsaeng: {
+    id: "minsaeng",
+    name: "민생당",
+    shortName: "민생당",
+    color: "#45B5AA",
+  },
+  "bareun-mirae": {
+    id: "bareun-mirae",
+    name: "바른미래당",
+    shortName: "바른미래",
+    color: "#00B0CD",
+  },
+  "democratic-peace": {
+    id: "democratic-peace",
+    name: "민주평화당",
+    shortName: "평화당",
+    color: "#3FAE2A",
+  },
+  "our-republican": {
+    id: "our-republican",
+    name: "우리공화당",
+    shortName: "공화당",
+    color: "#E8306A",
+  },
+  minjung: {
+    id: "minjung",
+    name: "민중당",
+    shortName: "민중당",
+    color: "#E8451E",
+  },
+  chinpark: {
+    id: "chinpark",
+    name: "친박신당",
+    shortName: "친박신당",
+    color: "#FF6699",
+  },
 };
 
 export const VOTE_RESULT_MAP = {
