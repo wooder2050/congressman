@@ -60,7 +60,15 @@ export class BillSyncService {
     // 기존 법안 데이터 조회 (변경 감지용)
     const existingBills = await this.prisma.bill.findMany({
       where: { termId },
-      select: { id: true, title: true, proposerName: true, coProposerCount: true, status: true, proposedDate: true, committee: true },
+      select: {
+        id: true,
+        title: true,
+        proposerName: true,
+        coProposerCount: true,
+        status: true,
+        proposedDate: true,
+        committee: true,
+      },
     });
     const existingMap = new Map(existingBills.map((b) => [b.id, b]));
     const existingIds = new Set(existingBills.map((b) => b.id));
@@ -114,7 +122,9 @@ export class BillSyncService {
 
     // 기존 법안: 변경된 것만 update (summary/pdfBookId/detailLink 보존)
     if (updateRows.length > 0) {
-      console.log(`[BillSync]   Updating ${updateRows.length} changed bills (${existingBills.length - newRows.length - updateRows.length} unchanged, skipped)...`);
+      console.log(
+        `[BillSync]   Updating ${updateRows.length} changed bills (${existingBills.length - newRows.length - updateRows.length} unchanged, skipped)...`,
+      );
       for (let i = 0; i < updateRows.length; i += UPDATE_BATCH_SIZE) {
         const batch = updateRows.slice(i, i + UPDATE_BATCH_SIZE);
         for (const row of batch) {
