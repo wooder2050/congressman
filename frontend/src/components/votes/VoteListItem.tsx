@@ -25,6 +25,7 @@ export default function VoteListItem({ vote }: VoteListItemProps) {
           color={resultInfo.color}
           textColor={resultInfo.textColor}
           size="sm"
+          termHint={resultInfo.termKey}
         />
       </div>
 

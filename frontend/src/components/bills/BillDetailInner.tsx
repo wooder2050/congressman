@@ -5,6 +5,7 @@ import { notFound } from "next/navigation";
 import { useCongressSuspenseQuery } from "@/hooks/useCongressQuery";
 import { getBill } from "@/lib/api";
 import ColorBadge from "@/components/ui/color-badge";
+import TermHint from "@/components/ui/term-hint";
 import MemberAvatar from "@/components/members/MemberAvatar";
 import { formatDate, formatDistrict } from "@/lib/utils";
 import { BILL_STATUS_MAP } from "@/lib/constants";
@@ -38,6 +39,7 @@ export default function BillDetailInner({ id }: BillDetailInnerProps) {
             label={statusInfo.label}
             color={statusInfo.color}
             textColor={statusInfo.textColor}
+            termHint={statusInfo.termKey}
           />
         </div>
 
@@ -126,7 +128,10 @@ export default function BillDetailInner({ id }: BillDetailInnerProps) {
             <div className="space-y-4">
               {reps.length > 0 && (
                 <>
-                  <h2 className="text-lg font-bold">대표발의 ({reps.length}명)</h2>
+                  <h2 className="flex items-center gap-1 text-lg font-bold">
+                    대표발의 ({reps.length}명)
+                    <TermHint termKey="chief_proposer" />
+                  </h2>
                   <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3">
                     {reps.map(renderProposerCard)}
                   </div>
@@ -134,7 +139,10 @@ export default function BillDetailInner({ id }: BillDetailInnerProps) {
               )}
               {coProps.length > 0 && (
                 <>
-                  <h2 className="text-lg font-bold">공동발의 ({coProps.length}명)</h2>
+                  <h2 className="flex items-center gap-1 text-lg font-bold">
+                    공동발의 ({coProps.length}명)
+                    <TermHint termKey="co_proposer" />
+                  </h2>
                   <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3">
                     {coProps.map(renderProposerCard)}
                   </div>
@@ -145,7 +153,10 @@ export default function BillDetailInner({ id }: BillDetailInnerProps) {
         })()
       ) : (
         <div className="rounded-xl border border-(--color-border-primary) bg-(--color-bg-primary) p-5">
-          <h2 className="text-lg font-bold">발의자 정보</h2>
+          <h2 className="flex items-center gap-1 text-lg font-bold">
+            발의자 정보
+            {bill.proposerName?.includes("위원장") && <TermHint termKey="committee_alternative" />}
+          </h2>
           <p className="mt-2 text-sm text-(--color-text-tertiary)">
             {bill.proposerName?.includes("위원장")
               ? "위원회 대안으로 발의된 법안으로, 개별 발의자 정보가 없습니다."

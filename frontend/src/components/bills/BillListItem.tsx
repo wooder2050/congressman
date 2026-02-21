@@ -25,6 +25,7 @@ export default function BillListItem({ bill }: BillListItemProps) {
           color={statusInfo.color}
           textColor={statusInfo.textColor}
           size="sm"
+          termHint={statusInfo.termKey}
         />
       </div>
       <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-(--color-text-tertiary)">
