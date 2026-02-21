@@ -53,8 +53,7 @@ async function main() {
     { name: 'photos', run: () => new PhotoSyncService(prisma, api).syncPhotos(termId) },
     {
       name: 'member-votes-full',
-      run: () =>
-        new MemberVoteSyncService(prisma, api, syncLog).syncMemberVotes(termId, 365 * 5),
+      run: () => new MemberVoteSyncService(prisma, api, syncLog).syncMemberVotes(termId, 365 * 5),
     },
   ];
 

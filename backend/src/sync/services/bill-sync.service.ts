@@ -152,7 +152,9 @@ export class BillSyncService {
       }
 
       await this.syncLog.complete(log.id, rows.length);
-      console.log(`[BillSync:Safe] Completed: +${newRows.length} new, ~${updateRows.length} updated`);
+      console.log(
+        `[BillSync:Safe] Completed: +${newRows.length} new, ~${updateRows.length} updated`,
+      );
     } catch (error) {
       const msg = error instanceof Error ? error.message : String(error);
       await this.syncLog.fail(log.id, msg);
@@ -162,10 +164,7 @@ export class BillSyncService {
   }
 
   /** 특정 법안들에 대해서만 proposer 연결 (기존 proposer 삭제 없음) */
-  private async linkProposersForBills(
-    rows: BillApiRow[],
-    termId: number,
-  ): Promise<void> {
+  private async linkProposersForBills(rows: BillApiRow[], termId: number): Promise<void> {
     const memberMap = await this.buildMemberNameMap(termId);
     const allProposers: { billId: string; memberId: string; role: string }[] = [];
 
@@ -198,7 +197,9 @@ export class BillSyncService {
     }
 
     if (allProposers.length > 0) {
-      console.log(`[BillSync:Safe] Linking ${allProposers.length} proposers for ${rows.length} new bills...`);
+      console.log(
+        `[BillSync:Safe] Linking ${allProposers.length} proposers for ${rows.length} new bills...`,
+      );
       for (let i = 0; i < allProposers.length; i += BATCH_SIZE) {
         const batch = allProposers.slice(i, i + BATCH_SIZE);
         await this.prisma.billProposer.createMany({ data: batch, skipDuplicates: true });
