@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { GLOSSARY, getTermsByCategory } from "@/lib/glossary";
+import { getTermsByCategory } from "@/lib/glossary";
 
 export const metadata: Metadata = {
   title: "용어 사전",

@@ -5,7 +5,6 @@ import MetricHint from "./metric-hint";
 
 interface TermHintProps {
   termKey: string;
-  className?: string;
 }
 
 /**
@@ -16,7 +15,7 @@ interface TermHintProps {
  * @example
  * <TermHint termKey="passed_original" />
  */
-export default function TermHint({ termKey, className }: TermHintProps) {
+export default function TermHint({ termKey }: TermHintProps) {
   const term = getTerm(termKey);
 
   if (!term) {
