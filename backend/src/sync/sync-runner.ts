@@ -31,6 +31,7 @@ async function invalidateCache(command: string) {
   }
   if (
     command === 'bills' ||
+    command === 'bills-safe' ||
     command === 'extra-bills' ||
     command === 'bill-content' ||
     command === 'all'
@@ -98,6 +99,9 @@ async function main() {
         break;
       case 'bills':
         await new BillSyncService(prisma, api, syncLog).syncBills(termId);
+        break;
+      case 'bills-safe':
+        await new BillSyncService(prisma, api, syncLog).syncBillsSafe(termId);
         break;
       case 'extra-bills':
         await new ExtraBillSyncService(prisma, api, syncLog).syncExtraBills(termId);

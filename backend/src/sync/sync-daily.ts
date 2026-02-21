@@ -1,7 +1,7 @@
 /**
  * 매일 동기화 스크립트
  *
- * 대상: 법안, 본회의 표결, 의원별 표결, 출석
+ * 대상: 법안, 본회의 표결, 의원별 표결(최근 7일), 출석, 일정
  * 실행: pnpm sync:daily [termId]
  * 권장: 매일 새벽 4시 (KST)
  */
@@ -60,7 +60,7 @@ async function main() {
     { name: 'votes', run: () => new VoteSyncService(prisma, api, syncLog).syncVotes(termId) },
     {
       name: 'member-votes',
-      run: () => new MemberVoteSyncService(prisma, api, syncLog).syncMemberVotes(termId),
+      run: () => new MemberVoteSyncService(prisma, api, syncLog).syncMemberVotes(termId, 7),
     },
     {
       name: 'bill-content',

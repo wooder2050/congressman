@@ -1,9 +1,10 @@
 /**
  * 주간 동기화 스크립트
  *
- * 대상: 의원 정보, 사진
+ * 대상: 의원 정보, 사진, 의원별 표결 전체
  * 실행: pnpm sync:weekly [termId]
  * 권장: 매주 월요일 새벽 3시 (KST)
+ * 주의: member-votes 전체 동기화는 약 1시간 소요
  */
 import 'dotenv/config';
 import { PrismaClient } from '@prisma/client';
@@ -12,6 +13,7 @@ import { AssemblyApiService } from './services/assembly-api.service';
 import { SyncLogService } from './services/sync-log.service';
 import { MemberSyncService } from './services/member-sync.service';
 import { PhotoSyncService } from './services/photo-sync.service';
+import { MemberVoteSyncService } from './services/member-vote-sync.service';
 
 async function invalidateCache(prefixes: string[]) {
   const url = process.env.UPSTASH_REDIS_REST_URL;
@@ -49,6 +51,11 @@ async function main() {
   const tasks: { name: string; run: () => Promise<void> }[] = [
     { name: 'members', run: () => new MemberSyncService(prisma, api, syncLog).syncMembers(termId) },
     { name: 'photos', run: () => new PhotoSyncService(prisma, api).syncPhotos(termId) },
+    {
+      name: 'member-votes-full',
+      run: () =>
+        new MemberVoteSyncService(prisma, api, syncLog).syncMemberVotes(termId, 365 * 5),
+    },
   ];
 
   for (const task of tasks) {
