@@ -170,7 +170,7 @@ export const VOTE_RESULT_MAP = {
     textColor: "#595959",
     termKey: "vote_discarded",
   },
-  other: { label: "기타", color: "#F5F5F5", textColor: "#595959" },
+  other: { label: "기타", color: "#F5F5F5", textColor: "#595959", termKey: undefined },
 } as const;
 
 export const MEMBER_VOTE_RESULT_MAP = {
