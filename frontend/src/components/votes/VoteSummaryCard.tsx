@@ -1,6 +1,7 @@
 "use client";
 
 import DonutChart from "@/components/charts/DonutChart";
+import TermHint from "@/components/ui/term-hint";
 import { VOTE_RESULT_MAP } from "@/lib/constants";
 import type { VoteSummary } from "@/types";
 
@@ -10,10 +11,30 @@ interface VoteSummaryCardProps {
 
 export default function VoteSummaryCard({ summary }: VoteSummaryCardProps) {
   const chartData = [
-    { name: "원안가결", value: summary.passed, color: VOTE_RESULT_MAP.passed.color },
-    { name: "수정가결", value: summary.amended, color: VOTE_RESULT_MAP.amended.color },
-    { name: "부결", value: summary.rejected, color: VOTE_RESULT_MAP.rejected.color },
-    { name: "폐기", value: summary.discarded, color: VOTE_RESULT_MAP.discarded.color },
+    {
+      name: "원안가결",
+      value: summary.passed,
+      color: VOTE_RESULT_MAP.passed.color,
+      termKey: "passed_original",
+    },
+    {
+      name: "수정가결",
+      value: summary.amended,
+      color: VOTE_RESULT_MAP.amended.color,
+      termKey: "passed_amended",
+    },
+    {
+      name: "부결",
+      value: summary.rejected,
+      color: VOTE_RESULT_MAP.rejected.color,
+      termKey: "rejected",
+    },
+    {
+      name: "폐기",
+      value: summary.discarded,
+      color: VOTE_RESULT_MAP.discarded.color,
+      termKey: "vote_discarded",
+    },
   ];
 
   return (
@@ -24,8 +45,9 @@ export default function VoteSummaryCard({ summary }: VoteSummaryCardProps) {
           {chartData.map((d) => (
             <div key={d.name} className="flex items-center gap-2">
               <div className="h-3 w-3 shrink-0 rounded-full" style={{ backgroundColor: d.color }} />
-              <span className="text-sm whitespace-nowrap text-(--color-text-secondary)">
+              <span className="flex items-center gap-0.5 text-sm whitespace-nowrap text-(--color-text-secondary)">
                 {d.name}
+                <TermHint termKey={d.termKey} />
               </span>
               <span className="text-sm font-bold">{d.value.toLocaleString()}건</span>
             </div>
