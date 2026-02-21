@@ -39,6 +39,7 @@ export default function BillDetailInner({ id }: BillDetailInnerProps) {
             label={statusInfo.label}
             color={statusInfo.color}
             textColor={statusInfo.textColor}
+            termHint={statusInfo.termKey}
           />
         </div>
 
