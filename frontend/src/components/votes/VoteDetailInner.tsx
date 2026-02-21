@@ -41,6 +41,7 @@ export default function VoteDetailInner({ id }: VoteDetailInnerProps) {
             label={resultInfo.label}
             color={resultInfo.color}
             textColor={resultInfo.textColor}
+            termHint={resultInfo.termKey}
           />
         </div>
 
