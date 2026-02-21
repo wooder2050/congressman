@@ -9,7 +9,7 @@ jobs:
   sync:
     name: Weekly Data Sync
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 120
 
     defaults:
       run:
