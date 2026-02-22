@@ -1,8 +1,8 @@
 name: Daily Sync
 
 on:
-  schedule:
-    - cron: "0 19 * * *" # UTC 19:00 = KST 04:00
+  # schedule:
+  #   - cron: "0 19 * * *" # UTC 19:00 = KST 04:00
   workflow_dispatch: {}
 
 jobs:

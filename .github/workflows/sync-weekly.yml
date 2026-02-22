@@ -1,8 +1,8 @@
 name: Weekly Sync
 
 on:
-  schedule:
-    - cron: "0 18 * * 1" # UTC 18:00 Mon = KST 03:00 Mon
+  # schedule:
+  #   - cron: "0 18 * * 1" # UTC 18:00 Mon = KST 03:00 Mon
   workflow_dispatch: {}
 
 jobs:
