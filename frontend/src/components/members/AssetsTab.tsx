@@ -9,19 +9,27 @@ interface AssetsTabProps {
   memberId: string;
 }
 
-/** 천원 단위 → 읽기 좋은 한국어 금액 */
+/** 천원 단위 → 읽기 좋은 한국어 금액 (일관된 형식) */
 function formatAmount(amountInThousands: number): string {
   const abs = Math.abs(amountInThousands);
   const sign = amountInThousands < 0 ? "-" : "";
 
+  // 1억 이상: 억 단위 (소수점 1자리, .0 제거)
   if (abs >= 100_000) {
     const eok = abs / 100_000;
-    return `${sign}${eok.toFixed(1).replace(/\.0$/, "")}억원`;
+    return `${sign}${eok.toLocaleString("ko-KR", {
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 1,
+    })}억원`;
   }
-  if (abs >= 10_000) {
-    const man = abs / 10_000;
-    return `${sign}${man.toFixed(0)}만원`;
+
+  // 1만원 이상: 만 단위 (천 단위 구분자)
+  if (abs >= 10) {
+    const man = abs / 10;
+    return `${sign}${man.toLocaleString("ko-KR")}만원`;
   }
+
+  // 1만원 미만: 천원 단위 (천 단위 구분자)
   return `${sign}${abs.toLocaleString("ko-KR")}천원`;
 }
 
