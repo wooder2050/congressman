@@ -9,6 +9,7 @@ import TermHint from "@/components/ui/term-hint";
 import MemberAvatar from "@/components/members/MemberAvatar";
 import { formatDate, formatDistrict } from "@/lib/utils";
 import { BILL_STATUS_MAP } from "@/lib/constants";
+import type { BillStructuredSummary } from "@/types";
 
 interface BillDetailInnerProps {
   id: string;
@@ -50,6 +51,11 @@ export default function BillDetailInner({ id }: BillDetailInnerProps) {
           </span>
           <span>{formatDate(bill.proposedDate)}</span>
           {bill.committee && <span>{bill.committee}</span>}
+          {bill.topic && (
+            <span className="rounded-full bg-(--color-bg-tertiary) px-2.5 py-0.5 text-xs font-medium text-(--color-text-secondary)">
+              {bill.topic}
+            </span>
+          )}
         </div>
 
         <div className="flex flex-wrap gap-3">
@@ -83,6 +89,44 @@ export default function BillDetailInner({ id }: BillDetailInnerProps) {
           )}
         </div>
       </div>
+
+      {bill.simpleSummary && (
+        <div className="space-y-4 rounded-xl border border-(--color-border-primary) bg-(--color-bg-primary) p-5">
+          <h2 className="flex items-center gap-2 text-lg font-bold">
+            AI 요약
+            <span className="rounded-full bg-(--color-bg-tertiary) px-2 py-0.5 text-xs font-normal text-(--color-text-tertiary)">
+              Beta
+            </span>
+          </h2>
+          <p className="text-base leading-relaxed font-medium text-(--color-text-primary)">
+            {bill.simpleSummary}
+          </p>
+          {bill.structuredSummary &&
+            (() => {
+              const s = bill.structuredSummary as BillStructuredSummary;
+              const items = [
+                { label: "현재 상황", value: s.situation },
+                { label: "문제점", value: s.problem },
+                { label: "개정 내용", value: s.change },
+                { label: "기대 효과", value: s.impact },
+              ];
+              return (
+                <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                  {items.map((item) => (
+                    <div key={item.label} className="rounded-lg bg-(--color-bg-secondary) p-3">
+                      <dt className="mb-1 text-xs font-semibold text-(--color-text-tertiary)">
+                        {item.label}
+                      </dt>
+                      <dd className="text-sm leading-relaxed text-(--color-text-secondary)">
+                        {item.value}
+                      </dd>
+                    </div>
+                  ))}
+                </div>
+              );
+            })()}
+        </div>
+      )}
 
       {bill.summary && (
         <div className="space-y-3 rounded-xl border border-(--color-border-primary) bg-(--color-bg-primary) p-5">

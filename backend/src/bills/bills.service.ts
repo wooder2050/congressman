@@ -168,6 +168,9 @@ export class BillsService {
       committee: bill.committee,
       hasVote: !!voteExists,
       summary: bill.summary ?? null,
+      simpleSummary: bill.simpleSummary ?? null,
+      structuredSummary: bill.structuredSummary ?? null,
+      topic: bill.topic ?? null,
       pdfUrl: bill.pdfBookId
         ? `https://likms.assembly.go.kr/filegate/servlet/FileGate?bookId=${bill.pdfBookId}&type=1`
         : null,
