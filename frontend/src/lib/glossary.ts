@@ -101,6 +101,76 @@ export const GLOSSARY: Record<string, GlossaryTerm> = {
       "같은 주제의 여러 법안이 발의되었을 때, 위원회가 이들의 장점을 모아 새로운 법안으로 통합한 것입니다. 개별 법안보다 더 나은 내용으로 만들어집니다.",
     category: "bill",
   },
+  alternative_discard: {
+    term: "대안반영폐기",
+    shortDesc: "이 법안의 내용이 다른 법안(대안)에 합쳐져서 원래 법안은 폐기된 것입니다.",
+    fullDesc:
+      "부정적인 의미가 아닙니다. 법안의 핵심 내용이 위원회 대안에 반영되어 살아있으며, 형식적으로 원래 법안만 폐기 처리된 것입니다.",
+    category: "bill",
+  },
+  term_expiry_discard: {
+    term: "임기만료폐기",
+    shortDesc: "국회의원 4년 임기 내에 처리되지 못해 자동 폐기된 법안입니다.",
+    fullDesc:
+      "국회의원의 임기(4년)가 끝나면, 그 임기 동안 처리되지 못한 법안은 자동으로 폐기됩니다. 다음 대 국회에서 다시 발의해야 합니다.",
+    category: "bill",
+  },
+  withdrawal: {
+    term: "철회",
+    shortDesc: "발의자가 스스로 법안을 거둬들인 것입니다.",
+    fullDesc:
+      "법안을 발의한 의원이 여러 사유(정치적 합의, 내용 보완 필요, 상황 변화 등)로 직접 법안을 취소하는 것입니다.",
+    category: "bill",
+  },
+  partial_amendment: {
+    term: "일부개정법률안",
+    shortDesc: "기존 법의 일부 조항을 고치는 법안입니다.",
+    fullDesc:
+      "이미 존재하는 법률의 특정 조항만 수정·삭제·추가하는 법안입니다. 전체 법안 중 가장 많은 비중을 차지합니다.",
+    category: "bill",
+  },
+  full_amendment: {
+    term: "전부개정법률안",
+    shortDesc: "기존 법을 전면적으로 다시 쓰는 법안입니다.",
+    fullDesc:
+      "법률의 체계나 내용이 크게 달라져야 할 때, 기존 법 전체를 새로 작성하는 법안입니다. 법률 번호는 유지되지만 내용은 완전히 새로워집니다.",
+    category: "bill",
+  },
+  enactment: {
+    term: "제정법률안",
+    shortDesc: "완전히 새로운 법을 만드는 법안입니다.",
+    fullDesc:
+      "기존에 없던 법률을 새로 만드는 법안입니다. 새로운 사회 현상이나 정책 수요에 대응하기 위해 발의됩니다.",
+    category: "bill",
+  },
+  proposer_count: {
+    term: "○○ 외 N인",
+    shortDesc: "대표발의자 + 공동발의자 수를 합친 표현입니다.",
+    fullDesc:
+      "예를 들어 '홍길동 외 20인'은 대표발의자 홍길동 + 공동발의자 20명 = 총 21명이 참여했다는 뜻입니다. 법안 발의에는 최소 10명의 찬성이 필요합니다.",
+    category: "bill",
+  },
+  referral: {
+    term: "회부",
+    shortDesc: "발의된 법안이 담당 위원회로 넘겨지는 것입니다.",
+    fullDesc:
+      "발의된 법안은 국회의장이 해당 법안의 소관 상임위원회를 정하여 넘기는데, 이를 회부라 합니다. 회부 이후 위원회에서 본격적인 심사가 시작됩니다.",
+    category: "bill",
+  },
+  tabling: {
+    term: "상정",
+    shortDesc: "법안이 회의 안건으로 올라가는 것입니다.",
+    fullDesc:
+      "위원회나 본회의에서 특정 법안을 공식 안건으로 채택하여 논의를 시작하는 것입니다. 상정되어야 심사와 표결이 가능합니다.",
+    category: "bill",
+  },
+  attendance_rate: {
+    term: "출석률",
+    shortDesc: "본회의(전체 회의) 표결에 참석한 비율입니다.",
+    fullDesc:
+      "전체 본회의 표결 중 의원이 실제로 참여한 비율입니다. 출장, 질병 등으로 불참할 수 있으며, 출석률은 의원의 의정활동 성실도를 보여주는 지표 중 하나입니다.",
+    category: "activity",
+  },
 
   // === 투표 행위 ===
   vote_yes: {

@@ -109,9 +109,12 @@ model Bill {
   proposedDate    String
   termId          Int
   committee       String?
-  summary         String?  // 제안이유 및 주요내용
-  pdfBookId       String?  // 의안원문 PDF bookId
-  detailLink      String?  // 의안정보시스템 상세 URL
+  summary           String?  // 제안이유 및 주요내용
+  simpleSummary     String?  // AI 원라이너 요약
+  structuredSummary Json?    // { situation, problem, change, impact }
+  topic             String?  // 주제 카테고리
+  pdfBookId         String?  // 의안원문 PDF bookId
+  detailLink        String?  // 의안정보시스템 상세 URL
 
   term      Term           @relation(fields: [termId], references: [id])
   proposers BillProposer[]
