@@ -1,6 +1,11 @@
 "use client";
 
-import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react";
+import {
+  ChevronsLeftIcon,
+  ChevronLeftIcon,
+  ChevronRightIcon,
+  ChevronsRightIcon,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 interface PaginationProps {
@@ -10,17 +15,17 @@ interface PaginationProps {
 }
 
 function getPageNumbers(current: number, total: number): (number | "...")[] {
-  if (total <= 5) return Array.from({ length: total }, (_, i) => i + 1);
+  if (total <= 7) return Array.from({ length: total }, (_, i) => i + 1);
 
   const pages: (number | "...")[] = [1];
 
-  if (current > 3) pages.push("...");
+  if (current > 4) pages.push("...");
 
-  const start = Math.max(2, current - 1);
-  const end = Math.min(total - 1, current + 1);
+  const start = Math.max(2, current - 2);
+  const end = Math.min(total - 1, current + 2);
   for (let i = start; i <= end; i++) pages.push(i);
 
-  if (current < total - 2) pages.push("...");
+  if (current < total - 3) pages.push("...");
 
   pages.push(total);
   return pages;
@@ -33,6 +38,15 @@ export default function Pagination({ currentPage, totalPages, onPageChange }: Pa
 
   return (
     <nav aria-label="페이지 탐색" className="flex items-center justify-center gap-1">
+      <Button
+        variant="outline"
+        size="icon-sm"
+        onClick={() => onPageChange(Math.max(1, currentPage - 10))}
+        disabled={currentPage <= 1}
+        aria-label="10페이지 이전"
+      >
+        <ChevronsLeftIcon className="h-4 w-4" />
+      </Button>
       <Button
         variant="outline"
         size="icon-sm"
@@ -81,6 +95,15 @@ export default function Pagination({ currentPage, totalPages, onPageChange }: Pa
         aria-label="다음 페이지"
       >
         <ChevronRightIcon className="h-4 w-4" />
+      </Button>
+      <Button
+        variant="outline"
+        size="icon-sm"
+        onClick={() => onPageChange(Math.min(totalPages, currentPage + 10))}
+        disabled={currentPage >= totalPages}
+        aria-label="10페이지 다음"
+      >
+        <ChevronsRightIcon className="h-4 w-4" />
       </Button>
     </nav>
   );
