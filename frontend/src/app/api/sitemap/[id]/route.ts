@@ -26,7 +26,9 @@ async function buildSitemap(id: number) {
         if (res.ok) {
           const members: { id: string }[] = await res.json();
           for (const m of members) {
-            entries.push(urlEntry(`${BASE}/members/${m.id}`, { changefreq: "weekly", priority: 0.7 }));
+            entries.push(
+              urlEntry(`${BASE}/members/${m.id}`, { changefreq: "weekly", priority: 0.7 }),
+            );
           }
         }
       } catch {
@@ -52,7 +54,7 @@ async function buildSitemap(id: number) {
           lastmod: b.proposedDate || undefined,
           changefreq: "monthly",
           priority: 0.5,
-        })
+        }),
       );
       return urlset(entries);
     }
@@ -64,7 +66,7 @@ async function buildSitemap(id: number) {
           lastmod: v.procDate || undefined,
           changefreq: "monthly",
           priority: 0.5,
-        })
+        }),
       );
       return urlset(entries);
     }

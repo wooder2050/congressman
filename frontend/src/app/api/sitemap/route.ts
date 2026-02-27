@@ -16,7 +16,10 @@ export function xmlResponse(xml: string) {
   });
 }
 
-export function urlEntry(url: string, opts?: { lastmod?: string; changefreq?: string; priority?: number }) {
+export function urlEntry(
+  url: string,
+  opts?: { lastmod?: string; changefreq?: string; priority?: number },
+) {
   let entry = `  <url>\n    <loc>${url}</loc>`;
   if (opts?.lastmod) entry += `\n    <lastmod>${opts.lastmod}</lastmod>`;
   if (opts?.changefreq) entry += `\n    <changefreq>${opts.changefreq}</changefreq>`;
