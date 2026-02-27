@@ -26,6 +26,9 @@ build/
 .claude/
 .mcp.json
 
+# Google credentials
+.google/
+
 # Documents
 *.docx
 
