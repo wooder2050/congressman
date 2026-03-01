@@ -74,6 +74,7 @@ export async function getBills(params: {
   search?: string;
   month?: string;
   committee?: string;
+  topic?: string;
   page?: number;
   limit?: number;
 }): Promise<{ bills: Bill[]; total: number }> {
@@ -85,6 +86,7 @@ export async function getBills(params: {
   if (params.month) searchParams.set("month", params.month);
   if (params.search) searchParams.set("search", params.search);
   if (params.committee) searchParams.set("committee", params.committee);
+  if (params.topic) searchParams.set("topic", params.topic);
   if (params.page) searchParams.set("page", String(params.page));
   if (params.limit) searchParams.set("limit", String(params.limit));
   return fetchApi(`/api/bills?${searchParams.toString()}`);
@@ -92,6 +94,10 @@ export async function getBills(params: {
 
 export async function getBillSummary(termId: number): Promise<BillSummary> {
   return fetchApi(`/api/bills/summary?termId=${termId}`);
+}
+
+export async function getBillTopics(termId: number): Promise<{ topic: string; count: number }[]> {
+  return fetchApi(`/api/bills/topics?termId=${termId}`);
 }
 
 export async function getBillCommittees(termId: number): Promise<string[]> {
@@ -221,6 +227,7 @@ Object.defineProperty(getAttendance, "queryKey", { value: "attendance" });
 Object.defineProperty(getAbsenceDetails, "queryKey", { value: "absenceDetails" });
 Object.defineProperty(getBills, "queryKey", { value: "bills" });
 Object.defineProperty(getBillSummary, "queryKey", { value: "billSummary" });
+Object.defineProperty(getBillTopics, "queryKey", { value: "billTopics" });
 Object.defineProperty(getBillCommittees, "queryKey", { value: "billCommittees" });
 Object.defineProperty(getMemberHistory, "queryKey", { value: "memberHistory" });
 Object.defineProperty(getVotes, "queryKey", { value: "votes" });

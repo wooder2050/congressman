@@ -258,7 +258,12 @@ export default function BillsTab({ memberId, termId }: BillsTabProps) {
                       termHint={statusInfo.termKey}
                     />
                   </div>
-                  <div className="flex items-center gap-3 text-xs text-(--color-text-tertiary)">
+                  {bill.simpleSummary && (
+                    <p className="mt-1 line-clamp-1 text-sm text-(--color-text-secondary)">
+                      {bill.simpleSummary}
+                    </p>
+                  )}
+                  <div className="mt-2 flex items-center gap-3 text-xs text-(--color-text-tertiary)">
                     <span>{formatDate(bill.proposedDate)}</span>
                     {bill.committee && <span>{bill.committee}</span>}
                     <span>외 {bill.coProposerCount}인</span>

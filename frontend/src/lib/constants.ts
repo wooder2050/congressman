@@ -191,3 +191,21 @@ export const BILL_STATUS_MAP = {
     termKey: "committee_review",
   },
 } as const;
+
+export const TOPIC_MAP: Record<string, { label: string; emoji: string }> = {
+  "경제·산업": { label: "경제·산업", emoji: "💰" },
+  "법·사법": { label: "법·사법", emoji: "⚖️" },
+  "환경·에너지": { label: "환경·에너지", emoji: "🌱" },
+  "노동·고용": { label: "노동·고용", emoji: "💼" },
+  "보건·의료": { label: "보건·의료", emoji: "🏥" },
+  "교통·물류": { label: "교통·물류", emoji: "🚗" },
+  "부동산·주거": { label: "부동산·주거", emoji: "🏠" },
+  "복지·돌봄": { label: "복지·돌봄", emoji: "🤝" },
+  "육아·교육": { label: "육아·교육", emoji: "👶" },
+  "행정·지방자치": { label: "행정·지방자치", emoji: "🏛️" },
+  "농업·식품": { label: "농업·식품", emoji: "🌾" },
+  "문화·체육": { label: "문화·체육", emoji: "🎭" },
+  "과학기술·ICT": { label: "과학기술·ICT", emoji: "📱" },
+  "외교·안보": { label: "외교·안보", emoji: "🌐" },
+  "안전·치안": { label: "안전·치안", emoji: "🔒" },
+};

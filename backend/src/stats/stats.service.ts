@@ -238,6 +238,8 @@ export class StatsService {
         proposedDate: b.proposedDate,
         termId: b.termId,
         committee: b.committee,
+        simpleSummary: b.simpleSummary ?? null,
+        topic: b.topic ?? null,
       })),
       closeVotes: closeVotesRaw.map((v) => ({
         id: v.id,

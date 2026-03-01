@@ -28,6 +28,11 @@ export default function BillListItem({ bill }: BillListItemProps) {
           termHint={statusInfo.termKey}
         />
       </div>
+      {bill.simpleSummary && (
+        <p className="mt-1 line-clamp-1 text-sm text-(--color-text-secondary)">
+          {bill.simpleSummary}
+        </p>
+      )}
       <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-(--color-text-tertiary)">
         <span className="font-semibold text-(--color-text-secondary)">
           {bill.proposerName} 외 {bill.coProposerCount}인

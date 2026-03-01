@@ -9,11 +9,12 @@ import { Input } from "@/components/ui/input";
 import Pagination from "@/components/ui/pagination";
 import BillSummaryCard from "./BillSummaryCard";
 import BillListItem from "./BillListItem";
-import { BILL_STATUS_MAP } from "@/lib/constants";
+import { BILL_STATUS_MAP, TOPIC_MAP } from "@/lib/constants";
 import { SkeletonBillItem } from "@/components/skeletons/BillListSkeleton";
 
 interface BillListInnerProps {
   termId: number;
+  initialTopic?: string;
 }
 
 const LIMIT = 20;
@@ -48,7 +49,7 @@ function formatMonthButton(yearMonth: string): string {
   return `${y}.${parseInt(m, 10)}`;
 }
 
-export default function BillListInner({ termId }: BillListInnerProps) {
+export default function BillListInner({ termId, initialTopic }: BillListInnerProps) {
   const { data: summary } = useCongressSuspenseQuery(getBillSummary, termId);
   const { data: committees = [] } = useCongressSuspenseQuery(getBillCommittees, termId);
   const [selectedStatus, setSelectedStatus] = useState<string | null>(null);
@@ -56,10 +57,12 @@ export default function BillListInner({ termId }: BillListInnerProps) {
   const [searchInput, setSearchInput] = useState("");
   const debouncedSearch = useDeferredValue(searchInput);
   const [selectedMonth, setSelectedMonth] = useState<string | null>(null);
+  const [selectedTopic, setSelectedTopic] = useState<string | null>(initialTopic ?? null);
   const [page, setPage] = useState(1);
-  const [showFilters, setShowFilters] = useState(false);
+  const [showFilters, setShowFilters] = useState(!!initialTopic);
   const monthScrollRef = useRef<HTMLDivElement>(null);
   const committeeScrollRef = useRef<HTMLDivElement>(null);
+  const topicScrollRef = useRef<HTMLDivElement>(null);
 
   const months = useMemo(() => generateMonths(termId), [termId]);
 
@@ -75,6 +78,10 @@ export default function BillListInner({ termId }: BillListInnerProps) {
     setSelectedMonth(v);
     setPage(1);
   }, []);
+  const handleTopicChange = useCallback((v: string | null) => {
+    setSelectedTopic(v);
+    setPage(1);
+  }, []);
   const handleSearchChange = useCallback((v: string) => {
     setSearchInput(v);
     setPage(1);
@@ -88,6 +95,7 @@ export default function BillListInner({ termId }: BillListInnerProps) {
     ...(debouncedSearch ? { search: debouncedSearch } : {}),
     ...(selectedMonth ? { month: selectedMonth } : {}),
     ...(selectedCommittee ? { committee: selectedCommittee } : {}),
+    ...(selectedTopic ? { topic: selectedTopic } : {}),
   };
 
   const { data, isLoading, isError, error } = useCongressQuery(getBills, queryParams);
@@ -106,6 +114,13 @@ export default function BillListInner({ termId }: BillListInnerProps) {
     if (active) active.scrollIntoView({ inline: "center", block: "nearest" });
   }, [selectedCommittee]);
 
+  // 주제 선택 시 스크롤
+  useEffect(() => {
+    if (!topicScrollRef.current) return;
+    const active = topicScrollRef.current.querySelector("[data-active='true']");
+    if (active) active.scrollIntoView({ inline: "center", block: "nearest" });
+  }, [selectedTopic]);
+
   const bills = data?.bills ?? [];
   const total = data?.total ?? 0;
   const totalPages = Math.ceil(total / LIMIT);
@@ -114,7 +129,8 @@ export default function BillListInner({ termId }: BillListInnerProps) {
     throw error;
   }
 
-  const activeFilterCount = (selectedCommittee ? 1 : 0) + (selectedMonth ? 1 : 0);
+  const activeFilterCount =
+    (selectedCommittee ? 1 : 0) + (selectedMonth ? 1 : 0) + (selectedTopic ? 1 : 0);
 
   return (
     <div className="space-y-4">
@@ -173,6 +189,7 @@ export default function BillListInner({ termId }: BillListInnerProps) {
                 onClick={() => {
                   handleCommitteeChange(null);
                   handleMonthChange(null);
+                  handleTopicChange(null);
                 }}
                 className="flex items-center gap-1 text-xs text-(--color-text-tertiary) hover:text-(--color-text-primary)"
               >
@@ -181,6 +198,35 @@ export default function BillListInner({ termId }: BillListInnerProps) {
               </button>
             )}
           </div>
+
+          {/* 주제 — AI 요약이 있는 22대만 표시 */}
+          {termId === 22 && (
+            <div>
+              <p className="mb-1.5 text-xs font-medium text-(--color-text-tertiary)">주제</p>
+              <div ref={topicScrollRef} className="scrollbar-none flex gap-1.5 overflow-x-auto">
+                <Button
+                  variant={selectedTopic === null ? "chipActive" : "chip"}
+                  size="xs"
+                  onClick={() => handleTopicChange(null)}
+                  className="shrink-0 rounded-full px-3 text-xs font-semibold"
+                >
+                  전체
+                </Button>
+                {Object.entries(TOPIC_MAP).map(([key, { emoji, label }]) => (
+                  <Button
+                    key={key}
+                    variant={selectedTopic === key ? "chipActive" : "chip"}
+                    size="xs"
+                    onClick={() => handleTopicChange(key)}
+                    data-active={selectedTopic === key}
+                    className="shrink-0 rounded-full px-3 text-xs font-semibold"
+                  >
+                    {emoji} {label}
+                  </Button>
+                ))}
+              </div>
+            </div>
+          )}
 
           {/* 위원회 */}
           {committees.length > 0 && (

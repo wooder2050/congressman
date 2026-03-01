@@ -73,6 +73,8 @@ export interface Bill {
   proposedDate: string;
   termId: number;
   committee?: string;
+  simpleSummary?: string | null;
+  topic?: string | null;
 }
 
 export interface BillSummary {
