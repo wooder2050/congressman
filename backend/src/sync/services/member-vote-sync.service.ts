@@ -20,17 +20,26 @@ export class MemberVoteSyncService {
     private readonly syncLog: SyncLogService,
   ) {}
 
-  async syncMemberVotes(termId: number): Promise<void> {
+  async syncMemberVotes(termId: number, incrementalDays = 7): Promise<void> {
     const log = await this.syncLog.start('member-votes', termId);
 
     try {
+      // Incremental: only sync votes from recent days
+      const cutoffDate = new Date();
+      cutoffDate.setDate(cutoffDate.getDate() - incrementalDays);
+
       const votes = await this.prisma.vote.findMany({
-        where: { termId },
+        where: {
+          termId,
+          procDate: { gte: cutoffDate.toISOString().slice(0, 10) },
+        },
         select: { id: true },
         orderBy: { procDate: 'desc' },
       });
 
-      console.log(`[MemberVoteSync] Found ${votes.length} votes for term ${termId}`);
+      console.log(
+        `[MemberVoteSync] Found ${votes.length} votes (last ${incrementalDays} days) for term ${termId}`,
+      );
 
       // Build set of known member IDs for this term
       const memberTerms = await this.prisma.memberTerm.findMany({

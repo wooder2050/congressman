@@ -41,6 +41,7 @@ function formatPeriod(start: string, end: string | null): string {
 
 /** 대수별 임기 시작연도 (국회 대수와 연도는 선형 관계가 아님) */
 const TERM_START_YEAR: Record<number, number> = {
+  20: 2016,
   21: 2020,
   22: 2024,
 };

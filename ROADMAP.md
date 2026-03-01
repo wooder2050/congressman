@@ -136,9 +136,17 @@
 
 ---
 
-## Phase 5: 콘텐츠 + 수익화 — ❌ 미착수
+## Phase 5: 콘텐츠 + 수익화 — 🔄 진행 중
 
 > 기획안 v4.2 §11 수익화 전략 + §12 콘텐츠 유통 전략 기반
+
+### 법안 AI 요약
+- [x] DB 스키마 확장 (simpleSummary, structuredSummary, topic)
+- [x] 법안 데이터 배치 export 스크립트 (`export-bills.ts`)
+- [x] AI 요약 생성 — 261/834 배치 완료 (batch-001 ~ batch-315, 5,212건 DB import 완료)
+- [x] 요약 DB import 스크립트 (`import-summaries.ts`) — 에러 구분, 경로 검증, 캐시 무효화
+- [x] 법안 상세 페이지 AI 요약 UI (topic 배지 + simpleSummary + structuredSummary 카드)
+- [ ] 나머지 배치 요약 생성 (batch-248 ~ batch-834)
 
 ### 콘텐츠 유통
 - [ ] SEO 블로그 글 10~20개 선 작성 (검색 유입 자산화)

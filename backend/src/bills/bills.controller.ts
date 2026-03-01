@@ -54,6 +54,12 @@ export class BillsController {
     return this.billsService.getSummary(parseInt(termId, 10) || 22);
   }
 
+  @Get('ids')
+  @ApiOperation({ summary: '법안 ID 목록', description: 'sitemap용 전체 법안 ID + 발의일 목록' })
+  findAllIds() {
+    return this.billsService.findAllIds();
+  }
+
   @Get('committees')
   @ApiOperation({
     summary: '위원회 목록',

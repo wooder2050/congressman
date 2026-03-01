@@ -16,6 +16,9 @@ interface MemberApiRow {
   ENG_NM: string;
 }
 
+/** 현재 국회 대수 — 현직 API는 이 대수에만 사용 */
+const CURRENT_TERM = 22;
+
 export class PhotoSyncService {
   constructor(
     private readonly prisma: PrismaClient,
@@ -23,9 +26,14 @@ export class PhotoSyncService {
   ) {}
 
   async syncPhotos(termId: number): Promise<void> {
-    const rows = await this.api.fetchAll<MemberApiRow>('nwvrqwxyaytdsfvhu', {
-      AGE: String(termId),
-    });
+    let rows: MemberApiRow[];
+    if (termId === CURRENT_TERM) {
+      rows = await this.api.fetchAll<MemberApiRow>('nwvrqwxyaytdsfvhu', {});
+    } else {
+      rows = await this.api.fetchAll<MemberApiRow>('npffdutiapkzbfyvr', {
+        UNIT_CD: String(100000 + termId),
+      });
+    }
 
     console.log(`[PhotoSync] Fetched ${rows.length} members for term ${termId}`);
 

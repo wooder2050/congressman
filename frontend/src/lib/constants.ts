@@ -104,26 +104,90 @@ export const PARTIES: Record<string, Party> = {
     shortName: "자유통일",
     color: "#004EA2",
   },
+  // 20대
+  saenuri: {
+    id: "saenuri",
+    name: "새누리당",
+    shortName: "새누리",
+    color: "#E61E2B",
+  },
+  "liberty-korea": {
+    id: "liberty-korea",
+    name: "자유한국당",
+    shortName: "한국당",
+    color: "#E61E2B",
+  },
+  minsaeng: {
+    id: "minsaeng",
+    name: "민생당",
+    shortName: "민생당",
+    color: "#45B5AA",
+  },
+  "bareun-mirae": {
+    id: "bareun-mirae",
+    name: "바른미래당",
+    shortName: "바른미래",
+    color: "#00B0CD",
+  },
+  "democratic-peace": {
+    id: "democratic-peace",
+    name: "민주평화당",
+    shortName: "평화당",
+    color: "#3FAE2A",
+  },
+  "our-republican": {
+    id: "our-republican",
+    name: "우리공화당",
+    shortName: "공화당",
+    color: "#E8306A",
+  },
+  minjung: {
+    id: "minjung",
+    name: "민중당",
+    shortName: "민중당",
+    color: "#E8451E",
+  },
+  chinpark: {
+    id: "chinpark",
+    name: "친박신당",
+    shortName: "친박신당",
+    color: "#FF6699",
+  },
 };
 
 export const VOTE_RESULT_MAP = {
-  passed: { label: "원안가결", color: "#111111", textColor: "#FFFFFF" },
-  amended: { label: "수정가결", color: "#6B7280", textColor: "#FFFFFF" },
-  rejected: { label: "부결", color: "#DC2626", textColor: "#FFFFFF" },
-  discarded: { label: "폐기", color: "#E5E5E5", textColor: "#595959" },
-  other: { label: "기타", color: "#F5F5F5", textColor: "#595959" },
+  passed: { label: "원안가결", color: "#111111", textColor: "#FFFFFF", termKey: "passed_original" },
+  amended: {
+    label: "수정가결",
+    color: "#6B7280",
+    textColor: "#FFFFFF",
+    termKey: "passed_amended",
+  },
+  rejected: { label: "부결", color: "#DC2626", textColor: "#FFFFFF", termKey: "rejected" },
+  discarded: {
+    label: "폐기",
+    color: "#E5E5E5",
+    textColor: "#595959",
+    termKey: "vote_discarded",
+  },
+  other: { label: "기타", color: "#F5F5F5", textColor: "#595959", termKey: undefined },
 } as const;
 
 export const MEMBER_VOTE_RESULT_MAP = {
-  yes: { label: "찬성", color: "#16A34A", textColor: "#FFFFFF" },
-  no: { label: "반대", color: "#DC2626", textColor: "#FFFFFF" },
-  abstain: { label: "기권", color: "#404040", textColor: "#FFFFFF" },
-  absent: { label: "불참", color: "#D4D4D4", textColor: "#595959" },
+  yes: { label: "찬성", color: "#16A34A", textColor: "#FFFFFF", termKey: "vote_yes" },
+  no: { label: "반대", color: "#DC2626", textColor: "#FFFFFF", termKey: "vote_no" },
+  abstain: { label: "기권", color: "#404040", textColor: "#FFFFFF", termKey: "vote_abstain" },
+  absent: { label: "불참", color: "#D4D4D4", textColor: "#595959", termKey: "vote_absent" },
 } as const;
 
 export const BILL_STATUS_MAP = {
-  passed: { label: "가결", color: "#0F766E", textColor: "#FFFFFF" },
-  pending: { label: "계류", color: "#737373", textColor: "#FFFFFF" },
-  discarded: { label: "폐기", color: "#D4D4D4", textColor: "#595959" },
-  committee: { label: "위원회 심사", color: "#111111", textColor: "#FFFFFF" },
+  passed: { label: "가결", color: "#0F766E", textColor: "#FFFFFF", termKey: "passed" },
+  pending: { label: "계류", color: "#737373", textColor: "#FFFFFF", termKey: "pending" },
+  discarded: { label: "폐기", color: "#D4D4D4", textColor: "#595959", termKey: "discarded" },
+  committee: {
+    label: "위원회 심사",
+    color: "#111111",
+    textColor: "#FFFFFF",
+    termKey: "committee_review",
+  },
 } as const;

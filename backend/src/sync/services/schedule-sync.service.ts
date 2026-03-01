@@ -54,8 +54,12 @@ export class ScheduleSyncService {
         `[ScheduleSync] Fetched ${plenaryRows.length} plenary + ${committeeRows.length} committee schedules`,
       );
 
-      // 기존 데이터 삭제 후 재삽입 (일정은 변경/삭제될 수 있으므로)
-      await this.prisma.schedule.deleteMany({ where: { termId } });
+      // API 응답이 비어있으면 삭제 스킵 (API 장애 대비)
+      if (plenaryRows.length === 0 && committeeRows.length === 0) {
+        console.warn('[ScheduleSync] API returned 0 records — skipping to preserve existing data');
+        await this.syncLog.complete(log.id, 0);
+        return;
+      }
 
       const plenaryData = plenaryRows.map((row) => ({
         type: 'plenary' as const,
@@ -85,13 +89,15 @@ export class ScheduleSyncService {
 
       const allData = [...plenaryData, ...committeeData];
 
-      for (let i = 0; i < allData.length; i += BATCH_SIZE) {
-        const batch = allData.slice(i, i + BATCH_SIZE);
-        await this.prisma.schedule.createMany({ data: batch, skipDuplicates: true });
-        console.log(
-          `[ScheduleSync]   ${Math.min(i + BATCH_SIZE, allData.length)}/${allData.length}`,
-        );
-      }
+      // 트랜잭션으로 삭제 + 재삽입 (API 데이터 확보 후에만 실행)
+      await this.prisma.$transaction(async (tx) => {
+        await tx.schedule.deleteMany({ where: { termId } });
+        for (let i = 0; i < allData.length; i += BATCH_SIZE) {
+          const batch = allData.slice(i, i + BATCH_SIZE);
+          await tx.schedule.createMany({ data: batch, skipDuplicates: true });
+        }
+      });
+      console.log(`[ScheduleSync]   Inserted ${allData.length} records`);
 
       await this.syncLog.complete(log.id, allData.length);
       console.log(`[ScheduleSync] Completed: ${allData.length} records`);

@@ -35,11 +35,10 @@ export class SchedulesService {
   }
 
   async getUpcomingSchedules(termId: number, limit = 5) {
-    const key = `schedules:upcoming:${termId}:${limit}`;
+    const today = new Date().toISOString().slice(0, 10);
+    const key = `schedules:upcoming:${termId}:${limit}:${today}`;
     const cached = await this.redis.get(key);
     if (cached) return cached;
-
-    const today = new Date().toISOString().slice(0, 10);
 
     const schedules = await this.prisma.schedule.findMany({
       where: { termId, meetingDate: { gte: today } },

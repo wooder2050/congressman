@@ -3,6 +3,8 @@ import { getMember, getMemberTerms } from "@/lib/api";
 import CongressWrapper from "@/common/CongressWrapper";
 import MemberDetailInner from "@/components/members/MemberDetailInner";
 import MemberDetailSkeleton from "@/components/skeletons/MemberDetailSkeleton";
+import MemberJsonLd from "@/components/seo/MemberJsonLd";
+import BreadcrumbJsonLd from "@/components/seo/BreadcrumbJsonLd";
 
 interface MemberDetailPageProps {
   params: Promise<{ id: string }>;
@@ -36,8 +38,18 @@ export default async function MemberDetailPage({ params, searchParams }: MemberD
   const termId = Number(term) || 22;
 
   return (
-    <CongressWrapper fallback={<MemberDetailSkeleton />}>
-      <MemberDetailInner id={id} termId={termId} defaultTab={tab || "attendance"} />
-    </CongressWrapper>
+    <>
+      <MemberJsonLd id={id} />
+      <BreadcrumbJsonLd
+        items={[
+          { name: "홈", href: "/" },
+          { name: "의원 목록", href: "/members" },
+          { name: "의원 상세", href: `/members/${id}` },
+        ]}
+      />
+      <CongressWrapper fallback={<MemberDetailSkeleton />}>
+        <MemberDetailInner id={id} termId={termId} defaultTab={tab || "attendance"} />
+      </CongressWrapper>
+    </>
   );
 }

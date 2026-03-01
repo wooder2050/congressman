@@ -202,11 +202,22 @@ export interface BillProposerInfo {
   district: string;
 }
 
+// ====== 법안 AI 요약 ======
+export interface BillStructuredSummary {
+  situation: string;
+  problem: string;
+  change: string;
+  impact: string;
+}
+
 // ====== 법안 상세 ======
 export interface BillDetail extends Omit<Bill, "proposerIds"> {
   proposers: BillProposerInfo[];
   hasVote?: boolean;
   summary?: string | null;
+  simpleSummary?: string | null;
+  structuredSummary?: BillStructuredSummary | null;
+  topic?: string | null;
   pdfUrl?: string | null;
   detailLink?: string | null;
 }

@@ -16,6 +16,7 @@ interface FindAllParams {
 }
 
 const TTL_HOUR = 60 * 60; // 1h
+const TTL_DAY = 24 * 60 * 60; // 24h
 
 @Injectable()
 export class BillsService {
@@ -115,6 +116,21 @@ export class BillsService {
     return result;
   }
 
+  async findAllIds() {
+    const key = 'bills:all-ids';
+    const cached = await this.redis.get(key);
+    if (cached) return cached;
+
+    const bills = await this.prisma.bill.findMany({
+      select: { id: true, proposedDate: true },
+      orderBy: { proposedDate: 'desc' },
+    });
+
+    const result = bills.map((b) => ({ id: b.id, proposedDate: b.proposedDate }));
+    await this.redis.set(key, result, TTL_DAY);
+    return result;
+  }
+
   async findById(id: string) {
     const key = `bill:${id}`;
     const cached = await this.redis.get(key);
@@ -152,6 +168,9 @@ export class BillsService {
       committee: bill.committee,
       hasVote: !!voteExists,
       summary: bill.summary ?? null,
+      simpleSummary: bill.simpleSummary ?? null,
+      structuredSummary: bill.structuredSummary ?? null,
+      topic: bill.topic ?? null,
       pdfUrl: bill.pdfBookId
         ? `https://likms.assembly.go.kr/filegate/servlet/FileGate?bookId=${bill.pdfBookId}&type=1`
         : null,

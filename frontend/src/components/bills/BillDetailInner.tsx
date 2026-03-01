@@ -5,9 +5,11 @@ import { notFound } from "next/navigation";
 import { useCongressSuspenseQuery } from "@/hooks/useCongressQuery";
 import { getBill } from "@/lib/api";
 import ColorBadge from "@/components/ui/color-badge";
+import TermHint from "@/components/ui/term-hint";
 import MemberAvatar from "@/components/members/MemberAvatar";
 import { formatDate, formatDistrict } from "@/lib/utils";
 import { BILL_STATUS_MAP } from "@/lib/constants";
+import type { BillStructuredSummary } from "@/types";
 
 interface BillDetailInnerProps {
   id: string;
@@ -38,6 +40,7 @@ export default function BillDetailInner({ id }: BillDetailInnerProps) {
             label={statusInfo.label}
             color={statusInfo.color}
             textColor={statusInfo.textColor}
+            termHint={statusInfo.termKey}
           />
         </div>
 
@@ -48,6 +51,11 @@ export default function BillDetailInner({ id }: BillDetailInnerProps) {
           </span>
           <span>{formatDate(bill.proposedDate)}</span>
           {bill.committee && <span>{bill.committee}</span>}
+          {bill.topic && (
+            <span className="rounded-full bg-(--color-bg-tertiary) px-2.5 py-0.5 text-xs font-medium text-(--color-text-secondary)">
+              {bill.topic}
+            </span>
+          )}
         </div>
 
         <div className="flex flex-wrap gap-3">
@@ -82,6 +90,44 @@ export default function BillDetailInner({ id }: BillDetailInnerProps) {
         </div>
       </div>
 
+      {bill.simpleSummary && (
+        <div className="space-y-4 rounded-xl border border-(--color-border-primary) bg-(--color-bg-primary) p-5">
+          <h2 className="flex items-center gap-2 text-lg font-bold">
+            AI 요약
+            <span className="rounded-full bg-(--color-bg-tertiary) px-2 py-0.5 text-xs font-normal text-(--color-text-tertiary)">
+              Beta
+            </span>
+          </h2>
+          <p className="text-base leading-relaxed font-medium text-(--color-text-primary)">
+            {bill.simpleSummary}
+          </p>
+          {bill.structuredSummary &&
+            (() => {
+              const s = bill.structuredSummary as BillStructuredSummary;
+              const items = [
+                { label: "현재 상황", value: s.situation },
+                { label: "문제점", value: s.problem },
+                { label: "개정 내용", value: s.change },
+                { label: "기대 효과", value: s.impact },
+              ];
+              return (
+                <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                  {items.map((item) => (
+                    <div key={item.label} className="rounded-lg bg-(--color-bg-secondary) p-3">
+                      <dt className="mb-1 text-xs font-semibold text-(--color-text-tertiary)">
+                        {item.label}
+                      </dt>
+                      <dd className="text-sm leading-relaxed text-(--color-text-secondary)">
+                        {item.value}
+                      </dd>
+                    </div>
+                  ))}
+                </div>
+              );
+            })()}
+        </div>
+      )}
+
       {bill.summary && (
         <div className="space-y-3 rounded-xl border border-(--color-border-primary) bg-(--color-bg-primary) p-5">
           <h2 className="text-lg font-bold">제안이유 및 주요내용</h2>
@@ -91,7 +137,7 @@ export default function BillDetailInner({ id }: BillDetailInnerProps) {
         </div>
       )}
 
-      {bill.proposers.length > 0 &&
+      {bill.proposers.length > 0 ? (
         (() => {
           const reps = bill.proposers.filter((p) => p.role === "representative");
           const coProps = bill.proposers.filter((p) => p.role !== "representative");
@@ -126,7 +172,10 @@ export default function BillDetailInner({ id }: BillDetailInnerProps) {
             <div className="space-y-4">
               {reps.length > 0 && (
                 <>
-                  <h2 className="text-lg font-bold">대표발의 ({reps.length}명)</h2>
+                  <h2 className="flex items-center gap-1 text-lg font-bold">
+                    대표발의 ({reps.length}명)
+                    <TermHint termKey="chief_proposer" />
+                  </h2>
                   <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3">
                     {reps.map(renderProposerCard)}
                   </div>
@@ -134,7 +183,10 @@ export default function BillDetailInner({ id }: BillDetailInnerProps) {
               )}
               {coProps.length > 0 && (
                 <>
-                  <h2 className="text-lg font-bold">공동발의 ({coProps.length}명)</h2>
+                  <h2 className="flex items-center gap-1 text-lg font-bold">
+                    공동발의 ({coProps.length}명)
+                    <TermHint termKey="co_proposer" />
+                  </h2>
                   <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3">
                     {coProps.map(renderProposerCard)}
                   </div>
@@ -142,7 +194,22 @@ export default function BillDetailInner({ id }: BillDetailInnerProps) {
               )}
             </div>
           );
-        })()}
+        })()
+      ) : (
+        <div className="rounded-xl border border-(--color-border-primary) bg-(--color-bg-primary) p-5">
+          <h2 className="flex items-center gap-1 text-lg font-bold">
+            발의자 정보
+            {bill.proposerName?.includes("위원장") && <TermHint termKey="committee_alternative" />}
+          </h2>
+          <p className="mt-2 text-sm text-(--color-text-tertiary)">
+            {bill.proposerName?.includes("위원장")
+              ? "위원회 대안으로 발의된 법안으로, 개별 발의자 정보가 없습니다."
+              : bill.proposerName === "정부"
+                ? "정부 제출 법안으로, 개별 발의자 정보가 없습니다."
+                : "이 법안의 개별 발의자 정보가 제공되지 않습니다."}
+          </p>
+        </div>
+      )}
     </div>
   );
 }

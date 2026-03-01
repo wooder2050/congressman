@@ -18,8 +18,8 @@ export function formatNumber(value: number): string {
   return value.toLocaleString("ko-KR");
 }
 
-export function getElectedLabel(count: number): string {
-  if (count === 1) return "초선";
+export function getElectedLabel(count: number | null | undefined): string {
+  if (!count || count === 1) return "초선";
   if (count === 2) return "재선";
   if (count === 3) return "3선";
   return `${count}선`;
