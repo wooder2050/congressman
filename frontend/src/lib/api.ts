@@ -227,6 +227,7 @@ Object.defineProperty(getAttendance, "queryKey", { value: "attendance" });
 Object.defineProperty(getAbsenceDetails, "queryKey", { value: "absenceDetails" });
 Object.defineProperty(getBills, "queryKey", { value: "bills" });
 Object.defineProperty(getBillSummary, "queryKey", { value: "billSummary" });
+Object.defineProperty(getBillTopics, "queryKey", { value: "billTopics" });
 Object.defineProperty(getBillCommittees, "queryKey", { value: "billCommittees" });
 Object.defineProperty(getMemberHistory, "queryKey", { value: "memberHistory" });
 Object.defineProperty(getVotes, "queryKey", { value: "votes" });
