@@ -9,6 +9,7 @@ import ColorBadge from "@/components/ui/color-badge";
 import { Button } from "@/components/ui/button";
 import { formatDate } from "@/lib/utils";
 import { BILL_STATUS_MAP } from "@/lib/constants";
+import TermHint from "@/components/ui/term-hint";
 import type { Bill } from "@/types";
 
 interface BillsTabProps {
@@ -26,8 +27,8 @@ function formatYearMonth(ym: string) {
 }
 
 const roleOptions = [
-  { id: "representative" as const, label: "대표발의" },
-  { id: "co" as const, label: "공동발의" },
+  { id: "representative" as const, label: "대표발의", termKey: "chief_proposer" },
+  { id: "co" as const, label: "공동발의", termKey: "co_proposer" },
 ];
 
 export default function BillsTab({ memberId, termId }: BillsTabProps) {
@@ -131,6 +132,7 @@ export default function BillsTab({ memberId, termId }: BillsTabProps) {
             className="shrink-0 rounded-full px-4 text-sm font-semibold"
           >
             {opt.label}
+            <TermHint termKey={opt.termKey} />
           </Button>
         ))}
       </div>
@@ -253,6 +255,7 @@ export default function BillsTab({ memberId, termId }: BillsTabProps) {
                       color={statusInfo.color}
                       textColor={statusInfo.textColor}
                       size="sm"
+                      termHint={statusInfo.termKey}
                     />
                   </div>
                   <div className="flex items-center gap-3 text-xs text-(--color-text-tertiary)">

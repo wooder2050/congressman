@@ -1,6 +1,7 @@
 "use client";
 
 import DonutChart from "@/components/charts/DonutChart";
+import TermHint from "@/components/ui/term-hint";
 import { BILL_STATUS_MAP } from "@/lib/constants";
 import type { BillSummary } from "@/types";
 
@@ -10,10 +11,25 @@ interface BillSummaryCardProps {
 
 export default function BillSummaryCard({ summary }: BillSummaryCardProps) {
   const chartData = [
-    { name: "가결", value: summary.passed, color: BILL_STATUS_MAP.passed.color },
-    { name: "계류", value: summary.pending, color: BILL_STATUS_MAP.pending.color },
-    { name: "폐기", value: summary.discarded, color: BILL_STATUS_MAP.discarded.color },
-    { name: "위원회 심사", value: summary.committee, color: BILL_STATUS_MAP.committee.color },
+    { name: "가결", value: summary.passed, color: BILL_STATUS_MAP.passed.color, termKey: "passed" },
+    {
+      name: "계류",
+      value: summary.pending,
+      color: BILL_STATUS_MAP.pending.color,
+      termKey: "pending",
+    },
+    {
+      name: "폐기",
+      value: summary.discarded,
+      color: BILL_STATUS_MAP.discarded.color,
+      termKey: "discarded",
+    },
+    {
+      name: "위원회 심사",
+      value: summary.committee,
+      color: BILL_STATUS_MAP.committee.color,
+      termKey: "committee_review",
+    },
   ];
 
   return (
@@ -27,6 +43,7 @@ export default function BillSummaryCard({ summary }: BillSummaryCardProps) {
               <span className="text-sm whitespace-nowrap text-(--color-text-secondary)">
                 {d.name}
               </span>
+              <TermHint termKey={d.termKey} />
               <span className="text-sm font-bold">{d.value.toLocaleString()}건</span>
             </div>
           ))}
