@@ -76,6 +76,25 @@ export function AttendanceRankingSkeleton() {
   );
 }
 
+export function TopicSectionSkeleton() {
+  return (
+    <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
+      {Array.from({ length: 10 }).map((_, i) => (
+        <div
+          key={i}
+          className="flex animate-pulse items-center gap-3 rounded-xl border border-(--color-border-primary) bg-(--color-bg-primary) p-3"
+        >
+          <div className="h-8 w-8 shrink-0 rounded bg-(--color-bg-tertiary)" />
+          <div className="min-w-0 flex-1">
+            <div className="h-4 w-16 rounded bg-(--color-bg-tertiary)" />
+            <div className="mt-1 h-3 w-10 rounded bg-(--color-bg-tertiary)" />
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
 export function ActivityHighlightsSkeleton() {
   return (
     <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">

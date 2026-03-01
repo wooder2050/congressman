@@ -23,6 +23,7 @@ export class BillsController {
   @ApiQuery({ name: 'search', required: false, description: '법안 제목 검색어' })
   @ApiQuery({ name: 'month', required: false, description: '월 필터 (YYYY-MM)' })
   @ApiQuery({ name: 'committee', required: false, description: '위원회 필터' })
+  @ApiQuery({ name: 'topic', required: false, description: '주제 필터 (정규화된 카테고리명)' })
   findAll(
     @Query('termId') termId?: string,
     @Query('memberId') memberId?: string,
@@ -31,6 +32,7 @@ export class BillsController {
     @Query('search') search?: string,
     @Query('month') month?: string,
     @Query('committee') committee?: string,
+    @Query('topic') topic?: string,
     @Query('page') page?: string,
     @Query('limit') limit?: string,
   ) {
@@ -42,6 +44,7 @@ export class BillsController {
       search: search || undefined,
       month: month || undefined,
       committee: committee || undefined,
+      topic: topic || undefined,
       page: Math.max(parseInt(page ?? '', 10) || 1, 1),
       limit: Math.min(Math.max(parseInt(limit ?? '', 10) || 20, 1), 100),
     });
@@ -68,6 +71,16 @@ export class BillsController {
   @ApiQuery({ name: 'termId', required: true, type: Number, description: '국회 대수' })
   getCommittees(@Query('termId') termId: string) {
     return this.billsService.getCommittees(parseInt(termId, 10) || 22);
+  }
+
+  @Get('topics')
+  @ApiOperation({
+    summary: '주제별 법안 수',
+    description: '정규화된 주제 카테고리별 법안 수를 반환합니다',
+  })
+  @ApiQuery({ name: 'termId', required: true, type: Number, description: '국회 대수' })
+  getTopics(@Query('termId') termId: string) {
+    return this.billsService.getTopicCounts(parseInt(termId, 10) || 22);
   }
 
   @Get(':id')

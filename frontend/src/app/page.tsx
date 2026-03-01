@@ -1,11 +1,13 @@
 import CongressWrapper from "@/common/CongressWrapper";
 import HomeStats from "@/components/home/HomeStats";
 import UpcomingSchedules from "@/components/home/UpcomingSchedules";
+import TopicSection from "@/components/home/TopicSection";
 import RecentActivity from "@/components/home/RecentActivity";
 import AttendanceRanking from "@/components/home/AttendanceRanking";
 import ActivityHighlights from "@/components/home/ActivityHighlights";
 import {
   HomeStatsSkeleton,
+  TopicSectionSkeleton,
   AttendanceRankingSkeleton,
   RecentActivitySkeleton,
   ActivityHighlightsSkeleton,
@@ -40,6 +42,16 @@ export default async function HomePage({ searchParams }: HomePageProps) {
         <CongressWrapper key={`schedules-${termId}`} fallback={<UpcomingSchedulesSkeleton />}>
           <UpcomingSchedules termId={termId} />
         </CongressWrapper>
+      )}
+
+      {/* 주제별 법안 — AI 요약이 있는 22대만 표시 */}
+      {termId === 22 && (
+        <section className="space-y-3">
+          <h2 className="text-xl font-bold">지금 국회에서 논의 중인 주제</h2>
+          <CongressWrapper key={`topics-${termId}`} fallback={<TopicSectionSkeleton />}>
+            <TopicSection termId={termId} />
+          </CongressWrapper>
+        </section>
       )}
 
       {/* 최근 활동 */}
