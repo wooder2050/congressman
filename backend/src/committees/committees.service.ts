@@ -116,7 +116,7 @@ export class CommitteesService {
 
     const today = new Date().toISOString().slice(0, 10);
 
-    const [billStats, members, recentMinutes, upcomingSchedules] = await Promise.all([
+    const [billStats, members, upcomingSchedules] = await Promise.all([
       // 법안 통계
       Promise.all([
         this.prisma.bill.count({ where: { termId, committee: committeeName } }),
@@ -130,12 +130,6 @@ export class CommitteesService {
         },
         include: { member: true, party: true },
         orderBy: { committeeRole: 'asc' },
-      }),
-      // 최근 회의록
-      this.prisma.meetingMinutes.findMany({
-        where: { termId, committeeName },
-        orderBy: { confDate: 'desc' },
-        take: 10,
       }),
       // 다가오는 일정
       this.prisma.schedule.findMany({
@@ -163,15 +157,6 @@ export class CommitteesService {
           partyColor: mt.party.color,
           role: mt.committeeRole,
         })),
-      recentMinutes: recentMinutes.map((m) => ({
-        id: m.id,
-        conferNum: m.conferNum,
-        title: m.title,
-        className: m.className,
-        confDate: m.confDate,
-        agendaCount: Array.isArray(m.agendas) ? (m.agendas as unknown[]).length : 0,
-        agendas: m.agendas,
-      })),
       upcomingSchedules: upcomingSchedules.map((s) => ({
         meetingDate: s.meetingDate,
         meetingTime: s.meetingTime,
@@ -188,7 +173,7 @@ export class CommitteesService {
     const cached = await this.redis.get(key);
     if (cached) return cached;
 
-    const pageSize = 20;
+    const pageSize = 5;
     const [items, total] = await Promise.all([
       this.prisma.meetingMinutes.findMany({
         where: { termId, committeeName },

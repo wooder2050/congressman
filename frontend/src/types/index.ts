@@ -296,7 +296,6 @@ export interface CommitteeDetail {
   billPassed: number;
   passRate: number;
   members: CommitteeMemberInfo[];
-  recentMinutes: MeetingMinutesSummary[];
   upcomingSchedules: CommitteeNextSchedule[];
 }
 

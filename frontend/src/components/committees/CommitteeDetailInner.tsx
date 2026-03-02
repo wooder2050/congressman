@@ -1,10 +1,12 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { useCongressSuspenseQuery } from "@/hooks/useCongressQuery";
-import { getCommitteeDetail } from "@/lib/api";
+import { useCongressSuspenseQuery, useCongressQuery } from "@/hooks/useCongressQuery";
+import { getCommitteeDetail, getCommitteeMinutes } from "@/lib/api";
 import { formatDate } from "@/lib/utils";
+import Pagination from "@/components/ui/pagination";
 import type { CommitteeMemberInfo, MeetingMinutesSummary, CommitteeNextSchedule } from "@/types";
 
 interface CommitteeDetailInnerProps {
@@ -74,21 +76,8 @@ export default function CommitteeDetailInner({ name, termId }: CommitteeDetailIn
         </div>
       </section>
 
-      {/* 최근 회의록 */}
-      <section>
-        <div className="mb-3 flex items-center justify-between">
-          <h2 className="text-lg font-bold text-(--color-text-primary)">최근 회의록</h2>
-        </div>
-        {data.recentMinutes.length > 0 ? (
-          <div className="space-y-3">
-            {data.recentMinutes.map((m: MeetingMinutesSummary) => (
-              <MinutesCard key={m.id} minutes={m} />
-            ))}
-          </div>
-        ) : (
-          <p className="text-sm text-(--color-text-tertiary)">회의록 데이터가 없습니다.</p>
-        )}
-      </section>
+      {/* 회의록 */}
+      <MinutesSection name={name} termId={termId} />
 
       {/* 소관 법안 보기 링크 */}
       <div className="text-center">
@@ -144,6 +133,55 @@ function MemberCard({ member, termId }: { member: CommitteeMemberInfo; termId: n
         </div>
       </div>
     </Link>
+  );
+}
+
+function MinutesSection({ name, termId }: { name: string; termId: number }) {
+  const [page, setPage] = useState(1);
+  const { data, isError } = useCongressQuery(getCommitteeMinutes, { name, termId, page });
+
+  if (isError) {
+    return (
+      <section>
+        <h2 className="mb-3 text-lg font-bold text-(--color-text-primary)">회의록</h2>
+        <p className="text-sm text-(--color-text-tertiary)">회의록을 불러오지 못했습니다.</p>
+      </section>
+    );
+  }
+
+  if (!data) {
+    return (
+      <section>
+        <h2 className="mb-3 text-lg font-bold text-(--color-text-primary)">회의록</h2>
+        <div className="animate-pulse space-y-3">
+          {[1, 2, 3].map((i) => (
+            <div key={i} className="h-24 rounded-xl bg-(--color-bg-tertiary)" />
+          ))}
+        </div>
+      </section>
+    );
+  }
+
+  return (
+    <section>
+      <div className="mb-3 flex items-center justify-between">
+        <h2 className="text-lg font-bold text-(--color-text-primary)">회의록 ({data.total}건)</h2>
+      </div>
+      {data.items.length > 0 ? (
+        <>
+          <div className="space-y-3">
+            {data.items.map((m: MeetingMinutesSummary) => (
+              <MinutesCard key={m.id} minutes={m} />
+            ))}
+          </div>
+          <div className="mt-4">
+            <Pagination currentPage={page} totalPages={data.totalPages} onPageChange={setPage} />
+          </div>
+        </>
+      ) : (
+        <p className="text-sm text-(--color-text-tertiary)">회의록 데이터가 없습니다.</p>
+      )}
+    </section>
   );
 }
 
