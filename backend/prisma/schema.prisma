@@ -15,11 +15,12 @@ model Term {
   endDate   DateTime
   isCurrent Boolean  @default(false)
 
-  memberTerms MemberTerm[]
-  attendances Attendance[]
-  bills       Bill[]
-  votes       Vote[]
-  schedules   Schedule[]
+  memberTerms    MemberTerm[]
+  attendances    Attendance[]
+  bills          Bill[]
+  votes          Vote[]
+  schedules      Schedule[]
+  meetingMinutes MeetingMinutes[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -235,6 +236,26 @@ model Schedule {
   @@index([termId])
   @@index([meetingDate])
   @@index([type])
+}
+
+model MeetingMinutes {
+  id            String   @id              // CONF_ID
+  conferNum     String                    // CONFER_NUM (회의 번호)
+  title         String                    // TITLE
+  className     String   @default("")     // CLASS_NAME (회의 구분)
+  committeeName String                    // COMM_NAME
+  confDate      String                    // CONF_DATE (YYYY-MM-DD)
+  agendas       Json     @default("[]")   // [{subName, vodLinkUrl, confLinkUrl, pdfLinkUrl}]
+  termId        Int
+
+  term Term @relation(fields: [termId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([termId])
+  @@index([committeeName])
+  @@index([confDate])
 }
 
 model SyncLog {

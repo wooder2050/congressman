@@ -15,6 +15,7 @@ import { BillContentSyncService } from './services/bill-content-sync.service';
 import { ScheduleSyncService } from './services/schedule-sync.service';
 import { CommitteeSyncService } from './services/committee-sync.service';
 import { BillJudgeSyncService } from './services/bill-judge-sync.service';
+import { MeetingMinutesSyncService } from './services/meeting-minutes-sync.service';
 
 async function invalidateCache(command: string) {
   const url = process.env.UPSTASH_REDIS_REST_URL;
@@ -60,6 +61,9 @@ async function invalidateCache(command: string) {
   }
   if (command === 'schedules') {
     prefixes.push('schedules:');
+  }
+  if (command === 'meeting-minutes') {
+    prefixes.push('committees:');
   }
 
   for (const prefix of prefixes) {
@@ -134,6 +138,9 @@ async function main() {
         break;
       case 'bill-judge':
         await new BillJudgeSyncService(prisma, api, syncLog).syncBillJudge(termId);
+        break;
+      case 'meeting-minutes':
+        await new MeetingMinutesSyncService(prisma, api, syncLog).syncMeetingMinutes(termId);
         break;
       case 'all':
       default: {

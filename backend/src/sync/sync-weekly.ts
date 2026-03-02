@@ -14,6 +14,7 @@ import { SyncLogService } from './services/sync-log.service';
 import { MemberSyncService } from './services/member-sync.service';
 import { PhotoSyncService } from './services/photo-sync.service';
 import { MemberVoteSyncService } from './services/member-vote-sync.service';
+import { MeetingMinutesSyncService } from './services/meeting-minutes-sync.service';
 
 async function invalidateCache(prefixes: string[]) {
   const url = process.env.UPSTASH_REDIS_REST_URL;
@@ -55,6 +56,10 @@ async function main() {
       name: 'member-votes-full',
       run: () => new MemberVoteSyncService(prisma, api, syncLog).syncMemberVotes(termId, 365 * 5),
     },
+    {
+      name: 'meeting-minutes',
+      run: () => new MeetingMinutesSyncService(prisma, api, syncLog).syncMeetingMinutes(termId),
+    },
   ];
 
   for (const task of tasks) {
@@ -69,7 +74,7 @@ async function main() {
     }
   }
 
-  await invalidateCache(['terms:', 'members:', 'member:']);
+  await invalidateCache(['terms:', 'members:', 'member:', 'committees:']);
 
   const totalMs = Date.now() - start;
   const failed = results.filter((r) => !r.ok);
