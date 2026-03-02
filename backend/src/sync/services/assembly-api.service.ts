@@ -30,7 +30,9 @@ export class AssemblyApiService {
       }
 
       console.log(`[API] Fetching ${endpoint} page ${pIndex} ...`);
-      const res = await fetch(url.toString());
+      const res = await fetch(url.toString(), {
+        headers: { 'User-Agent': 'Mozilla/5.0' },
+      });
       const json = await res.json();
 
       const data = json[endpoint];

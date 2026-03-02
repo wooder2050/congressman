@@ -313,6 +313,17 @@ export class BillsService {
         : null,
       detailLink:
         bill.detailLink ?? `https://likms.assembly.go.kr/bill/billDetail.do?billId=${bill.id}`,
+      progress: {
+        committeeDate: bill.committeeDate ?? null,
+        committeePresentDate: bill.committeePresentDate ?? null,
+        committeeResult: bill.committeeResultCode ?? null,
+        committeeResultDate: bill.committeeResultDate ?? null,
+        lawSubmitDate: bill.lawSubmitDate ?? null,
+        lawPresentDate: bill.lawPresentDate ?? null,
+        lawResult: bill.lawResultCode ?? null,
+        lawResultDate: bill.lawResultDate ?? null,
+        plenaryDate: bill.plenaryDate ?? null,
+      },
       proposers: proposers.map((p) => {
         const term = p.member.memberTerms[0];
         return {
