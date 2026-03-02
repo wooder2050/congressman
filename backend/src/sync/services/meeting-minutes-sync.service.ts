@@ -111,7 +111,7 @@ export class MeetingMinutesSyncService {
         // 안건 내용까지 비교 (길이가 같아도 텍스트/링크가 변경될 수 있음)
         const newConfDate = this.normalizeDate(entry.row.CONF_DATE);
         if (
-          existing.conferNum !== (entry.row.CONFER_NUM || '') ||
+          existing.conferNum !== String(entry.row.CONFER_NUM || '') ||
           existing.title !== entry.row.TITLE ||
           existing.className !== (entry.row.CLASS_NAME || '') ||
           existing.committeeName !== (entry.row.COMM_NAME || '') ||
@@ -134,7 +134,7 @@ export class MeetingMinutesSyncService {
         await this.prisma.meetingMinutes.createMany({
           data: batch.map(({ row, agendas }) => ({
             id: row.CONF_ID,
-            conferNum: row.CONFER_NUM || '',
+            conferNum: String(row.CONFER_NUM || ''),
             title: row.TITLE || '',
             className: row.CLASS_NAME || '',
             committeeName: row.COMM_NAME || '',
@@ -152,7 +152,7 @@ export class MeetingMinutesSyncService {
       await this.prisma.meetingMinutes.update({
         where: { id: row.CONF_ID },
         data: {
-          conferNum: row.CONFER_NUM || '',
+          conferNum: String(row.CONFER_NUM || ''),
           title: row.TITLE || '',
           className: row.CLASS_NAME || '',
           committeeName: row.COMM_NAME || '',

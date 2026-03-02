@@ -223,12 +223,19 @@ model BillProgress {
 - [x] 프론트엔드 `/committees` 페이지
 - [x] 의원 상세 페이지 위원회 활동 섹션 — CommitteeTab.tsx로 기존 구현 완료
 
-### Phase C: 회의록 연동
-- [ ] 회의록 API 코드명 확인 및 데이터 구조 파악
-- [ ] ProceedingInfoService (data.go.kr) API 키 발급 및 테스트
-- [ ] 위원회 출석 데이터 수집 방식 결정 (API vs 크롤링)
-- [ ] 의원별 위원회 출석률 계산 로직
-- [ ] 프론트엔드 위원회 출석률 UI
+### Phase C: 회의록 연동 + 위원회 상세 페이지
+- [x] 회의록 API 코드명 확인 — `ncwgseseafwbuheph` (37,471건/22대, 1,394개 회의로 그룹핑)
+- [x] DB 스키마: MeetingMinutes 모델 추가 (Prisma)
+- [x] MeetingMinutesSyncService 구현 (CONF_ID 그룹핑, 안건 JSON 배열)
+- [x] sync-runner.ts, sync-weekly.ts에 meeting-minutes 등록
+- [x] 백엔드 위원회 상세 API (`GET /api/committees/detail`, `GET /api/committees/minutes`)
+- [x] 프론트엔드 타입 + API 함수 (CommitteeDetail, CommitteeMinutesResponse 등)
+- [x] 프론트엔드 위원회 상세 페이지 (`/committees/[name]`) — 법안 통계, 소속 위원, 회의록, 일정
+- [x] 위원회 카드 링크 변경 (`/committees/{name}?term=...`)
+- [x] 초기 데이터 동기화 완료 (1,394개 회의록)
+- [ ] 위원회 출석 데이터 수집 방식 결정 (API vs 크롤링) — 향후 확장
+- [ ] 의원별 위원회 출석률 계산 로직 — 향후 확장
+- [ ] 프론트엔드 위원회 출석률 UI — 향후 확장
 
 ---
 
