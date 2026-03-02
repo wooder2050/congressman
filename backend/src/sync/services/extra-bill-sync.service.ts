@@ -84,8 +84,15 @@ export class ExtraBillSyncService {
       select: {
         id: true,
         status: true,
+        committee: true,
+        committeeDate: true,
+        committeePresentDate: true,
         committeeResultCode: true,
         committeeResultDate: true,
+        lawSubmitDate: true,
+        lawPresentDate: true,
+        lawResultCode: true,
+        lawResultDate: true,
         plenaryDate: true,
       },
     });
@@ -108,8 +115,15 @@ export class ExtraBillSyncService {
         );
         if (
           existing.status !== newStatus ||
+          existing.committee !== (row.CURR_COMMITTEE || null) ||
+          existing.committeeDate !== progress.committeeDate ||
+          existing.committeePresentDate !== progress.committeePresentDate ||
           existing.committeeResultCode !== progress.committeeResultCode ||
           existing.committeeResultDate !== progress.committeeResultDate ||
+          existing.lawSubmitDate !== progress.lawSubmitDate ||
+          existing.lawPresentDate !== progress.lawPresentDate ||
+          existing.lawResultCode !== progress.lawResultCode ||
+          existing.lawResultDate !== progress.lawResultDate ||
           existing.plenaryDate !== progress.plenaryDate
         ) {
           updateRows.push(row);
