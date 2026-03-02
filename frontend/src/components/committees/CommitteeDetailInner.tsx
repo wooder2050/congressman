@@ -38,13 +38,17 @@ export default function CommitteeDetailInner({ name, termId }: CommitteeDetailIn
 
       {/* 법안 통계 */}
       <div className="grid grid-cols-3 gap-4">
-        <StatCard label="접수 법안" value={data.billTotal.toLocaleString()} />
-        <StatCard label="통과" value={data.billPassed.toLocaleString()} color="text-green-600" />
-        <StatCard label="통과율" value={`${data.passRate}%`} />
+        <StatCard label="접수 법안" value={(data.billTotal ?? 0).toLocaleString()} />
+        <StatCard
+          label="통과"
+          value={(data.billPassed ?? 0).toLocaleString()}
+          color="text-green-600"
+        />
+        <StatCard label="통과율" value={`${data.passRate ?? 0}%`} />
       </div>
 
       {/* 다가오는 일정 */}
-      {data.upcomingSchedules.length > 0 && (
+      {data.upcomingSchedules?.length > 0 && (
         <section>
           <h2 className="mb-3 text-lg font-bold text-(--color-text-primary)">다가오는 일정</h2>
           <div className="space-y-2">
@@ -67,10 +71,10 @@ export default function CommitteeDetailInner({ name, termId }: CommitteeDetailIn
       {/* 소속 위원 */}
       <section>
         <h2 className="mb-3 text-lg font-bold text-(--color-text-primary)">
-          소속 위원 ({data.members.length}명)
+          소속 위원 ({data.members?.length ?? 0}명)
         </h2>
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
-          {data.members.map((m: CommitteeMemberInfo) => (
+          {(data.members ?? []).map((m: CommitteeMemberInfo) => (
             <MemberCard key={m.memberId} member={m} termId={termId} />
           ))}
         </div>
@@ -167,7 +171,7 @@ function MinutesSection({ name, termId }: { name: string; termId: number }) {
       <div className="mb-3 flex items-center justify-between">
         <h2 className="text-lg font-bold text-(--color-text-primary)">회의록 ({data.total}건)</h2>
       </div>
-      {data.items.length > 0 ? (
+      {data.items?.length > 0 ? (
         <>
           <div className="space-y-3">
             {data.items.map((m: MeetingMinutesSummary) => (
@@ -186,7 +190,8 @@ function MinutesSection({ name, termId }: { name: string; termId: number }) {
 }
 
 function MinutesCard({ minutes }: { minutes: MeetingMinutesSummary }) {
-  const hasLinks = minutes.agendas.some((a) => a.confLinkUrl || a.vodLinkUrl || a.pdfLinkUrl);
+  const agendas = minutes.agendas ?? [];
+  const hasLinks = agendas.some((a) => a.confLinkUrl || a.vodLinkUrl || a.pdfLinkUrl);
 
   return (
     <div className="rounded-xl border border-(--color-border-primary) bg-(--color-bg-primary) p-4">
@@ -202,9 +207,9 @@ function MinutesCard({ minutes }: { minutes: MeetingMinutesSummary }) {
       </div>
 
       {/* 안건 목록 */}
-      {minutes.agendas.length > 0 && (
+      {agendas.length > 0 && (
         <div className="mt-3 space-y-1.5">
-          {minutes.agendas.slice(0, 3).map((a, i) => (
+          {agendas.slice(0, 3).map((a, i) => (
             <div key={i} className="flex items-start gap-2">
               <span className="mt-0.5 text-xs text-(--color-text-tertiary)">{i + 1}.</span>
               <p className="flex-1 text-xs text-(--color-text-secondary)">{a.subName}</p>
@@ -242,16 +247,14 @@ function MinutesCard({ minutes }: { minutes: MeetingMinutesSummary }) {
               </div>
             </div>
           ))}
-          {minutes.agendas.length > 3 && (
-            <p className="text-xs text-(--color-text-tertiary)">
-              외 {minutes.agendas.length - 3}건
-            </p>
+          {agendas.length > 3 && (
+            <p className="text-xs text-(--color-text-tertiary)">외 {agendas.length - 3}건</p>
           )}
         </div>
       )}
 
       {/* 전체 링크 (안건별 링크가 없을 때) */}
-      {!hasLinks && minutes.agendas.length === 0 && (
+      {!hasLinks && agendas.length === 0 && (
         <p className="mt-2 text-xs text-(--color-text-tertiary)">링크 정보 없음</p>
       )}
     </div>
