@@ -108,7 +108,16 @@ model Bill {
   status          String  @default("pending") // passed, pending, discarded, committee
   proposedDate    String
   termId          Int
-  committee       String?
+  committee            String?
+  committeeDate        String?  // 위원회 회부일
+  committeePresentDate String?  // 위원회 상정일
+  committeeResultCode  String?  // 위원회 처리결과
+  committeeResultDate  String?  // 위원회 처리일
+  lawSubmitDate        String?  // 법사위 회부일
+  lawPresentDate       String?  // 법사위 상정일
+  lawResultCode        String?  // 법사위 처리결과
+  lawResultDate        String?  // 법사위 처리일
+  plenaryDate          String?  // 본회의 처리일
   summary           String?  // 제안이유 및 주요내용
   simpleSummary     String?  // AI 원라이너 요약
   structuredSummary Json?    // { situation, problem, change, impact }

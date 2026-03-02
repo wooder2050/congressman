@@ -204,6 +204,19 @@ export interface BillProposerInfo {
   district: string;
 }
 
+// ====== 법안 심사 경과 ======
+export interface BillProgress {
+  committeeDate: string | null;
+  committeePresentDate: string | null;
+  committeeResult: string | null;
+  committeeResultDate: string | null;
+  lawSubmitDate: string | null;
+  lawPresentDate: string | null;
+  lawResult: string | null;
+  lawResultDate: string | null;
+  plenaryDate: string | null;
+}
+
 // ====== 법안 AI 요약 ======
 export interface BillStructuredSummary {
   situation: string;
@@ -222,6 +235,7 @@ export interface BillDetail extends Omit<Bill, "proposerIds"> {
   topic?: string | null;
   pdfUrl?: string | null;
   detailLink?: string | null;
+  progress?: BillProgress | null;
 }
 
 // ====== 월별 출석 ======

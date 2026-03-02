@@ -9,6 +9,7 @@ import TermHint from "@/components/ui/term-hint";
 import MemberAvatar from "@/components/members/MemberAvatar";
 import { formatDate, formatDistrict } from "@/lib/utils";
 import { BILL_STATUS_MAP } from "@/lib/constants";
+import BillProgressTimeline from "@/components/bills/BillProgressTimeline";
 import type { BillStructuredSummary } from "@/types";
 
 interface BillDetailInnerProps {
@@ -89,6 +90,14 @@ export default function BillDetailInner({ id }: BillDetailInnerProps) {
           )}
         </div>
       </div>
+
+      {bill.progress && (
+        <BillProgressTimeline
+          progress={bill.progress}
+          proposedDate={bill.proposedDate}
+          status={bill.status}
+        />
+      )}
 
       {bill.simpleSummary && (
         <div className="space-y-4 rounded-xl border border-(--color-border-primary) bg-(--color-bg-primary) p-5">

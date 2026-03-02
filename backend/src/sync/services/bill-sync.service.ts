@@ -15,6 +15,16 @@ interface BillApiRow {
   PROC_RESULT: string;
   DETAIL_LINK: string;
   AGE: string;
+  // 심사 경과 필드
+  COMMITTEE_DT: string | null;
+  CMT_PRESENT_DT: string | null;
+  CMT_PROC_RESULT_CD: string | null;
+  CMT_PROC_DT: string | null;
+  LAW_SUBMIT_DT: string | null;
+  LAW_PRESENT_DT: string | null;
+  LAW_PROC_RESULT_CD: string | null;
+  LAW_PROC_DT: string | null;
+  PROC_DT: string | null;
 }
 
 const BATCH_SIZE = 500;
@@ -80,6 +90,15 @@ export class BillSyncService {
           status: true,
           proposedDate: true,
           committee: true,
+          committeeDate: true,
+          committeePresentDate: true,
+          committeeResultCode: true,
+          committeeResultDate: true,
+          lawSubmitDate: true,
+          lawPresentDate: true,
+          lawResultCode: true,
+          lawResultDate: true,
+          plenaryDate: true,
         },
       });
       const existingMap = new Map(existingBills.map((b) => [b.id, b]));
@@ -93,6 +112,7 @@ export class BillSyncService {
           newRows.push(row);
         } else {
           const existing = existingMap.get(row.BILL_ID)!;
+          const progress = this.mapProgressFields(row);
           if (
             existing.title !== row.BILL_NAME ||
             existing.proposerName !==
@@ -100,7 +120,10 @@ export class BillSyncService {
             existing.coProposerCount !== this.extractCoProposerCount(row.PROPOSER) ||
             existing.status !== this.mapStatus(row.PROC_RESULT) ||
             existing.proposedDate !== this.normalizeDate(row.PROPOSE_DT) ||
-            existing.committee !== (row.COMMITTEE || null)
+            existing.committee !== (row.COMMITTEE || null) ||
+            existing.committeeResultCode !== progress.committeeResultCode ||
+            existing.committeeResultDate !== progress.committeeResultDate ||
+            existing.plenaryDate !== progress.plenaryDate
           ) {
             updateRows.push(row);
           }
@@ -125,6 +148,7 @@ export class BillSyncService {
               proposedDate: this.normalizeDate(row.PROPOSE_DT),
               termId,
               committee: row.COMMITTEE || null,
+              ...this.mapProgressFields(row),
             })),
             skipDuplicates: true,
           });
@@ -146,6 +170,7 @@ export class BillSyncService {
               status: this.mapStatus(row.PROC_RESULT),
               proposedDate: this.normalizeDate(row.PROPOSE_DT),
               committee: row.COMMITTEE || null,
+              ...this.mapProgressFields(row),
             },
           });
         }
@@ -222,6 +247,15 @@ export class BillSyncService {
         status: true,
         proposedDate: true,
         committee: true,
+        committeeDate: true,
+        committeePresentDate: true,
+        committeeResultCode: true,
+        committeeResultDate: true,
+        lawSubmitDate: true,
+        lawPresentDate: true,
+        lawResultCode: true,
+        lawResultDate: true,
+        plenaryDate: true,
       },
     });
     const existingMap = new Map(existingBills.map((b) => [b.id, b]));
@@ -241,6 +275,7 @@ export class BillSyncService {
         const newStatus = this.mapStatus(row.PROC_RESULT);
         const newDate = this.normalizeDate(row.PROPOSE_DT);
         const newCommittee = row.COMMITTEE || null;
+        const progress = this.mapProgressFields(row);
 
         if (
           existing.title !== newTitle ||
@@ -248,7 +283,10 @@ export class BillSyncService {
           existing.coProposerCount !== newCoCount ||
           existing.status !== newStatus ||
           existing.proposedDate !== newDate ||
-          existing.committee !== newCommittee
+          existing.committee !== newCommittee ||
+          existing.committeeResultCode !== progress.committeeResultCode ||
+          existing.committeeResultDate !== progress.committeeResultDate ||
+          existing.plenaryDate !== progress.plenaryDate
         ) {
           updateRows.push(row);
         }
@@ -269,6 +307,7 @@ export class BillSyncService {
           proposedDate: this.normalizeDate(row.PROPOSE_DT),
           termId,
           committee: row.COMMITTEE || null,
+          ...this.mapProgressFields(row),
         }));
         await this.prisma.bill.createMany({ data, skipDuplicates: true });
       }
@@ -291,6 +330,7 @@ export class BillSyncService {
               status: this.mapStatus(row.PROC_RESULT),
               proposedDate: this.normalizeDate(row.PROPOSE_DT),
               committee: row.COMMITTEE || null,
+              ...this.mapProgressFields(row),
             },
           });
         }
@@ -390,6 +430,21 @@ export class BillSyncService {
       map.set(mt.member.name, mt.member.id);
     }
     return map;
+  }
+
+  /** API row → 심사 경과 필드 매핑 */
+  private mapProgressFields(row: BillApiRow) {
+    return {
+      committeeDate: row.COMMITTEE_DT ? this.normalizeDate(row.COMMITTEE_DT) : null,
+      committeePresentDate: row.CMT_PRESENT_DT ? this.normalizeDate(row.CMT_PRESENT_DT) : null,
+      committeeResultCode: row.CMT_PROC_RESULT_CD || null,
+      committeeResultDate: row.CMT_PROC_DT ? this.normalizeDate(row.CMT_PROC_DT) : null,
+      lawSubmitDate: row.LAW_SUBMIT_DT ? this.normalizeDate(row.LAW_SUBMIT_DT) : null,
+      lawPresentDate: row.LAW_PRESENT_DT ? this.normalizeDate(row.LAW_PRESENT_DT) : null,
+      lawResultCode: row.LAW_PROC_RESULT_CD || null,
+      lawResultDate: row.LAW_PROC_DT ? this.normalizeDate(row.LAW_PROC_DT) : null,
+      plenaryDate: row.PROC_DT ? this.normalizeDate(row.PROC_DT) : null,
+    };
   }
 
   /** "김민수의원 등 12인" → "김민수" */

@@ -14,6 +14,7 @@ import { AssetSyncService } from './services/asset-sync.service';
 import { BillContentSyncService } from './services/bill-content-sync.service';
 import { ScheduleSyncService } from './services/schedule-sync.service';
 import { CommitteeSyncService } from './services/committee-sync.service';
+import { BillJudgeSyncService } from './services/bill-judge-sync.service';
 
 async function invalidateCache(command: string) {
   const url = process.env.UPSTASH_REDIS_REST_URL;
@@ -34,6 +35,7 @@ async function invalidateCache(command: string) {
     command === 'bills-safe' ||
     command === 'extra-bills' ||
     command === 'bill-content' ||
+    command === 'bill-judge' ||
     command === 'all'
   ) {
     prefixes.push('bills:', 'bill:', 'member:history:');
@@ -129,6 +131,9 @@ async function main() {
         break;
       case 'committees':
         await new CommitteeSyncService(prisma, syncLog).syncCommittees(termId);
+        break;
+      case 'bill-judge':
+        await new BillJudgeSyncService(prisma, api, syncLog).syncBillJudge(termId);
         break;
       case 'all':
       default: {
