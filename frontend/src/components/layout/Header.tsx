@@ -9,6 +9,7 @@ const navItems = [
   { href: "/map", label: "지도" },
   { href: "/votes", label: "표결" },
   { href: "/bills", label: "법안" },
+  { href: "/committees", label: "위원회" },
   { href: "/compare", label: "비교" },
 ];
 

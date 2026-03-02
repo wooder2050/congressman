@@ -15,6 +15,7 @@ import { SkeletonBillItem } from "@/components/skeletons/BillListSkeleton";
 interface BillListInnerProps {
   termId: number;
   initialTopic?: string;
+  initialCommittee?: string;
 }
 
 const LIMIT = 20;
@@ -49,17 +50,23 @@ function formatMonthButton(yearMonth: string): string {
   return `${y}.${parseInt(m, 10)}`;
 }
 
-export default function BillListInner({ termId, initialTopic }: BillListInnerProps) {
+export default function BillListInner({
+  termId,
+  initialTopic,
+  initialCommittee,
+}: BillListInnerProps) {
   const { data: summary } = useCongressSuspenseQuery(getBillSummary, termId);
   const { data: committees = [] } = useCongressSuspenseQuery(getBillCommittees, termId);
   const [selectedStatus, setSelectedStatus] = useState<string | null>(null);
-  const [selectedCommittee, setSelectedCommittee] = useState<string | null>(null);
+  const [selectedCommittee, setSelectedCommittee] = useState<string | null>(
+    initialCommittee ?? null,
+  );
   const [searchInput, setSearchInput] = useState("");
   const debouncedSearch = useDeferredValue(searchInput);
   const [selectedMonth, setSelectedMonth] = useState<string | null>(null);
   const [selectedTopic, setSelectedTopic] = useState<string | null>(initialTopic ?? null);
   const [page, setPage] = useState(1);
-  const [showFilters, setShowFilters] = useState(!!initialTopic);
+  const [showFilters, setShowFilters] = useState(!!initialTopic || !!initialCommittee);
   const monthScrollRef = useRef<HTMLDivElement>(null);
   const committeeScrollRef = useRef<HTMLDivElement>(null);
   const topicScrollRef = useRef<HTMLDivElement>(null);
