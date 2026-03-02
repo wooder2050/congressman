@@ -121,8 +121,14 @@ export class BillSyncService {
             existing.status !== this.mapStatus(row.PROC_RESULT) ||
             existing.proposedDate !== this.normalizeDate(row.PROPOSE_DT) ||
             existing.committee !== (row.COMMITTEE || null) ||
+            existing.committeeDate !== progress.committeeDate ||
+            existing.committeePresentDate !== progress.committeePresentDate ||
             existing.committeeResultCode !== progress.committeeResultCode ||
             existing.committeeResultDate !== progress.committeeResultDate ||
+            existing.lawSubmitDate !== progress.lawSubmitDate ||
+            existing.lawPresentDate !== progress.lawPresentDate ||
+            existing.lawResultCode !== progress.lawResultCode ||
+            existing.lawResultDate !== progress.lawResultDate ||
             existing.plenaryDate !== progress.plenaryDate
           ) {
             updateRows.push(row);
@@ -284,8 +290,14 @@ export class BillSyncService {
           existing.status !== newStatus ||
           existing.proposedDate !== newDate ||
           existing.committee !== newCommittee ||
+          existing.committeeDate !== progress.committeeDate ||
+          existing.committeePresentDate !== progress.committeePresentDate ||
           existing.committeeResultCode !== progress.committeeResultCode ||
           existing.committeeResultDate !== progress.committeeResultDate ||
+          existing.lawSubmitDate !== progress.lawSubmitDate ||
+          existing.lawPresentDate !== progress.lawPresentDate ||
+          existing.lawResultCode !== progress.lawResultCode ||
+          existing.lawResultDate !== progress.lawResultDate ||
           existing.plenaryDate !== progress.plenaryDate
         ) {
           updateRows.push(row);

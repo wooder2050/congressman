@@ -142,6 +142,7 @@ async function main() {
         await new PhotoSyncService(prisma, allApi).syncPhotos(termId);
         await new BillSyncService(prisma, allApi, syncLog).syncBills(termId);
         await new ExtraBillSyncService(prisma, allApi, syncLog).syncExtraBills(termId);
+        await new BillJudgeSyncService(prisma, allApi, syncLog).syncBillJudge(termId);
         await new VoteSyncService(prisma, allApi, syncLog).syncVotes(termId);
         break;
       }
