@@ -108,4 +108,115 @@ export class CommitteesService {
     await this.redis.set(key, result, TTL_HOUR);
     return result;
   }
+
+  async getCommitteeDetail(committeeName: string, termId: number) {
+    const key = `committees:detail:${termId}:${committeeName}`;
+    const cached = await this.redis.get(key);
+    if (cached) return cached;
+
+    const today = new Date().toISOString().slice(0, 10);
+
+    const [billStats, members, recentMinutes, upcomingSchedules] = await Promise.all([
+      // 법안 통계
+      Promise.all([
+        this.prisma.bill.count({ where: { termId, committee: committeeName } }),
+        this.prisma.bill.count({ where: { termId, committee: committeeName, status: 'passed' } }),
+      ]),
+      // 소속 위원 목록
+      this.prisma.memberTerm.findMany({
+        where: {
+          termId,
+          committees: { has: committeeName },
+        },
+        include: { member: true, party: true },
+        orderBy: { committeeRole: 'asc' },
+      }),
+      // 최근 회의록
+      this.prisma.meetingMinutes.findMany({
+        where: { termId, committeeName },
+        orderBy: { confDate: 'desc' },
+        take: 10,
+      }),
+      // 다가오는 일정
+      this.prisma.schedule.findMany({
+        where: { termId, type: 'committee', committeeName, meetingDate: { gte: today } },
+        orderBy: [{ meetingDate: 'asc' }, { meetingTime: 'asc' }],
+        take: 3,
+      }),
+    ]);
+
+    const [billTotal, billPassed] = billStats;
+    const roleOrder: Record<string, number> = { 위원장: 0, 간사: 1, 위원: 2 };
+
+    const result = {
+      name: committeeName,
+      billTotal,
+      billPassed,
+      passRate: billTotal > 0 ? Math.round((billPassed / billTotal) * 1000) / 10 : 0,
+      members: members
+        .sort((a, b) => (roleOrder[a.committeeRole] ?? 2) - (roleOrder[b.committeeRole] ?? 2))
+        .map((mt) => ({
+          memberId: mt.memberId,
+          name: mt.member.name,
+          photoUrl: mt.member.photoUrl,
+          partyName: mt.party.name,
+          partyColor: mt.party.color,
+          role: mt.committeeRole,
+        })),
+      recentMinutes: recentMinutes.map((m) => ({
+        id: m.id,
+        conferNum: m.conferNum,
+        title: m.title,
+        className: m.className,
+        confDate: m.confDate,
+        agendaCount: Array.isArray(m.agendas) ? (m.agendas as unknown[]).length : 0,
+        agendas: m.agendas,
+      })),
+      upcomingSchedules: upcomingSchedules.map((s) => ({
+        meetingDate: s.meetingDate,
+        meetingTime: s.meetingTime,
+        title: s.title,
+      })),
+    };
+
+    await this.redis.set(key, result, TTL_HOUR);
+    return result;
+  }
+
+  async getCommitteeMinutes(committeeName: string, termId: number, page: number) {
+    const key = `committees:minutes:${termId}:${committeeName}:${page}`;
+    const cached = await this.redis.get(key);
+    if (cached) return cached;
+
+    const pageSize = 20;
+    const [items, total] = await Promise.all([
+      this.prisma.meetingMinutes.findMany({
+        where: { termId, committeeName },
+        orderBy: { confDate: 'desc' },
+        skip: (page - 1) * pageSize,
+        take: pageSize,
+      }),
+      this.prisma.meetingMinutes.count({
+        where: { termId, committeeName },
+      }),
+    ]);
+
+    const result = {
+      items: items.map((m) => ({
+        id: m.id,
+        conferNum: m.conferNum,
+        title: m.title,
+        className: m.className,
+        confDate: m.confDate,
+        agendaCount: Array.isArray(m.agendas) ? (m.agendas as unknown[]).length : 0,
+        agendas: m.agendas,
+      })),
+      total,
+      page,
+      totalPages: Math.ceil(total / pageSize),
+    };
+
+    await this.redis.set(key, result, TTL_HOUR);
+    return result;
+  }
 }

@@ -35,7 +35,7 @@ export default function CommitteeListInner({ termId }: CommitteeListInnerProps) 
 function CommitteeCard({ committee, termId }: { committee: CommitteeStats; termId: number }) {
   return (
     <Link
-      href={`/bills?committee=${encodeURIComponent(committee.name)}&term=${termId}`}
+      href={`/committees/${encodeURIComponent(committee.name)}?term=${termId}`}
       className="block rounded-xl border border-(--color-border-primary) bg-(--color-bg-primary) p-4 no-underline transition-shadow hover:shadow-md"
     >
       <h3 className="text-base font-bold text-(--color-text-primary)">{committee.name}</h3>

@@ -20,6 +20,8 @@ import type {
   CommitteeBillCount,
   CommitteeActivity,
   CommitteeStats,
+  CommitteeDetail,
+  CommitteeMinutesResponse,
   Schedule,
 } from "@/types";
 
@@ -219,6 +221,25 @@ export async function getCommitteeStats(termId: number): Promise<CommitteeStats[
   return fetchApi(`/api/committees?termId=${termId}`);
 }
 
+export async function getCommitteeDetail(params: {
+  name: string;
+  termId: number;
+}): Promise<CommitteeDetail> {
+  return fetchApi(
+    `/api/committees/detail?name=${encodeURIComponent(params.name)}&termId=${params.termId}`,
+  );
+}
+
+export async function getCommitteeMinutes(params: {
+  name: string;
+  termId: number;
+  page: number;
+}): Promise<CommitteeMinutesResponse> {
+  return fetchApi(
+    `/api/committees/minutes?name=${encodeURIComponent(params.name)}&termId=${params.termId}&page=${params.page}`,
+  );
+}
+
 export async function getLastSync(): Promise<{ lastSyncAt: string | null }> {
   return fetchApi("/api/health/last-sync");
 }
@@ -249,4 +270,6 @@ Object.defineProperty(getHomeStats, "queryKey", { value: "homeStats" });
 Object.defineProperty(getUpcomingSchedules, "queryKey", { value: "upcomingSchedules" });
 Object.defineProperty(getSchedules, "queryKey", { value: "schedules" });
 Object.defineProperty(getCommitteeStats, "queryKey", { value: "committeeStats" });
+Object.defineProperty(getCommitteeDetail, "queryKey", { value: "committeeDetail" });
+Object.defineProperty(getCommitteeMinutes, "queryKey", { value: "committeeMinutes" });
 Object.defineProperty(getLastSync, "queryKey", { value: "lastSync" });

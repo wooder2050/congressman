@@ -263,6 +263,50 @@ export interface CommitteeStats {
   nextSchedule: CommitteeNextSchedule | null;
 }
 
+// ====== 위원회 상세 ======
+export interface CommitteeMemberInfo {
+  memberId: string;
+  name: string;
+  photoUrl: string;
+  partyName: string;
+  partyColor: string;
+  role: string;
+}
+
+export interface MeetingMinutesAgenda {
+  subName: string;
+  vodLinkUrl?: string;
+  confLinkUrl?: string;
+  pdfLinkUrl?: string;
+}
+
+export interface MeetingMinutesSummary {
+  id: string;
+  conferNum: string;
+  title: string;
+  className: string;
+  confDate: string;
+  agendaCount: number;
+  agendas: MeetingMinutesAgenda[];
+}
+
+export interface CommitteeDetail {
+  name: string;
+  billTotal: number;
+  billPassed: number;
+  passRate: number;
+  members: CommitteeMemberInfo[];
+  recentMinutes: MeetingMinutesSummary[];
+  upcomingSchedules: CommitteeNextSchedule[];
+}
+
+export interface CommitteeMinutesResponse {
+  items: MeetingMinutesSummary[];
+  total: number;
+  page: number;
+  totalPages: number;
+}
+
 // ====== 월별 출석 ======
 export interface MonthlyAttendance {
   month: string;
