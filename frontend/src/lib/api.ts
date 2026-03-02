@@ -19,6 +19,7 @@ import type {
   MonthlyAttendance,
   CommitteeBillCount,
   CommitteeActivity,
+  CommitteeStats,
   Schedule,
 } from "@/types";
 
@@ -214,6 +215,10 @@ export async function getSchedules(params: {
   return fetchApi(`/api/schedules?${searchParams.toString()}`);
 }
 
+export async function getCommitteeStats(termId: number): Promise<CommitteeStats[]> {
+  return fetchApi(`/api/committees?termId=${termId}`);
+}
+
 export async function getLastSync(): Promise<{ lastSyncAt: string | null }> {
   return fetchApi("/api/health/last-sync");
 }
@@ -243,4 +248,5 @@ Object.defineProperty(getAttendanceRanking, "queryKey", { value: "attendanceRank
 Object.defineProperty(getHomeStats, "queryKey", { value: "homeStats" });
 Object.defineProperty(getUpcomingSchedules, "queryKey", { value: "upcomingSchedules" });
 Object.defineProperty(getSchedules, "queryKey", { value: "schedules" });
+Object.defineProperty(getCommitteeStats, "queryKey", { value: "committeeStats" });
 Object.defineProperty(getLastSync, "queryKey", { value: "lastSync" });

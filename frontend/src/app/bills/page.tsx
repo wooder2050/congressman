@@ -9,13 +9,14 @@ export const metadata: Metadata = {
 };
 
 interface BillsPageProps {
-  searchParams: Promise<{ term?: string; topic?: string }>;
+  searchParams: Promise<{ term?: string; topic?: string; committee?: string }>;
 }
 
 export default async function BillsPage({ searchParams }: BillsPageProps) {
   const params = await searchParams;
   const termId = Number(params.term) || 22;
   const topic = params.topic || undefined;
+  const committee = params.committee || undefined;
 
   return (
     <div className="mx-auto max-w-7xl">
@@ -25,8 +26,11 @@ export default async function BillsPage({ searchParams }: BillsPageProps) {
           발의된 법안을 검색하고 필터링하세요.
         </p>
       </div>
-      <CongressWrapper key={`${termId}-${topic ?? ""}`} fallback={<BillListSkeleton />}>
-        <BillListInner termId={termId} initialTopic={topic} />
+      <CongressWrapper
+        key={`${termId}-${topic ?? ""}-${committee ?? ""}`}
+        fallback={<BillListSkeleton />}
+      >
+        <BillListInner termId={termId} initialTopic={topic} initialCommittee={committee} />
       </CongressWrapper>
     </div>
   );

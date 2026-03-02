@@ -238,6 +238,31 @@ export interface BillDetail extends Omit<Bill, "proposerIds"> {
   progress?: BillProgress | null;
 }
 
+// ====== 위원회 통계 ======
+export interface CommitteeChairInfo {
+  memberId: string;
+  name: string;
+  photoUrl: string;
+  partyName: string;
+  partyColor: string;
+}
+
+export interface CommitteeNextSchedule {
+  meetingDate: string;
+  meetingTime: string;
+  title: string;
+}
+
+export interface CommitteeStats {
+  name: string;
+  billTotal: number;
+  billPassed: number;
+  passRate: number;
+  memberCount: number;
+  chair: CommitteeChairInfo | null;
+  nextSchedule: CommitteeNextSchedule | null;
+}
+
 // ====== 월별 출석 ======
 export interface MonthlyAttendance {
   month: string;
