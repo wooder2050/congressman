@@ -17,6 +17,7 @@ import { MemberVoteSyncService } from './services/member-vote-sync.service';
 import { AttendanceSyncService } from './services/attendance-sync.service';
 import { BillContentSyncService } from './services/bill-content-sync.service';
 import { ScheduleSyncService } from './services/schedule-sync.service';
+import { BillJudgeSyncService } from './services/bill-judge-sync.service';
 
 async function invalidateCache(prefixes: string[]) {
   const url = process.env.UPSTASH_REDIS_REST_URL;
@@ -74,6 +75,10 @@ async function main() {
       name: 'schedules',
       run: () => new ScheduleSyncService(prisma, api, syncLog).syncSchedules(termId),
     },
+    {
+      name: 'bill-judge',
+      run: () => new BillJudgeSyncService(prisma, api, syncLog).syncBillJudge(termId),
+    },
   ];
 
   for (const task of tasks) {
@@ -97,6 +102,7 @@ async function main() {
     'member:history:',
     'attendance:',
     'schedules:',
+    'committees:',
   ]);
 
   const totalMs = Date.now() - start;
