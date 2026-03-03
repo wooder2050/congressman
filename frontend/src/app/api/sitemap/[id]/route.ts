@@ -18,6 +18,9 @@ async function buildSitemap(id: number) {
       urlEntry(`${BASE}/schedule`, { changefreq: "daily", priority: 0.7 }),
       urlEntry(`${BASE}/map`, { changefreq: "monthly", priority: 0.6 }),
       urlEntry(`${BASE}/compare`, { changefreq: "monthly", priority: 0.5 }),
+      urlEntry(`${BASE}/committees`, { changefreq: "weekly", priority: 0.7 }),
+      urlEntry(`${BASE}/guide`, { changefreq: "monthly", priority: 0.6 }),
+      urlEntry(`${BASE}/glossary`, { changefreq: "monthly", priority: 0.5 }),
     ];
 
     if (API_BASE) {
