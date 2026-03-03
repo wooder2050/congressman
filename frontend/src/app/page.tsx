@@ -1,3 +1,4 @@
+import PageIntro from "@/components/ui/page-intro";
 import CongressWrapper from "@/common/CongressWrapper";
 import HomeStats from "@/components/home/HomeStats";
 import UpcomingSchedules from "@/components/home/UpcomingSchedules";
@@ -31,6 +32,17 @@ export default async function HomePage({ searchParams }: HomePageProps) {
           대한민국 국회의원의 의정활동 정보를 한눈에 확인하세요.
         </p>
       </section>
+
+      {/* 플랫폼 소개 */}
+      <PageIntro
+        description="lawmake.kr은 대한민국 국회의 의정활동 데이터를 시민이 쉽게 이해하고 활용할 수 있도록 정리한 플랫폼입니다. 열린국회정보 공공데이터를 기반으로, 국회의원의 법안 발의, 본회의 표결, 출석 현황 등 핵심 의정활동 정보를 제공합니다."
+        details={[
+          "의원별 법안 발의 건수, 표결 참여율, 출석률 등 의정활동 성적표를 한눈에 비교할 수 있습니다.",
+          "발의된 법안의 심사 진행 상황을 단계별로 추적하고, AI 요약으로 법안 내용을 쉽게 파악할 수 있습니다.",
+          "본회의 표결에서 각 의원이 어떻게 투표했는지 찬성·반대·기권 내역을 투명하게 공개합니다.",
+          "지역구·정당별 의원 검색과 비교 기능으로 내 지역 국회의원의 활동을 확인해 보세요.",
+        ]}
+      />
 
       {/* 통계 요약 */}
       <CongressWrapper key={`stats-${termId}`} fallback={<HomeStatsSkeleton />}>

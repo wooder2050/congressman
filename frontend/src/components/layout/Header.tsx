@@ -11,6 +11,7 @@ const navItems = [
   { href: "/bills", label: "법안" },
   { href: "/committees", label: "위원회" },
   { href: "/compare", label: "비교" },
+  { href: "/guide", label: "안내" },
 ];
 
 export default function Header() {

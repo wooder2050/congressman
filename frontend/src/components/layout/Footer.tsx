@@ -30,6 +30,9 @@ export default function Footer() {
             >
               용어 사전
             </Link>
+            <Link href="/guide" className="underline hover:text-(--color-text-secondary)">
+              입법 과정 안내
+            </Link>
             <a
               href="https://open.assembly.go.kr"
               target="_blank"
