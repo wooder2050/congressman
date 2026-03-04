@@ -163,16 +163,28 @@ export class StatsService {
                  "procDate" DESC
         LIMIT 3
       `,
-      // 최다 대표발의 의원 TOP 5
+      // 최다 대표발의 의원 TOP 5 (파티 정보 포함)
       this.prisma.$queryRaw<
-        { memberId: string; name: string; photoUrl: string; billCount: bigint }[]
+        {
+          memberId: string;
+          name: string;
+          photoUrl: string;
+          billCount: bigint;
+          partyId: string;
+          partyName: string;
+          partyShortName: string;
+          partyColor: string;
+        }[]
       >`
-        SELECT bp."memberId", m.name, m."photoUrl", COUNT(*)::bigint as "billCount"
+        SELECT bp."memberId", m.name, m."photoUrl", COUNT(*)::bigint as "billCount",
+               p.id as "partyId", p.name as "partyName", p."shortName" as "partyShortName", p.color as "partyColor"
         FROM "BillProposer" bp
         JOIN "Bill" b ON bp."billId" = b.id
         JOIN "Member" m ON bp."memberId" = m.id
+        LEFT JOIN "MemberTerm" mt ON mt."memberId" = bp."memberId" AND mt."termId" = ${termId}
+        LEFT JOIN "Party" p ON p.id = mt."partyId"
         WHERE b."termId" = ${termId} AND bp."role" = 'representative'
-        GROUP BY bp."memberId", m.name, m."photoUrl"
+        GROUP BY bp."memberId", m.name, m."photoUrl", p.id, p.name, p."shortName", p.color
         ORDER BY "billCount" DESC
         LIMIT 5
       `,
@@ -183,27 +195,6 @@ export class StatsService {
         take: 3,
       }),
     ]);
-
-    // 최다 발의 의원의 파티 정보 조회
-    const proposerIds = topProposersRaw.map((p) => p.memberId);
-    const memberTerms =
-      proposerIds.length > 0
-        ? await this.prisma.memberTerm.findMany({
-            where: { memberId: { in: proposerIds }, termId },
-            include: { party: true },
-          })
-        : [];
-    const partyMap = new Map(
-      memberTerms.map((mt) => [
-        mt.memberId,
-        {
-          id: mt.party.id,
-          name: mt.party.name,
-          shortName: mt.party.shortName,
-          color: mt.party.color,
-        },
-      ]),
-    );
 
     const mapVote = (v: (typeof recentVotesRaw)[0]) => ({
       id: v.id,
@@ -262,12 +253,19 @@ export class StatsService {
         name: p.name,
         photoUrl: p.photoUrl,
         billCount: Number(p.billCount),
-        party: partyMap.get(p.memberId) ?? {
-          id: 'independent',
-          name: '무소속',
-          shortName: '무소속',
-          color: '#999999',
-        },
+        party: p.partyId
+          ? {
+              id: p.partyId,
+              name: p.partyName,
+              shortName: p.partyShortName,
+              color: p.partyColor,
+            }
+          : {
+              id: 'independent',
+              name: '무소속',
+              shortName: '무소속',
+              color: '#999999',
+            },
       })),
       rejectedVotes: rejectedVotesRaw.map(mapVote),
     };

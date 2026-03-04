@@ -6,12 +6,16 @@
 
 - **홈**: 의원 수/법안/표결 통계 요약, 최근 활동, 의정활동 하이라이트(최다발의/부결표결/접전표결)
 - **의원 목록**: 정당 필터, 검색, 그리드 카드
-- **의원 상세**: 프로필, 출석(도넛 차트 + 결석 상세), 법안(대표/공동발의), 표결(정당 이탈 표시), 재산, 경력, 위원회별 활동
+- **의원 상세**: 프로필, 출석(도넛 차트 + 결석 상세), 법안(대표/공동발의), 표결(정당 이탈 표시), 위원회별 활동, 재산, 경력
 - **역대 활동 비교**: 대수별 출석/법안/표결 바 차트
-- **법안 목록/상세**: 페이지네이션, 상태 필터, 발의자 목록, 관련 표결 연결
+- **법안 목록/상세**: 페이지네이션, 상태/위원회 필터, AI 요약, 발의자 목록, 관련 표결 연결
 - **표결 목록/상세**: 페이지네이션, 결과 필터, 찬반 비율 차트, 정당별 의원 투표 내역
+- **위원회**: 상임위원회별 법안/표결/회의록 현황, 소속 의원 목록
+- **국회 일정**: 본회의/위원회 회의 일정 캘린더
 - **선거구 지도**: D3 + TopoJSON 전국 → 시도 → 선거구 드릴다운, 정당 컬러 오버레이
 - **의원 비교**: 최대 4명 출석/법안/표결 비교
+- **입법 과정 안내**: 법안 발의부터 공포까지 4단계 교육 콘텐츠
+- **용어 사전**: 국회 관련 용어 해설
 - **카카오톡 OG 공유**: 동적 OG 이미지 생성
 
 ## Tech Stack
@@ -36,8 +40,12 @@ congressman/
 │       │   ├── members/              # 의원 목록/상세/출석상세/역대활동
 │       │   ├── bills/                # 법안 목록/상세
 │       │   ├── votes/                # 표결 목록/상세
+│       │   ├── committees/           # 위원회 목록/상세
+│       │   ├── schedule/             # 국회 일정
 │       │   ├── map/                  # 선거구 지도
-│       │   └── compare/              # 의원 비교
+│       │   ├── compare/              # 의원 비교
+│       │   ├── guide/                # 입법 과정 안내
+│       │   └── glossary/             # 용어 사전
 │       ├── components/     # UI 컴포넌트
 │       ├── hooks/          # 커스텀 훅 (useCongressQuery)
 │       ├── lib/            # API 클라이언트, 유틸리티
@@ -48,6 +56,8 @@ congressman/
 │   │   ├── bills/          # 법안 API
 │   │   ├── votes/          # 표결 API
 │   │   ├── attendance/     # 출석 API
+│   │   ├── committees/     # 위원회 API
+│   │   ├── schedules/      # 일정 API
 │   │   ├── stats/          # 홈 통계 API
 │   │   ├── terms/          # 국회 대수 API
 │   │   ├── health/         # 헬스체크
@@ -156,6 +166,19 @@ pnpm sync:weekly         # 주간 동기화 (전체)
 | GET | `/api/votes/summary?termId=22` | 표결 통계 요약 |
 | GET | `/api/votes/:id/member-votes` | 표결 상세 + 의원별 투표 내역 |
 
+### 위원회
+
+| Method | Path | Description |
+|---|---|---|
+| GET | `/api/committees?termId=22` | 위원회 목록 |
+| GET | `/api/committees/:name?termId=22` | 위원회 상세 (법안/표결/회의록) |
+
+### 일정
+
+| Method | Path | Description |
+|---|---|---|
+| GET | `/api/schedules?termId=22` | 국회 일정 목록 |
+
 ### 기타
 
 | Method | Path | Description |
@@ -164,7 +187,9 @@ pnpm sync:weekly         # 주간 동기화 (전체)
 | GET | `/api/attendance?memberId=...&termId=22` | 출석 정보 |
 | GET | `/api/attendance/absence?memberId=...&termId=22` | 결석 상세 내역 |
 | GET | `/api/stats/home?termId=22` | 홈 통계 (의원수, 법안수, 표결수, 최다발의) |
+| GET | `/api/stats/attendance-ranking?termId=22` | 출석률 순위 |
 | GET | `/api/health` | 헬스체크 (DB + Redis) |
+| GET | `/api/sync/last` | 마지막 동기화 시각 |
 
 ## Scripts
 
