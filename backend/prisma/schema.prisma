@@ -77,6 +77,7 @@ model MemberTerm {
   updatedAt DateTime @updatedAt
 
   @@unique([memberId, termId])
+  @@index([memberId])
   @@index([termId])
   @@index([partyId])
 }
@@ -98,6 +99,7 @@ model Attendance {
   updatedAt DateTime @updatedAt
 
   @@unique([memberId, termId])
+  @@index([memberId])
   @@index([termId])
 }
 
@@ -132,6 +134,7 @@ model Bill {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
+  @@index([termId, status])
   @@index([termId])
   @@index([status])
 }
@@ -146,7 +149,9 @@ model BillProposer {
   member Member @relation(fields: [memberId], references: [id])
 
   @@unique([billId, memberId])
+  @@index([billId])
   @@index([memberId])
+  @@index([memberId, role])
   @@index([role])
 }
 
@@ -173,6 +178,8 @@ model Vote {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
+  @@index([termId, procDate])
+  @@index([termId, resultCode])
   @@index([termId])
   @@index([procDate])
   @@index([resultCode])
@@ -210,6 +217,7 @@ model Asset {
   updatedAt DateTime @updatedAt
 
   @@unique([memberId, year, category, item, relation])
+  @@index([memberId, year])
   @@index([memberId])
   @@index([year])
 }
@@ -233,6 +241,7 @@ model Schedule {
   updatedAt DateTime @updatedAt
 
   @@unique([type, meetingDate, meetingTime, committeeName, degree])
+  @@index([termId, type, meetingDate])
   @@index([termId])
   @@index([meetingDate])
   @@index([type])

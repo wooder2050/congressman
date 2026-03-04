@@ -116,43 +116,47 @@ export class MembersService {
     const cached = await this.redis.get(key);
     if (cached) return cached;
 
-    const memberTerms = await this.prisma.memberTerm.findMany({
-      where: { memberId },
-      include: { term: true },
-      orderBy: { termId: 'desc' },
-    });
+    const rows = await this.prisma.$queryRaw<
+      {
+        termId: number;
+        termName: string;
+        attendanceRate: number | null;
+        billsProposed: bigint;
+        billsPassed: bigint;
+      }[]
+    >`
+      SELECT
+        mt."termId",
+        t.name AS "termName",
+        a.rate AS "attendanceRate",
+        COALESCE(proposed.cnt, 0)::bigint AS "billsProposed",
+        COALESCE(passed.cnt, 0)::bigint AS "billsPassed"
+      FROM "MemberTerm" mt
+      JOIN "Term" t ON t.id = mt."termId"
+      LEFT JOIN "Attendance" a ON a."memberId" = mt."memberId" AND a."termId" = mt."termId"
+      LEFT JOIN LATERAL (
+        SELECT COUNT(*) AS cnt
+        FROM "BillProposer" bp
+        JOIN "Bill" b ON b.id = bp."billId"
+        WHERE bp."memberId" = ${memberId} AND bp.role = 'representative' AND b."termId" = mt."termId"
+      ) proposed ON true
+      LEFT JOIN LATERAL (
+        SELECT COUNT(*) AS cnt
+        FROM "BillProposer" bp
+        JOIN "Bill" b ON b.id = bp."billId"
+        WHERE bp."memberId" = ${memberId} AND bp.role = 'representative' AND b."termId" = mt."termId" AND b.status = 'passed'
+      ) passed ON true
+      WHERE mt."memberId" = ${memberId}
+      ORDER BY mt."termId" DESC
+    `;
 
-    const result = await Promise.all(
-      memberTerms.map(async (mt) => {
-        const attendance = await this.prisma.attendance.findUnique({
-          where: { memberId_termId: { memberId, termId: mt.termId } },
-        });
-
-        const billsProposed = await this.prisma.billProposer.count({
-          where: {
-            memberId,
-            role: 'representative',
-            bill: { termId: mt.termId },
-          },
-        });
-
-        const billsPassed = await this.prisma.billProposer.count({
-          where: {
-            memberId,
-            role: 'representative',
-            bill: { termId: mt.termId, status: 'passed' },
-          },
-        });
-
-        return {
-          termId: mt.termId,
-          termName: mt.term.name,
-          attendanceRate: attendance?.rate ?? 0,
-          billsProposed,
-          billsPassed,
-        };
-      }),
-    );
+    const result = rows.map((r) => ({
+      termId: r.termId,
+      termName: r.termName,
+      attendanceRate: r.attendanceRate ?? 0,
+      billsProposed: Number(r.billsProposed),
+      billsPassed: Number(r.billsPassed),
+    }));
 
     await this.redis.set(key, result, TTL_HOUR);
     return result;
