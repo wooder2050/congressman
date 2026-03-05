@@ -57,6 +57,57 @@ function getCategoryColor(category: string): string {
   return CATEGORY_COLORS[category] ?? "#6B7280";
 }
 
+function AssetSummaryCard({ years }: { years: AssetYear[] }) {
+  const latest = years[0];
+  const prev = years.length >= 2 ? years[1] : null;
+  const diff = prev ? latest.total - prev.total : null;
+  const pct = prev && prev.total !== 0 ? (diff! / Math.abs(prev.total)) * 100 : null;
+
+  return (
+    <div className="rounded-xl border border-(--color-border-primary) bg-(--color-bg-primary) p-5">
+      <p className="text-sm text-(--color-text-tertiary)">{latest.year}년 총 재산</p>
+      <p className="mt-1 text-3xl font-bold tabular-nums">{formatAmount(latest.total)}</p>
+      {diff !== null && (
+        <p
+          className={`mt-1.5 text-sm font-medium ${
+            diff > 0 ? "text-red-500" : diff < 0 ? "text-blue-500" : "text-(--color-text-tertiary)"
+          }`}
+        >
+          {diff > 0 ? "▲" : diff < 0 ? "▼" : ""} {formatAmount(Math.abs(diff))}
+          {pct !== null && ` (${diff >= 0 ? "+" : ""}${pct.toFixed(1)}%)`}
+          <span className="ml-1 text-(--color-text-tertiary)">전년 대비</span>
+        </p>
+      )}
+    </div>
+  );
+}
+
+function CategoryCards({ year }: { year: AssetYear }) {
+  return (
+    <div className="space-y-3">
+      <h3 className="text-sm font-semibold text-(--color-text-tertiary)">
+        {year.year}년 항목별 금액
+      </h3>
+      <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
+        {year.categories.map((c) => (
+          <div key={c.category} className="rounded-lg bg-(--color-bg-secondary) p-3">
+            <div className="flex items-center gap-1.5">
+              <span
+                className="inline-block h-2.5 w-2.5 shrink-0 rounded-full"
+                style={{ backgroundColor: getCategoryColor(c.category) }}
+              />
+              <span className="text-xs text-(--color-text-tertiary)">
+                {shortCategory(c.category)}
+              </span>
+            </div>
+            <p className="mt-1 text-lg font-bold tabular-nums">{formatAmount(c.amount)}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 function YearBarChart({ years }: { years: AssetYear[] }) {
   const maxTotal = Math.max(...years.map((y) => Math.abs(y.total)), 1);
 
@@ -64,8 +115,10 @@ function YearBarChart({ years }: { years: AssetYear[] }) {
     <div className="space-y-3">
       <h3 className="text-sm font-semibold text-(--color-text-tertiary)">연도별 총 재산</h3>
       <div className="space-y-2">
-        {years.map((y) => {
+        {years.map((y, idx) => {
           const ratio = Math.abs(y.total) / maxTotal;
+          const next = years[idx + 1];
+          const diff = next ? y.total - next.total : null;
           return (
             <div key={y.year} className="flex items-center gap-3">
               <span className="w-10 text-right text-sm font-medium tabular-nums">{y.year}</span>
@@ -81,6 +134,22 @@ function YearBarChart({ years }: { years: AssetYear[] }) {
               <span className="w-20 text-right text-sm font-semibold tabular-nums">
                 {formatAmount(y.total)}
               </span>
+              {diff !== null ? (
+                <span
+                  className={`w-24 text-right text-xs tabular-nums ${
+                    diff > 0
+                      ? "text-red-400"
+                      : diff < 0
+                        ? "text-blue-400"
+                        : "text-(--color-text-tertiary)"
+                  }`}
+                >
+                  {diff > 0 ? "▲" : diff < 0 ? "▼" : ""}
+                  {formatAmount(Math.abs(diff))}
+                </span>
+              ) : (
+                <span className="w-24" />
+              )}
             </div>
           );
         })}
@@ -127,6 +196,32 @@ function CategoryBreakdown({ year }: { year: AssetYear }) {
     </div>
   );
 }
+
+/** item 문자열에서 종류와 상세 설명을 분리 */
+function parseItem(item: string): { type: string; detail: string } {
+  // "아파트 - 서울특별시 ..." or "자동차 - 2021년식 ..." or "상장주식 - 안랩 ..."
+  const dashIdx = item.indexOf(" - ");
+  if (dashIdx > 0 && dashIdx < 30) {
+    return { type: item.slice(0, dashIdx).trim(), detail: item.slice(dashIdx + 3).trim() };
+  }
+  // "(전세(임차)권)" 같은 접미사가 포함된 경우
+  const parenMatch = item.match(/^(.+?\s*\(.+?\))\s*-\s*(.+)$/);
+  if (parenMatch) {
+    return { type: parenMatch[1].trim(), detail: parenMatch[2].trim() };
+  }
+  return { type: item, detail: "" };
+}
+
+const RELATION_LABEL: Record<string, string> = {
+  본인: "본인",
+  배우자: "배우자",
+  모: "어머니",
+  부: "아버지",
+  장녀: "장녀",
+  장남: "장남",
+  차녀: "차녀",
+  차남: "차남",
+};
 
 function DetailAccordion({ years, details }: { years: AssetYear[]; details: AssetDetail[] }) {
   const [openYear, setOpenYear] = useState<number | null>(years[0]?.year ?? null);
@@ -182,31 +277,50 @@ function DetailAccordion({ years, details }: { years: AssetYear[]; details: Asse
                               className="inline-block h-2 w-2 shrink-0 rounded-full"
                               style={{ backgroundColor: getCategoryColor(cat) }}
                             />
-                            <span className="truncate text-sm font-medium">{cat}</span>
+                            <span className="truncate text-sm font-medium">
+                              {shortCategory(cat)}
+                            </span>
+                            <span className="shrink-0 text-xs text-(--color-text-tertiary)">
+                              {catDetails.length}건
+                            </span>
                           </div>
-                          <span className="shrink-0 text-sm text-(--color-text-tertiary) tabular-nums">
+                          <span className="shrink-0 text-sm font-semibold tabular-nums">
                             {formatAmount(catTotal)}
                           </span>
                         </button>
 
                         {isCatOpen && (
-                          <div className="divide-y divide-(--color-border-primary)">
-                            {catDetails.map((d, i) => (
-                              <div
-                                key={i}
-                                className="flex items-center justify-between px-10 py-2 text-sm"
-                              >
-                                <div className="min-w-0 flex-1">
-                                  <span className="line-clamp-1">{d.item}</span>
-                                  <span className="text-xs text-(--color-text-tertiary)">
-                                    {d.relation}
-                                  </span>
+                          <div className="space-y-1 px-6 pt-1 pb-3">
+                            {catDetails.map((d, i) => {
+                              const { type, detail } = parseItem(d.item);
+                              const relationLabel = RELATION_LABEL[d.relation] ?? d.relation;
+                              return (
+                                <div key={i} className="rounded-lg bg-(--color-bg-primary) p-3">
+                                  <div className="flex items-start justify-between gap-2">
+                                    <div className="min-w-0 flex-1">
+                                      <div className="flex flex-wrap items-center gap-1.5">
+                                        <span className="text-sm font-medium">{type}</span>
+                                        <span className="rounded-full bg-(--color-bg-tertiary) px-2 py-0.5 text-xs text-(--color-text-tertiary)">
+                                          {relationLabel}
+                                        </span>
+                                      </div>
+                                      {detail && (
+                                        <p className="mt-1 text-xs leading-relaxed text-(--color-text-secondary)">
+                                          {detail}
+                                        </p>
+                                      )}
+                                    </div>
+                                    <span
+                                      className={`shrink-0 text-sm font-bold tabular-nums ${
+                                        d.amount < 0 ? "text-blue-500" : ""
+                                      }`}
+                                    >
+                                      {formatAmount(d.amount)}
+                                    </span>
+                                  </div>
                                 </div>
-                                <span className="ml-3 shrink-0 font-medium tabular-nums">
-                                  {formatAmount(d.amount)}
-                                </span>
-                              </div>
-                            ))}
+                              );
+                            })}
                           </div>
                         )}
                       </div>
@@ -238,8 +352,10 @@ export default function AssetsTab({ memberId }: AssetsTabProps) {
 
   return (
     <div className="space-y-6 py-4" role="tabpanel">
-      <YearBarChart years={assets.years} />
+      <AssetSummaryCard years={assets.years} />
+      <CategoryCards year={assets.years[0]} />
       <CategoryBreakdown year={assets.years[0]} />
+      <YearBarChart years={assets.years} />
       <DetailAccordion years={assets.years} details={assets.details} />
     </div>
   );
