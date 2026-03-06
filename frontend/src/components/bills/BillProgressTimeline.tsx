@@ -47,21 +47,23 @@ function getStages(progress: BillProgress, proposedDate: string, billStatus: str
       label: "위원회 심사",
       date: progress.committeePresentDate ?? progress.committeeResultDate,
       result: progress.committeeResult,
-      status: progress.committeeResult || hasLaw || hasPlenary
-        ? "completed"
-        : progress.committeePresentDate
-          ? "current"
-          : "pending",
+      status:
+        progress.committeeResult || hasLaw || hasPlenary
+          ? "completed"
+          : progress.committeePresentDate
+            ? "current"
+            : "pending",
     },
     {
       label: "법사위",
       date: progress.lawPresentDate ?? progress.lawSubmitDate,
       result: progress.lawResult,
-      status: progress.lawResult || hasPlenary
-        ? "completed"
-        : progress.lawSubmitDate || progress.lawPresentDate
-          ? "current"
-          : "pending",
+      status:
+        progress.lawResult || hasPlenary
+          ? "completed"
+          : progress.lawSubmitDate || progress.lawPresentDate
+            ? "current"
+            : "pending",
     },
     {
       label: "본회의",
