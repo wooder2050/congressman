@@ -17,6 +17,19 @@ interface Stage {
 }
 
 function getStages(progress: BillProgress, proposedDate: string, billStatus: string): Stage[] {
+  // 이후 단계 진행 여부로 이전 단계 완료 판단
+  // 가결된 법안은 progress 데이터 없어도 전체 완료
+  const isPassed = billStatus === "passed";
+  const hasLaw = !!(progress.lawSubmitDate || progress.lawPresentDate || progress.lawResult);
+  const hasPlenary = !!progress.plenaryDate || isPassed;
+  const hasCommitteeReview = !!(
+    progress.committeeResult ||
+    progress.committeePresentDate ||
+    hasLaw ||
+    hasPlenary
+  );
+  const hasCommitteeRefer = !!(progress.committeeDate || hasCommitteeReview);
+
   const stages: Stage[] = [
     {
       label: "발의",
@@ -28,17 +41,13 @@ function getStages(progress: BillProgress, proposedDate: string, billStatus: str
       label: "위원회 회부",
       date: progress.committeeDate,
       result: null,
-      status: progress.committeeDate
-        ? "completed"
-        : progress.committeePresentDate || progress.committeeResult
-          ? "completed"
-          : "pending",
+      status: hasCommitteeRefer ? "completed" : "pending",
     },
     {
       label: "위원회 심사",
       date: progress.committeePresentDate ?? progress.committeeResultDate,
       result: progress.committeeResult,
-      status: progress.committeeResult
+      status: progress.committeeResult || hasLaw || hasPlenary
         ? "completed"
         : progress.committeePresentDate
           ? "current"
@@ -48,7 +57,11 @@ function getStages(progress: BillProgress, proposedDate: string, billStatus: str
       label: "법사위",
       date: progress.lawPresentDate ?? progress.lawSubmitDate,
       result: progress.lawResult,
-      status: progress.lawResult ? "completed" : progress.lawSubmitDate ? "current" : "pending",
+      status: progress.lawResult || hasPlenary
+        ? "completed"
+        : progress.lawSubmitDate || progress.lawPresentDate
+          ? "current"
+          : "pending",
     },
     {
       label: "본회의",
@@ -59,7 +72,7 @@ function getStages(progress: BillProgress, proposedDate: string, billStatus: str
           : billStatus === "discarded" && progress.plenaryDate
             ? "부결"
             : null,
-      status: progress.plenaryDate ? "completed" : "pending",
+      status: hasPlenary ? "completed" : "pending",
     },
   ];
 
@@ -110,7 +123,7 @@ export default function BillProgressTimeline({
                       ? "border-(--color-primary) bg-(--color-primary) text-white"
                       : stage.status === "current"
                         ? "animate-pulse border-(--color-primary) bg-(--color-bg-primary) text-(--color-primary)"
-                        : "border-(--color-border-secondary) bg-(--color-bg-secondary) text-(--color-text-tertiary)"
+                        : "border-(--color-border-primary) bg-(--color-bg-secondary) text-(--color-text-tertiary)"
                   }`}
                 >
                   {stage.status === "completed" ? "✓" : i + 1}
@@ -151,46 +164,58 @@ export default function BillProgressTimeline({
 
       {/* 모바일: 세로 타임라인 */}
       <div className="sm:hidden">
-        <div className="relative ml-4 space-y-4 border-l-2 border-(--color-border-secondary) pl-6">
-          {stages.map((stage, i) => (
-            <div key={stage.label} className="relative">
+        {stages.map((stage, i) => (
+          <div key={stage.label} className="flex gap-3">
+            {/* 왼쪽: 원 + 세로선 */}
+            <div className="flex shrink-0 flex-col items-center" style={{ width: 24 }}>
               <div
-                className={`absolute -left-[31px] flex h-6 w-6 items-center justify-center rounded-full border-2 text-[10px] font-bold ${
+                className={`flex h-6 w-6 items-center justify-center rounded-full border-2 text-[10px] font-bold ${
                   stage.status === "completed"
                     ? "border-(--color-primary) bg-(--color-primary) text-white"
                     : stage.status === "current"
                       ? "animate-pulse border-(--color-primary) bg-(--color-bg-primary) text-(--color-primary)"
-                      : "border-(--color-border-secondary) bg-(--color-bg-secondary) text-(--color-text-tertiary)"
+                      : "border-(--color-border-primary) bg-(--color-bg-primary) text-(--color-text-tertiary)"
                 }`}
               >
                 {stage.status === "completed" ? "✓" : i + 1}
               </div>
-              <div>
-                <span
-                  className={`text-sm font-semibold ${
-                    stage.status !== "pending"
-                      ? "text-(--color-text-primary)"
-                      : "text-(--color-text-tertiary)"
+              {i < stages.length - 1 && (
+                <div
+                  className={`w-0.75 grow rounded-full ${
+                    stages[i + 1].status !== "pending"
+                      ? "bg-(--color-primary)"
+                      : "bg-(--color-border-primary)"
                   }`}
-                >
-                  {stage.label}
-                </span>
-                <div className="flex flex-wrap items-center gap-2">
-                  {stage.date && (
-                    <span className="text-xs text-(--color-text-tertiary)">
-                      {formatDate(stage.date)}
-                    </span>
-                  )}
-                  {stage.result && (
-                    <span className="rounded-full bg-(--color-bg-tertiary) px-2 py-0.5 text-xs font-medium text-(--color-text-secondary)">
-                      {stage.result}
-                    </span>
-                  )}
-                </div>
+                  style={{ minHeight: 16 }}
+                />
+              )}
+            </div>
+            {/* 오른쪽: 텍스트 */}
+            <div className={`pt-0.5 ${i < stages.length - 1 ? "pb-3" : ""}`}>
+              <span
+                className={`text-sm font-semibold ${
+                  stage.status !== "pending"
+                    ? "text-(--color-text-primary)"
+                    : "text-(--color-text-tertiary)"
+                }`}
+              >
+                {stage.label}
+              </span>
+              <div className="flex flex-wrap items-center gap-2">
+                {stage.date && (
+                  <span className="text-xs text-(--color-text-tertiary)">
+                    {formatDate(stage.date)}
+                  </span>
+                )}
+                {stage.result && (
+                  <span className="rounded-full bg-(--color-bg-tertiary) px-2 py-0.5 text-xs font-medium text-(--color-text-secondary)">
+                    {stage.result}
+                  </span>
+                )}
               </div>
             </div>
-          ))}
-        </div>
+          </div>
+        ))}
       </div>
     </div>
   );
