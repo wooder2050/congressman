@@ -561,16 +561,14 @@ function DetailSection({ years, details }: { years: AssetYear[]; details: AssetD
                                       >
                                         {multi ? (
                                           <div>
-                                            <div className="flex items-start justify-between gap-2">
-                                              <MultiEntryTable item={d.item} />
-                                              <span
-                                                className={`shrink-0 text-sm font-bold tabular-nums ${
-                                                  d.amount < 0 ? "text-blue-500" : ""
-                                                }`}
-                                              >
-                                                {formatAmount(d.amount)}
-                                              </span>
-                                            </div>
+                                            <span
+                                              className={`text-sm font-bold tabular-nums ${
+                                                d.amount < 0 ? "text-blue-500" : ""
+                                              }`}
+                                            >
+                                              {formatAmount(d.amount)}
+                                            </span>
+                                            <MultiEntryTable item={d.item} />
                                           </div>
                                         ) : (
                                           <div className="flex items-start justify-between gap-2">
