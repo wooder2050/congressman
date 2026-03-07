@@ -25,12 +25,26 @@ async function buildSitemap(id: number) {
 
     if (API_BASE) {
       try {
-        const res = await fetch(`${API_BASE}/api/members?termId=22`);
-        if (res.ok) {
-          const members: { id: string }[] = await res.json();
+        const [membersRes, committeesRes] = await Promise.all([
+          fetch(`${API_BASE}/api/members?termId=22`),
+          fetch(`${API_BASE}/api/committees?termId=22`),
+        ]);
+        if (membersRes.ok) {
+          const members: { id: string }[] = await membersRes.json();
           for (const m of members) {
             entries.push(
               urlEntry(`${BASE}/members/${m.id}`, { changefreq: "weekly", priority: 0.7 }),
+            );
+          }
+        }
+        if (committeesRes.ok) {
+          const committees: { name: string }[] = await committeesRes.json();
+          for (const c of committees) {
+            entries.push(
+              urlEntry(`${BASE}/committees/${encodeURIComponent(c.name)}`, {
+                changefreq: "weekly",
+                priority: 0.6,
+              }),
             );
           }
         }

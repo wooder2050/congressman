@@ -14,8 +14,9 @@ export async function generateMetadata({ params }: AttendancePageProps): Promise
   const member = await getMember(id);
   if (!member) return { title: "의원 정보 없음" };
   return {
-    title: `${member.name} 의원 출석 상세`,
-    description: `${member.name} 국회의원의 본회의 출석 현황 및 표결 참여 내역`,
+    title: `${member.name} 의원 출석률·표결 참여`,
+    description: `${member.name} 국회의원의 본회의 출석률, 상임위원회 출석 현황, 표결 참여 내역을 확인하세요.`,
+    alternates: { canonical: `https://www.lawmake.kr/members/${id}/attendance` },
   };
 }
 

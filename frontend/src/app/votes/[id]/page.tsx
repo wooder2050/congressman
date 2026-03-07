@@ -16,15 +16,20 @@ export async function generateMetadata({ params }: VoteDetailPageProps): Promise
   if (!data) return { title: "표결 정보 없음" };
 
   const { vote } = data;
-  const description = `${vote.billName} 본회의 표결 결과 — 찬성 ${vote.yesCount}, 반대 ${vote.noCount}, 기권 ${vote.abstainCount}`;
+  const resultText =
+    vote.resultCode === "passed" || vote.resultCode === "amended" ? "가결" : "부결";
+  const description = `${vote.billName} 본회의 표결 결과: ${resultText} (찬성 ${vote.yesCount}, 반대 ${vote.noCount}, 기권 ${vote.abstainCount}). 의원별 투표 내역을 확인하세요.`;
 
   return {
-    title: vote.billName,
+    title: `${vote.billName} - 표결 결과`,
     description,
+    alternates: { canonical: `https://www.lawmake.kr/votes/${id}` },
     openGraph: {
-      title: `${vote.billName} | 표결 상세`,
+      title: `${vote.billName} | 국회 본회의 표결`,
       description,
+      url: `https://www.lawmake.kr/votes/${id}`,
     },
+    twitter: { card: "summary", title: `${vote.billName} 표결 결과`, description },
   };
 }
 

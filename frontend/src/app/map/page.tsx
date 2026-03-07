@@ -4,8 +4,10 @@ import MapSkeleton from "@/components/skeletons/MapSkeleton";
 import MapPageInner from "@/components/map/MapDynamic";
 
 export const metadata: Metadata = {
-  title: "선거구 지도",
-  description: "254개 지역구를 지도에서 확인하세요.",
+  title: "선거구 지도 - 우리 동네 국회의원 찾기",
+  description:
+    "22대 국회 254개 지역구를 지도에서 확인하세요. 내 지역구 국회의원이 누구인지, 어떤 정당 소속인지 한눈에 볼 수 있습니다.",
+  alternates: { canonical: "https://www.lawmake.kr/map" },
 };
 
 interface MapPageProps {

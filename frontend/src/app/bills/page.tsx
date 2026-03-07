@@ -5,9 +5,10 @@ import BillListInner from "@/components/bills/BillListInner";
 import BillListSkeleton from "@/components/skeletons/BillListSkeleton";
 
 export const metadata: Metadata = {
-  title: "법안 목록",
+  title: "법안 목록 - 22대 국회 발의 법안 검색",
   description:
-    "국회의원이 발의한 법안을 검색하고, 상태·위원회·주제별로 필터링하세요. 법안의 심사 경과와 AI 요약을 확인할 수 있습니다.",
+    "22대 국회의원이 발의한 법안을 검색하고, 상태·위원회·주제별로 필터링하세요. 법안의 심사 경과와 AI 요약을 확인할 수 있습니다.",
+  alternates: { canonical: "https://www.lawmake.kr/bills" },
 };
 
 interface BillsPageProps {

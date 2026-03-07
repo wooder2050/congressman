@@ -5,9 +5,10 @@ import VoteListInner from "@/components/votes/VoteListInner";
 import VoteListSkeleton from "@/components/skeletons/VoteListSkeleton";
 
 export const metadata: Metadata = {
-  title: "표결 현황",
+  title: "표결 현황 - 국회 본회의 투표 결과",
   description:
-    "국회 본회의 표결 결과를 확인하세요. 법안별 의원 투표 내역(찬성·반대·기권·불참)을 투명하게 공개합니다.",
+    "22대 국회 본회의 표결 결과를 확인하세요. 법안별 의원 투표 내역(찬성·반대·기권·불참)을 투명하게 공개합니다.",
+  alternates: { canonical: "https://www.lawmake.kr/votes" },
 };
 
 interface VotesPageProps {

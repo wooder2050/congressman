@@ -19,16 +19,20 @@ export async function generateMetadata({ params }: MemberDetailPageProps): Promi
   const currentTerm = terms.find((t) => t.termId === 22) ?? terms[0];
   const partyName = currentTerm?.party.name ?? "";
   const district = currentTerm?.district ?? "";
-  const description = `${member.name} ${partyName} 국회의원${district ? ` (${district})` : ""}의 출석, 법안 발의, 표결, 재산 등 의정활동 정보`;
+  const districtText = district ? ` (${district})` : "";
+  const description = `${member.name} ${partyName} 국회의원${districtText}의 출석률, 법안 발의 현황, 본회의 표결 기록, 재산 신고 내역을 확인하세요. 22대 국회 의정활동 정보를 한눈에 볼 수 있습니다.`;
 
   return {
-    title: `${member.name} 의원`,
+    title: `${member.name} 의원 - ${partyName}${districtText}`,
     description,
+    alternates: { canonical: `https://www.lawmake.kr/members/${id}` },
     openGraph: {
-      title: `${member.name} 의원 | 국회의원 의정활동 정보`,
+      title: `${member.name} ${partyName} 국회의원${districtText} 의정활동`,
       description,
       type: "profile",
+      url: `https://www.lawmake.kr/members/${id}`,
     },
+    twitter: { card: "summary", title: `${member.name} 의원 의정활동`, description },
   };
 }
 
