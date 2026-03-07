@@ -10,9 +10,19 @@ interface CommitteeDetailPageProps {
 export async function generateMetadata({ params }: CommitteeDetailPageProps): Promise<Metadata> {
   const { name } = await params;
   const committeeName = decodeURIComponent(name);
+  const description = `22대 국회 ${committeeName} 소속 위원 명단, 법안 심사·처리 현황, 회의록을 확인하세요. ${committeeName}의 최근 활동과 안건 정보를 제공합니다.`;
   return {
-    title: `${committeeName} - 위원회 상세`,
-    description: `${committeeName} 소속 위원, 법안 처리 현황, 회의록을 확인하세요.`,
+    title: `${committeeName} - 소속 위원·법안·회의록`,
+    description,
+    alternates: {
+      canonical: `https://www.lawmake.kr/committees/${encodeURIComponent(committeeName)}`,
+    },
+    openGraph: {
+      title: `${committeeName} | 국회 위원회`,
+      description,
+      url: `https://www.lawmake.kr/committees/${encodeURIComponent(committeeName)}`,
+    },
+    twitter: { card: "summary", title: `${committeeName} 위원회`, description },
   };
 }
 

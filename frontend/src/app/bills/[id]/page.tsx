@@ -15,15 +15,21 @@ export async function generateMetadata({ params }: BillDetailPageProps): Promise
   const bill = await getBill(id);
   if (!bill) return { title: "법안 정보 없음" };
 
-  const description = `${bill.title} — ${bill.proposerName} 외 ${bill.coProposerCount}인 발의`;
+  const statusText =
+    bill.status === "passed" ? "가결" : bill.status === "discarded" ? "폐기" : "심사 중";
+  const committeeText = bill.committee ? ` | ${bill.committee}` : "";
+  const description = `${bill.title} — ${bill.proposerName} 외 ${bill.coProposerCount}인 발의${committeeText}. 현재 상태: ${statusText}. 법안 요약, 심사 경과, 발의 의원 정보를 확인하세요.`;
 
   return {
-    title: bill.title,
+    title: `${bill.title} - 법안 상세`,
     description,
+    alternates: { canonical: `https://www.lawmake.kr/bills/${id}` },
     openGraph: {
-      title: `${bill.title} | 법안 상세`,
+      title: `${bill.title} | 22대 국회 법안`,
       description,
+      url: `https://www.lawmake.kr/bills/${id}`,
     },
+    twitter: { card: "summary", title: bill.title, description },
   };
 }
 

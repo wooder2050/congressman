@@ -5,9 +5,10 @@ import ScheduleListInner from "@/components/schedules/ScheduleListInner";
 import { ScheduleListSkeleton } from "@/components/skeletons/ScheduleSkeleton";
 
 export const metadata: Metadata = {
-  title: "국회 일정",
+  title: "국회 일정 - 본회의·위원회 회의 일정",
   description:
-    "국회 본회의 및 상임위원회 회의 일정을 확인하세요. 정기회·임시회 일정과 법안 심사 안건을 추적할 수 있습니다.",
+    "22대 국회 본회의 및 상임위원회 회의 일정을 확인하세요. 정기회·임시회 일정과 법안 심사 안건을 추적할 수 있습니다.",
+  alternates: { canonical: "https://www.lawmake.kr/schedule" },
 };
 
 interface SchedulePageProps {

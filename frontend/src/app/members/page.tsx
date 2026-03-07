@@ -7,9 +7,10 @@ import MemberListSkeleton from "@/components/skeletons/MemberListSkeleton";
 import { DistrictFinderSkeleton } from "@/components/skeletons/HomeSkeleton";
 
 export const metadata: Metadata = {
-  title: "의원 목록",
+  title: "국회의원 목록 - 22대 국회의원 300명",
   description:
-    "국회의원 300명의 의정활동 정보를 검색하세요. 지역구 의원 찾기, 정당별 필터, 법안 발의·출석률 비교 기능을 제공합니다.",
+    "22대 국회의원 300명의 의정활동 정보를 검색하세요. 지역구 의원 찾기, 정당별 필터, 법안 발의 건수·출석률 비교 기능을 제공합니다.",
+  alternates: { canonical: "https://www.lawmake.kr/members" },
 };
 
 interface MembersPageProps {

@@ -5,9 +5,10 @@ import CommitteeListInner from "@/components/committees/CommitteeListInner";
 import CommitteeListSkeleton from "@/components/skeletons/CommitteeListSkeleton";
 
 export const metadata: Metadata = {
-  title: "위원회 현황",
+  title: "위원회 현황 - 국회 상임위원회 활동",
   description:
-    "국회 상임위원회별 법안 처리 현황, 소속 위원, 회의 일정을 확인하세요. 위원회는 법안 심사의 핵심 기관입니다.",
+    "22대 국회 상임위원회별 법안 처리 현황, 소속 위원 명단, 회의 일정을 확인하세요. 위원회는 법안 심사의 핵심 기관입니다.",
+  alternates: { canonical: "https://www.lawmake.kr/committees" },
 };
 
 interface CommitteesPageProps {
