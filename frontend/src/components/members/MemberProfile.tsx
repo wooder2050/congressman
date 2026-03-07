@@ -113,33 +113,34 @@ export default function MemberProfile({ member, memberTerm, allTermIds }: Member
 
       {/* 대수 전환 + 역대 활동 링크 */}
       {allTermIds.length > 1 && (
-        <div className="flex items-center gap-3">
-          <div className="flex gap-2">
+        <div className="flex flex-wrap items-center gap-2 sm:gap-3">
+          <div className="flex gap-1.5 sm:gap-2">
             {allTermIds
               .sort((a, b) => b - a)
               .map((t) => {
                 const isActive = t === memberTerm.termId;
+                const label = t === 22 ? `${t}대(현재)` : `${t}대`;
                 return isActive ? (
                   <span
                     key={t}
-                    className="rounded-lg bg-(--color-primary) px-4 py-2 text-sm font-bold text-(--color-text-inverse)"
+                    className="rounded-lg bg-(--color-primary) px-3 py-1.5 text-xs font-bold whitespace-nowrap text-(--color-text-inverse) sm:px-4 sm:py-2 sm:text-sm"
                   >
-                    제{t}대{t === 22 ? " (현재)" : ""}
+                    제{label}
                   </span>
                 ) : (
                   <Link
                     key={t}
                     href={`/members/${member.id}?term=${t}`}
-                    className="rounded-lg border border-(--color-border-primary) bg-(--color-bg-secondary) px-4 py-2 text-sm font-medium text-(--color-text-secondary) no-underline transition-colors hover:bg-(--color-bg-tertiary)"
+                    className="rounded-lg border border-(--color-border-primary) bg-(--color-bg-secondary) px-3 py-1.5 text-xs font-medium whitespace-nowrap text-(--color-text-secondary) no-underline transition-colors hover:bg-(--color-bg-tertiary) sm:px-4 sm:py-2 sm:text-sm"
                   >
-                    제{t}대{t === 22 ? " (현재)" : ""}
+                    제{label}
                   </Link>
                 );
               })}
           </div>
           <Link
             href={`/members/${member.id}/history?term=${memberTerm.termId}`}
-            className="text-sm font-semibold text-(--color-primary) no-underline hover:underline"
+            className="text-xs font-semibold whitespace-nowrap text-(--color-primary) no-underline hover:underline sm:text-sm"
           >
             역대 비교 →
           </Link>
