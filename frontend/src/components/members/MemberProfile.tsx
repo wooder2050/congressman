@@ -123,7 +123,7 @@ export default function MemberProfile({ member, memberTerm, allTermIds }: Member
                 return isActive ? (
                   <span
                     key={t}
-                    className="rounded-lg bg-(--color-primary) px-3 py-1.5 text-xs font-bold whitespace-nowrap text-(--color-text-inverse) sm:px-4 sm:py-2 sm:text-sm"
+                    className="inline-flex items-center rounded-lg bg-(--color-primary) px-3 py-1.5 text-xs leading-none font-bold whitespace-nowrap text-(--color-text-inverse) sm:px-4 sm:py-2 sm:text-sm"
                   >
                     제{label}
                   </span>
@@ -131,7 +131,7 @@ export default function MemberProfile({ member, memberTerm, allTermIds }: Member
                   <Link
                     key={t}
                     href={`/members/${member.id}?term=${t}`}
-                    className="rounded-lg border border-(--color-border-primary) bg-(--color-bg-secondary) px-3 py-1.5 text-xs font-medium whitespace-nowrap text-(--color-text-secondary) no-underline transition-colors hover:bg-(--color-bg-tertiary) sm:px-4 sm:py-2 sm:text-sm"
+                    className="inline-flex items-center rounded-lg border border-(--color-border-primary) bg-(--color-bg-secondary) px-3 py-1.5 text-xs leading-none font-medium whitespace-nowrap text-(--color-text-secondary) no-underline transition-colors hover:bg-(--color-bg-tertiary) sm:px-4 sm:py-2 sm:text-sm"
                   >
                     제{label}
                   </Link>

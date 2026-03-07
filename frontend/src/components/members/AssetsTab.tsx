@@ -350,15 +350,15 @@ function MultiEntryTable({ item }: { item: string }) {
   return (
     <div className="mt-1.5">
       {hasPrefix && <p className="mb-1 text-xs font-medium text-(--color-text-tertiary)">{type}</p>}
-      <div className="divide-y divide-(--color-border-primary)/50 text-xs">
+      <div className="divide-y divide-(--color-border-primary)/50 text-xs sm:text-sm">
         {parsed.map((p, i) => (
-          <div key={i} className="flex items-baseline justify-between gap-2 py-1">
+          <div key={i} className="flex items-baseline justify-between gap-2 py-1 sm:py-1.5">
             <span className="min-w-0 shrink text-(--color-text-secondary)">{p.name}</span>
             <span className="flex shrink-0 items-baseline gap-1">
               <span className="font-medium tabular-nums">{p.amountText}</span>
               {p.changeText && (
                 <span
-                  className={`text-[11px] tabular-nums ${
+                  className={`text-[11px] tabular-nums sm:text-xs ${
                     p.changeText.includes("증가") ? "text-red-400" : "text-blue-400"
                   }`}
                 >
