@@ -7,13 +7,7 @@ const article: WeeklyArticle = {
   publishedDate: "2026-02-01",
   summary:
     "민생법안 91건 본회의 일괄 처리, 반도체 특별법 통과, 제헌절 공휴일 복원, 한동훈 제명 확정, 트럼프 관세 25% 인상 예고",
-  tags: [
-    "반도체특별법",
-    "민생법안 91건",
-    "제헌절 공휴일",
-    "한동훈 제명",
-    "트럼프 관세",
-  ],
+  tags: ["반도체특별법", "민생법안 91건", "제헌절 공휴일", "한동훈 제명", "트럼프 관세"],
   stats: {
     billsPassed: 91,
     votesHeld: 7,
@@ -47,8 +41,7 @@ const article: WeeklyArticle = {
       voteResult: { yes: 198, no: 2, abstain: 3 },
       sources: [
         {
-          title:
-            "제헌절 18년 만에 공휴일로, 올해부터 다시 빨간 날 - SBS",
+          title: "제헌절 18년 만에 공휴일로, 올해부터 다시 빨간 날 - SBS",
           url: "https://www.youtube.com/watch?v=1EELgzSjXvM",
           type: "youtube",
         },
@@ -67,8 +60,7 @@ const article: WeeklyArticle = {
       voteResult: { yes: 229, no: 0, abstain: 1 },
       sources: [
         {
-          title:
-            "여야 비쟁점 법안 91개 처리, 대미투자특별법 뇌관 - 연합뉴스TV",
+          title: "여야 비쟁점 법안 91개 처리, 대미투자특별법 뇌관 - 연합뉴스TV",
           url: "https://www.youtube.com/watch?v=EHzj-QOEZCk",
           type: "youtube",
         },

@@ -38,10 +38,7 @@ export default function WeeklyListSkeleton() {
       {/* 월별 필터 */}
       <div className="flex gap-2">
         {Array.from({ length: 4 }).map((_, i) => (
-          <div
-            key={i}
-            className="h-8 w-20 animate-pulse rounded-full bg-(--color-bg-tertiary)"
-          />
+          <div key={i} className="h-8 w-20 animate-pulse rounded-full bg-(--color-bg-tertiary)" />
         ))}
       </div>
 

@@ -7,13 +7,7 @@ const article: WeeklyArticle = {
   publishedDate: "2025-11-23",
   summary:
     "예산소위 가동, 기재위 조세소위 세법개정안 심사, 한미 MOU 후속 입법 논의, 추경호 체포동의안 27일 표결 대기",
-  tags: [
-    "예산소위",
-    "세법개정안",
-    "한미 MOU",
-    "추경호 표결",
-    "상임위 심사",
-  ],
+  tags: ["예산소위", "세법개정안", "한미 MOU", "추경호 표결", "상임위 심사"],
   stats: {
     committeeMeetings: 12,
   },
@@ -44,8 +38,7 @@ const article: WeeklyArticle = {
         "한미 관세 팩트시트에 따른 후속 입법 방안이 산업통상자원위에서 논의되었습니다. 자동차 원산지 규정 완화, 철강 관세 할당 확대 등 이행법안 마련이 과제로 떠올랐습니다.",
       sources: [
         {
-          title:
-            "산업장관 '적절한 시일 내 대미투자 MOU, 이달 내 입법' - KBS",
+          title: "산업장관 '적절한 시일 내 대미투자 MOU, 이달 내 입법' - KBS",
           url: "https://www.youtube.com/watch?v=QWxEw4necB0",
           type: "youtube",
         },

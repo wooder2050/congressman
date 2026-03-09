@@ -7,13 +7,7 @@ const article: WeeklyArticle = {
   publishedDate: "2026-01-25",
   summary:
     "2차 종합특검법 국무회의 의결, 이혜훈 기획예산처 장관 후보 인사청문회, 12.29 여객기 참사 국정조사 청문회",
-  tags: [
-    "종합특검법 의결",
-    "인사청문회",
-    "여객기 참사",
-    "AI기본법 시행",
-    "당명 변경",
-  ],
+  tags: ["종합특검법 의결", "인사청문회", "여객기 참사", "AI기본법 시행", "당명 변경"],
   stats: {
     committeeMeetings: 7,
   },
@@ -25,8 +19,7 @@ const article: WeeklyArticle = {
         "1월 20일 이재명 대통령이 거부권 행사 없이 2차 종합특검법을 국무회의에서 의결했습니다. 국민의힘과 개혁신당의 거부권 행사 요구에도 불구하고 서명하여, 6·3 지방선거 기간 중 특검 수사가 진행됩니다.",
       sources: [
         {
-          title:
-            "종합특검법 국무회의 통과, 지방선거까지 특검 정국 - KBS",
+          title: "종합특검법 국무회의 통과, 지방선거까지 특검 정국 - KBS",
           url: "https://www.youtube.com/watch?v=OYEFU99snI0",
           type: "youtube",
         },

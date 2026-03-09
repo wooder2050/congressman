@@ -22,8 +22,7 @@ const article: WeeklyArticle = {
       voteResult: { yes: 248, no: 8, abstain: 6 },
       sources: [
         {
-          title:
-            "727.9조 내년도 예산안 국회 본회의 통과, 5년 만에 법정시한 준수 - YTN",
+          title: "727.9조 내년도 예산안 국회 본회의 통과, 5년 만에 법정시한 준수 - YTN",
           url: "https://www.youtube.com/watch?v=d5wkfufq6qE",
           type: "youtube",
         },

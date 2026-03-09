@@ -7,13 +7,7 @@ const article: WeeklyArticle = {
   publishedDate: "2025-12-14",
   summary:
     "정기국회 마지막 날 전면 필리버스터로 59건 법안 무산, 의장 마이크 차단 61년 만에 재현, 가맹사업법·형사소송법 통과",
-  tags: [
-    "전면 필리버스터",
-    "마이크 차단",
-    "가맹사업법",
-    "형사소송법",
-    "연금특위 연장",
-  ],
+  tags: ["전면 필리버스터", "마이크 차단", "가맹사업법", "형사소송법", "연금특위 연장"],
   stats: {
     billsPassed: 4,
     votesHeld: 5,
@@ -47,8 +41,7 @@ const article: WeeklyArticle = {
       voteResult: { yes: 160, no: 0, abstain: 0 },
       sources: [
         {
-          title:
-            "여야 정기국회 마지막날도 극한 대치, 필리버스터 충돌 - KBS",
+          title: "여야 정기국회 마지막날도 극한 대치, 필리버스터 충돌 - KBS",
           url: "https://www.youtube.com/watch?v=T02zKblzM3g",
           type: "youtube",
         },
@@ -67,8 +60,7 @@ const article: WeeklyArticle = {
       voteResult: { yes: 170, no: 1, abstain: 0 },
       sources: [
         {
-          title:
-            "마이크 또 꺼지자 나경원에 '쓱', 우원식 민주당 반응 - JTBC",
+          title: "마이크 또 꺼지자 나경원에 '쓱', 우원식 민주당 반응 - JTBC",
           url: "https://www.youtube.com/watch?v=tGMMeXtYY6M",
           type: "youtube",
         },

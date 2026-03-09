@@ -39,8 +39,8 @@ export default function WeeklyPage() {
       <section>
         <h1 className="text-3xl font-extrabold tracking-tight">주간 국회 뉴스</h1>
         <p className="mt-3 text-sm leading-relaxed text-(--color-text-secondary)">
-          매주 국회에서 있었던 주요 활동을 정리합니다. 화제의 법안, 본회의 표결, 위원회 심사 등
-          한 주간의 의정활동 하이라이트를 확인하세요.
+          매주 국회에서 있었던 주요 활동을 정리합니다. 화제의 법안, 본회의 표결, 위원회 심사 등 한
+          주간의 의정활동 하이라이트를 확인하세요.
         </p>
       </section>
 

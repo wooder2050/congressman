@@ -7,13 +7,7 @@ const article: WeeklyArticle = {
   publishedDate: "2026-01-04",
   summary:
     "내란전담재판부법·정통망법 본회의 통과, 장동혁 대표 역대 최장 22시간 필리버스터, 12·29 참사 1주기 추모, 쿠팡 연석청문회",
-  tags: [
-    "내란전담재판부",
-    "정통망법",
-    "필리버스터",
-    "12.29 1주기",
-    "쿠팡 청문회",
-  ],
+  tags: ["내란전담재판부", "정통망법", "필리버스터", "12.29 1주기", "쿠팡 청문회"],
   stats: {
     billsPassed: 2,
     votesHeld: 2,
@@ -29,8 +23,7 @@ const article: WeeklyArticle = {
       voteResult: { yes: 175, no: 2, abstain: 2 },
       sources: [
         {
-          title:
-            "내란재판부법 통과, 찬성 175명 반대 2명 기권 2 - YTN",
+          title: "내란재판부법 통과, 찬성 175명 반대 2명 기권 2 - YTN",
           url: "https://www.youtube.com/watch?v=-hAE7jqvFnA",
           type: "youtube",
         },
@@ -50,8 +43,7 @@ const article: WeeklyArticle = {
       voteResult: { yes: 170, no: 3, abstain: 4 },
       sources: [
         {
-          title:
-            "허위조작정보 5배 징벌 배상 본회의 통과에 野 반발 - MBC",
+          title: "허위조작정보 5배 징벌 배상 본회의 통과에 野 반발 - MBC",
           url: "https://www.youtube.com/watch?v=ruWtuZlTt2s",
           type: "youtube",
         },

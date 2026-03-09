@@ -7,13 +7,7 @@ const article: WeeklyArticle = {
   publishedDate: "2025-12-21",
   summary:
     "정통망법·내란전담재판부법 본회의 처리 임박, 상임위 집중 심사, 이재명 대통령 부처 업무보고 생중계",
-  tags: [
-    "정통망법",
-    "내란전담재판부",
-    "상임위 심사",
-    "부처 업무보고",
-    "12.29 참사",
-  ],
+  tags: ["정통망법", "내란전담재판부", "상임위 심사", "부처 업무보고", "12.29 참사"],
   stats: {
     committeeMeetings: 15,
   },
@@ -26,8 +20,7 @@ const article: WeeklyArticle = {
       proposer: "더불어민주당",
       sources: [
         {
-          title:
-            "최대 5배 손배 정보통신망법, 법사위 통과 - KBS",
+          title: "최대 5배 손배 정보통신망법, 법사위 통과 - KBS",
           url: "https://www.youtube.com/watch?v=AJSYrIZtHTw",
           type: "youtube",
         },
@@ -46,8 +39,7 @@ const article: WeeklyArticle = {
       proposer: "더불어민주당",
       sources: [
         {
-          title:
-            "내란전담재판부, 법왜곡죄 법안 법사위 소위 통과 - KBS",
+          title: "내란전담재판부, 법왜곡죄 법안 법사위 소위 통과 - KBS",
           url: "https://www.youtube.com/watch?v=gLvJxq0faDk",
           type: "youtube",
         },

@@ -28,8 +28,7 @@ const article: WeeklyArticle = {
           type: "youtube",
         },
         {
-          title:
-            "필리버스터 종료, 2차 종합특검법 국회 통과 - 연합뉴스TV",
+          title: "필리버스터 종료, 2차 종합특검법 국회 통과 - 연합뉴스TV",
           url: "https://www.youtube.com/watch?v=DD4tro1-lns",
           type: "youtube",
         },
@@ -47,8 +46,7 @@ const article: WeeklyArticle = {
         "블록체인 기반 토큰증권(STO) 발행·유통의 법적 근거를 마련하는 법안으로, 3년간 논의 끝에 1월 15일 본회의에서 통과되었습니다. 공포 후 1년(2027년 1월) 시행 예정이며, 2030년 367조 원 규모 시장이 전망됩니다.",
       sources: [
         {
-          title:
-            "2차 특검법 오늘 표결, 야당 단식·필리버스터 - SBS",
+          title: "2차 특검법 오늘 표결, 야당 단식·필리버스터 - SBS",
           url: "https://www.youtube.com/watch?v=D1u5T4gwwCc",
           type: "youtube",
         },

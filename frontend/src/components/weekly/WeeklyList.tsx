@@ -22,10 +22,7 @@ function formatMonthLabel(ym: string) {
 }
 
 export default function WeeklyList({ articles }: WeeklyListProps) {
-  const months = useMemo(
-    () => [...new Set(articles.map((a) => getYearMonth(a.id)))],
-    [articles],
-  );
+  const months = useMemo(() => [...new Set(articles.map((a) => getYearMonth(a.id)))], [articles]);
   const [selectedMonth, setSelectedMonth] = useState<string | null>(null);
   const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
   const sentinelRef = useRef<HTMLDivElement>(null);
@@ -104,9 +101,7 @@ export default function WeeklyList({ articles }: WeeklyListProps) {
             <div className="flex items-start justify-between gap-3">
               <div className="min-w-0 flex-1">
                 <div className="flex items-center gap-2">
-                  <h2 className="text-lg font-bold text-(--color-text-primary)">
-                    {article.title}
-                  </h2>
+                  <h2 className="text-lg font-bold text-(--color-text-primary)">{article.title}</h2>
                   <span className="shrink-0 text-xs text-(--color-text-tertiary)">
                     {article.period}
                   </span>

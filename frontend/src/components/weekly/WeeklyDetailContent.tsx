@@ -47,12 +47,10 @@ function FeaturedBillCard({ bill }: { bill: FeaturedBill }) {
         <div className="mt-4">
           <div className="flex gap-4 text-sm">
             <span className="text-(--color-text-secondary)">
-              찬성{" "}
-              <span className="font-bold text-green-600">{bill.voteResult.yes}</span>
+              찬성 <span className="font-bold text-green-600">{bill.voteResult.yes}</span>
             </span>
             <span className="text-(--color-text-secondary)">
-              반대{" "}
-              <span className="font-bold text-red-600">{bill.voteResult.no}</span>
+              반대 <span className="font-bold text-red-600">{bill.voteResult.no}</span>
             </span>
             <span className="text-(--color-text-secondary)">
               기권{" "}
@@ -95,66 +93,68 @@ function FeaturedBillCard({ bill }: { bill: FeaturedBill }) {
         </div>
       )}
 
-      {bill.sources && bill.sources.length > 0 && (() => {
-        const youtubeLinks = bill.sources!.filter((s) => s.type === "youtube");
-        const articleLinks = bill.sources!.filter((s) => s.type !== "youtube");
+      {bill.sources &&
+        bill.sources.length > 0 &&
+        (() => {
+          const youtubeLinks = bill.sources!.filter((s) => s.type === "youtube");
+          const articleLinks = bill.sources!.filter((s) => s.type !== "youtube");
 
-        return (
-          <div className="mt-4 border-t border-(--color-border-primary) pt-3">
-            {youtubeLinks.length > 0 && (
-              <div className="mb-2">
-                <p className="mb-1.5 text-xs font-semibold text-(--color-text-tertiary)">
-                  관련 영상
-                </p>
-                <ul className="space-y-1.5">
-                  {youtubeLinks.map((source, i) => (
-                    <li key={i}>
-                      <a
-                        href={source.url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="inline-flex items-center gap-1.5 text-xs text-(--color-primary) no-underline hover:underline"
-                      >
-                        <svg
-                          width="14"
-                          height="14"
-                          viewBox="0 0 24 24"
-                          fill="currentColor"
-                          className="shrink-0 text-red-500"
+          return (
+            <div className="mt-4 border-t border-(--color-border-primary) pt-3">
+              {youtubeLinks.length > 0 && (
+                <div className="mb-2">
+                  <p className="mb-1.5 text-xs font-semibold text-(--color-text-tertiary)">
+                    관련 영상
+                  </p>
+                  <ul className="space-y-1.5">
+                    {youtubeLinks.map((source, i) => (
+                      <li key={i}>
+                        <a
+                          href={source.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center gap-1.5 text-xs text-(--color-primary) no-underline hover:underline"
                         >
-                          <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z" />
-                        </svg>
-                        {source.title}
-                      </a>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            )}
-            {articleLinks.length > 0 && (
-              <div>
-                <p className="mb-1.5 text-xs font-semibold text-(--color-text-tertiary)">
-                  관련 기사
-                </p>
-                <ul className="space-y-1">
-                  {articleLinks.map((source, i) => (
-                    <li key={i}>
-                      <a
-                        href={source.url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-xs text-(--color-primary) no-underline hover:underline"
-                      >
-                        {source.title}
-                      </a>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            )}
-          </div>
-        );
-      })()}
+                          <svg
+                            width="14"
+                            height="14"
+                            viewBox="0 0 24 24"
+                            fill="currentColor"
+                            className="shrink-0 text-red-500"
+                          >
+                            <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z" />
+                          </svg>
+                          {source.title}
+                        </a>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+              {articleLinks.length > 0 && (
+                <div>
+                  <p className="mb-1.5 text-xs font-semibold text-(--color-text-tertiary)">
+                    관련 기사
+                  </p>
+                  <ul className="space-y-1">
+                    {articleLinks.map((source, i) => (
+                      <li key={i}>
+                        <a
+                          href={source.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-xs text-(--color-primary) no-underline hover:underline"
+                        >
+                          {source.title}
+                        </a>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+            </div>
+          );
+        })()}
     </div>
   );
 }
@@ -193,9 +193,7 @@ export default function WeeklyDetailContent({ article }: WeeklyDetailContentProp
         >
           ← 주간 뉴스 목록
         </Link>
-        <h1 className="text-3xl font-extrabold tracking-tight">
-          {article.title} 주간 국회 뉴스
-        </h1>
+        <h1 className="text-3xl font-extrabold tracking-tight">{article.title} 주간 국회 뉴스</h1>
         <p className="mt-2 text-sm text-(--color-text-tertiary)">{article.period}</p>
         <p className="mt-3 text-sm leading-relaxed text-(--color-text-secondary)">
           {article.summary}
@@ -224,7 +222,9 @@ export default function WeeklyDetailContent({ article }: WeeklyDetailContentProp
             )}
             {article.stats.votesHeld != null && (
               <div className="rounded-xl border border-(--color-border-primary) bg-(--color-bg-primary) p-4 text-center">
-                <p className="text-2xl font-bold text-(--color-primary)">{article.stats.votesHeld}건</p>
+                <p className="text-2xl font-bold text-(--color-primary)">
+                  {article.stats.votesHeld}건
+                </p>
                 <p className="mt-1 text-xs text-(--color-text-tertiary)">본회의 표결</p>
               </div>
             )}

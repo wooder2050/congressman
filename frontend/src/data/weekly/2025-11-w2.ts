@@ -7,13 +7,7 @@ const article: WeeklyArticle = {
   publishedDate: "2025-11-16",
   summary:
     "본회의 비쟁점 법안 53건 일괄 처리, 국민의힘 집단 퇴장, 추경호 체포동의안 본회의 보고, 한미 관세 팩트시트 발표",
-  tags: [
-    "비쟁점 법안 53건",
-    "국민의힘 퇴장",
-    "추경호 체포동의안",
-    "한미 관세",
-    "예산 심사",
-  ],
+  tags: ["비쟁점 법안 53건", "국민의힘 퇴장", "추경호 체포동의안", "한미 관세", "예산 심사"],
   stats: {
     billsPassed: 53,
     votesHeld: 1,
@@ -27,8 +21,7 @@ const article: WeeklyArticle = {
         "11월 13일 본회의에서 비쟁점 법안 53건이 일괄 처리되었습니다. 국민의힘은 여당 단독 처리를 규탄하며 집단 퇴장했습니다.",
       sources: [
         {
-          title:
-            "비쟁점법안 50여건 본회의 처리, 추경호 체포동의안 보고 - MBC",
+          title: "비쟁점법안 50여건 본회의 처리, 추경호 체포동의안 보고 - MBC",
           url: "https://www.youtube.com/watch?v=kFh0MPYIos0",
           type: "youtube",
         },
