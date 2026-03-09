@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import Link from "next/link";
 import JsonLd from "@/components/seo/JsonLd";
 import { getWeeklyArticle, getWeeklyArticleIds } from "@/data/weekly";
 import WeeklyDetailContent from "@/components/weekly/WeeklyDetailContent";

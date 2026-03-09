@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useEffect, useRef, useCallback, useMemo } from "react";
 import Link from "next/link";
 import type { WeeklyArticle } from "@/data/weekly/types";
 import { SkeletonWeeklyItem } from "@/components/skeletons/WeeklyListSkeleton";
@@ -22,7 +22,10 @@ function formatMonthLabel(ym: string) {
 }
 
 export default function WeeklyList({ articles }: WeeklyListProps) {
-  const months = [...new Set(articles.map((a) => getYearMonth(a.id)))];
+  const months = useMemo(
+    () => [...new Set(articles.map((a) => getYearMonth(a.id)))],
+    [articles],
+  );
   const [selectedMonth, setSelectedMonth] = useState<string | null>(null);
   const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
   const sentinelRef = useRef<HTMLDivElement>(null);
@@ -35,9 +38,10 @@ export default function WeeklyList({ articles }: WeeklyListProps) {
   const hasMore = visibleCount < filtered.length;
 
   // 월 필터 변경 시 페이지 리셋
-  useEffect(() => {
+  const handleMonthSelect = useCallback((month: string | null) => {
+    setSelectedMonth(month);
     setVisibleCount(PAGE_SIZE);
-  }, [selectedMonth]);
+  }, []);
 
   // IntersectionObserver로 무한 스크롤
   const observerCallback = useCallback(
@@ -65,7 +69,7 @@ export default function WeeklyList({ articles }: WeeklyListProps) {
       {/* 월별 필터 */}
       <div className="flex flex-wrap gap-2">
         <button
-          onClick={() => setSelectedMonth(null)}
+          onClick={() => handleMonthSelect(null)}
           className={`rounded-full px-3.5 py-1.5 text-sm font-medium transition-colors ${
             selectedMonth === null
               ? "bg-(--color-text-primary) text-(--color-bg-primary)"
@@ -77,7 +81,7 @@ export default function WeeklyList({ articles }: WeeklyListProps) {
         {months.map((ym) => (
           <button
             key={ym}
-            onClick={() => setSelectedMonth(ym)}
+            onClick={() => handleMonthSelect(ym)}
             className={`rounded-full px-3.5 py-1.5 text-sm font-medium transition-colors ${
               selectedMonth === ym
                 ? "bg-(--color-text-primary) text-(--color-bg-primary)"
