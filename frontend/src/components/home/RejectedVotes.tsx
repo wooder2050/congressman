@@ -11,7 +11,7 @@ interface RejectedVotesProps {
 export default function RejectedVotes({ termId }: RejectedVotesProps) {
   const { data } = useCongressSuspenseQuery(getHomeStats, termId);
 
-  if (!data.rejectedVotes?.length) return null;
+  if (!data?.rejectedVotes?.length) return null;
 
   return (
     <div className="space-y-3">
