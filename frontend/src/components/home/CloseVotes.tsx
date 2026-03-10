@@ -15,7 +15,7 @@ interface CloseVotesProps {
 export default function CloseVotes({ termId }: CloseVotesProps) {
   const { data } = useCongressSuspenseQuery(getHomeStats, termId);
 
-  if (!data.closeVotes?.length) return null;
+  if (!data?.closeVotes?.length) return null;
 
   return (
     <div className="space-y-3">

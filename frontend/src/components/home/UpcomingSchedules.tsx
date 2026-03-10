@@ -12,6 +12,8 @@ interface UpcomingSchedulesProps {
 export default function UpcomingSchedules({ termId }: UpcomingSchedulesProps) {
   const { data: schedules } = useCongressSuspenseQuery(getUpcomingSchedules, termId);
 
+  if (!schedules) return null;
+
   return (
     <div className="space-y-3">
       <div className="flex items-center justify-between">

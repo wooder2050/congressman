@@ -12,7 +12,7 @@ interface TopProposersProps {
 export default function TopProposers({ termId }: TopProposersProps) {
   const { data } = useCongressSuspenseQuery(getHomeStats, termId);
 
-  if (!data.topProposers?.length) return null;
+  if (!data?.topProposers?.length) return null;
 
   return (
     <div className="space-y-3">
