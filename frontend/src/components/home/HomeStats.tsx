@@ -45,6 +45,8 @@ const statCards = [
 export default function HomeStats({ termId }: HomeStatsProps) {
   const { data } = useCongressSuspenseQuery(getHomeStats, termId);
 
+  if (!data) return null;
+
   return (
     <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
       {statCards.map((card) => {

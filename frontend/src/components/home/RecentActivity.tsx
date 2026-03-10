@@ -13,6 +13,8 @@ interface RecentActivityProps {
 export default function RecentActivity({ termId }: RecentActivityProps) {
   const { data } = useCongressSuspenseQuery(getHomeStats, termId);
 
+  if (!data) return null;
+
   return (
     <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
       {/* 최근 표결 */}
