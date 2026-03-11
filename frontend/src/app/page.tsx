@@ -7,6 +7,7 @@ import TopicSection from "@/components/home/TopicSection";
 import RecentActivity from "@/components/home/RecentActivity";
 import AttendanceRanking from "@/components/home/AttendanceRanking";
 import ActivityHighlights from "@/components/home/ActivityHighlights";
+import LatestWeeklyNews from "@/components/home/LatestWeeklyNews";
 import {
   HomeStatsSkeleton,
   TopicSectionSkeleton,
@@ -81,6 +82,9 @@ export default async function HomePage({ searchParams }: HomePageProps) {
         <CongressWrapper key={`stats-${termId}`} fallback={<HomeStatsSkeleton />}>
           <HomeStats termId={termId} />
         </CongressWrapper>
+
+        {/* 주간 국회 뉴스 */}
+        <LatestWeeklyNews />
 
         {/* 다가오는 일정 — 현재 대수(22대)만 표시 */}
         {termId === 22 && (
