@@ -5,7 +5,8 @@ import JsonLd from "@/components/seo/JsonLd";
 export const metadata: Metadata = {
   title: "입법 과정 안내",
   description:
-    "대한민국 국회에서 법률이 만들어지는 과정을 알기 쉽게 설명합니다. 법안 발의부터 위원회 심사, 본회의 표결, 법률 공포까지 전체 입법 절차를 안내합니다.",
+    "대한민국 국회에서 법률이 만들어지는 과정을 알기 쉽게 설명합니다. 법안 발의부터 위원회 심사, 본회의 표결, 법률 공포까지 전체 입법 절차와 위원회 역할, 법안 유형을 안내합니다.",
+  alternates: { canonical: "https://www.lawmake.kr/guide" },
 };
 
 const steps = [
@@ -32,6 +33,60 @@ const steps = [
     title: "법률 공포 및 시행",
     content:
       "국회를 통과한 법안은 정부로 이송되어 대통령이 15일 이내에 공포합니다. 대통령은 이의가 있을 경우 거부권(재의요구권)을 행사할 수 있으며, 이 경우 국회에서 재적의원 과반수 출석에 출석의원 3분의 2 이상 찬성으로 재의결하면 법률로 확정됩니다. 공포된 법률은 특별한 규정이 없으면 공포일로부터 20일 후에 시행됩니다.",
+  },
+];
+
+const committees = [
+  {
+    name: "기획재정위원회",
+    desc: "국가 예산, 세제, 금융, 경제 정책 전반을 다룹니다. 정부의 예산안을 1차로 심사하며, 세금과 관련된 법안을 소관합니다.",
+  },
+  {
+    name: "법제사법위원회",
+    desc: "모든 법안의 체계와 자구를 최종 점검하는 '관문' 역할을 합니다. 법원·검찰·법무부 소관 법안도 심사하며, '법사위 심사'는 법안 통과의 마지막 관문으로 불립니다.",
+  },
+  {
+    name: "국방위원회",
+    desc: "국방부, 병무청, 방위사업청 등을 관할합니다. 국방 예산, 병역제도, 방위산업 관련 법안을 심사합니다.",
+  },
+  {
+    name: "행정안전위원회",
+    desc: "행정안전부, 경찰청, 소방청 등을 관할합니다. 지방자치, 선거, 공무원 제도, 재난 안전 관련 법안을 다룹니다.",
+  },
+  {
+    name: "교육위원회",
+    desc: "교육부를 관할하며, 초·중·고·대학 교육 정책, 교원 제도, 학교 안전 등에 관한 법안을 심사합니다.",
+  },
+  {
+    name: "보건복지위원회",
+    desc: "보건복지부, 질병관리청 등을 관할합니다. 건강보험, 연금, 사회복지, 저출생 대책 등 국민 생활과 밀접한 법안을 다룹니다.",
+  },
+  {
+    name: "환경노동위원회",
+    desc: "환경부와 고용노동부를 관할합니다. 환경 보호, 근로 조건, 최저임금, 산업 안전 등에 관한 법안을 심사합니다.",
+  },
+  {
+    name: "과학기술정보방송통신위원회",
+    desc: "과학기술정보통신부, 방송통신위원회 등을 관할합니다. 과학기술 진흥, 정보통신, 방송, 인터넷 관련 법안을 다룹니다.",
+  },
+];
+
+const billTypes = [
+  {
+    type: "일부개정법률안",
+    desc: "기존 법률의 특정 조항만 수정·삭제·추가하는 법안입니다. 전체 법안 중 가장 많은 비중(약 90% 이상)을 차지합니다. 예: '근로기준법 일부개정법률안'은 근로기준법의 특정 조항을 고치는 법안입니다.",
+  },
+  {
+    type: "전부개정법률안",
+    desc: "법률의 체계나 내용이 크게 달라져야 할 때, 기존 법 전체를 새로 작성하는 법안입니다. 법률 번호는 유지되지만 내용은 완전히 새로워집니다.",
+  },
+  {
+    type: "제정법률안",
+    desc: "기존에 없던 완전히 새로운 법률을 만드는 법안입니다. 새로운 사회 현상이나 정책 수요에 대응하기 위해 발의됩니다. 예: 새로운 기술(AI, 드론 등)을 규율하기 위한 법률 등.",
+  },
+  {
+    type: "폐지법률안",
+    desc: "더 이상 필요 없는 법률을 없애는 법안입니다. 시대 변화로 실효성을 잃었거나, 다른 법률에 통합된 경우에 발의됩니다.",
   },
 ];
 
@@ -106,6 +161,59 @@ export default function GuidePage() {
             </div>
           </div>
         ))}
+      </section>
+
+      {/* 위원회 역할 안내 */}
+      <section className="space-y-6">
+        <h2 className="text-2xl font-bold">국회 위원회의 역할</h2>
+        <p className="text-sm leading-relaxed text-(--color-text-secondary)">
+          국회에는 17개의 상임위원회가 있으며, 각 위원회는 특정 분야의 법안을 전문적으로 심사합니다.
+          모든 법안은 본회의 표결 전에 반드시 소관 상임위원회의 심사를 거쳐야 합니다. 각 의원은
+          하나의 상임위원회에 소속되어 활동합니다.
+        </p>
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+          {committees.map((committee) => (
+            <div
+              key={committee.name}
+              className="rounded-xl border border-(--color-border-primary) bg-(--color-bg-primary) p-4"
+            >
+              <h3 className="text-base font-bold text-(--color-text-primary)">{committee.name}</h3>
+              <p className="mt-1.5 text-sm leading-relaxed text-(--color-text-secondary)">
+                {committee.desc}
+              </p>
+            </div>
+          ))}
+        </div>
+        <p className="text-sm text-(--color-text-tertiary)">
+          이 외에도 국토교통, 농림축산식품해양수산, 산업통상자원중소벤처기업, 문화체육관광,
+          외교통일, 국회운영, 정보, 여성가족 위원회 등이 있습니다.{" "}
+          <Link href="/committees" className="font-semibold text-(--color-primary) underline">
+            위원회 현황
+          </Link>
+          에서 각 위원회의 활동과 소속 의원을 확인할 수 있습니다.
+        </p>
+      </section>
+
+      {/* 법안의 유형 */}
+      <section className="space-y-6">
+        <h2 className="text-2xl font-bold">법안의 유형</h2>
+        <p className="text-sm leading-relaxed text-(--color-text-secondary)">
+          법안은 기존 법률을 어떻게 다루느냐에 따라 여러 유형으로 나뉩니다. 법안 제목에 포함된
+          유형을 보면 해당 법안이 어떤 성격인지 빠르게 파악할 수 있습니다.
+        </p>
+        <div className="space-y-3">
+          {billTypes.map((item) => (
+            <div
+              key={item.type}
+              className="rounded-xl border border-(--color-border-primary) bg-(--color-bg-primary) p-4"
+            >
+              <h3 className="text-base font-bold text-(--color-text-primary)">{item.type}</h3>
+              <p className="mt-1.5 text-sm leading-relaxed text-(--color-text-secondary)">
+                {item.desc}
+              </p>
+            </div>
+          ))}
+        </div>
       </section>
 
       {/* 알아두면 좋은 용어 */}

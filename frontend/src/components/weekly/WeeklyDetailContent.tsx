@@ -264,6 +264,21 @@ export default function WeeklyDetailContent({ article }: WeeklyDetailContentProp
         </section>
       )}
 
+      {/* 이번 주 분석 */}
+      {article.analysis && (
+        <section className="space-y-3">
+          <h2 className="text-2xl font-bold">이번 주 분석</h2>
+          <div className="rounded-xl border border-(--color-border-primary) bg-(--color-bg-primary) p-5">
+            <p className="text-sm leading-relaxed text-(--color-text-secondary)">
+              {article.analysis}
+            </p>
+            <p className="mt-3 text-xs text-(--color-text-tertiary)">
+              위 분석은 해당 주의 입법 동향을 객관적으로 정리한 내용입니다.
+            </p>
+          </div>
+        </section>
+      )}
+
       {/* 하단 CTA */}
       <section className="rounded-xl border border-(--color-border-primary) bg-(--color-bg-secondary) p-6">
         <h2 className="text-lg font-bold text-(--color-text-primary)">직접 확인해 보세요</h2>

@@ -17,6 +17,8 @@ export interface WeeklyArticle {
   highlights: WeeklyHighlight[];
   /** 주간 통계 */
   stats?: WeeklyStats;
+  /** 이번 주 분석 — 입법 동향에 대한 맥락과 전망 */
+  analysis?: string;
 }
 
 export interface FeaturedBill {
