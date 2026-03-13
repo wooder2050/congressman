@@ -1,12 +1,13 @@
 "use client";
 
-import { useState } from "react";
+import { useState, Suspense } from "react";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { useCongressSuspenseQuery } from "@/hooks/useCongressQuery";
 import { getMember, getMemberTerms } from "@/lib/api";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import MemberProfile from "./MemberProfile";
+import MemberActivitySummary from "./MemberActivitySummary";
 import MemberDetailTabContent from "./MemberDetailTabs";
 
 interface MemberDetailInnerProps {
@@ -75,6 +76,14 @@ export default function MemberDetailInner({ id, termId, defaultTab }: MemberDeta
       </Link>
 
       <MemberProfile member={member} memberTerm={currentMemberTerm} allTermIds={allTermIds} />
+
+      <Suspense fallback={null}>
+        <MemberActivitySummary
+          memberId={id}
+          memberName={member.name}
+          memberTerm={currentMemberTerm}
+        />
+      </Suspense>
 
       {/* 탭 헤더 — 항상 즉시 렌더 */}
       <Tabs value={activeTab} onValueChange={setActiveTab}>
