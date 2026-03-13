@@ -21,6 +21,9 @@ async function buildSitemap(id: number) {
       urlEntry(`${BASE}/committees`, { changefreq: "weekly", priority: 0.7 }),
       urlEntry(`${BASE}/guide`, { changefreq: "monthly", priority: 0.6 }),
       urlEntry(`${BASE}/glossary`, { changefreq: "monthly", priority: 0.5 }),
+      urlEntry(`${BASE}/about`, { changefreq: "monthly", priority: 0.5 }),
+      urlEntry(`${BASE}/privacy`, { changefreq: "yearly", priority: 0.3 }),
+      urlEntry(`${BASE}/terms`, { changefreq: "yearly", priority: 0.3 }),
     ];
 
     if (API_BASE) {

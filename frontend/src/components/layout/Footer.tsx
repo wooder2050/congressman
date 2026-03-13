@@ -22,12 +22,15 @@ export default function Footer() {
   return (
     <footer className="mt-8 border-t border-(--color-border-primary) pb-20 lg:pb-0">
       <div className="mx-auto max-w-7xl px-4 py-6">
-        <div className="flex flex-col gap-2">
+        <div className="flex flex-col gap-3">
           <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-(--color-text-tertiary)">
             <Link
-              href="/glossary"
+              href="/about"
               className="font-semibold underline hover:text-(--color-text-secondary)"
             >
+              서비스 소개
+            </Link>
+            <Link href="/glossary" className="underline hover:text-(--color-text-secondary)">
               용어 사전
             </Link>
             <Link href="/guide" className="underline hover:text-(--color-text-secondary)">
@@ -49,6 +52,14 @@ export default function Footer() {
             >
               GitHub
             </a>
+          </div>
+          <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-(--color-text-tertiary)">
+            <Link href="/privacy" className="underline hover:text-(--color-text-secondary)">
+              개인정보처리방침
+            </Link>
+            <Link href="/terms" className="underline hover:text-(--color-text-secondary)">
+              이용약관
+            </Link>
           </div>
           {data?.lastSyncAt && (
             <p className="text-xs text-(--color-text-tertiary)">
