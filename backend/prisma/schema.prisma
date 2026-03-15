@@ -208,8 +208,9 @@ model Asset {
   year     Int
   category String
   item     String
-  amount   BigInt @default(0)
-  relation String @default("본인")
+  amount       BigInt @default(0)
+  relation     String @default("본인")
+  changeReason String @default("") // 변동사유 (신규등록, 가액변동, 매입 등)
 
   member Member @relation(fields: [memberId], references: [id])
 

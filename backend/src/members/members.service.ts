@@ -200,6 +200,7 @@ export class MembersService {
       item: a.item,
       amount: safeBigIntToNumber(a.amount),
       relation: a.relation,
+      changeReason: a.changeReason || '',
     }));
 
     const result = { years, details };
