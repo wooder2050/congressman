@@ -179,6 +179,7 @@ export class AssetSyncService {
           if (category === '채무' && amount > 0n) amount = -amount;
 
           const relation = (row['본인과의 관계'] ?? '').trim() || '본인';
+          const changeReason = (row['변동사유'] ?? '').trim();
 
           // item이 매우 길 수 있으므로 200자로 제한 (unique 제약)
           const truncatedItem = item.length > 200 ? item.slice(0, 200) : item;
@@ -193,8 +194,16 @@ export class AssetSyncService {
                 relation,
               },
             },
-            update: { amount },
-            create: { memberId, year, category, item: truncatedItem, amount, relation },
+            update: { amount, changeReason },
+            create: {
+              memberId,
+              year,
+              category,
+              item: truncatedItem,
+              amount,
+              relation,
+              changeReason,
+            },
           });
 
           fileCount++;

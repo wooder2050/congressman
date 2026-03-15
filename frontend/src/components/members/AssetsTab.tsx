@@ -186,7 +186,12 @@ function AssetSummaryCard({ years }: { years: AssetYear[] }) {
 
   return (
     <div className="rounded-xl border border-(--color-border-primary) bg-(--color-bg-primary) p-5">
-      <p className="text-sm text-(--color-text-tertiary)">{latest.year}년 총 재산</p>
+      <div className="flex items-center justify-between">
+        <p className="text-sm text-(--color-text-tertiary)">{latest.year}년 총 재산</p>
+        <p className="text-[11px] text-(--color-text-tertiary)">
+          ({latest.year}년 정기 재산공개 기준)
+        </p>
+      </div>
       <p className="mt-1 text-3xl font-bold tabular-nums">{formatAmount(latest.total)}</p>
       {diff !== null && (
         <p
@@ -373,14 +378,50 @@ function MultiEntryTable({ item }: { item: string }) {
   );
 }
 
+/** 건물/토지 소재지에서 주소 추출 (지도 링크용) */
+function extractAddress(item: string): string | null {
+  const { detail } = parseItem(item);
+  const target = detail || item;
+  // "서울특별시 ..." 또는 "경기도 ..." 등 주소 패턴 매칭
+  const m = target.match(
+    /((?:서울특별시|부산광역시|대구광역시|인천광역시|광주광역시|대전광역시|울산광역시|세종특별자치시|경기도|충청북도|충청남도|전라북도|전북특별자치도|전라남도|경상북도|경상남도|강원특별자치도|강원도|제주특별자치도)\s+\S+\s+\S+(?:\s+\S+)?)/,
+  );
+  return m ? m[1].replace(/\s+\d[\d,.]*㎡.*$/, "").trim() : null;
+}
+
 /** 단일 항목 렌더링 */
-function SingleItemContent({ item }: { item: string }) {
+function SingleItemContent({ item, category }: { item: string; category: string }) {
   const { type, detail } = parseItem(item);
+  const isRealEstate = category === "건물" || category === "토지";
+  const address = isRealEstate ? extractAddress(item) : null;
+
   return (
     <div className="min-w-0 flex-1">
       <span className="text-sm font-medium">{type}</span>
       {detail && (
         <p className="mt-0.5 text-xs leading-relaxed text-(--color-text-secondary)">{detail}</p>
+      )}
+      {address && (
+        <div className="mt-1 flex gap-2">
+          <a
+            href={`https://map.kakao.com/?q=${encodeURIComponent(address)}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-[11px] text-(--color-primary) no-underline hover:underline"
+            onClick={(e) => e.stopPropagation()}
+          >
+            카카오맵
+          </a>
+          <a
+            href={`https://map.naver.com/v5/search/${encodeURIComponent(address)}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-[11px] text-emerald-600 no-underline hover:underline dark:text-emerald-400"
+            onClick={(e) => e.stopPropagation()}
+          >
+            네이버지도
+          </a>
+        </div>
       )}
     </div>
   );
@@ -572,7 +613,7 @@ function DetailSection({ years, details }: { years: AssetYear[]; details: AssetD
                                           </div>
                                         ) : (
                                           <div className="flex items-start justify-between gap-2">
-                                            <SingleItemContent item={d.item} />
+                                            <SingleItemContent item={d.item} category={cat} />
                                             <span
                                               className={`shrink-0 text-sm font-bold tabular-nums ${
                                                 d.amount < 0 ? "text-blue-500" : ""
@@ -581,6 +622,11 @@ function DetailSection({ years, details }: { years: AssetYear[]; details: AssetD
                                               {formatAmount(d.amount)}
                                             </span>
                                           </div>
+                                        )}
+                                        {d.changeReason && (
+                                          <p className="mt-1 text-[11px] text-(--color-text-tertiary)">
+                                            변동사유: {d.changeReason}
+                                          </p>
                                         )}
                                       </div>
                                     );

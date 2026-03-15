@@ -168,6 +168,7 @@ export interface AssetDetail {
   item: string;
   amount: number;
   relation: string;
+  changeReason: string;
 }
 
 export interface AssetResponse {
