@@ -7,13 +7,7 @@ const article: WeeklyArticle = {
   publishedDate: "2026-03-15",
   summary:
     "대미투자특별법 본회의 가결, 임금체불 처벌 강화 근로기준법 통과, 가습기살균제 국가 책임 명문화, 법안 52건 일괄 처리",
-  tags: [
-    "대미투자특별법",
-    "근로기준법",
-    "임금체불",
-    "가습기살균제",
-    "보이스피싱",
-  ],
+  tags: ["대미투자특별법", "근로기준법", "임금체불", "가습기살균제", "보이스피싱"],
   stats: {
     billsPassed: 52,
     votesHeld: 52,
@@ -29,8 +23,7 @@ const article: WeeklyArticle = {
       voteResult: { yes: 226, no: 8, abstain: 8 },
       sources: [
         {
-          title:
-            "여야 정쟁 뚫은 '대미투자특별법', 국회 본회의 통과 - 매일신문",
+          title: "여야 정쟁 뚫은 '대미투자특별법', 국회 본회의 통과 - 매일신문",
           url: "https://www.imaeil.com/page/view/2026031215140247581",
           type: "article",
         },
@@ -49,14 +42,12 @@ const article: WeeklyArticle = {
       voteResult: { yes: 177, no: 1, abstain: 1 },
       sources: [
         {
-          title:
-            "임금 체불 시 '5년 이하 징역'...근로기준법 개정안 국회 본회의 통과 - 서울경제",
+          title: "임금 체불 시 '5년 이하 징역'...근로기준법 개정안 국회 본회의 통과 - 서울경제",
           url: "https://www.sedaily.com/article/20018624",
           type: "article",
         },
         {
-          title:
-            "임금체불 형량 '징역 3년→5년' 상향...감독관 명칭도 73년만에 변경 - 코스카저널",
+          title: "임금체불 형량 '징역 3년→5년' 상향...감독관 명칭도 73년만에 변경 - 코스카저널",
           url: "https://www.koscaj.com/news/articleView.html?idxno=322875",
           type: "article",
         },
@@ -70,8 +61,7 @@ const article: WeeklyArticle = {
       voteResult: { yes: 179, no: 0, abstain: 2 },
       sources: [
         {
-          title:
-            "가습기살균제피해구제법 개정안 통과…국가 책임 명문화 - CBC뉴스",
+          title: "가습기살균제피해구제법 개정안 통과…국가 책임 명문화 - CBC뉴스",
           url: "https://www.cbci.co.kr/news/articleView.html?idxno=560621",
           type: "article",
         },
