@@ -4,6 +4,16 @@ import { RedisService } from '../redis/redis.service';
 
 const TTL_HOUR = 60 * 60;
 
+/** 정부조직법 개정 등으로 변경된 위원회명 → 현행 위원회명 매핑 */
+const COMMITTEE_NAME_MAP: Record<string, string> = {
+  기획재정위원회: '재정경제기획위원회',
+  여성가족위원회: '성평등가족위원회',
+  환경노동위원회: '기후에너지환경노동위원회',
+};
+
+/** 위원회 목록에서 제외할 이름 */
+const EXCLUDED_COMMITTEES = new Set(['본회의']);
+
 @Injectable()
 export class CommitteesService {
   constructor(
@@ -53,12 +63,27 @@ export class CommitteesService {
       }),
     ]);
 
-    // 위원회명 목록 (특위 제외)
+    // 옛 위원회명 → 현행 이름으로 법안 통계를 병합
+    const mergedBillStats = new Map<string, number>();
+    const mergedPassedStats = new Map<string, number>();
+    for (const b of billStats) {
+      const name = COMMITTEE_NAME_MAP[b.committee!] ?? b.committee!;
+      mergedBillStats.set(name, (mergedBillStats.get(name) ?? 0) + b._count);
+    }
+    for (const p of passedStats) {
+      const name = COMMITTEE_NAME_MAP[p.committee!] ?? p.committee!;
+      mergedPassedStats.set(name, (mergedPassedStats.get(name) ?? 0) + p._count);
+    }
+
+    // 위원회명 목록 (특위, 본회의 제외)
     const committeeNames = [
-      ...new Set(billStats.map((b) => b.committee!).filter((c) => !c.includes('특별위원회'))),
+      ...new Set(
+        [...mergedBillStats.keys()].filter(
+          (c) => !c.includes('특별위원회') && !EXCLUDED_COMMITTEES.has(c),
+        ),
+      ),
     ].sort();
 
-    const passedMap = new Map(passedStats.map((p) => [p.committee, p._count]));
     const memberCountMap = new Map(memberCounts.map((m) => [m.committee, Number(m.member_count)]));
 
     // 위원장을 위원회명으로 매칭 (committeeRoles에서 "위원장"인 위원회만)
@@ -81,8 +106,8 @@ export class CommitteesService {
     }
 
     const result = committeeNames.map((name) => {
-      const total = billStats.find((b) => b.committee === name)?._count ?? 0;
-      const passed = passedMap.get(name) ?? 0;
+      const total = mergedBillStats.get(name) ?? 0;
+      const passed = mergedPassedStats.get(name) ?? 0;
       const chair = chairMap.get(name);
       const nextSchedule = nextScheduleMap.get(name);
 
