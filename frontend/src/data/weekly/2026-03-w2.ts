@@ -23,13 +23,18 @@ const article: WeeklyArticle = {
       voteResult: { yes: 226, no: 8, abstain: 8 },
       sources: [
         {
-          title: "여야 정쟁 뚫은 '대미투자특별법', 국회 본회의 통과 - 매일신문",
-          url: "https://www.imaeil.com/page/view/2026031215140247581",
-          type: "article",
+          title: '대미투자특별법 국회 통과…"3,500억 달러 규모 투자" - SBS 뉴스',
+          url: "https://www.youtube.com/watch?v=gjFrxgnNXYM",
+          type: "youtube",
         },
         {
-          title: "'대미투자특별법' 여야 합의로 국회 본회의 통과 - MBC",
-          url: "https://imnews.imbc.com/news/2026/politics/article/6806890_36911.html",
+          title: "'대미투자특별법' 여야 합의로 국회 본회의 통과 - MBC 5시뉴스",
+          url: "https://www.youtube.com/watch?v=5uPElfrYETQ",
+          type: "youtube",
+        },
+        {
+          title: "여야 정쟁 뚫은 '대미투자특별법', 국회 본회의 통과 - 매일신문",
+          url: "https://www.imaeil.com/page/view/2026031215140247581",
           type: "article",
         },
       ],
@@ -42,13 +47,13 @@ const article: WeeklyArticle = {
       voteResult: { yes: 177, no: 1, abstain: 1 },
       sources: [
         {
-          title: "임금 체불 시 '5년 이하 징역'...근로기준법 개정안 국회 본회의 통과 - 서울경제",
-          url: "https://www.sedaily.com/article/20018624",
-          type: "article",
+          title: "'임금체불' 고통…\"사전 대책·처벌 강화 절실\" - KBS 뉴스",
+          url: "https://www.youtube.com/watch?v=HqnMCl7Das4",
+          type: "youtube",
         },
         {
-          title: "임금체불 형량 '징역 3년→5년' 상향...감독관 명칭도 73년만에 변경 - 코스카저널",
-          url: "https://www.koscaj.com/news/articleView.html?idxno=322875",
+          title: "임금 체불 시 '5년 이하 징역'...근로기준법 개정안 국회 본회의 통과 - 서울경제",
+          url: "https://www.sedaily.com/article/20018624",
           type: "article",
         },
       ],
@@ -65,6 +70,11 @@ const article: WeeklyArticle = {
           url: "https://www.cbci.co.kr/news/articleView.html?idxno=560621",
           type: "article",
         },
+        {
+          title: "정부, 가습기살균제 사건 '참사'로 규정…국가 주도 배상체계로 전환 - 정책브리핑",
+          url: "https://www.korea.kr/news/policyNewsView.do?newsId=148957088",
+          type: "article",
+        },
       ],
     },
     {
@@ -76,7 +86,13 @@ const article: WeeklyArticle = {
       sources: [
         {
           title:
-            "가상자산 악용 보이스피싱까지 대응…통신사기피해환급법 개정안 국회 통과 - 대한민국 정책브리핑",
+            "보이스피싱 의심계좌 실시간 정보 공유…통신사기피해환급법 개정안 국회 통과 - 데일리안",
+          url: "https://www.dailian.co.kr/news/view/1598846",
+          type: "article",
+        },
+        {
+          title:
+            "가상자산 악용 보이스피싱까지 대응…통신사기피해환급법 개정안 국회 통과 - 정책브리핑",
           url: "https://www.korea.kr/briefing/pressReleaseView.do?newsId=156748788",
           type: "article",
         },
