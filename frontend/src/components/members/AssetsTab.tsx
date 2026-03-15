@@ -378,11 +378,11 @@ function MultiEntryTable({ item }: { item: string }) {
   );
 }
 
-/** 건물/토지 소재지에서 주소 추출 (지도 링크용) */
+/** 건물/토지 소재지에서 주소 추출 (지도 링크용) — cleanSpaces 적용 전 원본 사용 */
 function extractAddress(item: string): string | null {
-  const { detail } = parseItem(item);
-  const target = detail || item;
-  // "서울특별시 ..." 또는 "경기도 ..." 등 주소 패턴 매칭
+  // parseItem의 cleanSpaces가 주소 공백을 제거하므로, 원본 item에서 직접 추출
+  const dashIdx = item.indexOf(" - ");
+  const target = dashIdx > 0 && dashIdx < 30 ? item.slice(dashIdx + 3) : item;
   const m = target.match(
     /((?:서울특별시|부산광역시|대구광역시|인천광역시|광주광역시|대전광역시|울산광역시|세종특별자치시|경기도|충청북도|충청남도|전라북도|전북특별자치도|전라남도|경상북도|경상남도|강원특별자치도|강원도|제주특별자치도)\s+\S+\s+\S+(?:\s+\S+)?)/,
   );
