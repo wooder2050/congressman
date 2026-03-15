@@ -1,4 +1,8 @@
 import type { WeeklyArticle } from "./types";
+import w202509w1 from "./2025-09-w1";
+import w202509w2 from "./2025-09-w2";
+import w202509w3 from "./2025-09-w3";
+import w202509w4 from "./2025-09-w4";
 import w202510w1 from "./2025-10-w1";
 import w202510w2 from "./2025-10-w2";
 import w202510w3 from "./2025-10-w3";
@@ -46,6 +50,10 @@ const articles: WeeklyArticle[] = [
   w202510w3,
   w202510w2,
   w202510w1,
+  w202509w4,
+  w202509w3,
+  w202509w2,
+  w202509w1,
 ];
 
 export function getAllWeeklyArticles(): WeeklyArticle[] {
