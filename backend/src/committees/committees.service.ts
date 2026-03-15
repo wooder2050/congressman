@@ -77,9 +77,11 @@ export class CommitteesService {
 
     // 위원회명 목록 (특위, 본회의 제외)
     const committeeNames = [
-      ...new Set([...mergedBillStats.keys()].filter(
-        (c) => !c.includes('특별위원회') && !EXCLUDED_COMMITTEES.has(c),
-      )),
+      ...new Set(
+        [...mergedBillStats.keys()].filter(
+          (c) => !c.includes('특별위원회') && !EXCLUDED_COMMITTEES.has(c),
+        ),
+      ),
     ].sort();
 
     const memberCountMap = new Map(memberCounts.map((m) => [m.committee, Number(m.member_count)]));
