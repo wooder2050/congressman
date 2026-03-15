@@ -52,7 +52,13 @@ const article: WeeklyArticle = {
       description:
         "두 가지 중요한 변화가 담긴 의료법 개정안이에요. 첫째, 조산사(=출산을 돕는 전문 의료인)의 업무 범위가 넓어져서 산모들이 출산 과정에서 더 다양한 의료 서비스를 받을 수 있게 됐어요. 둘째, 대리수술(=환자 동의 없이 다른 의사가 수술하는 행위)에 대한 처벌이 크게 강화됐어요. 수술대에 오르는 환자라면 '내 수술은 내가 선택한 의사가 한다'는 안심을 가질 수 있게 된 거예요. 찬성 257표로 가결됐어요.",
       voteResult: { yes: 257, no: 0, abstain: 0 },
-      sources: [],
+      sources: [
+        {
+          title: "국회 보건복지위원회 국정감사 - 보건복지부 등 종합감사 - NATV 국회방송",
+          url: "https://www.youtube.com/watch?v=JXdz9ZXHXTc",
+          type: "youtube",
+        },
+      ],
     },
   ],
   highlights: [
