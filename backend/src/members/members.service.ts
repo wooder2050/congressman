@@ -50,7 +50,7 @@ export class MembersService {
         district: mt.district,
         proportional: mt.proportional,
         committees: mt.committees,
-        committeeRole: mt.committeeRole,
+        committeeRoles: mt.committeeRoles as Record<string, string>,
       },
     }));
 
@@ -103,7 +103,7 @@ export class MembersService {
       proportional: mt.proportional,
       committees: mt.committees,
       committeeHistory: mt.committeeHistory,
-      committeeRole: mt.committeeRole,
+      committeeRoles: mt.committeeRoles as Record<string, string>,
       electedCount: mt.electedCount,
     }));
 

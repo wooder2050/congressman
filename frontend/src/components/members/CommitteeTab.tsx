@@ -87,7 +87,8 @@ export default function CommitteeTab({ memberId, termId }: CommitteeTabProps) {
   const currentTerm = memberTerms.find((mt) => mt.termId === termId);
   const committees = currentTerm?.committees ?? [];
   const committeeHistory = currentTerm?.committeeHistory ?? [];
-  const committeeRole = currentTerm?.committeeRole ?? "위원";
+  const committeeRoles = currentTerm?.committeeRoles ?? {};
+  const committeeRole = Object.values(committeeRoles).find((r) => r !== "위원") ?? "위원";
 
   // 전체 이력에서 고유 위원회 추출 (활동 카드용)
   const allCommitteeNames = [

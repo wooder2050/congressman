@@ -31,9 +31,12 @@ export class CommitteesService {
         where: { termId, committee: { not: null }, status: 'passed' },
         _count: true,
       }),
-      // 3. 위원장 정보
+      // 3. 위원장 정보 (committeeRoles Json에서 "위원장" 값이 있는 의원만)
       this.prisma.memberTerm.findMany({
-        where: { termId, committeeRole: '위원장' },
+        where: {
+          termId,
+          committeeRoles: { path: [], not: '{}' },
+        },
         include: { member: true, party: true },
       }),
       // 4. 위원회별 소속 위원 수
@@ -58,11 +61,14 @@ export class CommitteesService {
     const passedMap = new Map(passedStats.map((p) => [p.committee, p._count]));
     const memberCountMap = new Map(memberCounts.map((m) => [m.committee, Number(m.member_count)]));
 
-    // 위원장을 위원회명으로 매칭
+    // 위원장을 위원회명으로 매칭 (committeeRoles에서 "위원장"인 위원회만)
     const chairMap = new Map<string, (typeof chairs)[0]>();
     for (const chair of chairs) {
-      for (const committeeName of chair.committees) {
-        chairMap.set(committeeName, chair);
+      const roles = (chair.committeeRoles ?? {}) as Record<string, string>;
+      for (const [cName, cRole] of Object.entries(roles)) {
+        if (cRole === '위원장') {
+          chairMap.set(cName, chair);
+        }
       }
     }
 
@@ -129,7 +135,6 @@ export class CommitteesService {
           committees: { has: committeeName },
         },
         include: { member: true, party: true },
-        orderBy: { committeeRole: 'asc' },
       }),
       // 다가오는 일정
       this.prisma.schedule.findMany({
@@ -148,14 +153,19 @@ export class CommitteesService {
       billPassed,
       passRate: billTotal > 0 ? Math.round((billPassed / billTotal) * 1000) / 10 : 0,
       members: members
-        .sort((a, b) => (roleOrder[a.committeeRole] ?? 2) - (roleOrder[b.committeeRole] ?? 2))
-        .map((mt) => ({
+        .map((mt) => {
+          const roles = (mt.committeeRoles ?? {}) as Record<string, string>;
+          const role = roles[committeeName] ?? '위원';
+          return { mt, role };
+        })
+        .sort((a, b) => (roleOrder[a.role] ?? 2) - (roleOrder[b.role] ?? 2))
+        .map(({ mt, role }) => ({
           memberId: mt.memberId,
           name: mt.member.name,
           photoUrl: mt.member.photoUrl,
           partyName: mt.party.name,
           partyColor: mt.party.color,
-          role: mt.committeeRole,
+          role,
         })),
       upcomingSchedules: upcomingSchedules.map((s) => ({
         meetingDate: s.meetingDate,

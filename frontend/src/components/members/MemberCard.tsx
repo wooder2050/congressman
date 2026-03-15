@@ -34,11 +34,15 @@ export default function MemberCard({ member }: MemberCardProps) {
         <div className="mb-1 flex flex-wrap items-center gap-1.5">
           <span className="text-lg font-bold text-(--color-text-primary)">{member.name}</span>
           <ColorBadge label={term.party.shortName} color={term.party.color} size="sm" />
-          {term.committeeRole && term.committeeRole !== "위원" && (
-            <span className="rounded-full bg-amber-100 px-2 py-0.5 text-[11px] font-semibold text-amber-800 dark:bg-amber-900/30 dark:text-amber-300">
-              {term.committeeRole}
-            </span>
-          )}
+          {(() => {
+            const roles = Object.values(term.committeeRoles ?? {});
+            const topRole = roles.find((r) => r !== "위원");
+            return topRole ? (
+              <span className="rounded-full bg-amber-100 px-2 py-0.5 text-[11px] font-semibold text-amber-800 dark:bg-amber-900/30 dark:text-amber-300">
+                {topRole}
+              </span>
+            ) : null;
+          })()}
         </div>
         <p className="text-sm text-(--color-text-secondary)">
           {term.proportional ? "비례대표" : formatDistrict(term.district)}
