@@ -41,7 +41,7 @@ export interface MemberTerm {
   proportional: boolean;
   committees: string[];
   committeeHistory: CommitteeHistoryEntry[];
-  committeeRole: string; // "위원장", "간사", "위원"
+  committeeRoles: Record<string, string>; // {"법제사법위원회": "위원장"}
   electedCount: number; // 해당 대수 기준 선수
 }
 

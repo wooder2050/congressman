@@ -137,7 +137,7 @@ export class MemberSyncService {
           .map((c) => c.trim())
           .filter(Boolean)
       : [];
-    const committeeRole = row.JOB_RES_NM || '위원';
+    const apiRole = row.JOB_RES_NM || '';
     const career = row.MEM_TITLE?.trim() || null;
 
     // 역대 API에는 MEM_TITLE이 없으므로, career가 null이면 기존 값 보존
@@ -152,8 +152,34 @@ export class MemberSyncService {
 
     // 역대 API에는 CMITS, JOB_RES_NM이 없으므로, 빈 값이면 기존 값 보존
     const termUpdate: Record<string, unknown> = { partyId, district, proportional, electedCount };
-    if (committees.length > 0) termUpdate.committees = committees;
-    if (row.JOB_RES_NM) termUpdate.committeeRole = committeeRole;
+    if (committees.length > 0) {
+      termUpdate.committees = committees;
+
+      // 기존 DB의 committeeRoles를 읽어서 병합 (수동 설정된 위원장/간사를 보존)
+      const existing = await this.prisma.memberTerm.findUnique({
+        where: { memberId_termId: { memberId, termId } },
+        select: { committeeRoles: true },
+      });
+      const existingRoles = (existing?.committeeRoles ?? {}) as Record<string, string>;
+
+      // 새 위원회 목록 기준으로 역할 맵 생성
+      const committeeRoles: Record<string, string> = {};
+      for (const c of committees) {
+        // 기존 DB에 위원장/간사가 설정되어 있으면 보존, 없으면 기본값 '위원'
+        committeeRoles[c] = existingRoles[c] ?? '위원';
+      }
+
+      // API의 JOB_RES_NM이 위원장/간사인데 기존 DB에 해당 역할이 없으면,
+      // 소속 위원회가 1개일 때만 안전하게 적용
+      if (apiRole && apiRole !== '위원') {
+        const hasRoleInDb = Object.values(committeeRoles).some((r) => r === apiRole);
+        if (!hasRoleInDb && committees.length === 1) {
+          committeeRoles[committees[0]] = apiRole;
+        }
+      }
+
+      termUpdate.committeeRoles = committeeRoles;
+    }
 
     await this.prisma.memberTerm.upsert({
       where: { memberId_termId: { memberId, termId } },
@@ -165,7 +191,7 @@ export class MemberSyncService {
         district,
         proportional,
         committees,
-        committeeRole,
+        committeeRoles: termUpdate.committeeRoles ?? {},
         electedCount,
       },
     });

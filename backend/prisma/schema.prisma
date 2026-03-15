@@ -66,7 +66,7 @@ model MemberTerm {
   proportional Boolean  @default(false)
   committees       String[] @default([])
   committeeHistory Json     @default("[]") // 전체 위원회 이력 [{name, startDate, endDate}]
-  committeeRole    String   @default("위원") // "위원장", "간사", "위원"
+  committeeRoles   Json     @default("{}") // {"법제사법위원회": "위원장", "예산결산특별위원회": "위원"}
   electedCount   Int      @default(1) // 해당 대수 기준 선수
 
   member Member @relation(fields: [memberId], references: [id])

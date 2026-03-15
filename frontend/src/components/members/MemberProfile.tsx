@@ -49,14 +49,17 @@ export default function MemberProfile({ member, memberTerm, allTermIds }: Member
             {standingCommittees.length > 0 && (
               <p className="mt-1 text-sm" style={{ color: contrastColor, opacity: 0.7 }}>
                 {standingCommittees[0]}
-                {memberTerm.committeeRole && memberTerm.committeeRole !== "위원" && (
-                  <span
-                    className="ml-1.5 inline-block rounded-full px-2 py-0.5 text-[11px] font-semibold"
-                    style={{ backgroundColor: "rgba(255,255,255,0.25)", color: contrastColor }}
-                  >
-                    {memberTerm.committeeRole}
-                  </span>
-                )}
+                {(() => {
+                  const role = (memberTerm.committeeRoles ?? {})[standingCommittees[0]];
+                  return role && role !== "위원" ? (
+                    <span
+                      className="ml-1.5 inline-block rounded-full px-2 py-0.5 text-[11px] font-semibold"
+                      style={{ backgroundColor: "rgba(255,255,255,0.25)", color: contrastColor }}
+                    >
+                      {role}
+                    </span>
+                  ) : null;
+                })()}
               </p>
             )}
           </div>
