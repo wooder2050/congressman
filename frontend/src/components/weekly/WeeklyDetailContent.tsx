@@ -92,7 +92,8 @@ function FeaturedBillCard({ bill, weeklyId }: { bill: FeaturedBill; weeklyId: st
         </div>
       )}
 
-      {bill.sources &&
+      {!hasArticle &&
+        bill.sources &&
         bill.sources.length > 0 &&
         (() => {
           const youtubeLinks = bill.sources!.filter((s) => s.type === "youtube");
