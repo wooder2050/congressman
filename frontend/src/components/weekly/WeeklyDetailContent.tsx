@@ -86,26 +86,11 @@ function FeaturedBillCard({ bill, weeklyId }: { bill: FeaturedBill; weeklyId: st
         </div>
       )}
 
-      {(bill.slug && bill.article) || bill.billId ? (
-        <div className="mt-3 flex flex-wrap gap-3">
-          {bill.slug && bill.article && (
-            <Link
-              href={`/weekly/${weeklyId}/${encodeURIComponent(bill.slug)}`}
-              className="text-sm font-semibold text-(--color-primary) no-underline"
-            >
-              자세히 읽기 →
-            </Link>
-          )}
-          {bill.billId && (
-            <Link
-              href={`/bills/${bill.billId}`}
-              className="text-sm font-semibold text-(--color-text-tertiary) no-underline"
-            >
-              법안 상세 보기 →
-            </Link>
-          )}
+      {hasArticle && (
+        <div className="mt-3">
+          <span className="text-sm font-semibold text-(--color-primary)">자세히 읽기 →</span>
         </div>
-      ) : null}
+      )}
 
       {bill.sources &&
         bill.sources.length > 0 &&
