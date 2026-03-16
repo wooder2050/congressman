@@ -37,19 +37,53 @@ export async function generateStaticParams() {
         params.push({ id, slug: bill.slug });
       }
     }
+    for (const hl of article.highlights) {
+      if (hl.slug && hl.article) {
+        params.push({ id, slug: hl.slug });
+      }
+    }
   }
   return params;
+}
+
+/** featuredBills + highlights에서 slug로 기사 데이터를 찾기 */
+function findArticleBySlug(article: ReturnType<typeof getWeeklyArticle>, slug: string) {
+  if (!article) return null;
+  const bill = article.featuredBills.find((b) => b.slug === slug);
+  if (bill?.article) {
+    return {
+      title: bill.title,
+      description: bill.description,
+      status: bill.status,
+      proposer: bill.proposer,
+      voteResult: bill.voteResult,
+      sources: bill.sources,
+      article: bill.article,
+    };
+  }
+  const hl = article.highlights.find((h) => h.slug === slug);
+  if (hl?.article) {
+    return {
+      title: hl.title,
+      description: hl.description,
+      status: null,
+      proposer: undefined,
+      voteResult: undefined,
+      sources: undefined,
+      article: hl.article,
+    };
+  }
+  return null;
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { id, slug } = await params;
   const article = getWeeklyArticle(id);
-  if (!article) return {};
-  const bill = article.featuredBills.find((b) => b.slug === decodeURIComponent(slug));
-  if (!bill) return {};
+  const found = findArticleBySlug(article, decodeURIComponent(slug));
+  if (!found || !article) return {};
   return {
-    title: `${bill.title} | ${article.title} 주간 국회 뉴스`,
-    description: bill.description,
+    title: `${found.title} | ${article.title} 주간 국회 뉴스`,
+    description: found.description,
   };
 }
 
@@ -59,10 +93,10 @@ export default async function WeeklyArticlePage({ params }: Props) {
   if (!weeklyArticle) notFound();
 
   const decodedSlug = decodeURIComponent(slug);
-  const bill = weeklyArticle.featuredBills.find((b) => b.slug === decodedSlug);
+  const bill = findArticleBySlug(weeklyArticle, decodedSlug);
   if (!bill || !bill.article) notFound();
 
-  const status = STATUS_LABEL[bill.status];
+  const status = bill.status ? STATUS_LABEL[bill.status] : null;
   const youtubeSources = (bill.sources ?? []).filter((s) => s.type === "youtube");
   const articleSources = (bill.sources ?? []).filter((s) => s.type === "article");
 
@@ -79,9 +113,11 @@ export default async function WeeklyArticlePage({ params }: Props) {
       {/* 헤더 */}
       <header className="mb-8">
         <div className="mb-3 flex flex-wrap items-center gap-2">
-          <span className={`rounded px-2 py-0.5 text-xs font-bold ${status.className}`}>
-            {status.text}
-          </span>
+          {status && (
+            <span className={`rounded px-2 py-0.5 text-xs font-bold ${status.className}`}>
+              {status.text}
+            </span>
+          )}
           <span className="text-xs text-(--color-text-tertiary)">{weeklyArticle.period}</span>
           {bill.proposer && (
             <span className="text-xs text-(--color-text-tertiary)">{bill.proposer}</span>

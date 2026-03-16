@@ -60,6 +60,10 @@ export interface WeeklyHighlight {
   title: string;
   /** 설명 */
   description: string;
+  /** URL 슬러그 (기사 페이지 연결용) */
+  slug?: string;
+  /** 기사 본문 */
+  article?: ArticleSection[];
 }
 
 export interface WeeklyStats {

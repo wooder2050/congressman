@@ -183,27 +183,47 @@ function FeaturedBillCard({ bill, weeklyId }: { bill: FeaturedBill; weeklyId: st
   return <div className={cardClass}>{content}</div>;
 }
 
-function HighlightItem({ highlight }: { highlight: WeeklyHighlight }) {
+function HighlightItem({ highlight, weeklyId }: { highlight: WeeklyHighlight; weeklyId: string }) {
   const cat = CATEGORY_MAP[highlight.category] ?? CATEGORY_MAP.politics;
+  const hasArticle = !!(highlight.slug && highlight.article);
 
-  return (
-    <div className="rounded-xl border border-(--color-border-primary) bg-(--color-bg-primary) p-4">
-      <div className="flex items-start gap-3">
-        <span className="mt-0.5 text-lg">{cat.emoji}</span>
-        <div className="min-w-0 flex-1">
-          <div className="flex items-center gap-2">
-            <h3 className="text-sm font-bold text-(--color-text-primary)">{highlight.title}</h3>
-            <span className="shrink-0 rounded-full bg-(--color-bg-secondary) px-2 py-0.5 text-[0.65rem] text-(--color-text-tertiary)">
-              {cat.label}
-            </span>
-          </div>
-          <p className="mt-1.5 text-sm leading-relaxed text-(--color-text-secondary)">
-            {highlight.description}
-          </p>
+  const content = (
+    <div className="flex items-start gap-3">
+      <span className="mt-0.5 text-lg">{cat.emoji}</span>
+      <div className="min-w-0 flex-1">
+        <div className="flex items-center gap-2">
+          <h3 className="text-sm font-bold text-(--color-text-primary)">{highlight.title}</h3>
+          <span className="shrink-0 rounded-full bg-(--color-bg-secondary) px-2 py-0.5 text-[0.65rem] text-(--color-text-tertiary)">
+            {cat.label}
+          </span>
         </div>
+        <p className="mt-1.5 text-sm leading-relaxed text-(--color-text-secondary)">
+          {highlight.description}
+        </p>
+        {hasArticle && (
+          <span className="mt-2 inline-block text-xs font-semibold text-(--color-primary)">
+            자세히 읽기 →
+          </span>
+        )}
       </div>
     </div>
   );
+
+  const cardClass =
+    "block rounded-xl border border-(--color-border-primary) bg-(--color-bg-primary) p-4 no-underline transition-colors hover:border-(--color-primary)";
+
+  if (hasArticle) {
+    return (
+      <Link
+        href={`/weekly/${weeklyId}/${encodeURIComponent(highlight.slug!)}`}
+        className={cardClass}
+      >
+        {content}
+      </Link>
+    );
+  }
+
+  return <div className={cardClass}>{content}</div>;
 }
 
 export default function WeeklyDetailContent({ article }: WeeklyDetailContentProps) {
@@ -282,7 +302,7 @@ export default function WeeklyDetailContent({ article }: WeeklyDetailContentProp
           <h2 className="text-2xl font-bold">이번 주 하이라이트</h2>
           <div className="space-y-3">
             {article.highlights.map((highlight, i) => (
-              <HighlightItem key={i} highlight={highlight} />
+              <HighlightItem key={i} highlight={highlight} weeklyId={article.id} />
             ))}
           </div>
         </section>
