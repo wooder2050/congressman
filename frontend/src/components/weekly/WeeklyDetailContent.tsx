@@ -23,8 +23,12 @@ interface WeeklyDetailContentProps {
 function FeaturedBillCard({ bill, weeklyId }: { bill: FeaturedBill; weeklyId: string }) {
   const status = STATUS_MAP[bill.status] ?? STATUS_MAP.pending;
 
-  return (
-    <div className="rounded-xl border border-(--color-border-primary) bg-(--color-bg-primary) p-5">
+  const hasArticle = !!(bill.slug && bill.article);
+  const cardClass =
+    "block rounded-xl border border-(--color-border-primary) bg-(--color-bg-primary) p-5 no-underline transition-colors hover:border-(--color-primary)";
+
+  const content = (
+    <>
       <div className="flex items-start justify-between gap-3">
         <h3 className="text-base font-bold text-(--color-text-primary)">{bill.title}</h3>
         <span
@@ -165,8 +169,18 @@ function FeaturedBillCard({ bill, weeklyId }: { bill: FeaturedBill; weeklyId: st
             </div>
           );
         })()}
-    </div>
+    </>
   );
+
+  if (hasArticle) {
+    return (
+      <Link href={`/weekly/${weeklyId}/${encodeURIComponent(bill.slug!)}`} className={cardClass}>
+        {content}
+      </Link>
+    );
+  }
+
+  return <div className={cardClass}>{content}</div>;
 }
 
 function HighlightItem({ highlight }: { highlight: WeeklyHighlight }) {
