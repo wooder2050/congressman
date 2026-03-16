@@ -47,7 +47,13 @@ const article: WeeklyArticle = {
         },
       ],
       voteResult: { yes: 267, no: 0, abstain: 0 },
-      sources: [],
+      sources: [
+        {
+          title: "국회 본회의 비쟁점 민생 법안 70여건 처리 - MBC",
+          url: "https://www.youtube.com/watch?v=Ow6LdDVJ0xE",
+          type: "youtube",
+        },
+      ],
     },
     {
       title: "발달장애인 권리보장법 — '평생 돌봄'이 법적 권리가 돼요",

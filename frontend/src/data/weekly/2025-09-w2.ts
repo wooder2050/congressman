@@ -42,7 +42,18 @@ const article: WeeklyArticle = {
         },
       ],
       voteResult: { yes: 168, no: 0, abstain: 0 },
-      sources: [],
+      sources: [
+        {
+          title: "'김건희 특검법' 국회 본회의 통과...찬성 194 - YTN",
+          url: "https://www.youtube.com/watch?v=krHARSF63DU",
+          type: "youtube",
+        },
+        {
+          title: "'내란, 김건희, 명태균' 3특검법 처리한다 - MBC 뉴스데스크",
+          url: "https://www.youtube.com/watch?v=hDdMo6sL52c",
+          type: "youtube",
+        },
+      ],
     },
     {
       title: "순직 해병 수사방해 특검법 — 수사 외압 의혹, 끝까지 밝힌다",

@@ -99,7 +99,13 @@ const article: WeeklyArticle = {
         },
       ],
       voteResult: { yes: 176, no: 1, abstain: 0 },
-      sources: [],
+      sources: [
+        {
+          title: "방송미디어통신위원회 설치법 본회의 통과 - YTN",
+          url: "https://www.youtube.com/watch?v=q3D87ELDaHo",
+          type: "youtube",
+        },
+      ],
     },
     {
       title: "경북·경남·울산 초대형산불 특별법 — 피해 주민 지원 본격화",
