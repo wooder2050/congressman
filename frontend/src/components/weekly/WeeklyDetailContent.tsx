@@ -20,7 +20,7 @@ interface WeeklyDetailContentProps {
   article: WeeklyArticle;
 }
 
-function FeaturedBillCard({ bill }: { bill: FeaturedBill }) {
+function FeaturedBillCard({ bill, weeklyId }: { bill: FeaturedBill; weeklyId: string }) {
   const status = STATUS_MAP[bill.status] ?? STATUS_MAP.pending;
 
   return (
@@ -82,16 +82,26 @@ function FeaturedBillCard({ bill }: { bill: FeaturedBill }) {
         </div>
       )}
 
-      {bill.billId && (
-        <div className="mt-3">
-          <Link
-            href={`/bills/${bill.billId}`}
-            className="text-sm font-semibold text-(--color-primary) no-underline"
-          >
-            법안 상세 보기 →
-          </Link>
+      {(bill.slug && bill.article) || bill.billId ? (
+        <div className="mt-3 flex flex-wrap gap-3">
+          {bill.slug && bill.article && (
+            <Link
+              href={`/weekly/${weeklyId}/${encodeURIComponent(bill.slug)}`}
+              className="text-sm font-semibold text-(--color-primary) no-underline"
+            >
+              자세히 읽기 →
+            </Link>
+          )}
+          {bill.billId && (
+            <Link
+              href={`/bills/${bill.billId}`}
+              className="text-sm font-semibold text-(--color-text-tertiary) no-underline"
+            >
+              법안 상세 보기 →
+            </Link>
+          )}
         </div>
-      )}
+      ) : null}
 
       {bill.sources &&
         bill.sources.length > 0 &&
@@ -246,7 +256,7 @@ export default function WeeklyDetailContent({ article }: WeeklyDetailContentProp
           <h2 className="text-2xl font-bold">주목할 만한 법안</h2>
           <div className="space-y-4">
             {article.featuredBills.map((bill, i) => (
-              <FeaturedBillCard key={i} bill={bill} />
+              <FeaturedBillCard key={i} bill={bill} weeklyId={article.id} />
             ))}
           </div>
         </section>

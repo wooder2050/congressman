@@ -24,12 +24,16 @@ export interface WeeklyArticle {
 export interface FeaturedBill {
   /** 법안 제목 */
   title: string;
+  /** URL 슬러그 (기사 페이지용, 예: "대미투자특별법") */
+  slug?: string;
   /** lawmake.kr 법안 ID (있으면 링크 연결) */
   billId?: string;
   /** 상태: passed, pending, committee 등 */
   status: "passed" | "pending" | "committee" | "rejected";
   /** 법안 설명 (왜 주목할 만한지) */
   description: string;
+  /** 기사 본문 (신문 기사 스타일, 섹션별 배열) */
+  article?: ArticleSection[];
   /** 발의자/대표발의자 */
   proposer?: string;
   /** 표결 결과 (본회의 통과 법안의 경우) */
@@ -40,6 +44,13 @@ export interface FeaturedBill {
   };
   /** 관련 뉴스/영상 출처 */
   sources?: { title: string; url: string; type?: "article" | "youtube" }[];
+}
+
+export interface ArticleSection {
+  /** 소제목 (질문형 권장) */
+  heading: string;
+  /** 본문 (여러 문단이면 \n\n으로 구분) */
+  body: string;
 }
 
 export interface WeeklyHighlight {
