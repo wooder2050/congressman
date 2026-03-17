@@ -1,5 +1,6 @@
 import { NextRequest } from "next/server";
 import { getBillIds, getVoteIds } from "@/lib/api";
+import { getAllWeeklyArticles } from "@/data/weekly";
 import { BASE, BILLS_PER_SITEMAP, xmlResponse, urlEntry, urlset } from "../route";
 
 export const dynamic = "force-dynamic";
@@ -24,7 +25,42 @@ async function buildSitemap(id: number) {
       urlEntry(`${BASE}/about`, { changefreq: "monthly", priority: 0.5 }),
       urlEntry(`${BASE}/privacy`, { changefreq: "yearly", priority: 0.3 }),
       urlEntry(`${BASE}/terms`, { changefreq: "yearly", priority: 0.3 }),
+      urlEntry(`${BASE}/weekly`, { changefreq: "weekly", priority: 0.8 }),
     ];
+
+    // 주간뉴스 + 기사 상세 페이지
+    const weeklyArticles = getAllWeeklyArticles();
+    for (const article of weeklyArticles) {
+      entries.push(
+        urlEntry(`${BASE}/weekly/${article.id}`, {
+          lastmod: article.publishedDate,
+          changefreq: "monthly",
+          priority: 0.7,
+        }),
+      );
+      for (const bill of article.featuredBills) {
+        if (bill.slug && bill.article) {
+          entries.push(
+            urlEntry(`${BASE}/weekly/${article.id}/${encodeURIComponent(bill.slug)}`, {
+              lastmod: article.publishedDate,
+              changefreq: "monthly",
+              priority: 0.6,
+            }),
+          );
+        }
+      }
+      for (const hl of article.highlights) {
+        if (hl.slug && hl.article) {
+          entries.push(
+            urlEntry(`${BASE}/weekly/${article.id}/${encodeURIComponent(hl.slug)}`, {
+              lastmod: article.publishedDate,
+              changefreq: "monthly",
+              priority: 0.5,
+            }),
+          );
+        }
+      }
+    }
 
     if (API_BASE) {
       try {
