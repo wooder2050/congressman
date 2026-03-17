@@ -4,8 +4,10 @@ import CompareInner from "@/components/compare/CompareInner";
 import CompareSkeleton from "@/components/compare/CompareSkeleton";
 
 export const metadata: Metadata = {
-  title: "의원 비교",
-  description: "국회의원의 의정활동을 비교해보세요.",
+  title: "국회의원 비교 - 출석률·법안 발의·표결 기록 비교",
+  description:
+    "국회의원 최대 4명의 의정활동을 나란히 비교해보세요. 출석률, 법안 발의 건수, 본회의 표결 참여율, 재산 현황까지 한눈에 비교할 수 있습니다.",
+  alternates: { canonical: "https://www.lawmake.kr/compare" },
 };
 
 interface ComparePageProps {

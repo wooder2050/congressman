@@ -5,9 +5,9 @@ import BillListInner from "@/components/bills/BillListInner";
 import BillListSkeleton from "@/components/skeletons/BillListSkeleton";
 
 export const metadata: Metadata = {
-  title: "법안 목록 - 22대 국회 발의 법안 검색",
+  title: "국회 법안 검색 - 22대 발의 법안 17,200건 | AI 요약 제공",
   description:
-    "22대 국회의원이 발의한 법안을 검색하고, 상태·위원회·주제별로 필터링하세요. 법안의 심사 경과와 AI 요약을 확인할 수 있습니다.",
+    "22대 국회 17,200건의 발의 법안을 검색하세요. 법안 통과 여부, 위원회별·주제별 필터, 심사 경과 추적, AI 요약까지 제공합니다. 우리 생활에 영향을 미치는 법안을 쉽게 찾아보세요.",
   alternates: { canonical: "https://www.lawmake.kr/bills" },
 };
 

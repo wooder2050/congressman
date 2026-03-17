@@ -5,9 +5,10 @@ import WeeklyList from "@/components/weekly/WeeklyList";
 import { getAllWeeklyArticles } from "@/data/weekly";
 
 export const metadata: Metadata = {
-  title: "주간 국회 뉴스",
+  title: "주간 국회 뉴스 - 이번 주 국회에서 무슨 일이?",
   description:
-    "매주 국회에서 있었던 주요 법안, 표결, 위원회 활동을 한눈에 정리합니다. 화제의 법안과 의정활동 하이라이트를 확인하세요.",
+    "매주 국회에서 통과된 법안, 본회의 표결, 위원회 활동을 쉽게 정리합니다. 대미투자특별법, 임금체불 처벌 강화 등 시민 생활에 닿는 법안 소식을 해요체로 풀어드려요.",
+  alternates: { canonical: "https://www.lawmake.kr/weekly" },
 };
 
 export default function WeeklyPage() {
