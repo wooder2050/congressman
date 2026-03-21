@@ -25,9 +25,11 @@ import w202602w3 from "./2026-02-w3";
 import w202602w4 from "./2026-02-w4";
 import w202603w1 from "./2026-03-w1";
 import w202603w2 from "./2026-03-w2";
+import w202603w3 from "./2026-03-w3";
 
 /** 최신순 정렬 */
 const articles: WeeklyArticle[] = [
+  w202603w3,
   w202603w2,
   w202603w1,
   w202602w4,
