@@ -58,20 +58,17 @@ const article: WeeklyArticle = {
       voteResult: { yes: 164, no: 1, abstain: 0 },
       sources: [
         {
-          title:
-            "'공소청법 통과' 국회, 중수청법 상정..필리버스터 거쳐 내일 표결 - MBC 중계방송",
+          title: "'공소청법 통과' 국회, 중수청법 상정..필리버스터 거쳐 내일 표결 - MBC 중계방송",
           url: "https://www.youtube.com/watch?v=8TIDIbBSenY",
           type: "youtube",
         },
         {
-          title:
-            "[속보] 공소청법, 민주당 주도로 국회 본회의 통과 - 연합뉴스TV",
+          title: "[속보] 공소청법, 민주당 주도로 국회 본회의 통과 - 연합뉴스TV",
           url: "https://www.youtube.com/watch?v=kKSYzBFDOJc",
           type: "youtube",
         },
         {
-          title:
-            "공소청법 與주도로 국회 본회의 통과…10월 2일 시행 - 법률신문",
+          title: "공소청법 與주도로 국회 본회의 통과…10월 2일 시행 - 법률신문",
           url: "https://www.lawtimes.co.kr/news/articleView.html?idxno=218105",
           type: "article",
         },
@@ -107,20 +104,17 @@ const article: WeeklyArticle = {
       ],
       sources: [
         {
-          title:
-            "\"오늘 검찰청이 폐지됩니다!\" 중수청·공소청법안 처리 본회의 - JTBC",
+          title: '"오늘 검찰청이 폐지됩니다!" 중수청·공소청법안 처리 본회의 - JTBC',
           url: "https://www.youtube.com/watch?v=xtkiLQBlL2o",
           type: "youtube",
         },
         {
-          title:
-            "검찰개혁 법안 '중수청법' '공소청법' 통과 임박. 국힘 '필리버스터' 대응 전망",
+          title: "검찰개혁 법안 '중수청법' '공소청법' 통과 임박. 국힘 '필리버스터' 대응 전망",
           url: "https://www.youtube.com/watch?v=lzqB5GVvMjs",
           type: "youtube",
         },
         {
-          title:
-            "중수청·공소청법 법사위 통과…19일 본회의 상정 - 법률신문",
+          title: "중수청·공소청법 법사위 통과…19일 본회의 상정 - 법률신문",
           url: "https://www.lawtimes.co.kr/news/articleView.html?idxno=217976",
           type: "article",
         },
@@ -156,20 +150,17 @@ const article: WeeklyArticle = {
       ],
       sources: [
         {
-          title:
-            "[속보] '법왜곡죄' 시행 첫날, 조희대 대법원장 고발 - MBC 뉴스속보",
+          title: "[속보] '법왜곡죄' 시행 첫날, 조희대 대법원장 고발 - MBC 뉴스속보",
           url: "https://www.youtube.com/watch?v=K7X3F6HvZVE",
           type: "youtube",
         },
         {
-          title:
-            "'법왜곡죄' 시행 첫날, 조희대 고발 당해…\"1호 수사\" - SBS",
+          title: "'법왜곡죄' 시행 첫날, 조희대 고발 당해…\"1호 수사\" - SBS",
           url: "https://www.youtube.com/watch?v=hiRBgu3aDh0",
           type: "youtube",
         },
         {
-          title:
-            "시행되자마자 고발 줄줄이 혼란 속 '법왜곡죄' - KBS 라디오전망대",
+          title: "시행되자마자 고발 줄줄이 혼란 속 '법왜곡죄' - KBS 라디오전망대",
           url: "https://www.youtube.com/watch?v=oOOgjYPLYrY",
           type: "youtube",
         },
