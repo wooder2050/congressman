@@ -22,8 +22,17 @@ export default function HistoryInner({ id, termId }: HistoryInnerProps) {
 
   if (!member || activities.length === 0) return notFound();
 
+  const currentMemberTerm = memberTerms.find((mt) => mt.termId === termId) ?? memberTerms[0];
+
   return (
-    <div className="mx-auto max-w-7xl space-y-6">
+    <div
+      className="mx-auto max-w-7xl space-y-6"
+      style={
+        {
+          "--color-member-accent": currentMemberTerm?.party.color ?? "#1b56db",
+        } as React.CSSProperties
+      }
+    >
       <Link
         href={`/members/${id}?term=${termId}`}
         className="inline-flex items-center gap-1 text-sm text-(--color-text-tertiary) no-underline hover:text-(--color-text-secondary)"

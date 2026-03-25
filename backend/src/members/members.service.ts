@@ -339,6 +339,75 @@ export class MembersService {
     return result;
   }
 
+  async getActivityHeatmap(memberId: string, termId: number, startDate: string, endDate: string) {
+    const key = `member:activity-heatmap:${memberId}:${termId}:${startDate}:${endDate}`;
+    const cached = await this.redis.get(key);
+    if (cached) return cached;
+
+    const rows = await this.prisma.$queryRaw<
+      {
+        date: string;
+        representative_bills: bigint;
+        co_bills: bigint;
+        votes: bigint;
+      }[]
+    >`
+      SELECT
+        d.date,
+        COALESCE(rb.cnt, 0)::bigint AS representative_bills,
+        COALESCE(cb.cnt, 0)::bigint AS co_bills,
+        COALESCE(vt.cnt, 0)::bigint AS votes
+      FROM (
+        SELECT DISTINCT date FROM (
+          SELECT b."proposedDate" AS date
+          FROM "BillProposer" bp
+          JOIN "Bill" b ON b.id = bp."billId"
+          WHERE bp."memberId" = ${memberId} AND b."termId" = ${termId}
+            AND b."proposedDate" >= ${startDate} AND b."proposedDate" <= ${endDate}
+          UNION
+          SELECT v."procDate" AS date
+          FROM "MemberVote" mv
+          JOIN "Vote" v ON v.id = mv."voteId"
+          WHERE mv."memberId" = ${memberId} AND mv.result != 'absent'
+            AND v."termId" = ${termId}
+            AND v."procDate" >= ${startDate} AND v."procDate" <= ${endDate}
+        ) dates
+      ) d
+      LEFT JOIN LATERAL (
+        SELECT COUNT(*) AS cnt
+        FROM "BillProposer" bp
+        JOIN "Bill" b ON b.id = bp."billId"
+        WHERE bp."memberId" = ${memberId} AND bp.role = 'representative'
+          AND b."termId" = ${termId} AND b."proposedDate" = d.date
+      ) rb ON true
+      LEFT JOIN LATERAL (
+        SELECT COUNT(*) AS cnt
+        FROM "BillProposer" bp
+        JOIN "Bill" b ON b.id = bp."billId"
+        WHERE bp."memberId" = ${memberId} AND bp.role = 'co'
+          AND b."termId" = ${termId} AND b."proposedDate" = d.date
+      ) cb ON true
+      LEFT JOIN LATERAL (
+        SELECT COUNT(*) AS cnt
+        FROM "MemberVote" mv
+        JOIN "Vote" v ON v.id = mv."voteId"
+        WHERE mv."memberId" = ${memberId} AND mv.result != 'absent'
+          AND v."termId" = ${termId} AND v."procDate" = d.date
+      ) vt ON true
+      ORDER BY d.date
+    `;
+
+    const result = rows.map((r) => ({
+      date: r.date,
+      representativeBills: Number(r.representative_bills),
+      coBills: Number(r.co_bills),
+      votes: Number(r.votes),
+    }));
+
+    await this.redis.set(key, result, TTL_HOUR);
+    return result;
+  }
+
   async findMemberVotes(
     memberId: string,
     params: { termId: number; page: number; limit: number; result?: string; month?: string },

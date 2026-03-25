@@ -383,6 +383,14 @@ export interface AttendanceRanking {
   bottom: AttendanceRankItem[];
 }
 
+// ====== 활동 히트맵 ======
+export interface ActivityHeatmapDay {
+  date: string;
+  representativeBills: number;
+  coBills: number;
+  votes: number;
+}
+
 // ====== 의원 + 대수 정보 결합 ======
 export interface MemberWithTerm extends Member {
   term: MemberTerm;

@@ -23,6 +23,7 @@ import type {
   CommitteeDetail,
   CommitteeMinutesResponse,
   Schedule,
+  ActivityHeatmapDay,
 } from "@/types";
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL;
@@ -240,6 +241,17 @@ export async function getCommitteeMinutes(params: {
   );
 }
 
+export async function getActivityHeatmap(params: {
+  memberId: string;
+  termId: number;
+  startDate: string;
+  endDate: string;
+}): Promise<ActivityHeatmapDay[]> {
+  return fetchApi(
+    `/api/members/${params.memberId}/activity-heatmap?termId=${params.termId}&startDate=${params.startDate}&endDate=${params.endDate}`,
+  );
+}
+
 export async function getLastSync(): Promise<{ lastSyncAt: string | null }> {
   return fetchApi("/api/health/last-sync");
 }
@@ -272,4 +284,5 @@ Object.defineProperty(getSchedules, "queryKey", { value: "schedules" });
 Object.defineProperty(getCommitteeStats, "queryKey", { value: "committeeStats" });
 Object.defineProperty(getCommitteeDetail, "queryKey", { value: "committeeDetail" });
 Object.defineProperty(getCommitteeMinutes, "queryKey", { value: "committeeMinutes" });
+Object.defineProperty(getActivityHeatmap, "queryKey", { value: "activityHeatmap" });
 Object.defineProperty(getLastSync, "queryKey", { value: "lastSync" });
