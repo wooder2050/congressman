@@ -11,6 +11,83 @@ export class StatsService {
     private readonly redis: RedisService,
   ) {}
 
+  async getPropertyStats() {
+    const key = `stats:property:22`;
+    const cached = await this.redis.get(key);
+    if (cached) return cached;
+
+    const TERM_ID = 22;
+    const ASSET_YEAR = 2024;
+
+    const [members, assets] = await Promise.all([
+      this.prisma.$queryRaw<
+        {
+          memberId: string;
+          name: string;
+          photoUrl: string;
+          party: string;
+          partyColor: string;
+          district: string;
+          proportional: boolean;
+          committees: string[];
+          electedCount: number;
+        }[]
+      >`
+        SELECT
+          m.id AS "memberId",
+          m.name,
+          m."photoUrl",
+          p."shortName" AS party,
+          p.color AS "partyColor",
+          mt.district,
+          mt.proportional,
+          mt.committees,
+          mt."electedCount"
+        FROM "MemberTerm" mt
+        JOIN "Member" m ON mt."memberId" = m.id
+        JOIN "Party" p ON mt."partyId" = p.id
+        WHERE mt."termId" = ${TERM_ID}
+        ORDER BY m.name
+      `,
+      this.prisma.$queryRaw<
+        {
+          memberId: string;
+          category: string;
+          item: string;
+          amount: bigint;
+          relation: string;
+        }[]
+      >`
+        SELECT
+          a."memberId",
+          a.category,
+          a.item,
+          a.amount,
+          a.relation
+        FROM "Asset" a
+        JOIN "MemberTerm" mt ON a."memberId" = mt."memberId" AND mt."termId" = ${TERM_ID}
+        WHERE a.year = ${ASSET_YEAR}
+          AND a.category IN ('건물', '토지')
+          AND a.relation IN ('본인', '배우자')
+          AND a.item NOT LIKE '%전세(임차)권%'
+      `,
+    ]);
+
+    const result = {
+      members,
+      assets: assets.map((a) => ({
+        memberId: a.memberId,
+        category: a.category,
+        item: a.item,
+        amount: Number(a.amount),
+        relation: a.relation,
+      })),
+    };
+
+    await this.redis.set(key, result, TTL_HOUR);
+    return result;
+  }
+
   async getAttendanceRanking(termId: number, limit = 5) {
     const key = `stats:attendance-ranking:${termId}:${limit}`;
     const cached = await this.redis.get(key);
