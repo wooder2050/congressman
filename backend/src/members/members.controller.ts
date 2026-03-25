@@ -61,6 +61,24 @@ export class MembersController {
     return this.membersService.getMonthlyAttendance(id, termId);
   }
 
+  @Get(':id/activity-heatmap')
+  @ApiOperation({
+    summary: '활동 히트맵',
+    description: '의원의 일별 의정활동(법안 발의, 표결 참여)을 반환합니다',
+  })
+  @ApiParam({ name: 'id', description: '의원 ID' })
+  @ApiQuery({ name: 'termId', type: Number, description: '국회 대수' })
+  @ApiQuery({ name: 'startDate', type: String, description: '시작일 (YYYY-MM-DD)' })
+  @ApiQuery({ name: 'endDate', type: String, description: '종료일 (YYYY-MM-DD)' })
+  getActivityHeatmap(
+    @Param('id') id: string,
+    @Query('termId', ParseIntPipe) termId: number,
+    @Query('startDate') startDate: string,
+    @Query('endDate') endDate: string,
+  ) {
+    return this.membersService.getActivityHeatmap(id, termId, startDate, endDate);
+  }
+
   @Get(':id/committee-bills')
   @ApiOperation({
     summary: '위원회별 발의 법안',

@@ -195,7 +195,7 @@ export default function CommitteeTab({ memberId, termId }: CommitteeTabProps) {
             <BarChart
               data={barData}
               xKey="위원회"
-              bars={[{ dataKey: "법안수", color: "var(--color-primary)", label: "법안 수" }]}
+              bars={[{ dataKey: "법안수", color: "var(--color-member-accent)", label: "법안 수" }]}
               height={Math.max(200, barData.length * 30)}
             />
           </div>
@@ -258,14 +258,14 @@ function CommitteeActivityCard({
     <div
       className={`rounded-xl border p-4 ${
         highlight
-          ? "border-(--color-primary)/20 bg-(--color-primary)/5"
+          ? "border-(--color-member-accent)/20 bg-(--color-member-accent)/5"
           : "border-(--color-border-primary) bg-(--color-bg-secondary)"
       }`}
     >
       <div className="mb-3 flex items-center justify-between">
         <h4 className="font-semibold text-(--color-text-primary)">{committee}</h4>
         {activity && activity.billCount > 0 && (
-          <span className="text-sm text-(--color-primary)">발의 {activity.billCount}건</span>
+          <span className="text-sm text-(--color-member-accent)">발의 {activity.billCount}건</span>
         )}
       </div>
 

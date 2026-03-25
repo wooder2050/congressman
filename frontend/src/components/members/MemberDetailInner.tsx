@@ -6,9 +6,19 @@ import Link from "next/link";
 import { useCongressSuspenseQuery } from "@/hooks/useCongressQuery";
 import { getMember, getMemberTerms } from "@/lib/api";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import dynamic from "next/dynamic";
 import MemberProfile from "./MemberProfile";
 import MemberActivitySummary from "./MemberActivitySummary";
 import MemberDetailTabContent from "./MemberDetailTabs";
+
+const ActivityHeatmap = dynamic(() => import("./ActivityHeatmap"), {
+  ssr: false,
+  loading: () => (
+    <div className="flex h-[200px] items-center justify-center rounded-xl border border-(--color-border-primary) bg-(--color-bg-primary)">
+      <span className="text-sm text-(--color-text-tertiary)">불러오는 중...</span>
+    </div>
+  ),
+});
 
 interface MemberDetailInnerProps {
   id: string;
@@ -55,7 +65,7 @@ export default function MemberDetailInner({ id, termId, defaultTab }: MemberDeta
               <Link
                 key={t}
                 href={`/members/${id}?term=${t}`}
-                className="rounded-lg bg-(--color-primary) px-5 py-2.5 text-sm font-semibold text-(--color-text-inverse) no-underline transition-colors hover:bg-(--color-primary-hover)"
+                className="rounded-lg bg-(--color-primary) px-5 py-2.5 text-sm font-semibold text-white no-underline transition-colors hover:opacity-90"
               >
                 제{t}대 활동 보기
               </Link>
@@ -67,7 +77,10 @@ export default function MemberDetailInner({ id, termId, defaultTab }: MemberDeta
   }
 
   return (
-    <div className="mx-auto max-w-7xl space-y-6">
+    <div
+      className="mx-auto max-w-7xl space-y-6"
+      style={{ "--color-member-accent": currentMemberTerm.party.color } as React.CSSProperties}
+    >
       <Link
         href={`/members?term=${termId}`}
         className="inline-flex items-center gap-1 text-sm text-(--color-text-tertiary) no-underline hover:text-(--color-text-secondary)"
@@ -84,6 +97,13 @@ export default function MemberDetailInner({ id, termId, defaultTab }: MemberDeta
           memberTerm={currentMemberTerm}
         />
       </Suspense>
+
+      <ActivityHeatmap
+        key={termId}
+        memberId={id}
+        termId={termId}
+        partyColor={currentMemberTerm.party.color}
+      />
 
       {/* 탭 헤더 — 항상 즉시 렌더 */}
       <Tabs value={activeTab} onValueChange={setActiveTab}>
