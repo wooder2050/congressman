@@ -17,6 +17,16 @@ export class StatsController {
     return this.statsService.getAttendanceRanking(parsedTermId, parsedLimit);
   }
 
+  @Get('property')
+  @ApiOperation({
+    summary: '부동산 보유 현황',
+    description:
+      '22대 국회의원의 부동산(건물/토지) 보유 현황 원시 데이터를 반환합니다 (2024년 재산신고 기준)',
+  })
+  getPropertyStats() {
+    return this.statsService.getPropertyStats();
+  }
+
   @Get('home')
   @ApiOperation({ summary: '홈 통계', description: '홈페이지용 요약 통계를 반환합니다' })
   @ApiQuery({ name: 'termId', required: false, type: Number, description: '국회 대수 (기본: 22)' })

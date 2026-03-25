@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import CongressWrapper from "@/common/CongressWrapper";
 import PageIntro from "@/components/ui/page-intro";
 import DistrictFinder from "@/components/members/DistrictFinder";
@@ -34,6 +35,20 @@ export default async function MembersPage({ searchParams }: MembersPageProps) {
           ]}
         />
       </div>
+
+      {/* 부동산 현황 배너 */}
+      <Link
+        href="/members/property"
+        className="flex items-center justify-between rounded-xl border border-purple-200 bg-purple-50 p-4 no-underline transition-colors hover:bg-purple-100"
+      >
+        <div>
+          <div className="text-sm font-bold text-purple-900">국회의원 부동산 보유 현황</div>
+          <div className="mt-0.5 text-xs text-purple-700">
+            2024년 재산신고 기준 다주택자·고가주택·부동산 과다보유 현황
+          </div>
+        </div>
+        <span className="shrink-0 text-sm font-semibold text-purple-600">보기 →</span>
+      </Link>
 
       {/* 내 지역구 의원 찾기 */}
       <section className="space-y-3">
