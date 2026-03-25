@@ -214,7 +214,7 @@ export default function VotesTab({ memberId, termId }: VotesTabProps) {
 
       <Link
         href={`/votes?term=${termId}`}
-        className="inline-flex items-center gap-1 rounded-lg bg-(--color-bg-secondary) px-4 py-3 text-base font-semibold text-(--color-primary) no-underline transition-colors hover:bg-(--color-bg-tertiary)"
+        className="inline-flex items-center gap-1 rounded-lg bg-(--color-bg-secondary) px-4 py-3 text-base font-semibold text-(--color-member-accent) no-underline transition-colors hover:bg-(--color-bg-tertiary)"
       >
         전체 표결 보기 →
       </Link>

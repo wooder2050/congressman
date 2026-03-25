@@ -129,7 +129,7 @@ export default function AttendanceTab({ memberId, termId }: AttendanceTabProps) 
       {/* 출석 상세 보기 링크 */}
       <Link
         href={`/members/${memberId}/attendance?term=${termId}`}
-        className="inline-flex items-center gap-1 rounded-lg bg-(--color-bg-secondary) px-4 py-3 text-base font-semibold text-(--color-primary) no-underline transition-colors hover:bg-(--color-bg-tertiary)"
+        className="inline-flex items-center gap-1 rounded-lg bg-(--color-bg-secondary) px-4 py-3 text-base font-semibold text-(--color-member-accent) no-underline transition-colors hover:bg-(--color-bg-tertiary)"
       >
         출석 상세 보기 →
       </Link>

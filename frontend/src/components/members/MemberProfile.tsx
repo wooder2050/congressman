@@ -126,7 +126,7 @@ export default function MemberProfile({ member, memberTerm, allTermIds }: Member
                 return isActive ? (
                   <span
                     key={t}
-                    className="inline-flex items-center rounded-lg bg-(--color-primary) px-3 py-1.5 text-xs leading-none font-bold whitespace-nowrap text-(--color-text-inverse) sm:px-4 sm:py-2 sm:text-sm"
+                    className="inline-flex items-center rounded-lg bg-(--color-member-accent) px-3 py-1.5 text-xs leading-none font-bold whitespace-nowrap text-white sm:px-4 sm:py-2 sm:text-sm"
                   >
                     제{label}
                   </span>
@@ -143,7 +143,7 @@ export default function MemberProfile({ member, memberTerm, allTermIds }: Member
           </div>
           <Link
             href={`/members/${member.id}/history?term=${memberTerm.termId}`}
-            className="text-xs font-semibold whitespace-nowrap text-(--color-primary) no-underline hover:underline sm:text-sm"
+            className="text-xs font-semibold whitespace-nowrap text-(--color-member-accent) no-underline hover:underline sm:text-sm"
           >
             역대 비교 →
           </Link>
