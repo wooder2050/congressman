@@ -27,7 +27,11 @@ export default function HistoryInner({ id, termId }: HistoryInnerProps) {
   return (
     <div
       className="mx-auto max-w-7xl space-y-6"
-      style={{ "--color-member-accent": currentMemberTerm?.party.color ?? "#1b56db" } as React.CSSProperties}
+      style={
+        {
+          "--color-member-accent": currentMemberTerm?.party.color ?? "#1b56db",
+        } as React.CSSProperties
+      }
     >
       <Link
         href={`/members/${id}?term=${termId}`}

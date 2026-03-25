@@ -12,8 +12,19 @@ const DAYS = 7;
 
 const DAY_LABELS = ["", "월", "", "수", "", "금", ""] as const;
 const MONTH_NAMES = [
-  "", "1월", "2월", "3월", "4월", "5월", "6월",
-  "7월", "8월", "9월", "10월", "11월", "12월",
+  "",
+  "1월",
+  "2월",
+  "3월",
+  "4월",
+  "5월",
+  "6월",
+  "7월",
+  "8월",
+  "9월",
+  "10월",
+  "11월",
+  "12월",
 ];
 
 /** hex 색상에서 투명도를 적용한 색상 배열 생성 */
@@ -139,7 +150,10 @@ function getRecentYearRange(): { start: Date; end: Date; startDate: string; endD
 }
 
 /** 전체 임기 모드의 날짜 범위 */
-function getFullTermRange(startYear: number, endYear: number): { start: Date; end: Date; startDate: string; endDate: string } {
+function getFullTermRange(
+  startYear: number,
+  endYear: number,
+): { start: Date; end: Date; startDate: string; endDate: string } {
   const now = new Date();
   const end = endYear > now.getFullYear() ? now : new Date(endYear, 11, 31);
   return {
@@ -151,7 +165,12 @@ function getFullTermRange(startYear: number, endYear: number): { start: Date; en
 }
 
 /** 특정 연도 모드의 날짜 범위 (현재 연도면 오늘까지) */
-function getYearRange(year: number): { start: Date; end: Date; startDate: string; endDate: string } {
+function getYearRange(year: number): {
+  start: Date;
+  end: Date;
+  startDate: string;
+  endDate: string;
+} {
   const now = new Date();
   const end = year === now.getFullYear() ? now : new Date(year, 11, 31);
   return {
@@ -228,10 +247,7 @@ export default function ActivityHeatmap({
 
   const totalScore = useMemo(() => {
     if (!data) return 0;
-    return data.reduce(
-      (sum, d) => sum + d.representativeBills + d.coBills + d.votes,
-      0,
-    );
+    return data.reduce((sum, d) => sum + d.representativeBills + d.coBills + d.votes, 0);
   }, [data]);
 
   const headerLabel =
@@ -395,7 +411,7 @@ export default function ActivityHeatmap({
           {/* 툴팁 */}
           {tooltip && (
             <div
-              className={`pointer-events-none absolute z-10 -translate-x-1/2 rounded-lg bg-(--color-text-primary) px-3 py-2 text-xs text-(--color-text-inverse) whitespace-nowrap shadow-lg ${
+              className={`pointer-events-none absolute z-10 -translate-x-1/2 rounded-lg bg-(--color-text-primary) px-3 py-2 text-xs whitespace-nowrap text-(--color-text-inverse) shadow-lg ${
                 tooltip.direction === "up" ? "-translate-y-full" : ""
               }`}
               style={{
@@ -403,9 +419,7 @@ export default function ActivityHeatmap({
                 top: tooltip.direction === "up" ? tooltip.y - 6 : tooltip.y + 6,
               }}
             >
-              <div className="mb-1 font-semibold">
-                {formatDate(tooltip.day.date)}
-              </div>
+              <div className="mb-1 font-semibold">{formatDate(tooltip.day.date)}</div>
               {getScore(tooltip.day) === 0 ? (
                 <div className="text-(--color-text-inverse)/70">활동 없음</div>
               ) : (
@@ -413,12 +427,8 @@ export default function ActivityHeatmap({
                   {tooltip.day.representativeBills > 0 && (
                     <div>대표발의 {tooltip.day.representativeBills}건</div>
                   )}
-                  {tooltip.day.coBills > 0 && (
-                    <div>공동발의 {tooltip.day.coBills}건</div>
-                  )}
-                  {tooltip.day.votes > 0 && (
-                    <div>표결참여 {tooltip.day.votes}건</div>
-                  )}
+                  {tooltip.day.coBills > 0 && <div>공동발의 {tooltip.day.coBills}건</div>}
+                  {tooltip.day.votes > 0 && <div>표결참여 {tooltip.day.votes}건</div>}
                 </div>
               )}
               {tooltip.direction === "up" ? (

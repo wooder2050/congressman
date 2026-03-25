@@ -98,7 +98,12 @@ export default function MemberDetailInner({ id, termId, defaultTab }: MemberDeta
         />
       </Suspense>
 
-      <ActivityHeatmap key={termId} memberId={id} termId={termId} partyColor={currentMemberTerm.party.color} />
+      <ActivityHeatmap
+        key={termId}
+        memberId={id}
+        termId={termId}
+        partyColor={currentMemberTerm.party.color}
+      />
 
       {/* 탭 헤더 — 항상 즉시 렌더 */}
       <Tabs value={activeTab} onValueChange={setActiveTab}>
