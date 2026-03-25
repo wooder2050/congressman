@@ -383,6 +383,32 @@ export interface AttendanceRanking {
   bottom: AttendanceRankItem[];
 }
 
+// ====== 부동산 현황 ======
+export interface PropertyMember {
+  memberId: string;
+  name: string;
+  photoUrl: string;
+  party: string;
+  partyColor: string;
+  district: string;
+  proportional: boolean;
+  committees: string[];
+  electedCount: number;
+}
+
+export interface PropertyAsset {
+  memberId: string;
+  category: string;
+  item: string;
+  amount: number;
+  relation: string;
+}
+
+export interface PropertyStatsResponse {
+  members: PropertyMember[];
+  assets: PropertyAsset[];
+}
+
 // ====== 활동 히트맵 ======
 export interface ActivityHeatmapDay {
   date: string;
