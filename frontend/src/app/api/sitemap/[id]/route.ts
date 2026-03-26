@@ -78,7 +78,10 @@ async function buildSitemap(id: number) {
               urlEntry(`${BASE}/members/${m.id}`, { changefreq: "weekly", priority: 0.7 }),
             );
             entries.push(
-              urlEntry(`${BASE}/members/${m.id}/attendance`, { changefreq: "weekly", priority: 0.6 }),
+              urlEntry(`${BASE}/members/${m.id}/attendance`, {
+                changefreq: "weekly",
+                priority: 0.6,
+              }),
             );
             entries.push(
               urlEntry(`${BASE}/members/${m.id}/history`, { changefreq: "monthly", priority: 0.5 }),

@@ -46,7 +46,9 @@ async function ServerBillSummary({ id }: { id: string }) {
   return (
     <section className="sr-only" aria-hidden="true">
       <h1>{bill.title}</h1>
-      <p>발의자: {bill.proposerName} 외 {bill.coProposerCount}인</p>
+      <p>
+        발의자: {bill.proposerName} 외 {bill.coProposerCount}인
+      </p>
       <p>상태: {statusText}</p>
       {bill.committee && <p>소관위원회: {bill.committee}</p>}
       <p>발의일: {bill.proposedDate}</p>

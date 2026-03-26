@@ -37,8 +37,8 @@ export default function AdsPolicyPage() {
         <p className="mt-3 text-sm text-(--color-text-tertiary)">시행일: 2026년 3월 26일</p>
         <p className="mt-3 text-sm leading-relaxed text-(--color-text-secondary)">
           lawmake.kr(이하 &apos;서비스&apos;)은 무료로 제공되는 비영리 공익 서비스로, 운영 비용을
-          충당하기 위해 Google 애드센스를 통한 광고를 게재합니다. 본 정책은 광고 운영 방식과 이용자의
-          권리를 안내합니다.
+          충당하기 위해 Google 애드센스를 통한 광고를 게재합니다. 본 정책은 광고 운영 방식과
+          이용자의 권리를 안내합니다.
         </p>
       </section>
 
@@ -74,8 +74,8 @@ export default function AdsPolicyPage() {
           <div className="space-y-3 rounded-xl border border-(--color-border-primary) bg-(--color-bg-primary) p-5">
             <p className="text-sm leading-relaxed text-(--color-text-secondary)">
               Google 애드센스는 쿠키를 사용하여 이용자의 관심사와 이전 방문 기록을 기반으로 관련성
-              높은 광고를 표시할 수 있습니다. 이 과정에서 수집되는 데이터는 Google의 개인정보처리방침에
-              따라 관리됩니다.
+              높은 광고를 표시할 수 있습니다. 이 과정에서 수집되는 데이터는 Google의
+              개인정보처리방침에 따라 관리됩니다.
             </p>
             <ul className="list-inside list-disc space-y-1.5 text-sm text-(--color-text-secondary)">
               <li>
@@ -143,9 +143,9 @@ export default function AdsPolicyPage() {
           <div className="rounded-xl border border-(--color-border-primary) bg-(--color-bg-primary) p-5">
             <p className="text-sm leading-relaxed text-(--color-text-secondary)">
               광고를 통해 발생하는 수익은 전액 서비스 운영 및 개선에 사용됩니다. 구체적으로 서버
-              비용, 데이터 처리 비용, 서비스 품질 개선 등에 활용됩니다. lawmake.kr은 영리를
-              목적으로 하지 않으며, 시민의 알 권리 보장과 의정활동 투명성 제고라는 공익적 가치를
-              최우선으로 합니다.
+              비용, 데이터 처리 비용, 서비스 품질 개선 등에 활용됩니다. lawmake.kr은 영리를 목적으로
+              하지 않으며, 시민의 알 권리 보장과 의정활동 투명성 제고라는 공익적 가치를 최우선으로
+              합니다.
             </p>
           </div>
         </article>
@@ -165,8 +165,8 @@ export default function AdsPolicyPage() {
           <h2 className="text-xl font-bold">7. 정책 변경</h2>
           <div className="rounded-xl border border-(--color-border-primary) bg-(--color-bg-primary) p-5">
             <p className="text-sm leading-relaxed text-(--color-text-secondary)">
-              본 광고 정책은 광고 운영 방식 변경, 관련 법령 개정 등에 따라 수정될 수 있습니다.
-              변경 시 서비스 내 공지를 통해 안내하며, 최신 내용은 이 페이지에서 항상 확인하실 수
+              본 광고 정책은 광고 운영 방식 변경, 관련 법령 개정 등에 따라 수정될 수 있습니다. 변경
+              시 서비스 내 공지를 통해 안내하며, 최신 내용은 이 페이지에서 항상 확인하실 수
               있습니다.
             </p>
           </div>

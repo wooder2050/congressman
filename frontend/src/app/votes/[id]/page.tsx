@@ -48,7 +48,9 @@ async function ServerVoteSummary({ id }: { id: string }) {
     <section className="sr-only" aria-hidden="true">
       <h1>{vote.billName} 표결 결과</h1>
       <p>결과: {resultText}</p>
-      <p>찬성: {vote.yesCount}명, 반대: {vote.noCount}명, 기권: {vote.abstainCount}명</p>
+      <p>
+        찬성: {vote.yesCount}명, 반대: {vote.noCount}명, 기권: {vote.abstainCount}명
+      </p>
       <p>표결일: {vote.procDate}</p>
     </section>
   );
