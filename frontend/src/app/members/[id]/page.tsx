@@ -37,27 +37,28 @@ export async function generateMetadata({ params }: MemberDetailPageProps): Promi
 }
 
 async function ServerMemberSummary({ id }: { id: string }) {
+  let member, terms;
   try {
-    const [member, terms] = await Promise.all([getMember(id), getMemberTerms(id)]);
-    if (!member) return null;
-    const currentTerm = terms.find((t) => t.termId === 22) ?? terms[0];
-    const partyName = currentTerm?.party.name ?? "";
-    const district = currentTerm?.district ?? "";
-    const termList = terms.map((t) => `${t.termId}대`).join(", ");
-    return (
-      <section className="sr-only" aria-hidden="true">
-        <h1>{member.name} 국회의원</h1>
-        <p>정당: {partyName}</p>
-        {district && <p>지역구: {district}</p>}
-        <p>선수: {termList}</p>
-        {currentTerm?.committees && currentTerm.committees.length > 0 && (
-          <p>소속 위원회: {currentTerm.committees.join(", ")}</p>
-        )}
-      </section>
-    );
+    [member, terms] = await Promise.all([getMember(id), getMemberTerms(id)]);
   } catch {
     return null;
   }
+  if (!member) return null;
+  const currentTerm = terms.find((t) => t.termId === 22) ?? terms[0];
+  const partyName = currentTerm?.party.name ?? "";
+  const district = currentTerm?.district ?? "";
+  const termList = terms.map((t) => `${t.termId}대`).join(", ");
+  return (
+    <section className="sr-only" aria-hidden="true">
+      <h1>{member.name} 국회의원</h1>
+      <p>정당: {partyName}</p>
+      {district && <p>지역구: {district}</p>}
+      <p>선수: {termList}</p>
+      {currentTerm?.committees && currentTerm.committees.length > 0 && (
+        <p>소속 위원회: {currentTerm.committees.join(", ")}</p>
+      )}
+    </section>
+  );
 }
 
 export default async function MemberDetailPage({ params, searchParams }: MemberDetailPageProps) {
