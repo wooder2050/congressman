@@ -60,6 +60,9 @@ export default function Footer() {
             <Link href="/terms" className="underline hover:text-(--color-text-secondary)">
               이용약관
             </Link>
+            <Link href="/ads-policy" className="underline hover:text-(--color-text-secondary)">
+              광고 정책
+            </Link>
           </div>
           {data?.lastSyncAt && (
             <p className="text-xs text-(--color-text-tertiary)">

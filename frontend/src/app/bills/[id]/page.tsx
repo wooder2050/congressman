@@ -33,6 +33,31 @@ export async function generateMetadata({ params }: BillDetailPageProps): Promise
   };
 }
 
+async function ServerBillSummary({ id }: { id: string }) {
+  let bill;
+  try {
+    bill = await getBill(id);
+  } catch {
+    return null;
+  }
+  if (!bill) return null;
+  const statusText =
+    bill.status === "passed" ? "가결" : bill.status === "discarded" ? "폐기" : "심사 중";
+  return (
+    <section className="sr-only" aria-hidden="true">
+      <h1>{bill.title}</h1>
+      <p>
+        발의자: {bill.proposerName} 외 {bill.coProposerCount}인
+      </p>
+      <p>상태: {statusText}</p>
+      {bill.committee && <p>소관위원회: {bill.committee}</p>}
+      <p>발의일: {bill.proposedDate}</p>
+      {bill.simpleSummary && <p>요약: {bill.simpleSummary}</p>}
+      {bill.summary && <p>제안이유: {bill.summary}</p>}
+    </section>
+  );
+}
+
 export default async function BillDetailPage({ params }: BillDetailPageProps) {
   const { id } = await params;
 
@@ -46,6 +71,7 @@ export default async function BillDetailPage({ params }: BillDetailPageProps) {
           { name: "법안 상세", href: `/bills/${id}` },
         ]}
       />
+      <ServerBillSummary id={id} />
       <CongressWrapper fallback={<BillDetailSkeleton />}>
         <BillDetailInner id={id} />
       </CongressWrapper>
