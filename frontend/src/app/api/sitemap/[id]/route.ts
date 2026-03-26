@@ -23,6 +23,9 @@ async function buildSitemap(id: number) {
       urlEntry(`${BASE}/guide`, { changefreq: "monthly", priority: 0.6 }),
       urlEntry(`${BASE}/glossary`, { changefreq: "monthly", priority: 0.5 }),
       urlEntry(`${BASE}/about`, { changefreq: "monthly", priority: 0.5 }),
+      urlEntry(`${BASE}/members/property`, { changefreq: "weekly", priority: 0.7 }),
+      urlEntry(`${BASE}/support`, { changefreq: "monthly", priority: 0.4 }),
+      urlEntry(`${BASE}/ads-policy`, { changefreq: "yearly", priority: 0.3 }),
       urlEntry(`${BASE}/privacy`, { changefreq: "yearly", priority: 0.3 }),
       urlEntry(`${BASE}/terms`, { changefreq: "yearly", priority: 0.3 }),
       urlEntry(`${BASE}/weekly`, { changefreq: "weekly", priority: 0.8 }),
@@ -73,6 +76,12 @@ async function buildSitemap(id: number) {
           for (const m of members) {
             entries.push(
               urlEntry(`${BASE}/members/${m.id}`, { changefreq: "weekly", priority: 0.7 }),
+            );
+            entries.push(
+              urlEntry(`${BASE}/members/${m.id}/attendance`, { changefreq: "weekly", priority: 0.6 }),
+            );
+            entries.push(
+              urlEntry(`${BASE}/members/${m.id}/history`, { changefreq: "monthly", priority: 0.5 }),
             );
           }
         }
