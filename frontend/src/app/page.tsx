@@ -8,6 +8,7 @@ import RecentActivity from "@/components/home/RecentActivity";
 import AttendanceRanking from "@/components/home/AttendanceRanking";
 import ActivityHighlights from "@/components/home/ActivityHighlights";
 import LatestWeeklyNews from "@/components/home/LatestWeeklyNews";
+import PropertyHighlight from "@/components/home/PropertyHighlight";
 import {
   HomeStatsSkeleton,
   TopicSectionSkeleton,
@@ -118,6 +119,16 @@ export default async function HomePage({ searchParams }: HomePageProps) {
             <AttendanceRanking termId={termId} />
           </CongressWrapper>
         </section>
+
+        {/* 국회의원 부동산 현황 — 22대만 표시 */}
+        {termId === 22 && (
+          <section className="space-y-3">
+            <h2 className="text-xl font-bold">국회의원 부동산 보유 현황</h2>
+            <CongressWrapper key="property" fallback={<AttendanceRankingSkeleton />}>
+              <PropertyHighlight />
+            </CongressWrapper>
+          </section>
+        )}
 
         {/* 의정활동 하이라이트 */}
         <section className="space-y-3">
