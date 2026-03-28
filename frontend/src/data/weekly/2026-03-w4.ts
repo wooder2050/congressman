@@ -7,14 +7,7 @@ const article: WeeklyArticle = {
   publishedDate: "2026-03-28",
   summary:
     "중동 전쟁 대응 '25조 전쟁 추경' 당정 협의 본격화 — 비상경제상황실 가동, 통합돌봄법 전국 시행, 자원안보위기 경보 격상",
-  tags: [
-    "전쟁 추경",
-    "비상경제",
-    "중동 전쟁",
-    "통합돌봄법",
-    "자원안보위기",
-    "민생지원금",
-  ],
+  tags: ["전쟁 추경", "비상경제", "중동 전쟁", "통합돌봄법", "자원안보위기", "민생지원금"],
   stats: {
     committeeMeetings: 8,
   },
@@ -42,20 +35,17 @@ const article: WeeklyArticle = {
       proposer: "정부",
       sources: [
         {
-          title:
-            "[현장영상] \"31일 국회 제출\"..'전쟁 추경' 25조 어디 쓰나 봤더니 / JTBC News",
+          title: "[현장영상] \"31일 국회 제출\"..'전쟁 추경' 25조 어디 쓰나 봤더니 / JTBC News",
           url: "https://www.youtube.com/watch?v=7b_laNnhmNU",
           type: "youtube",
         },
         {
-          title:
-            "당정, 25조 규모 전쟁 추경 논의…다음달 10일 본회의 처리 / MBC",
+          title: "당정, 25조 규모 전쟁 추경 논의…다음달 10일 본회의 처리 / MBC",
           url: "https://www.youtube.com/watch?v=HxT0BWVogwQ",
           type: "youtube",
         },
         {
-          title:
-            "정부, 31일 추경안 국회 제출…당정 '민생지원금 지급' 취약계층·지방 우대 공감대",
+          title: "정부, 31일 추경안 국회 제출…당정 '민생지원금 지급' 취약계층·지방 우대 공감대",
           url: "https://www.khan.co.kr/article/202603261024001",
           type: "article",
         },
@@ -84,14 +74,12 @@ const article: WeeklyArticle = {
       proposer: "정부",
       sources: [
         {
-          title:
-            "이재명 대통령 제11회 국무회의 — 중동 상황 평가 및 대응 방향 / KTV",
+          title: "이재명 대통령 제11회 국무회의 — 중동 상황 평가 및 대응 방향 / KTV",
           url: "https://www.youtube.com/watch?v=56VTWKdWaLQ",
           type: "youtube",
         },
         {
-          title:
-            "이 대통령 \"중동 전쟁 비상대응체계 선제 가동…석탄발전소 폐쇄 일정 조정 검토\"",
+          title: '이 대통령 "중동 전쟁 비상대응체계 선제 가동…석탄발전소 폐쇄 일정 조정 검토"',
           url: "https://www.khan.co.kr/article/202603241647001/",
           type: "article",
         },
@@ -120,8 +108,7 @@ const article: WeeklyArticle = {
       proposer: "정부",
       sources: [
         {
-          title:
-            "통합돌봄 전국시행 본격화…2026년 3월 시행 앞두고 법적 기틀 완성",
+          title: "통합돌봄 전국시행 본격화…2026년 3월 시행 앞두고 법적 기틀 완성",
           url: "https://medicalworldnews.co.kr/m/view.php?idx=1510971754",
           type: "article",
         },
