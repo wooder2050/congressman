@@ -244,6 +244,13 @@ export const GLOSSARY: Record<string, GlossaryTerm> = {
 };
 
 /**
+ * 전체 용어 목록 조회
+ */
+export function getAllTerms(): GlossaryTerm[] {
+  return Object.values(GLOSSARY);
+}
+
+/**
  * 카테고리별 용어 목록 조회
  */
 export function getTermsByCategory(category: GlossaryTerm["category"]): GlossaryTerm[] {
