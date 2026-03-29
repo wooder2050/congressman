@@ -7,9 +7,9 @@ import PropertyPageClient from "./PropertyPageClient";
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
-  title: "국회의원 부동산 보유 현황 - 22대 국회의원 재산신고 분석",
+  title: "국회의원 부동산 보유 현황 — 다주택자·고가주택·재산 순위",
   description:
-    "22대 국회의원의 부동산 보유 현황을 한눈에 확인하세요. 다주택자, 고가주택 보유자, 부동산 과다 보유자를 2024년 재산신고 공개자료 기반으로 분류합니다.",
+    "22대 국회의원 중 다주택자는 몇 명? 부동산 보유 현황을 2024년 재산신고 공개자료로 분석합니다. 다주택 의원, 15억 이상 고가주택 보유자, 부동산 총액 30억 이상 의원을 정당별·위원회별로 확인하세요.",
   alternates: { canonical: "https://www.lawmake.kr/members/property" },
 };
 

@@ -3,9 +3,9 @@ import Link from "next/link";
 import JsonLd from "@/components/seo/JsonLd";
 
 export const metadata: Metadata = {
-  title: "입법 과정 안내",
+  title: "입법 과정 안내 — 법안 발의부터 본회의 통과까지 법이 만들어지는 절차",
   description:
-    "대한민국 국회에서 법률이 만들어지는 과정을 알기 쉽게 설명합니다. 법안 발의부터 위원회 심사, 본회의 표결, 법률 공포까지 전체 입법 절차와 위원회 역할, 법안 유형을 안내합니다.",
+    "법안은 어떻게 통과될까? 국회에서 법률이 만들어지는 과정을 단계별로 설명합니다. 법안 발의 → 위원회 심사 → 본회의 표결 → 법률 공포까지 입법 절차 전체를 알기 쉽게 안내합니다. 의원입법과 정부입법의 차이, 대안반영폐기의 뜻도 함께 알아보세요.",
   alternates: { canonical: "https://www.lawmake.kr/guide" },
 };
 

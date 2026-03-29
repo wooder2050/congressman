@@ -5,9 +5,9 @@ import ScheduleListInner from "@/components/schedules/ScheduleListInner";
 import { ScheduleListSkeleton } from "@/components/skeletons/ScheduleSkeleton";
 
 export const metadata: Metadata = {
-  title: "국회 본회의 일정 - 오늘 국회 의사일정 · 위원회 회의",
+  title: "국회 일정 — 오늘 본회의·위원회 회의 의사일정 확인",
   description:
-    "국회 본회의 일정과 상임위원회 회의 일정을 실시간으로 확인하세요. 22대 국회 정기회·임시회 일정, 법안 심사 안건, 국정감사 일정까지 한눈에 추적할 수 있습니다.",
+    "오늘 국회 본회의 일정과 상임위원회 회의 일정을 확인하세요. 22대 국회 임시회·정기회 일정, 법안 심사 안건, 위원회별 회의 일정을 날짜순으로 정리했습니다. 본회의 표결 예정 법안도 미리 확인할 수 있습니다.",
   alternates: { canonical: "https://www.lawmake.kr/schedule" },
 };
 
