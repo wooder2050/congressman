@@ -1,4 +1,5 @@
 import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
+import JsonLd from "@/components/seo/JsonLd";
 import PageIntro from "@/components/ui/page-intro";
 import CongressWrapper from "@/common/CongressWrapper";
 import HomeStats from "@/components/home/HomeStats";
@@ -59,6 +60,23 @@ export default async function HomePage({ searchParams }: HomePageProps) {
 
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>
+      <JsonLd
+        data={{
+          "@context": "https://schema.org",
+          "@type": "WebSite",
+          name: "lawmake",
+          alternateName: "국회의원 의정활동 정보",
+          url: "https://www.lawmake.kr",
+          potentialAction: {
+            "@type": "SearchAction",
+            target: {
+              "@type": "EntryPoint",
+              urlTemplate: "https://www.lawmake.kr/members?search={search_term_string}",
+            },
+            "query-input": "required name=search_term_string",
+          },
+        }}
+      />
       <div className="mx-auto max-w-7xl space-y-8">
         {/* 헤더 */}
         <section>

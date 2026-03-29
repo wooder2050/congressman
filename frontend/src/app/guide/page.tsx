@@ -105,6 +105,34 @@ const terms = [
   },
 ];
 
+const faqs = [
+  {
+    question: "법안이 발의되면 바로 통과되나요?",
+    answer:
+      "아닙니다. 법안은 발의 → 위원회 심사 → 본회의 표결 → 대통령 공포의 4단계를 거쳐야 법률이 됩니다. 22대 국회에서 발의된 17,000건 이상의 법안 중 실제 본회의를 통과하는 비율은 약 10% 미만입니다. 대부분의 법안은 위원회 심사 단계에서 계류되거나 임기만료로 자동 폐기됩니다.",
+  },
+  {
+    question: "의원입법과 정부입법은 어떻게 다른가요?",
+    answer:
+      "의원입법은 국회의원 10명 이상이 찬성하여 발의하는 법안이고, 정부입법은 정부(행정부)가 국무회의 심의를 거쳐 국회에 제출하는 법안입니다. 의원입법이 전체의 약 90% 이상을 차지하지만, 정부입법은 행정부의 전문성과 예산이 뒷받침되어 통과율이 상대적으로 높은 편입니다.",
+  },
+  {
+    question: "대안반영폐기는 법안이 폐기된 건가요?",
+    answer:
+      "형식적으로는 폐기이지만, 실질적으로는 법안의 핵심 내용이 살아남은 것입니다. 같은 주제의 법안이 여러 개 발의되면 위원회에서 이를 하나의 '대안'으로 통합합니다. 이때 원래 법안들은 '대안반영폐기'로 처리되지만, 그 내용은 대안에 반영되어 심사가 계속됩니다.",
+  },
+  {
+    question: "본회의 통과에 필요한 조건은 무엇인가요?",
+    answer:
+      "국회의원 재적의원 과반수(151명 이상)가 출석해야 회의를 열 수 있고, 출석의원 과반수의 찬성으로 의결됩니다. 헌법 개정안은 재적의원 3분의 2 이상의 찬성이 필요합니다. 대통령이 거부권을 행사한 법안은 재적의원 과반수 출석에 출석의원 3분의 2 이상의 찬성으로 재의결합니다.",
+  },
+  {
+    question: "국회의원은 왜 여러 개의 법안을 동시에 발의하나요?",
+    answer:
+      "의원들은 자신의 정책 비전이나 지역구 현안을 해결하기 위해 다양한 분야의 법안을 발의합니다. 또한 법안 발의 건수는 의정활동의 중요한 지표 중 하나이기 때문에, 적극적인 입법 활동을 보여주기 위해 많은 법안을 발의하는 경향이 있습니다.",
+  },
+];
+
 export default function GuidePage() {
   return (
     <div className="mx-auto max-w-4xl space-y-10">
@@ -126,6 +154,20 @@ export default function GuidePage() {
               item: "https://www.lawmake.kr/guide",
             },
           ],
+        }}
+      />
+      <JsonLd
+        data={{
+          "@context": "https://schema.org",
+          "@type": "FAQPage",
+          mainEntity: faqs.map((faq) => ({
+            "@type": "Question",
+            name: faq.question,
+            acceptedAnswer: {
+              "@type": "Answer",
+              text: faq.answer,
+            },
+          })),
         }}
       />
 
@@ -239,6 +281,31 @@ export default function GuidePage() {
           </Link>
           에서 확인하세요.
         </p>
+      </section>
+
+      {/* 자주 묻는 질문 */}
+      <section className="space-y-4">
+        <h2 className="text-2xl font-bold">자주 묻는 질문</h2>
+        <div className="space-y-3">
+          {faqs.map((faq) => (
+            <details
+              key={faq.question}
+              className="group rounded-xl border border-(--color-border-primary) bg-(--color-bg-primary)"
+            >
+              <summary className="cursor-pointer p-4 text-base font-bold text-(--color-text-primary) [&::-webkit-details-marker]:hidden">
+                <span className="flex items-center gap-2">
+                  <span className="text-sm text-(--color-primary) transition-transform group-open:rotate-90">
+                    ▶
+                  </span>
+                  {faq.question}
+                </span>
+              </summary>
+              <p className="px-4 pb-4 text-sm leading-relaxed text-(--color-text-secondary)">
+                {faq.answer}
+              </p>
+            </details>
+          ))}
+        </div>
       </section>
 
       {/* CTA */}

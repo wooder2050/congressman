@@ -1,10 +1,12 @@
 import type { Metadata } from "next";
-import { getTermsByCategory } from "@/lib/glossary";
+import { getTermsByCategory, getAllTerms } from "@/lib/glossary";
+import JsonLd from "@/components/seo/JsonLd";
 
 export const metadata: Metadata = {
   title: "국회 용어 사전 — 발의 뜻, 대안반영폐기, 본회의 통과 등 쉽게 설명",
   description:
     "국회 의정활동에서 자주 쓰이는 전문 용어를 쉽게 풀어 설명합니다. 발의 뜻, 대안반영폐기, 본회의 통과, 상임위원회, 법안 심사 등 법안·표결·위원회 관련 용어를 한곳에서 확인하세요.",
+  alternates: { canonical: "https://www.lawmake.kr/glossary" },
 };
 
 export default function GlossaryPage() {
@@ -15,8 +17,25 @@ export default function GlossaryPage() {
     { id: "committee", name: "위원회", icon: "👥" },
   ] as const;
 
+  const allTerms = getAllTerms();
+
   return (
     <div className="mx-auto max-w-4xl space-y-8">
+      <JsonLd
+        data={{
+          "@context": "https://schema.org",
+          "@type": "FAQPage",
+          mainEntity: allTerms.map((t) => ({
+            "@type": "Question",
+            name: `${t.term}이란?`,
+            acceptedAnswer: {
+              "@type": "Answer",
+              text: t.fullDesc || t.shortDesc,
+            },
+          })),
+        }}
+      />
+
       {/* 헤더 */}
       <section>
         <h1 className="text-3xl font-extrabold tracking-tight">국회 용어 사전</h1>
