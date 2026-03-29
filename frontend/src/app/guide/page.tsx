@@ -292,7 +292,7 @@ export default function GuidePage() {
               key={faq.question}
               className="group rounded-xl border border-(--color-border-primary) bg-(--color-bg-primary)"
             >
-              <summary className="cursor-pointer p-4 text-base font-bold text-(--color-text-primary) [&::-webkit-details-marker]:hidden">
+              <summary className="cursor-pointer list-none p-4 text-base font-bold text-(--color-text-primary) [&::-webkit-details-marker]:hidden">
                 <span className="flex items-center gap-2">
                   <span className="text-sm text-(--color-primary) transition-transform group-open:rotate-90">
                     ▶
