@@ -2,8 +2,9 @@ import type { Metadata } from "next";
 import { getTermsByCategory } from "@/lib/glossary";
 
 export const metadata: Metadata = {
-  title: "용어 사전",
-  description: "국회 의정활동 관련 전문 용어를 쉽게 설명합니다.",
+  title: "국회 용어 사전 — 발의 뜻, 대안반영폐기, 본회의 통과 등 쉽게 설명",
+  description:
+    "국회 의정활동에서 자주 쓰이는 전문 용어를 쉽게 풀어 설명합니다. 발의 뜻, 대안반영폐기, 본회의 통과, 상임위원회, 법안 심사 등 법안·표결·위원회 관련 용어를 한곳에서 확인하세요.",
 };
 
 export default function GlossaryPage() {

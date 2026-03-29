@@ -5,9 +5,9 @@ import CommitteeListInner from "@/components/committees/CommitteeListInner";
 import CommitteeListSkeleton from "@/components/skeletons/CommitteeListSkeleton";
 
 export const metadata: Metadata = {
-  title: "위원회 현황 - 국회 상임위원회 활동",
+  title: "국회 위원회 현황 — 상임위원회별 법안 처리·소속 의원·회의록",
   description:
-    "22대 국회 상임위원회별 법안 처리 현황, 소속 위원 명단, 회의 일정을 확인하세요. 위원회는 법안 심사의 핵심 기관입니다.",
+    "22대 국회 18개 상임위원회의 법안 처리 현황, 소속 의원 명단, 회의 일정과 회의록을 확인하세요. 기획재정위원회, 법제사법위원회, 국토교통위원회 등 위원회별 활동을 한눈에 비교할 수 있습니다.",
   alternates: { canonical: "https://www.lawmake.kr/committees" },
 };
 
