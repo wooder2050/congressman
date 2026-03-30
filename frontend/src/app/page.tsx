@@ -10,6 +10,7 @@ import AttendanceRanking from "@/components/home/AttendanceRanking";
 import ActivityHighlights from "@/components/home/ActivityHighlights";
 import LatestWeeklyNews from "@/components/home/LatestWeeklyNews";
 import PropertyHighlight from "@/components/home/PropertyHighlight";
+import ScorecardHighlight from "@/components/home/ScorecardHighlight";
 import {
   HomeStatsSkeleton,
   TopicSectionSkeleton,
@@ -129,6 +130,16 @@ export default async function HomePage({ searchParams }: HomePageProps) {
             <RecentActivity termId={termId} />
           </CongressWrapper>
         </section>
+
+        {/* 의정활동 성적표 — 22대만 표시 */}
+        {termId === 22 && (
+          <section className="space-y-3">
+            <h2 className="text-xl font-bold">의정활동 성적표</h2>
+            <CongressWrapper key="scorecard" fallback={<AttendanceRankingSkeleton />}>
+              <ScorecardHighlight />
+            </CongressWrapper>
+          </section>
+        )}
 
         {/* 출석 랭킹 */}
         <section className="space-y-3">

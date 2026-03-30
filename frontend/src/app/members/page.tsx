@@ -50,6 +50,24 @@ export default async function MembersPage({ searchParams }: MembersPageProps) {
         <span className="shrink-0 text-sm font-semibold text-purple-600">보기 →</span>
       </Link>
 
+      {/* 성적표 랭킹 배너 */}
+      <Link
+        href="/members/scorecard"
+        className="flex items-center justify-between rounded-xl border border-blue-200 bg-blue-50 p-4 no-underline transition-colors hover:bg-blue-100 dark:border-blue-800 dark:bg-blue-950/30 dark:hover:bg-blue-950/50"
+      >
+        <div>
+          <div className="text-sm font-bold text-blue-900 dark:text-blue-200">
+            의정활동 성적표 랭킹
+          </div>
+          <div className="mt-0.5 text-xs text-blue-700 dark:text-blue-400">
+            출석률·표결참여율·법안발의·법안통과율 종합 평가
+          </div>
+        </div>
+        <span className="shrink-0 text-sm font-semibold text-blue-600 dark:text-blue-300">
+          보기 →
+        </span>
+      </Link>
+
       {/* 내 지역구 의원 찾기 */}
       <section className="space-y-3">
         <h2 className="text-lg font-bold">내 지역구 의원 찾기</h2>
