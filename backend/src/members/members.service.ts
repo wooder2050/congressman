@@ -767,4 +767,124 @@ export class MembersService {
     await this.redis.set(key, result, TTL_HOUR);
     return result;
   }
+
+  // ====== 전체 의원 성적표 랭킹 ======
+
+  async getScorecardRanking(termId: number) {
+    const key = `scorecard:ranking:${termId}`;
+    const cached = await this.redis.get(key);
+    if (cached) return cached;
+
+    const totalMembers = await this.prisma.memberTerm.count({ where: { termId } });
+
+    // 전체 의원 기본 정보
+    const allMemberTerms = await this.prisma.memberTerm.findMany({
+      where: { termId },
+      include: { member: true, party: true },
+    });
+
+    // 전체 통계 병렬 조회
+    const [attendanceRows, voteRows, billRows, passRows] = await Promise.all([
+      this.prisma.$queryRaw<{ memberId: string; rate: number }[]>`
+        SELECT "memberId", rate
+        FROM "Attendance"
+        WHERE "termId" = ${termId} AND "totalSessions" > 0
+        ORDER BY rate DESC
+      `,
+      this.prisma.$queryRaw<
+        { memberId: string; total: bigint; participated: bigint; rate: number }[]
+      >`
+        SELECT mv."memberId",
+               COUNT(*)::bigint as total,
+               COUNT(*) FILTER (WHERE mv.result != 'absent')::bigint as participated,
+               CASE WHEN COUNT(*) > 0
+                 THEN (COUNT(*) FILTER (WHERE mv.result != 'absent'))::float / COUNT(*) * 100
+                 ELSE 0
+               END as rate
+        FROM "MemberVote" mv
+        JOIN "Vote" v ON v.id = mv."voteId"
+        WHERE v."termId" = ${termId}
+        GROUP BY mv."memberId"
+        ORDER BY rate DESC
+      `,
+      this.prisma.$queryRaw<{ memberId: string; cnt: bigint }[]>`
+        SELECT bp."memberId", COUNT(*)::bigint as cnt
+        FROM "BillProposer" bp
+        JOIN "Bill" b ON b.id = bp."billId"
+        WHERE bp.role = 'representative' AND b."termId" = ${termId}
+        GROUP BY bp."memberId"
+        ORDER BY cnt DESC
+      `,
+      this.prisma.$queryRaw<
+        { memberId: string; total_rep: bigint; passed: bigint; rate: number }[]
+      >`
+        SELECT bp."memberId",
+               COUNT(*)::bigint as total_rep,
+               COUNT(*) FILTER (WHERE b.status = 'passed')::bigint as passed,
+               CASE WHEN COUNT(*) > 0
+                 THEN (COUNT(*) FILTER (WHERE b.status = 'passed'))::float / COUNT(*) * 100
+                 ELSE 0
+               END as rate
+        FROM "BillProposer" bp
+        JOIN "Bill" b ON b.id = bp."billId"
+        WHERE bp.role = 'representative' AND b."termId" = ${termId}
+        GROUP BY bp."memberId"
+        ORDER BY rate DESC
+      `,
+    ]);
+
+    // 각 의원별 점수 계산
+    const rankings = allMemberTerms.map((mt) => {
+      const att = attendanceRows.find((r) => r.memberId === mt.memberId);
+      const attRate = att?.rate ?? 0;
+      const attScore = Math.round((attRate / 100) * 30 * 10) / 10;
+
+      const vt = voteRows.find((r) => r.memberId === mt.memberId);
+      const vtRate = vt?.rate ?? 0;
+      const vtScore = Math.round((vtRate / 100) * 25 * 10) / 10;
+
+      const bl = billRows.find((r) => r.memberId === mt.memberId);
+      const repCount = bl ? Number(bl.cnt) : 0;
+      const blPct =
+        billRows.length > 1
+          ? (billRows.filter((r) => Number(r.cnt) < repCount).length / (totalMembers - 1)) * 100
+          : 0;
+      const blScore = Math.round((blPct / 100) * 25 * 10) / 10;
+
+      const ps = passRows.find((r) => r.memberId === mt.memberId);
+      const psRate = ps?.rate ?? 0;
+      const psPct =
+        passRows.length > 1
+          ? (passRows.filter((r) => r.rate < psRate).length / (passRows.length - 1)) * 100
+          : 0;
+      const psScore = Math.round((psPct / 100) * 20 * 10) / 10;
+
+      const total = Math.round((attScore + vtScore + blScore + psScore) * 10) / 10;
+
+      return {
+        memberId: mt.memberId,
+        name: mt.member.name,
+        photoUrl: mt.member.photoUrl,
+        party: {
+          id: mt.party.id,
+          name: mt.party.name,
+          shortName: mt.party.shortName,
+          color: mt.party.color,
+        },
+        district: mt.district,
+        totalScore: total,
+        grade: this.getGrade(total),
+        attendance: { rate: Math.round(attRate * 10) / 10, score: attScore },
+        voteParticipation: { rate: Math.round(vtRate * 10) / 10, score: vtScore },
+        billProposal: { representativeCount: repCount, score: blScore },
+        billPassRate: { rate: Math.round(psRate * 10) / 10, score: psScore },
+      };
+    });
+
+    rankings.sort((a, b) => b.totalScore - a.totalScore);
+
+    const result = { rankings };
+    await this.redis.set(key, result, TTL_HOUR);
+    return result;
+  }
 }

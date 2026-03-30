@@ -24,6 +24,7 @@ async function buildSitemap(id: number) {
       urlEntry(`${BASE}/glossary`, { changefreq: "monthly", priority: 0.5 }),
       urlEntry(`${BASE}/about`, { changefreq: "monthly", priority: 0.5 }),
       urlEntry(`${BASE}/members/property`, { changefreq: "weekly", priority: 0.7 }),
+      urlEntry(`${BASE}/members/scorecard`, { changefreq: "daily", priority: 0.7 }),
       urlEntry(`${BASE}/support`, { changefreq: "monthly", priority: 0.4 }),
       urlEntry(`${BASE}/ads-policy`, { changefreq: "yearly", priority: 0.3 }),
       urlEntry(`${BASE}/privacy`, { changefreq: "yearly", priority: 0.3 }),

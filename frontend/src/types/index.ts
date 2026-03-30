@@ -477,3 +477,22 @@ export interface MemberScorecard {
     };
   };
 }
+
+// ====== 성적표 랭킹 ======
+export interface ScorecardRankingItem {
+  memberId: string;
+  name: string;
+  photoUrl: string;
+  party: Party;
+  district: string;
+  totalScore: number;
+  grade: ScorecardGrade;
+  attendance: { rate: number; score: number };
+  voteParticipation: { rate: number; score: number };
+  billProposal: { representativeCount: number; score: number };
+  billPassRate: { rate: number; score: number };
+}
+
+export interface ScorecardRankingResponse {
+  rankings: ScorecardRankingItem[];
+}
