@@ -407,7 +407,7 @@ function SingleItemContent({ item, category }: { item: string; category: string 
             href={`https://map.kakao.com/?q=${encodeURIComponent(address)}`}
             target="_blank"
             rel="noopener noreferrer"
-            className="text-[11px] text-(--color-primary) no-underline hover:underline"
+            className="text-[11px] text-(--color-member-accent) no-underline hover:underline"
             onClick={(e) => e.stopPropagation()}
           >
             카카오맵

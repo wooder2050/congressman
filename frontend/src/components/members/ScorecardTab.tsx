@@ -58,14 +58,14 @@ function ScoreBar({
     <div className="space-y-1.5">
       <div className="flex items-center justify-between">
         <span className="text-sm font-bold text-(--color-text-primary)">{label}</span>
-        <span className="text-sm font-bold text-(--color-primary)">
+        <span className="text-sm font-bold text-(--color-member-accent)">
           {score}
           <span className="text-xs font-normal text-(--color-text-tertiary)">/{maxScore}점</span>
         </span>
       </div>
       <div className="h-3 overflow-hidden rounded-full bg-(--color-bg-tertiary)">
         <div
-          className="h-full rounded-full bg-(--color-primary) transition-all duration-500"
+          className="h-full rounded-full bg-(--color-member-accent) transition-all duration-500"
           style={{ width: `${pct}%` }}
         />
       </div>
@@ -111,7 +111,7 @@ function ShareButton({
   return (
     <button
       onClick={handleShare}
-      className="inline-flex items-center gap-1.5 rounded-lg bg-(--color-primary) px-4 py-2 text-sm font-medium text-white transition-opacity hover:opacity-90"
+      className="inline-flex items-center gap-1.5 rounded-lg bg-(--color-member-accent) px-4 py-2 text-sm font-medium text-white transition-opacity hover:opacity-90"
     >
       <svg
         xmlns="http://www.w3.org/2000/svg"
@@ -226,13 +226,13 @@ export default function ScorecardTab({ memberId, termId }: ScorecardTabProps) {
         <h3 className="text-base font-bold text-(--color-text-primary)">최근 30일 활동</h3>
         <div className="mt-3 grid grid-cols-3 gap-3">
           <div className="rounded-lg bg-(--color-bg-secondary) p-3 text-center">
-            <div className="text-2xl font-bold text-(--color-primary)">
+            <div className="text-2xl font-bold text-(--color-member-accent)">
               {scorecard.recentActivity.last30Days.bills}
             </div>
             <div className="mt-0.5 text-xs text-(--color-text-tertiary)">법안 발의</div>
           </div>
           <div className="rounded-lg bg-(--color-bg-secondary) p-3 text-center">
-            <div className="text-2xl font-bold text-(--color-primary)">
+            <div className="text-2xl font-bold text-(--color-member-accent)">
               {scorecard.recentActivity.last30Days.votesAttended}
               <span className="text-sm font-normal text-(--color-text-tertiary)">
                 /{scorecard.recentActivity.last30Days.votes}
@@ -241,7 +241,7 @@ export default function ScorecardTab({ memberId, termId }: ScorecardTabProps) {
             <div className="mt-0.5 text-xs text-(--color-text-tertiary)">표결 참여</div>
           </div>
           <div className="rounded-lg bg-(--color-bg-secondary) p-3 text-center">
-            <div className="text-2xl font-bold text-(--color-primary)">
+            <div className="text-2xl font-bold text-(--color-member-accent)">
               {scorecard.recentActivity.last30Days.votes > 0
                 ? Math.round(
                     (scorecard.recentActivity.last30Days.votesAttended /

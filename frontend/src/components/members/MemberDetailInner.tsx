@@ -66,7 +66,7 @@ export default function MemberDetailInner({ id, termId, defaultTab }: MemberDeta
               <Link
                 key={t}
                 href={`/members/${id}?term=${t}`}
-                className="rounded-lg bg-(--color-primary) px-5 py-2.5 text-sm font-semibold text-white no-underline transition-colors hover:opacity-90"
+                className="rounded-lg bg-(--color-member-accent) px-5 py-2.5 text-sm font-semibold text-white no-underline transition-colors hover:opacity-90"
               >
                 제{t}대 활동 보기
               </Link>
@@ -110,7 +110,11 @@ export default function MemberDetailInner({ id, termId, defaultTab }: MemberDeta
       <Tabs value={activeTab} onValueChange={setActiveTab}>
         <TabsList variant="line" className="w-full">
           {TAB_OPTIONS.map((tab) => (
-            <TabsTrigger key={tab.value} value={tab.value} className="text-base font-semibold">
+            <TabsTrigger
+              key={tab.value}
+              value={tab.value}
+              className="text-base font-semibold after:bg-(--color-member-accent)!"
+            >
               {tab.label}
             </TabsTrigger>
           ))}
