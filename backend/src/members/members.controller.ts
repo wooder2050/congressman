@@ -101,6 +101,20 @@ export class MembersController {
     return this.membersService.getCommitteeActivity(id, termId);
   }
 
+  @Get(':id/scorecard')
+  @ApiOperation({
+    summary: '의원 성적표',
+    description: '의원의 종합 성적표(출석, 표결, 법안발의, 법안통과율)를 반환합니다',
+  })
+  @ApiParam({ name: 'id', description: '의원 ID' })
+  @ApiQuery({ name: 'termId', required: false, type: Number, description: '국회 대수 (기본: 22)' })
+  async getScorecard(@Param('id') id: string, @Query('termId') termId?: string) {
+    const parsedTermId = Math.min(Math.max(parseInt(termId ?? '', 10) || 22, 1), 30);
+    const result = await this.membersService.getScorecard(id, parsedTermId);
+    if (!result) throw new NotFoundException();
+    return result;
+  }
+
   @Get(':id/votes')
   @ApiOperation({ summary: '의원 표결 이력', description: '의원의 본회의 표결 이력을 반환합니다' })
   @ApiParam({ name: 'id', description: '의원 ID' })

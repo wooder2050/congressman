@@ -27,6 +27,7 @@ interface MemberDetailInnerProps {
 }
 
 const TAB_OPTIONS = [
+  { value: "scorecard", label: "성적표" },
   { value: "attendance", label: "출석" },
   { value: "bills", label: "법안" },
   { value: "votes", label: "표결" },

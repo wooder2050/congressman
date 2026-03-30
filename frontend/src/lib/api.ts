@@ -25,6 +25,7 @@ import type {
   Schedule,
   ActivityHeatmapDay,
   PropertyStatsResponse,
+  MemberScorecard,
 } from "@/types";
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL;
@@ -257,6 +258,13 @@ export async function getPropertyStats(): Promise<PropertyStatsResponse> {
   return fetchApi("/api/stats/property");
 }
 
+export async function getMemberScorecard(params: {
+  memberId: string;
+  termId: number;
+}): Promise<MemberScorecard | null> {
+  return fetchApi(`/api/members/${params.memberId}/scorecard?termId=${params.termId}`);
+}
+
 export async function getLastSync(): Promise<{ lastSyncAt: string | null }> {
   return fetchApi("/api/health/last-sync");
 }
@@ -291,4 +299,5 @@ Object.defineProperty(getCommitteeDetail, "queryKey", { value: "committeeDetail"
 Object.defineProperty(getCommitteeMinutes, "queryKey", { value: "committeeMinutes" });
 Object.defineProperty(getActivityHeatmap, "queryKey", { value: "activityHeatmap" });
 Object.defineProperty(getPropertyStats, "queryKey", { value: "propertyStats" });
+Object.defineProperty(getMemberScorecard, "queryKey", { value: "memberScorecard" });
 Object.defineProperty(getLastSync, "queryKey", { value: "lastSync" });

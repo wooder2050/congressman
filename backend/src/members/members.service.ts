@@ -484,4 +484,287 @@ export class MembersService {
     await this.redis.set(key, result, TTL_HOUR);
     return result;
   }
+
+  // ====== 의원 성적표 ======
+
+  private getGrade(score: number): string {
+    if (score >= 90) return 'S';
+    if (score >= 80) return 'A';
+    if (score >= 70) return 'B';
+    if (score >= 60) return 'C';
+    return 'D';
+  }
+
+  async getScorecard(memberId: string, termId: number) {
+    const key = `member:scorecard:${memberId}:${termId}`;
+    const cached = await this.redis.get(key);
+    if (cached) return cached;
+
+    // 의원 기본 정보 확인
+    const memberTerm = await this.prisma.memberTerm.findUnique({
+      where: { memberId_termId: { memberId, termId } },
+      include: { member: true, party: true },
+    });
+    if (!memberTerm) return null;
+
+    // 전체 의원 수
+    const totalMembers = await this.prisma.memberTerm.count({ where: { termId } });
+
+    // 병렬 데이터 조회: 전체 의원 통계 (순위 계산용)
+    const [attendanceRows, voteRows, billRows, passRows, recentBills, recentVotes] =
+      await Promise.all([
+        // (1) 출석률 전체 랭킹
+        this.prisma.$queryRaw<{ memberId: string; rate: number }[]>`
+          SELECT "memberId", rate
+          FROM "Attendance"
+          WHERE "termId" = ${termId} AND "totalSessions" > 0
+          ORDER BY rate DESC
+        `,
+
+        // (2) 표결 참여율 전체 랭킹
+        this.prisma.$queryRaw<
+          { memberId: string; total: bigint; participated: bigint; rate: number }[]
+        >`
+          SELECT mv."memberId",
+                 COUNT(*)::bigint as total,
+                 COUNT(*) FILTER (WHERE mv.result != 'absent')::bigint as participated,
+                 CASE WHEN COUNT(*) > 0
+                   THEN (COUNT(*) FILTER (WHERE mv.result != 'absent'))::float / COUNT(*) * 100
+                   ELSE 0
+                 END as rate
+          FROM "MemberVote" mv
+          JOIN "Vote" v ON v.id = mv."voteId"
+          WHERE v."termId" = ${termId}
+          GROUP BY mv."memberId"
+          ORDER BY rate DESC
+        `,
+
+        // (3) 대표발의 건수 전체 랭킹
+        this.prisma.$queryRaw<{ memberId: string; cnt: bigint }[]>`
+          SELECT bp."memberId", COUNT(*)::bigint as cnt
+          FROM "BillProposer" bp
+          JOIN "Bill" b ON b.id = bp."billId"
+          WHERE bp.role = 'representative' AND b."termId" = ${termId}
+          GROUP BY bp."memberId"
+          ORDER BY cnt DESC
+        `,
+
+        // (4) 법안 통과율 전체 랭킹
+        this.prisma.$queryRaw<
+          { memberId: string; total_rep: bigint; passed: bigint; rate: number }[]
+        >`
+          SELECT bp."memberId",
+                 COUNT(*)::bigint as total_rep,
+                 COUNT(*) FILTER (WHERE b.status = 'passed')::bigint as passed,
+                 CASE WHEN COUNT(*) > 0
+                   THEN (COUNT(*) FILTER (WHERE b.status = 'passed'))::float / COUNT(*) * 100
+                   ELSE 0
+                 END as rate
+          FROM "BillProposer" bp
+          JOIN "Bill" b ON b.id = bp."billId"
+          WHERE bp.role = 'representative' AND b."termId" = ${termId}
+          GROUP BY bp."memberId"
+          ORDER BY rate DESC
+        `,
+
+        // (5) 최근 30일 대표발의
+        this.prisma.$queryRaw<{ cnt: bigint }[]>`
+          SELECT COUNT(*)::bigint as cnt
+          FROM "BillProposer" bp
+          JOIN "Bill" b ON b.id = bp."billId"
+          WHERE bp."memberId" = ${memberId}
+            AND bp.role = 'representative'
+            AND b."termId" = ${termId}
+            AND b."proposedDate" >= (CURRENT_DATE - INTERVAL '30 days')::text
+        `,
+
+        // (6) 최근 30일 표결
+        this.prisma.$queryRaw<{ total: bigint; attended: bigint }[]>`
+          SELECT COUNT(*)::bigint as total,
+                 COUNT(*) FILTER (WHERE mv.result != 'absent')::bigint as attended
+          FROM "MemberVote" mv
+          JOIN "Vote" v ON v.id = mv."voteId"
+          WHERE mv."memberId" = ${memberId}
+            AND v."termId" = ${termId}
+            AND v."procDate" >= (CURRENT_DATE - INTERVAL '30 days')::text
+        `,
+      ]);
+
+    // === 출석률 점수 ===
+    const myAttendance = attendanceRows.find((r) => r.memberId === memberId);
+    const attendanceRate = myAttendance?.rate ?? 0;
+    const attendanceRank = myAttendance
+      ? attendanceRows.findIndex((r) => r.memberId === memberId) + 1
+      : totalMembers;
+    const attendanceScore = Math.round((attendanceRate / 100) * 30 * 10) / 10;
+
+    // === 표결 참여율 점수 ===
+    const myVote = voteRows.find((r) => r.memberId === memberId);
+    const voteRate = myVote?.rate ?? 0;
+    const voteRank = myVote ? voteRows.findIndex((r) => r.memberId === memberId) + 1 : totalMembers;
+    const voteScore = Math.round((voteRate / 100) * 25 * 10) / 10;
+
+    // 표결 상세 (yes/no/abstain/absent)
+    let voteYes = 0,
+      voteNo = 0,
+      voteAbstain = 0,
+      voteAbsent = 0;
+    if (myVote) {
+      const voteDetail = await this.prisma.$queryRaw<{ result: string; cnt: bigint }[]>`
+        SELECT mv.result, COUNT(*)::bigint as cnt
+        FROM "MemberVote" mv
+        JOIN "Vote" v ON v.id = mv."voteId"
+        WHERE mv."memberId" = ${memberId} AND v."termId" = ${termId}
+        GROUP BY mv.result
+      `;
+      for (const row of voteDetail) {
+        const cnt = Number(row.cnt);
+        if (row.result === 'yes') voteYes = cnt;
+        else if (row.result === 'no') voteNo = cnt;
+        else if (row.result === 'abstain') voteAbstain = cnt;
+        else if (row.result === 'absent') voteAbsent = cnt;
+      }
+    }
+
+    // === 법안 발의 점수 (백분위 기반) ===
+    const myBill = billRows.find((r) => r.memberId === memberId);
+    const repCount = myBill ? Number(myBill.cnt) : 0;
+    const billRank = myBill ? billRows.findIndex((r) => r.memberId === memberId) + 1 : totalMembers;
+    // 백분위: 나보다 적게 발의한 의원 비율
+    const billPercentile =
+      billRows.length > 1
+        ? (billRows.filter((r) => Number(r.cnt) < repCount).length / (totalMembers - 1)) * 100
+        : 0;
+    const billScore = Math.round((billPercentile / 100) * 25 * 10) / 10;
+
+    // 공동발의 건수
+    const coCountResult = await this.prisma.billProposer.count({
+      where: {
+        memberId,
+        role: 'co',
+        bill: { termId },
+      },
+    });
+
+    // === 법안 통과율 점수 (백분위 기반) ===
+    const myPass = passRows.find((r) => r.memberId === memberId);
+    const passedCount = myPass ? Number(myPass.passed) : 0;
+    const passRate = myPass?.rate ?? 0;
+    const passRank = myPass ? passRows.findIndex((r) => r.memberId === memberId) + 1 : totalMembers;
+    const passPercentile =
+      passRows.length > 1
+        ? (passRows.filter((r) => r.rate < passRate).length / (passRows.length - 1)) * 100
+        : 0;
+    const passScore = Math.round((passPercentile / 100) * 20 * 10) / 10;
+
+    // === 종합 점수 ===
+    const totalScore = Math.round((attendanceScore + voteScore + billScore + passScore) * 10) / 10;
+    const grade = this.getGrade(totalScore);
+
+    // === 전체 종합 순위 계산 ===
+    // 모든 의원의 totalScore를 계산하여 순위 매기기
+    const allScores: { memberId: string; score: number }[] = [];
+    const memberIds = [
+      ...new Set([
+        ...attendanceRows.map((r) => r.memberId),
+        ...voteRows.map((r) => r.memberId),
+        ...billRows.map((r) => r.memberId),
+      ]),
+    ];
+
+    for (const mid of memberIds) {
+      const att = attendanceRows.find((r) => r.memberId === mid);
+      const attScore = att ? Math.round((att.rate / 100) * 30 * 10) / 10 : 0;
+
+      const vt = voteRows.find((r) => r.memberId === mid);
+      const vtScore = vt ? Math.round((vt.rate / 100) * 25 * 10) / 10 : 0;
+
+      const bl = billRows.find((r) => r.memberId === mid);
+      const blCount = bl ? Number(bl.cnt) : 0;
+      const blPct =
+        billRows.length > 1
+          ? (billRows.filter((r) => Number(r.cnt) < blCount).length / (totalMembers - 1)) * 100
+          : 0;
+      const blScore = Math.round((blPct / 100) * 25 * 10) / 10;
+
+      const ps = passRows.find((r) => r.memberId === mid);
+      const psRate = ps?.rate ?? 0;
+      const psPct =
+        passRows.length > 1
+          ? (passRows.filter((r) => r.rate < psRate).length / (passRows.length - 1)) * 100
+          : 0;
+      const psScore = Math.round((psPct / 100) * 20 * 10) / 10;
+
+      allScores.push({ memberId: mid, score: attScore + vtScore + blScore + psScore });
+    }
+
+    allScores.sort((a, b) => b.score - a.score);
+    const overallRank = allScores.findIndex((s) => s.memberId === memberId) + 1 || totalMembers;
+
+    // === 최근 30일 활동 ===
+    const recent30Bills = Number(recentBills[0]?.cnt ?? 0n);
+    const recent30VotesTotal = Number(recentVotes[0]?.total ?? 0n);
+    const recent30VotesAttended = Number(recentVotes[0]?.attended ?? 0n);
+
+    const result = {
+      memberId,
+      name: memberTerm.member.name,
+      photoUrl: memberTerm.member.photoUrl,
+      party: {
+        id: memberTerm.party.id,
+        name: memberTerm.party.name,
+        shortName: memberTerm.party.shortName,
+        color: memberTerm.party.color,
+      },
+      district: memberTerm.district,
+      termId,
+
+      attendance: {
+        rate: Math.round(attendanceRate * 10) / 10,
+        score: attendanceScore,
+        rank: attendanceRank,
+        totalMembers,
+      },
+      voteParticipation: {
+        rate: Math.round(voteRate * 10) / 10,
+        score: voteScore,
+        rank: voteRank,
+        totalMembers,
+        yes: voteYes,
+        no: voteNo,
+        abstain: voteAbstain,
+        absent: voteAbsent,
+      },
+      billProposal: {
+        representativeCount: repCount,
+        coCount: coCountResult,
+        score: billScore,
+        rank: billRank,
+        totalMembers,
+      },
+      billPassRate: {
+        passedCount,
+        totalRepresentative: repCount,
+        rate: Math.round(passRate * 10) / 10,
+        score: passScore,
+        rank: passRank,
+        totalMembers,
+      },
+
+      totalScore,
+      grade,
+      overallRank,
+
+      recentActivity: {
+        last30Days: {
+          bills: recent30Bills,
+          votes: recent30VotesTotal,
+          votesAttended: recent30VotesAttended,
+        },
+      },
+    };
+
+    await this.redis.set(key, result, TTL_HOUR);
+    return result;
+  }
 }
