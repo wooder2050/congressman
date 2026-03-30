@@ -1,0 +1,267 @@
+"use client";
+
+import { useCongressSuspenseQuery } from "@/hooks/useCongressQuery";
+import { getMemberScorecard } from "@/lib/api";
+import type { ScorecardGrade } from "@/types";
+
+interface ScorecardTabProps {
+  memberId: string;
+  termId: number;
+}
+
+const GRADE_STYLES: Record<ScorecardGrade, { bg: string; text: string; border: string }> = {
+  S: {
+    bg: "bg-amber-50 dark:bg-amber-950/30",
+    text: "text-amber-600 dark:text-amber-400",
+    border: "border-amber-300 dark:border-amber-700",
+  },
+  A: {
+    bg: "bg-blue-50 dark:bg-blue-950/30",
+    text: "text-blue-600 dark:text-blue-400",
+    border: "border-blue-300 dark:border-blue-700",
+  },
+  B: {
+    bg: "bg-green-50 dark:bg-green-950/30",
+    text: "text-green-600 dark:text-green-400",
+    border: "border-green-300 dark:border-green-700",
+  },
+  C: {
+    bg: "bg-orange-50 dark:bg-orange-950/30",
+    text: "text-orange-600 dark:text-orange-400",
+    border: "border-orange-300 dark:border-orange-700",
+  },
+  D: {
+    bg: "bg-red-50 dark:bg-red-950/30",
+    text: "text-red-600 dark:text-red-400",
+    border: "border-red-300 dark:border-red-700",
+  },
+};
+
+function ScoreBar({
+  label,
+  score,
+  maxScore,
+  rank,
+  totalMembers,
+  detail,
+}: {
+  label: string;
+  score: number;
+  maxScore: number;
+  rank: number;
+  totalMembers: number;
+  detail: string;
+}) {
+  const pct = maxScore > 0 ? (score / maxScore) * 100 : 0;
+
+  return (
+    <div className="space-y-1.5">
+      <div className="flex items-center justify-between">
+        <span className="text-sm font-bold text-(--color-text-primary)">{label}</span>
+        <span className="text-sm font-bold text-(--color-primary)">
+          {score}
+          <span className="text-xs font-normal text-(--color-text-tertiary)">/{maxScore}점</span>
+        </span>
+      </div>
+      <div className="h-3 overflow-hidden rounded-full bg-(--color-bg-tertiary)">
+        <div
+          className="h-full rounded-full bg-(--color-primary) transition-all duration-500"
+          style={{ width: `${pct}%` }}
+        />
+      </div>
+      <div className="flex items-center justify-between text-xs text-(--color-text-tertiary)">
+        <span>{detail}</span>
+        <span>
+          {totalMembers}명 중 {rank}위
+        </span>
+      </div>
+    </div>
+  );
+}
+
+function ShareButton({
+  memberId,
+  termId,
+  name,
+  grade,
+  totalScore,
+}: {
+  memberId: string;
+  termId: number;
+  name: string;
+  grade: string;
+  totalScore: number;
+}) {
+  const url = `https://www.lawmake.kr/members/${memberId}/scorecard?term=${termId}`;
+  const text = `${name} 의원 의정활동 성적표: ${grade}등급 (${totalScore}점)`;
+
+  const handleShare = async () => {
+    if (navigator.share) {
+      try {
+        await navigator.share({ title: text, url });
+      } catch {
+        // 사용자가 공유를 취소한 경우
+      }
+    } else {
+      await navigator.clipboard.writeText(`${text}\n${url}`);
+      alert("링크가 복사되었습니다!");
+    }
+  };
+
+  return (
+    <button
+      onClick={handleShare}
+      className="inline-flex items-center gap-1.5 rounded-lg bg-(--color-primary) px-4 py-2 text-sm font-medium text-white transition-opacity hover:opacity-90"
+    >
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        width="16"
+        height="16"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      >
+        <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8" />
+        <polyline points="16 6 12 2 8 6" />
+        <line x1="12" y1="2" x2="12" y2="15" />
+      </svg>
+      공유하기
+    </button>
+  );
+}
+
+export default function ScorecardTab({ memberId, termId }: ScorecardTabProps) {
+  const { data: scorecard } = useCongressSuspenseQuery(getMemberScorecard, {
+    memberId,
+    termId,
+  });
+
+  if (!scorecard) {
+    return (
+      <div className="rounded-xl border border-(--color-border-primary) bg-(--color-bg-primary) p-8 text-center">
+        <p className="text-sm text-(--color-text-tertiary)">성적표 데이터가 없습니다.</p>
+      </div>
+    );
+  }
+
+  const gradeStyle = GRADE_STYLES[scorecard.grade];
+
+  return (
+    <div className="space-y-5">
+      {/* 종합 등급 카드 */}
+      <div className={`rounded-2xl border-2 ${gradeStyle.border} ${gradeStyle.bg} p-6`}>
+        <div className="flex items-center justify-between">
+          <div>
+            <div className="text-sm font-medium text-(--color-text-secondary)">종합 등급</div>
+            <div className="mt-1 flex items-baseline gap-3">
+              <span className={`text-6xl font-black ${gradeStyle.text}`}>{scorecard.grade}</span>
+              <span className="text-2xl font-bold text-(--color-text-primary)">
+                {scorecard.totalScore}
+                <span className="text-base font-normal text-(--color-text-tertiary)">/100점</span>
+              </span>
+            </div>
+            <div className="mt-2 text-sm text-(--color-text-secondary)">
+              전체 {scorecard.attendance.totalMembers}명 중{" "}
+              <span className="font-bold text-(--color-text-primary)">
+                {scorecard.overallRank}위
+              </span>
+            </div>
+          </div>
+          <ShareButton
+            memberId={memberId}
+            termId={termId}
+            name={scorecard.name}
+            grade={scorecard.grade}
+            totalScore={scorecard.totalScore}
+          />
+        </div>
+      </div>
+
+      {/* 항목별 점수 */}
+      <div className="space-y-5 rounded-xl border border-(--color-border-primary) bg-(--color-bg-primary) p-5">
+        <h3 className="text-base font-bold text-(--color-text-primary)">항목별 점수</h3>
+
+        <ScoreBar
+          label="출석률"
+          score={scorecard.attendance.score}
+          maxScore={30}
+          rank={scorecard.attendance.rank}
+          totalMembers={scorecard.attendance.totalMembers}
+          detail={`${scorecard.attendance.rate}%`}
+        />
+
+        <ScoreBar
+          label="표결 참여율"
+          score={scorecard.voteParticipation.score}
+          maxScore={25}
+          rank={scorecard.voteParticipation.rank}
+          totalMembers={scorecard.voteParticipation.totalMembers}
+          detail={`${scorecard.voteParticipation.rate}% (찬성 ${scorecard.voteParticipation.yes} · 반대 ${scorecard.voteParticipation.no} · 기권 ${scorecard.voteParticipation.abstain} · 불참 ${scorecard.voteParticipation.absent})`}
+        />
+
+        <ScoreBar
+          label="법안 발의"
+          score={scorecard.billProposal.score}
+          maxScore={25}
+          rank={scorecard.billProposal.rank}
+          totalMembers={scorecard.billProposal.totalMembers}
+          detail={`대표발의 ${scorecard.billProposal.representativeCount}건 · 공동발의 ${scorecard.billProposal.coCount}건`}
+        />
+
+        <ScoreBar
+          label="법안 통과율"
+          score={scorecard.billPassRate.score}
+          maxScore={20}
+          rank={scorecard.billPassRate.rank}
+          totalMembers={scorecard.billPassRate.totalMembers}
+          detail={`${scorecard.billPassRate.rate}% (${scorecard.billPassRate.passedCount}/${scorecard.billPassRate.totalRepresentative}건 통과)`}
+        />
+      </div>
+
+      {/* 최근 30일 활동 */}
+      <div className="rounded-xl border border-(--color-border-primary) bg-(--color-bg-primary) p-5">
+        <h3 className="text-base font-bold text-(--color-text-primary)">최근 30일 활동</h3>
+        <div className="mt-3 grid grid-cols-3 gap-3">
+          <div className="rounded-lg bg-(--color-bg-secondary) p-3 text-center">
+            <div className="text-2xl font-bold text-(--color-primary)">
+              {scorecard.recentActivity.last30Days.bills}
+            </div>
+            <div className="mt-0.5 text-xs text-(--color-text-tertiary)">법안 발의</div>
+          </div>
+          <div className="rounded-lg bg-(--color-bg-secondary) p-3 text-center">
+            <div className="text-2xl font-bold text-(--color-primary)">
+              {scorecard.recentActivity.last30Days.votesAttended}
+              <span className="text-sm font-normal text-(--color-text-tertiary)">
+                /{scorecard.recentActivity.last30Days.votes}
+              </span>
+            </div>
+            <div className="mt-0.5 text-xs text-(--color-text-tertiary)">표결 참여</div>
+          </div>
+          <div className="rounded-lg bg-(--color-bg-secondary) p-3 text-center">
+            <div className="text-2xl font-bold text-(--color-primary)">
+              {scorecard.recentActivity.last30Days.votes > 0
+                ? Math.round(
+                    (scorecard.recentActivity.last30Days.votesAttended /
+                      scorecard.recentActivity.last30Days.votes) *
+                      100,
+                  )
+                : 0}
+              <span className="text-sm font-normal text-(--color-text-tertiary)">%</span>
+            </div>
+            <div className="mt-0.5 text-xs text-(--color-text-tertiary)">최근 참여율</div>
+          </div>
+        </div>
+      </div>
+
+      {/* 안내문 */}
+      <p className="text-xs leading-relaxed text-(--color-text-tertiary)">
+        성적표는 출석률(30점), 표결 참여율(25점), 법안 발의(25점, 백분위 기준), 법안 통과율(20점,
+        백분위 기준)을 합산하여 100점 만점으로 산출합니다. 등급 기준: S(90+), A(80+), B(70+),
+        C(60+), D(60미만). 데이터는 열린국회정보 공공데이터 기반이며, 매일 자동 갱신됩니다.
+      </p>
+    </div>
+  );
+}

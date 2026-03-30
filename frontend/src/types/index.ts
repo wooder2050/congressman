@@ -421,3 +421,59 @@ export interface ActivityHeatmapDay {
 export interface MemberWithTerm extends Member {
   term: MemberTerm;
 }
+
+// ====== 의원 성적표 ======
+export type ScorecardGrade = "S" | "A" | "B" | "C" | "D";
+
+export interface MemberScorecard {
+  memberId: string;
+  name: string;
+  photoUrl: string;
+  party: Party;
+  district: string;
+  termId: number;
+
+  attendance: {
+    rate: number;
+    score: number;
+    rank: number;
+    totalMembers: number;
+  };
+  voteParticipation: {
+    rate: number;
+    score: number;
+    rank: number;
+    totalMembers: number;
+    yes: number;
+    no: number;
+    abstain: number;
+    absent: number;
+  };
+  billProposal: {
+    representativeCount: number;
+    coCount: number;
+    score: number;
+    rank: number;
+    totalMembers: number;
+  };
+  billPassRate: {
+    passedCount: number;
+    totalRepresentative: number;
+    rate: number;
+    score: number;
+    rank: number;
+    totalMembers: number;
+  };
+
+  totalScore: number;
+  grade: ScorecardGrade;
+  overallRank: number;
+
+  recentActivity: {
+    last30Days: {
+      bills: number;
+      votes: number;
+      votesAttended: number;
+    };
+  };
+}

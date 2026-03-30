@@ -7,6 +7,7 @@ import {
   CommitteeTabSkeleton,
   AssetsTabSkeleton,
 } from "@/components/skeletons/TabSkeleton";
+import ScorecardTab from "./ScorecardTab";
 import AttendanceTab from "./AttendanceTab";
 import BillsTab from "./BillsTab";
 import VotesTab from "./VotesTab";
@@ -29,6 +30,11 @@ export default function MemberDetailTabContent({
 }: MemberDetailTabContentProps) {
   return (
     <div>
+      {activeTab === "scorecard" && (
+        <Suspense fallback={<AttendanceTabSkeleton />}>
+          <ScorecardTab memberId={memberId} termId={termId} />
+        </Suspense>
+      )}
       {activeTab === "attendance" && (
         <Suspense fallback={<AttendanceTabSkeleton />}>
           <AttendanceTab memberId={memberId} termId={termId} />
