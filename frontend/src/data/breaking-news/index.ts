@@ -12,22 +12,22 @@ const breakingNews: BreakingNewsItem[] = [
       {
         label: "법제사법위원회",
         value: "추미애 사퇴 → 경기도지사 출마",
-        memberId: "PNR4930",
+        memberId: "URV1689Q",
       },
       {
         label: "보건복지위원회",
         value: "박주민 사퇴 → 서울시장 출마",
-        memberId: "OZZ7962",
+        memberId: "6AU2417B",
       },
       {
         label: "행정안전위원회",
         value: "신정훈 사퇴 → 전남광주특별시장 출마",
-        memberId: "KBA4948",
+        memberId: "M7O7878U",
       },
       {
         label: "기후에너지환경노동위원회",
         value: "안호영 사퇴 → 전북도지사 출마",
-        memberId: "GEK3882",
+        memberId: "XEF29171",
       },
     ],
     sources: [
