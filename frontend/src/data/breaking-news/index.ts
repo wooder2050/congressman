@@ -48,4 +48,3 @@ const breakingNews: BreakingNewsItem[] = [
 export function getActiveBreakingNews(): BreakingNewsItem[] {
   return breakingNews.filter((n) => n.active).sort((a, b) => b.date.localeCompare(a.date));
 }
-
