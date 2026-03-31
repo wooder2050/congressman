@@ -11,6 +11,7 @@ import ActivityHighlights from "@/components/home/ActivityHighlights";
 import LatestWeeklyNews from "@/components/home/LatestWeeklyNews";
 import PropertyHighlight from "@/components/home/PropertyHighlight";
 import ScorecardHighlight from "@/components/home/ScorecardHighlight";
+import BreakingNewsBanner from "@/components/home/BreakingNewsBanner";
 import {
   HomeStatsSkeleton,
   TopicSectionSkeleton,
@@ -86,6 +87,9 @@ export default async function HomePage({ searchParams }: HomePageProps) {
             대한민국 국회의원의 의정활동 정보를 한눈에 확인하세요.
           </p>
         </section>
+
+        {/* 속보 배너 */}
+        <BreakingNewsBanner />
 
         {/* 플랫폼 소개 */}
         <PageIntro
