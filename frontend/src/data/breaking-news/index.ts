@@ -32,8 +32,7 @@ const breakingNews: BreakingNewsItem[] = [
     ],
     sources: [
       {
-        title:
-          "국회, 신임 상임위원장 선출…법사위 서영교·행안위 권칠승·복지위 소병훈 — 아주경제",
+        title: "국회, 신임 상임위원장 선출…법사위 서영교·행안위 권칠승·복지위 소병훈 — 아주경제",
         url: "https://www.ajunews.com/view/20260331152533135",
       },
       {
