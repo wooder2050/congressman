@@ -3,41 +3,42 @@ import type { BreakingNewsItem } from "./types";
 const breakingNews: BreakingNewsItem[] = [
   {
     id: "2026-03-31-committee-chairs",
-    title: "상임위원장 4곳 교체 · 6·3 보궐선거 확대",
+    title: "상임위원장 3곳 교체 완료 · 6·3 보궐선거 확대",
     description:
-      "6·3 지방선거 출마를 위해 상임위원장 4명이 사퇴하고, 3월 31일 본회의에서 후임 위원장이 선출됩니다. 사퇴 의원들의 지역구는 보궐선거 대상에 추가됩니다.",
+      "6·3 지방선거 출마로 공석이 된 상임위원장 3곳의 후임이 3월 31일 본회의에서 선출되었습니다. 안호영 기후에너지환경노동위원장은 전북도지사 출마를 철회하여 유임됩니다.",
     date: "2026-03-31",
     category: "committee",
     items: [
       {
         label: "법제사법위원회",
-        value: "추미애 사퇴 → 경기도지사 출마",
-        memberId: "URV1689Q",
+        value: "추미애 사퇴 → 서영교 선출",
+        memberId: "TKJ4800F",
       },
       {
         label: "보건복지위원회",
-        value: "박주민 사퇴 → 서울시장 출마",
-        memberId: "6AU2417B",
+        value: "박주민 사퇴 → 소병훈 선출",
+        memberId: "ZDR63255",
       },
       {
         label: "행정안전위원회",
-        value: "신정훈 사퇴 → 전남광주특별시장 출마",
-        memberId: "M7O7878U",
+        value: "신정훈 사퇴 → 권칠승 선출",
+        memberId: "C7E79345",
       },
       {
         label: "기후에너지환경노동위원회",
-        value: "안호영 사퇴 → 전북도지사 출마",
+        value: "안호영 유임 (전북도지사 출마 철회)",
         memberId: "XEF29171",
       },
     ],
     sources: [
       {
-        title: '한병도 "31일 공석 상임위원장 임명하겠다" — 경향신문',
-        url: "https://www.khan.co.kr/article/202603271600001/",
+        title:
+          "국회, 신임 상임위원장 선출…법사위 서영교·행안위 권칠승·복지위 소병훈 — 아주경제",
+        url: "https://www.ajunews.com/view/20260331152533135",
       },
       {
-        title: "상임위원장 4곳 31일 일괄 임명 — 아주경제",
-        url: "https://www.ajunews.com/view/20260327134100959",
+        title: "안호영, 전북도지사 도전 '중도하차' — 아주경제",
+        url: "https://www.ajunews.com/view/20260331165258265",
       },
     ],
     active: true,
