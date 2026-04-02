@@ -9,6 +9,12 @@ export const metadata: Metadata = {
   description:
     "22대 국회 본회의 표결 결과를 확인하세요. 1,290건 법안의 찬성·반대·기권·불참 투표 내역과 의원별 표결 기록을 투명하게 공개합니다. 가결·부결·수정안 등 표결 유형별로 검색할 수 있습니다.",
   alternates: { canonical: "https://www.lawmake.kr/votes" },
+  openGraph: {
+    title: "국회 표결 결과 — 본회의 법안 찬반 투표 현황",
+    description:
+      "22대 국회 본회의 표결 결과. 찬성·반대·기권 투표 내역과 의원별 표결 기록을 확인하세요.",
+    url: "https://www.lawmake.kr/votes",
+  },
 };
 
 interface VotesPageProps {

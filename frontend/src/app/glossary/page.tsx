@@ -3,10 +3,16 @@ import { getTermsByCategory, getAllTerms } from "@/lib/glossary";
 import JsonLd from "@/components/seo/JsonLd";
 
 export const metadata: Metadata = {
-  title: "국회 용어 사전 — 발의 뜻, 대안반영폐기, 본회의 통과 등 쉽게 설명",
+  title: "국회 용어 사전 — 발의 뜻 · 상정 뜻 · 대안반영폐기 · 본회의 뜻 쉽게 설명",
   description:
-    "국회 의정활동에서 자주 쓰이는 전문 용어를 쉽게 풀어 설명합니다. 발의 뜻, 대안반영폐기, 본회의 통과, 상임위원회, 법안 심사 등 법안·표결·위원회 관련 용어를 한곳에서 확인하세요.",
+    "국회 의정활동에서 자주 쓰이는 전문 용어를 쉽게 풀어 설명합니다. 발의 뜻, 법안 발의 뜻, 상정 뜻, 대안반영폐기 뜻, 본회의 뜻, 상임위원회, 법안 심사 등 법안·표결·위원회 관련 용어를 한곳에서 확인하세요.",
   alternates: { canonical: "https://www.lawmake.kr/glossary" },
+  openGraph: {
+    title: "국회 용어 사전 — 발의 · 상정 · 대안반영폐기 · 본회의 뜻",
+    description:
+      "국회 전문 용어를 쉽게 설명합니다. 발의, 상정, 대안반영폐기, 본회의, 상임위원회 등 의정활동 용어 사전.",
+    url: "https://www.lawmake.kr/glossary",
+  },
 };
 
 export default function GlossaryPage() {

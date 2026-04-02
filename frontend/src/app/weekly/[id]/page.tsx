@@ -17,13 +17,16 @@ export async function generateMetadata({ params }: WeeklyDetailPageProps): Promi
   const article = getWeeklyArticle(id);
   if (!article) return { title: "주간 뉴스를 찾을 수 없습니다" };
 
+  const url = `https://www.lawmake.kr/weekly/${id}`;
   return {
     title: `${article.title} 주간 국회 뉴스`,
     description: article.summary,
+    alternates: { canonical: url },
     openGraph: {
       title: `${article.title} 주간 국회 뉴스`,
       description: article.summary,
       type: "article",
+      url,
       publishedTime: article.publishedDate,
     },
   };

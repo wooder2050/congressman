@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
 import JsonLd from "@/components/seo/JsonLd";
 import PageIntro from "@/components/ui/page-intro";
@@ -22,6 +23,24 @@ import {
 import { UpcomingSchedulesSkeleton } from "@/components/skeletons/ScheduleSkeleton";
 import { makeQueryClient } from "@/lib/query-client";
 import { getHomeStats, getAttendanceRanking, getBillTopics, getUpcomingSchedules } from "@/lib/api";
+
+export const metadata: Metadata = {
+  title: "국회의원 의정활동 정보 — 법안 발의 · 본회의 표결 · 출석률 · 재산 현황",
+  description:
+    "22대 국회의원 295명의 법안 발의, 본회의 표결 결과, 출석률, 재산 현황을 한눈에 확인하세요. 국회 일정, 위원회 활동, 선거구 지도, 의원 비교까지 — 열린국회정보 공공데이터 기반 의정활동 플랫폼입니다.",
+  alternates: { canonical: "https://www.lawmake.kr" },
+  openGraph: {
+    title: "국회의원 의정활동 정보 — 법안 · 표결 · 출석 · 재산",
+    description:
+      "22대 국회의원의 법안 발의, 본회의 표결, 출석률, 재산 현황을 한눈에. 열린국회정보 공공데이터 기반 의정활동 플랫폼.",
+    url: "https://www.lawmake.kr",
+  },
+  twitter: {
+    title: "국회의원 의정활동 정보 — 법안 · 표결 · 출석 · 재산",
+    description:
+      "22대 국회의원의 법안 발의, 본회의 표결, 출석률, 재산 현황을 한눈에. 열린국회정보 공공데이터 기반 의정활동 플랫폼.",
+  },
+};
 
 interface HomePageProps {
   searchParams: Promise<{ term?: string }>;
