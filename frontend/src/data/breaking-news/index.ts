@@ -2,6 +2,43 @@ import type { BreakingNewsItem } from "./types";
 
 const breakingNews: BreakingNewsItem[] = [
   {
+    id: "2026-04-02-supplementary-budget",
+    title: "이재명 대통령, 26.2조 원 '전쟁 추경' 국회 시정연설",
+    description:
+      "이재명 대통령이 4월 2일 국회 본회의에서 2026년도 제1회 추가경정예산안에 대한 시정연설을 했습니다. 중동 전쟁 장기화에 따른 고유가·고물가 대응을 위해 26.2조 원 규모의 추경안이 편성되었으며, 국채 발행 없이 초과 세수로 재원을 마련합니다.",
+    date: "2026-04-02",
+    category: "legislation",
+    items: [
+      {
+        label: "고유가 대응",
+        value: "10.1조 원",
+      },
+      {
+        label: "지방정부 투자 여력 확충",
+        value: "9.7조 원",
+      },
+      {
+        label: "민생 안정",
+        value: "2.8조 원",
+      },
+      {
+        label: "산업 피해 최소화·공급망 안정",
+        value: "2.6조 원",
+      },
+    ],
+    sources: [
+      {
+        title: "이 대통령, '전쟁 추경안' 시정연설...\"경제 회생 골든타임\" — YTN",
+        url: "https://www.ytn.co.kr/_cs/_ln_0101_202604021600165558_005.html",
+      },
+      {
+        title: "여야, 25조원 추경 추진…목요일 시정연설, 내달 10일까지 본회의 처리 — 헤럴드경제",
+        url: "https://biz.heraldcorp.com/article/10705960",
+      },
+    ],
+    active: true,
+  },
+  {
     id: "2026-03-31-committee-chairs",
     title: "상임위원장 3곳 교체 완료 · 6·3 보궐선거 확대",
     description:
@@ -40,7 +77,7 @@ const breakingNews: BreakingNewsItem[] = [
         url: "https://www.ajunews.com/view/20260331165258265",
       },
     ],
-    active: true,
+    active: false,
   },
 ];
 
