@@ -8,10 +8,16 @@ import MemberListSkeleton from "@/components/skeletons/MemberListSkeleton";
 import { DistrictFinderSkeleton } from "@/components/skeletons/HomeSkeleton";
 
 export const metadata: Metadata = {
-  title: "국회의원 목록 - 22대 국회의원 300명",
+  title: "국회의원 목록 — 22대 국회의원 295명 의정활동 검색",
   description:
-    "22대 국회의원 300명의 의정활동 정보를 검색하세요. 지역구 의원 찾기, 정당별 필터, 법안 발의 건수·출석률 비교 기능을 제공합니다.",
+    "22대 국회의원 295명의 의정활동 정보를 검색하세요. 지역구 의원 찾기, 정당별 필터, 법안 발의 건수·출석률 비교 기능을 제공합니다. 내 지역 국회의원을 찾아보세요.",
   alternates: { canonical: "https://www.lawmake.kr/members" },
+  openGraph: {
+    title: "국회의원 목록 — 22대 국회의원 295명 의정활동 검색",
+    description:
+      "22대 국회의원의 법안 발의, 출석률, 표결 참여를 검색하고 비교하세요. 지역구 의원 찾기 기능 제공.",
+    url: "https://www.lawmake.kr/members",
+  },
 };
 
 interface MembersPageProps {

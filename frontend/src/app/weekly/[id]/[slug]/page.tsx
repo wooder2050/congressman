@@ -79,11 +79,22 @@ function findArticleBySlug(article: ReturnType<typeof getWeeklyArticle>, slug: s
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { id, slug } = await params;
   const article = getWeeklyArticle(id);
-  const found = findArticleBySlug(article, decodeURIComponent(slug));
+  const decodedSlug = decodeURIComponent(slug);
+  const found = findArticleBySlug(article, decodedSlug);
   if (!found || !article) return {};
+  const title = `${found.title} | ${article.title} 주간 국회 뉴스`;
+  const url = `https://www.lawmake.kr/weekly/${id}/${decodedSlug}`;
   return {
-    title: `${found.title} | ${article.title} 주간 국회 뉴스`,
+    title,
     description: found.description,
+    alternates: { canonical: url },
+    openGraph: {
+      title,
+      description: found.description,
+      type: "article",
+      url,
+      publishedTime: article.publishedDate,
+    },
   };
 }
 
