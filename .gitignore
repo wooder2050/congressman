@@ -32,6 +32,11 @@ build/
 
 # Documents
 *.docx
+ROADMAP.md
+PLAN_*.md
+DATA-SYNC.md
+Lawmake_kr_action_plan.md
+skills-lock.json
 
 # Data (manual CSV imports)
 backend/data/
