@@ -193,6 +193,15 @@ export default function TermsPage() {
             </p>
             <ul className="mt-3 list-inside list-disc space-y-1.5 text-sm text-(--color-text-secondary)">
               <li>
+                이메일:{" "}
+                <a
+                  href="mailto:lawmake.official@gmail.com"
+                  className="font-semibold text-(--color-primary) underline"
+                >
+                  lawmake.official@gmail.com
+                </a>
+              </li>
+              <li>
                 GitHub 이슈:{" "}
                 <a
                   href="https://github.com/wooder2050/congressman/issues"
