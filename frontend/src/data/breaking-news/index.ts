@@ -73,7 +73,7 @@ const breakingNews: BreakingNewsItem[] = [
         url: "https://biz.heraldcorp.com/article/10705960",
       },
     ],
-    active: true,
+    active: false,
   },
   {
     id: "2026-03-31-committee-chairs",
