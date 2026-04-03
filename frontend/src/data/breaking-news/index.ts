@@ -2,6 +2,43 @@ import type { BreakingNewsItem } from "./types";
 
 const breakingNews: BreakingNewsItem[] = [
   {
+    id: "2026-04-03-constitutional-amendment",
+    title: "여야 6당, 계엄 요건 강화 개헌안 발의 — 국민투표 추진",
+    description:
+      "국민의힘을 제외한 여야 6당과 우원식 국회의장이 4월 3일 계엄 관련 개헌안을 발의했습니다. 대통령의 계엄 선포 시 48시간 내 국회 승인을 의무화하고, 승인이 없으면 즉시 무효화하는 내용입니다. 6·3 지방선거와 동시에 국민투표를 추진하며, 의결 정족수(197명) 충족을 위해 국민의힘에서 최소 10명의 찬성이 필요합니다.",
+    date: "2026-04-03",
+    category: "politics",
+    items: [
+      {
+        label: "핵심 내용",
+        value: "계엄 선포 시 48시간 내 국회 승인 의무화",
+      },
+      {
+        label: "헌법 전문 확대",
+        value: "4·19혁명, 부마항쟁, 5·18민주화운동 명시",
+      },
+      {
+        label: "의결 정족수",
+        value: "재적의원 2/3 이상 (197명)",
+      },
+      {
+        label: "국민투표",
+        value: "6·3 지방선거와 동시 실시 추진",
+      },
+    ],
+    sources: [
+      {
+        title: "국힘 뺀 여야 6당 '국회 계엄 승인권' 담은 개헌안 발의 착수 — 경향신문",
+        url: "https://www.khan.co.kr/article/202603312020005/",
+      },
+      {
+        title: "여야 6당, 내일 개헌안 발의…국힘 '이탈표' 관건 — 헤럴드경제",
+        url: "https://biz.heraldcorp.com/article/10708980",
+      },
+    ],
+    active: true,
+  },
+  {
     id: "2026-04-02-supplementary-budget",
     title: "이재명 대통령, 26.2조 원 '전쟁 추경' 국회 시정연설",
     description:
