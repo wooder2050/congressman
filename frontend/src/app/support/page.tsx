@@ -52,10 +52,10 @@ export default function SupportPage() {
           <div className="rounded-lg border border-(--color-border-primary) bg-(--color-bg-secondary) p-4">
             <h3 className="text-sm font-semibold">이메일 문의</h3>
             <a
-              href="mailto:support@lawmake.kr"
+              href="mailto:lawmake.official@gmail.com"
               className="mt-1 block text-sm text-(--color-primary) no-underline hover:underline"
             >
-              support@lawmake.kr
+              lawmake.official@gmail.com
             </a>
           </div>
           <div className="rounded-lg border border-(--color-border-primary) bg-(--color-bg-secondary) p-4">
