@@ -2,6 +2,43 @@ import type { BreakingNewsItem } from "./types";
 
 const breakingNews: BreakingNewsItem[] = [
   {
+    id: "2026-04-05-supplementary-budget-vote",
+    title: "26.2조 '전쟁 추경' 4월 10일 본회의 처리 — 예결위 심사 돌입",
+    description:
+      "여야가 합의한 일정에 따라 4월 7~8일 예결위 종합정책질의 및 부별 심사를 거쳐 4월 10일 본회의에서 26.2조 원 규모의 추경안을 처리합니다. 소득 하위 70% 국민 약 3,580만 명에게 1인당 10만~60만 원의 고유가 피해지원금이 지급될 예정입니다.",
+    date: "2026-04-05",
+    category: "legislation",
+    items: [
+      {
+        label: "4/7~8",
+        value: "예결위 종합정책질의 · 부별 심사",
+      },
+      {
+        label: "4/10",
+        value: "본회의 추경안 합의 처리 예정",
+      },
+      {
+        label: "고유가 피해지원금",
+        value: "소득 하위 70%에 1인당 10만~60만 원",
+      },
+      {
+        label: "추경 규모",
+        value: "26.2조 원 (국채 발행 없이 초과 세수 활용)",
+      },
+    ],
+    sources: [
+      {
+        title: "국회 '전쟁 추경' 심사 속도…10일 본회의서 처리 전망 — 매일신문",
+        url: "https://www.imaeil.com/page/view/2026040217294516275",
+      },
+      {
+        title: "여야, 25조원 추경 추진…시정연설, 내달 10일까지 본회의 처리 — 헤럴드경제",
+        url: "https://biz.heraldcorp.com/article/10705960",
+      },
+    ],
+    active: true,
+  },
+  {
     id: "2026-04-03-constitutional-amendment",
     title: "여야 6당, 계엄 요건 강화 개헌안 발의 — 국민투표 추진",
     description:
@@ -28,15 +65,19 @@ const breakingNews: BreakingNewsItem[] = [
     ],
     sources: [
       {
+        title: "여야 6당, 개헌안 발의 착수…국힘은 불참 — 연합뉴스TV",
+        url: "https://www.youtube.com/watch?v=V_aark30f8o",
+      },
+      {
+        title: "39년 만에 국회에서 개헌안 발의…국회 문턱 넘을 수 있을까? — KBS",
+        url: "https://www.youtube.com/watch?v=OPLBCZg4754",
+      },
+      {
         title: "국힘 뺀 여야 6당 '국회 계엄 승인권' 담은 개헌안 발의 착수 — 경향신문",
         url: "https://www.khan.co.kr/article/202603312020005/",
       },
-      {
-        title: "여야 6당, 내일 개헌안 발의…국힘 '이탈표' 관건 — 헤럴드경제",
-        url: "https://biz.heraldcorp.com/article/10708980",
-      },
     ],
-    active: true,
+    active: false,
   },
   {
     id: "2026-04-02-supplementary-budget",
