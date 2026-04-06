@@ -2,11 +2,48 @@ import type { BreakingNewsItem } from "./types";
 
 const breakingNews: BreakingNewsItem[] = [
   {
-    id: "2026-04-05-supplementary-budget-vote",
-    title: "26.2조 '전쟁 추경' 4월 10일 본회의 처리 — 예결위 심사 돌입",
+    id: "2026-04-06-constitutional-amendment-cabinet",
+    title: "개헌안 국무회의 의결 — 20일 공고 후 국회 표결·국민투표 수순",
     description:
-      "여야가 합의한 일정에 따라 4월 7~8일 예결위 종합정책질의 및 부별 심사를 거쳐 4월 10일 본회의에서 26.2조 원 규모의 추경안을 처리합니다. 소득 하위 70% 국민 약 3,580만 명에게 1인당 10만~60만 원의 고유가 피해지원금이 지급될 예정입니다.",
-    date: "2026-04-05",
+      "이재명 대통령이 4월 6일 국무회의에서 헌법 개정안 공고안을 의결했습니다. 여야 6당이 발의한 개헌안은 대통령의 비상계엄 선포에 대한 국회 통제를 강화하고, 헌법 전문에 5·18민주화운동·부마항쟁 정신을 명시하는 내용입니다. 20일 이상 공고 후 5월 10일까지 국회 본회의 가결이 필요하며, 6·3 지방선거와 동시 국민투표를 추진합니다.",
+    date: "2026-04-06",
+    category: "politics",
+    items: [
+      {
+        label: "국무회의 의결",
+        value: "4/6 개헌안 공고안 의결 완료",
+      },
+      {
+        label: "국회 의결 시한",
+        value: "5월 10일까지 본회의 가결 필요",
+      },
+      {
+        label: "의결 정족수",
+        value: "재적의원 2/3 이상 (197명) — 국민의힘 최소 10표 이탈 필요",
+      },
+      {
+        label: "국민투표",
+        value: "6·3 지방선거와 동시 실시 추진",
+      },
+    ],
+    sources: [
+      {
+        title: "'6·3 지방선거 동시 개헌 국민투표' 공고안, 국무회의 의결 — 경향신문",
+        url: "https://www.khan.co.kr/article/202604061310001",
+      },
+      {
+        title: "4월 국회 시작…추경·개헌 몰아치는 與 — 헤럴드경제",
+        url: "https://biz.heraldcorp.com/article/10709638",
+      },
+    ],
+    active: true,
+  },
+  {
+    id: "2026-04-06-supplementary-budget-review",
+    title: "26.2조 추경 예결위 심사 D-1 — 여야 '현금지원 vs 선별지원' 격돌 예고",
+    description:
+      "4월 7~8일 예결위 종합정책질의와 부별 심사가 시작됩니다. 여당은 고유가 피해지원금이 민생 방파제이자 소비 진작 효과가 있다고 강조하는 반면, 국민의힘은 약 4.8조 원 규모 피해지원금을 '선거용 현금 살포'로 규정하며 송곳 검증을 예고했습니다. 10일 본회의 처리가 목표입니다.",
+    date: "2026-04-06",
     category: "legislation",
     items: [
       {
@@ -18,8 +55,8 @@ const breakingNews: BreakingNewsItem[] = [
         value: "본회의 추경안 합의 처리 예정",
       },
       {
-        label: "고유가 피해지원금",
-        value: "소득 하위 70%에 1인당 10만~60만 원",
+        label: "핵심 쟁점",
+        value: "고유가 피해지원금 4.8조 원 — 여 '민생 방파제' vs 야 '선거 매표'",
       },
       {
         label: "추경 규모",
@@ -28,12 +65,12 @@ const breakingNews: BreakingNewsItem[] = [
     ],
     sources: [
       {
-        title: "국회 '전쟁 추경' 심사 속도…10일 본회의서 처리 전망 — 매일신문",
-        url: "https://www.imaeil.com/page/view/2026040217294516275",
+        title: "국회, 금주 26.2조 추경안 심사… 여야 격돌 예고 — 천지일보",
+        url: "https://www.newscj.com/news/articleView.html?idxno=3391438",
       },
       {
-        title: "여야, 25조원 추경 추진…시정연설, 내달 10일까지 본회의 처리 — 헤럴드경제",
-        url: "https://biz.heraldcorp.com/article/10705960",
+        title: "추경 26조 앞두고 여야 정면충돌…'현금지원 vs 선별지원' 격돌 — 경북일보",
+        url: "https://www.kyongbuk.co.kr/news/articleView.html?idxno=4069075",
       },
     ],
     active: true,
