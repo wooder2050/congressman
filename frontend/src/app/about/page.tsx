@@ -178,6 +178,36 @@ export default function AboutPage() {
         </div>
       </section>
 
+      {/* 데이터 갱신 주기 */}
+      <section className="space-y-4">
+        <h2 className="text-2xl font-bold">데이터 갱신 주기</h2>
+        <div className="space-y-3 rounded-xl border border-(--color-border-primary) bg-(--color-bg-primary) p-5">
+          <p className="text-sm leading-relaxed text-(--color-text-secondary)">
+            lawmake.kr의 데이터는 국회 열린국회정보 API를 통해 주기적으로 자동 갱신됩니다.
+          </p>
+          <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+            {[
+              { label: "법안 발의 현황", cycle: "매일" },
+              { label: "본회의 표결 결과", cycle: "매일" },
+              { label: "의원별 투표 내역", cycle: "매일" },
+              { label: "출석 통계", cycle: "매일" },
+              { label: "국회 일정", cycle: "매일" },
+              { label: "의원 정보·사진", cycle: "매주" },
+              { label: "위원회 회의록", cycle: "매주" },
+              { label: "주간 국회 뉴스", cycle: "매주" },
+            ].map((item) => (
+              <div
+                key={item.label}
+                className="flex items-center justify-between rounded-lg bg-(--color-bg-secondary) px-3 py-2"
+              >
+                <span className="text-sm text-(--color-text-secondary)">{item.label}</span>
+                <span className="text-xs font-semibold text-(--color-primary)">{item.cycle}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* 오픈소스 */}
       <section className="space-y-4">
         <h2 className="text-2xl font-bold">오픈소스 프로젝트</h2>
@@ -209,7 +239,46 @@ export default function AboutPage() {
                 GitHub Issues
               </a>
             </li>
+            <li>
+              문의:{" "}
+              <a
+                href="mailto:lawmake.official@gmail.com"
+                className="font-semibold text-(--color-primary) underline"
+              >
+                lawmake.official@gmail.com
+              </a>
+            </li>
           </ul>
+        </div>
+      </section>
+
+      {/* 교육 콘텐츠 안내 */}
+      <section className="space-y-4">
+        <h2 className="text-2xl font-bold">국회를 더 잘 이해하고 싶다면</h2>
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
+          <Link
+            href="/guide"
+            className="rounded-xl border border-(--color-border-primary) bg-(--color-bg-primary) p-4 no-underline transition-colors hover:bg-(--color-bg-secondary)"
+          >
+            <h3 className="text-sm font-bold text-(--color-text-primary)">입법 과정 안내</h3>
+            <p className="mt-1 text-xs text-(--color-text-tertiary)">법안이 만들어지는 과정</p>
+          </Link>
+          <Link
+            href="/guide/roles"
+            className="rounded-xl border border-(--color-border-primary) bg-(--color-bg-primary) p-4 no-underline transition-colors hover:bg-(--color-bg-secondary)"
+          >
+            <h3 className="text-sm font-bold text-(--color-text-primary)">국회의원의 역할</h3>
+            <p className="mt-1 text-xs text-(--color-text-tertiary)">4대 역할과 국회 운영</p>
+          </Link>
+          <Link
+            href="/guide/budget"
+            className="rounded-xl border border-(--color-border-primary) bg-(--color-bg-primary) p-4 no-underline transition-colors hover:bg-(--color-bg-secondary)"
+          >
+            <h3 className="text-sm font-bold text-(--color-text-primary)">
+              세금은 어떻게 쓰이나요?
+            </h3>
+            <p className="mt-1 text-xs text-(--color-text-tertiary)">국가 예산과 국회의 역할</p>
+          </Link>
         </div>
       </section>
 
