@@ -163,16 +163,17 @@ export default function BillDetailInner({ id }: BillDetailInnerProps) {
             (() => {
               const s = bill.structuredSummary as BillStructuredSummary;
               const items = [
-                { label: "현재 상황", value: s.situation },
-                { label: "문제점", value: s.problem },
-                { label: "개정 내용", value: s.change },
-                { label: "기대 효과", value: s.impact },
+                { label: "현재 상황", emoji: "📋", value: s.situation },
+                { label: "문제점", emoji: "⚠️", value: s.problem },
+                { label: "개정 내용", emoji: "📝", value: s.change },
+                { label: "기대 효과", emoji: "✅", value: s.impact },
               ];
               return (
                 <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                   {items.map((item) => (
-                    <div key={item.label} className="rounded-lg bg-(--color-bg-secondary) p-3">
-                      <dt className="mb-1 text-xs font-semibold text-(--color-text-tertiary)">
+                    <div key={item.label} className="rounded-lg bg-(--color-bg-secondary) p-3.5">
+                      <dt className="mb-1.5 flex items-center gap-1.5 text-xs font-bold text-(--color-text-tertiary)">
+                        <span>{item.emoji}</span>
                         {item.label}
                       </dt>
                       <dd className="text-sm leading-relaxed text-(--color-text-secondary)">
