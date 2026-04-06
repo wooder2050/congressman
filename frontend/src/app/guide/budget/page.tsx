@@ -232,7 +232,7 @@ export default function BudgetGuidePage() {
         <h2 className="text-lg font-bold">더 알아보기</h2>
         <div className="mt-3 flex flex-wrap gap-2">
           <Link
-            href="/guide/national-assembly"
+            href="/guide/roles"
             className="rounded-lg border border-(--color-border-primary) bg-(--color-bg-primary) px-4 py-2 text-sm font-medium text-(--color-text-primary) no-underline transition-colors hover:bg-(--color-bg-secondary)"
           >
             국회의원은 무엇을 하나요?
