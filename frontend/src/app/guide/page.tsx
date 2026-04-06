@@ -314,6 +314,35 @@ export default function GuidePage() {
         </div>
       </section>
 
+      {/* 더 알아보기 */}
+      <section className="space-y-4">
+        <h2 className="text-2xl font-bold">더 알아보기</h2>
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+          <Link
+            href="/guide/roles"
+            className="rounded-xl border border-(--color-border-primary) bg-(--color-bg-primary) p-5 no-underline transition-colors hover:bg-(--color-bg-secondary)"
+          >
+            <h3 className="text-base font-bold text-(--color-text-primary)">
+              국회의원은 무엇을 하나요?
+            </h3>
+            <p className="mt-2 text-sm leading-relaxed text-(--color-text-secondary)">
+              국회의원의 4대 역할, 국회 운영 방식, 국회의원의 하루를 알아봅니다.
+            </p>
+          </Link>
+          <Link
+            href="/guide/budget"
+            className="rounded-xl border border-(--color-border-primary) bg-(--color-bg-primary) p-5 no-underline transition-colors hover:bg-(--color-bg-secondary)"
+          >
+            <h3 className="text-base font-bold text-(--color-text-primary)">
+              세금은 어떻게 쓰이나요?
+            </h3>
+            <p className="mt-2 text-sm leading-relaxed text-(--color-text-secondary)">
+              국가 예산의 구성, 편성 과정, 국회의 심의·확정 역할을 알아봅니다.
+            </p>
+          </Link>
+        </div>
+      </section>
+
       {/* CTA */}
       <section className="rounded-xl border border-(--color-border-primary) bg-(--color-bg-secondary) p-6">
         <h2 className="text-lg font-bold text-(--color-text-primary)">직접 확인해 보세요</h2>
