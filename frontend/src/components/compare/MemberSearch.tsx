@@ -11,6 +11,8 @@ interface MemberSearchProps {
   selectedIds: string[];
   onSelect: (member: MemberWithTerm) => void;
   maxMembers: number;
+  placeholder?: string;
+  disabled?: boolean;
 }
 
 export default function MemberSearch({
@@ -18,6 +20,8 @@ export default function MemberSearch({
   selectedIds,
   onSelect,
   maxMembers,
+  placeholder: customPlaceholder,
+  disabled: externalDisabled,
 }: MemberSearchProps) {
   const [query, setQuery] = useState("");
   const [open, setOpen] = useState(false);
@@ -43,7 +47,7 @@ export default function MemberSearch({
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  const atMax = selectedIds.length >= maxMembers;
+  const atMax = externalDisabled ?? selectedIds.length >= maxMembers;
 
   return (
     <div ref={wrapperRef} className="relative">
@@ -55,9 +59,13 @@ export default function MemberSearch({
           setOpen(true);
         }}
         onFocus={() => setOpen(true)}
-        placeholder={atMax ? `최대 ${maxMembers}명까지 비교 가능` : "의원 이름 또는 지역구 검색"}
+        placeholder={
+          atMax
+            ? `최대 ${maxMembers}명까지 비교 가능`
+            : (customPlaceholder ?? "의원 이름 또는 지역구 검색")
+        }
         disabled={atMax}
-        className="w-full rounded-xl border border-(--color-border-primary) bg-(--color-bg-primary) px-4 py-3 text-base text-(--color-text-primary) transition-colors outline-none placeholder:text-(--color-text-tertiary) focus:border-(--color-primary) disabled:opacity-50"
+        className="w-full rounded-xl border border-(--color-border-primary) bg-(--color-bg-primary) px-4 py-2.5 text-sm text-(--color-text-primary) transition-colors outline-none placeholder:text-(--color-text-tertiary) focus:border-(--color-primary) disabled:opacity-50"
       />
 
       {open && filtered.length > 0 && (
@@ -70,7 +78,7 @@ export default function MemberSearch({
                 setQuery("");
                 setOpen(false);
               }}
-              className="flex w-full items-center gap-3 px-4 py-3 text-left transition-colors hover:bg-(--color-bg-secondary)"
+              className="flex w-full items-center gap-3 px-4 py-2.5 text-left transition-colors hover:bg-(--color-bg-secondary)"
             >
               <MemberAvatar
                 photoUrl={m.photoUrl}
