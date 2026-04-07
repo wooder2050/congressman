@@ -4,9 +4,9 @@ import CompareInner from "@/components/compare/CompareInner";
 import CompareSkeleton from "@/components/compare/CompareSkeleton";
 
 export const metadata: Metadata = {
-  title: "국회의원 비교 - 출석률·법안 발의·표결 기록 비교",
+  title: "국회의원 1:1 비교 - 출석률·법안 발의·표결 기록 대결",
   description:
-    "국회의원 최대 4명의 의정활동을 나란히 비교해보세요. 출석률, 법안 발의 건수, 본회의 표결 참여율, 재산 현황까지 한눈에 비교할 수 있습니다.",
+    "두 국회의원의 의정활동을 1:1로 비교해보세요. 출석률, 법안 발의 건수, 본회의 표결 참여율을 개표 방송처럼 한눈에 비교할 수 있습니다.",
   alternates: { canonical: "https://www.lawmake.kr/compare" },
 };
 
@@ -21,10 +21,10 @@ export default async function ComparePage({ searchParams }: ComparePageProps) {
 
   return (
     <div className="mx-auto max-w-7xl">
-      <div className="mb-4">
-        <h1 className="text-2xl font-bold">의원 비교</h1>
-        <p className="mt-1 text-sm text-(--color-text-tertiary)">
-          의원의 의정활동을 나란히 비교해보세요.
+      <div className="mb-6">
+        <h1 className="text-3xl font-black sm:text-4xl">의원 1:1 비교</h1>
+        <p className="mt-2 text-sm text-(--color-text-tertiary) sm:text-base">
+          두 의원의 의정활동을 개표 방송처럼 비교해보세요.
         </p>
       </div>
       <CongressWrapper key={termId} fallback={<CompareSkeleton />}>
