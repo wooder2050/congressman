@@ -39,38 +39,38 @@ const breakingNews: BreakingNewsItem[] = [
     active: true,
   },
   {
-    id: "2026-04-06-supplementary-budget-review",
-    title: "26.2조 추경 예결위 심사 D-1 — 여야 '현금지원 vs 선별지원' 격돌 예고",
+    id: "2026-04-07-supplementary-budget-review",
+    title: "26.2조 추경 예결위 심사 돌입 — 10일 본회의 처리 목표",
     description:
-      "4월 7~8일 예결위 종합정책질의와 부별 심사가 시작됩니다. 여당은 고유가 피해지원금이 민생 방파제이자 소비 진작 효과가 있다고 강조하는 반면, 국민의힘은 약 4.8조 원 규모 피해지원금을 '선거용 현금 살포'로 규정하며 송곳 검증을 예고했습니다. 10일 본회의 처리가 목표입니다.",
-    date: "2026-04-06",
+      "국회 예결위가 7일부터 26.2조 원 규모 추경안에 대한 종합정책질의에 돌입했습니다. 여당은 '전쟁 추경으로 경제 골든타임 사수'를 강조하는 반면, 국민의힘은 '6·3 지방선거를 앞둔 선거용 추경'이라며 정면 반박하고 있습니다. 9일 조정소위, 10일 본회의 처리가 목표입니다.",
+    date: "2026-04-07",
     category: "legislation",
     items: [
       {
         label: "4/7~8",
-        value: "예결위 종합정책질의 · 부별 심사",
+        value: "예결위 종합정책질의 진행 중",
+      },
+      {
+        label: "4/9",
+        value: "예산안 조정소위원회 세부 심의",
       },
       {
         label: "4/10",
-        value: "본회의 추경안 합의 처리 예정",
+        value: "본회의 추경안 처리 목표",
       },
       {
         label: "핵심 쟁점",
-        value: "고유가 피해지원금 4.8조 원 — 여 '민생 방파제' vs 야 '선거 매표'",
-      },
-      {
-        label: "추경 규모",
-        value: "26.2조 원 (국채 발행 없이 초과 세수 활용)",
+        value: "고유가 피해지원금 4.8조 원 — 여 '민생 골든타임' vs 야 '선거용 현금 살포'",
       },
     ],
     sources: [
       {
-        title: "국회, 금주 26.2조 추경안 심사… 여야 격돌 예고 — 천지일보",
-        url: "https://www.newscj.com/news/articleView.html?idxno=3391438",
+        title: "예결위 추경 심사 돌입…與 '민생 골든타임' vs 野 '선거용 정책' — 아주경제",
+        url: "https://www.ajunews.com/view/20260407110945703",
       },
       {
-        title: "추경 26조 앞두고 여야 정면충돌…'현금지원 vs 선별지원' 격돌 — 경북일보",
-        url: "https://www.kyongbuk.co.kr/news/articleView.html?idxno=4069075",
+        title: "'전쟁 추경' 심사 돌입…진성준 예결위원장 '그야말로 경제 비상사태' — 헤럴드경제",
+        url: "https://biz.heraldcorp.com/article/10711494",
       },
     ],
     active: true,
