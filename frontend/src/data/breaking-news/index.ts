@@ -2,6 +2,47 @@ import type { BreakingNewsItem } from "./types";
 
 const breakingNews: BreakingNewsItem[] = [
   {
+    id: "2026-04-09-supplementary-budget-final",
+    title: "추경 31.4조 → 감액 심사 중 — 내일 본회의 의결 예정",
+    description:
+      "예결위 조정소위(9일)가 상임위 증액분에 대한 감액 심사를 진행하고 있습니다. 정부 원안 26.2조 원이 상임위 심사 과정에서 31.4조 원으로 5.2조 원 증액되었으며, '전쟁 추경과 무관한 끼워넣기 예산'이라는 비판 속에 중국인 관광객 짐 캐리 지원(25억), 프로스포츠 관람권(200억), 베란다 태양광(475억) 등이 삭감 대상으로 거론되고 있습니다. 10일 예결위 전체회의와 본회의에서 최종 의결될 예정입니다.",
+    date: "2026-04-09",
+    category: "legislation",
+    items: [
+      {
+        label: "4/9 조정소위",
+        value: "상임위 증액분 감액 심사 진행",
+      },
+      {
+        label: "증액 규모",
+        value: "26.2조 → 31.4조 (8개 상임위에서 +5.2조)",
+      },
+      {
+        label: "주요 감액 대상",
+        value: "짐 캐리 지원 25억·프로스포츠 관람권 200억·베란다 태양광 475억·TBS 49억 등",
+      },
+      {
+        label: "4/10",
+        value: "예결위 전체회의 + 본회의 최종 의결 예정",
+      },
+    ],
+    sources: [
+      {
+        title: "'전쟁 추경' 처리 임박..\"증액이냐 감액이냐\" 기로에 — 파이낸셜뉴스",
+        url: "https://www.fnnews.com/news/202604091511508387",
+      },
+      {
+        title: "전쟁 추경이라는데 수상한 '끼워넣기'…예결위 '칼질' 기로 — 헤럴드경제",
+        url: "https://biz.heraldcorp.com/article/10713416",
+      },
+      {
+        title: "'전쟁추경'이라더니 곳곳에 끼워넣기 예산…국회 삭감 주목 — 헤럴드경제",
+        url: "https://biz.heraldcorp.com/article/10713499",
+      },
+    ],
+    active: true,
+  },
+  {
     id: "2026-04-06-constitutional-amendment-cabinet",
     title: "개헌안 국무회의 의결 — 20일 공고 후 국회 표결·국민투표 수순",
     description:
@@ -73,7 +114,7 @@ const breakingNews: BreakingNewsItem[] = [
         url: "https://www.khan.co.kr/article/202604070820001/",
       },
     ],
-    active: true,
+    active: false,
   },
   {
     id: "2026-04-03-constitutional-amendment",
