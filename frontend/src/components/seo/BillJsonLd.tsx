@@ -13,11 +13,16 @@ export default async function BillJsonLd({ id }: BillJsonLdProps) {
     <JsonLd
       data={{
         "@context": "https://schema.org",
-        "@type": "LegislationObject",
+        "@type": "Legislation",
         name: bill.title,
-        legislationDate: bill.proposedDate || undefined,
+        dateCreated: bill.proposedDate || undefined,
         description: bill.summary || `${bill.proposerName} 외 ${bill.coProposerCount}인 발의`,
         url: `https://www.lawmake.kr/bills/${id}`,
+        legislationIdentifier: id,
+        legislationPassedBy: {
+          "@type": "GovernmentOrganization",
+          name: "대한민국 국회",
+        },
         author: {
           "@type": "Person",
           name: bill.proposerName,

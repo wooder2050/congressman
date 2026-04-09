@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import type { Metadata } from "next";
 import { getWeeklyArticle, getWeeklyArticleIds } from "@/data/weekly";
+import JsonLd from "@/components/seo/JsonLd";
 
 const STATUS_LABEL: Record<string, { text: string; className: string }> = {
   passed: {
@@ -111,8 +112,31 @@ export default async function WeeklyArticlePage({ params }: Props) {
   const youtubeSources = (bill.sources ?? []).filter((s) => s.type === "youtube");
   const articleSources = (bill.sources ?? []).filter((s) => s.type === "article");
 
+  const articleUrl = `https://www.lawmake.kr/weekly/${id}/${decodedSlug}`;
+
   return (
     <div className="mx-auto max-w-2xl px-4 py-8">
+      <JsonLd
+        data={{
+          "@context": "https://schema.org",
+          "@type": "NewsArticle",
+          headline: bill.title,
+          description: bill.description,
+          datePublished: weeklyArticle.publishedDate,
+          url: articleUrl,
+          author: {
+            "@type": "Organization",
+            name: "lawmake",
+            url: "https://www.lawmake.kr",
+          },
+          publisher: {
+            "@type": "Organization",
+            name: "lawmake",
+            url: "https://www.lawmake.kr",
+          },
+          mainEntityOfPage: articleUrl,
+        }}
+      />
       {/* 네비게이션 */}
       <Link
         href={`/weekly/${id}`}
