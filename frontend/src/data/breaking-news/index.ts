@@ -2,6 +2,47 @@ import type { BreakingNewsItem } from "./types";
 
 const breakingNews: BreakingNewsItem[] = [
   {
+    id: "2026-04-10-supplementary-budget-passed",
+    title: "26.2조 '전쟁 추경' 여야 합의 — 오늘 밤 본회의 처리",
+    description:
+      "여야가 4월 10일 26.2조 원 규모의 추가경정예산안에 최종 합의했습니다. 상임위에서 5.2조 원 증액된 31.4조 원을 '감액 내 증액' 방식으로 정부 원안 규모를 유지했습니다. 고유가 피해지원금(소득 하위 70%, 10만~60만 원)은 원안 그대로 확정되었으며, K패스 50% 할인(1,000억), 농업 유가 보조금(2,000억), 나프타 수급 안정(2,000억) 등이 신규 반영되었습니다. 국채 발행 없이 초과 세수로 재원을 마련하는 역대 가장 빠른 추경입니다.",
+    date: "2026-04-10",
+    category: "legislation",
+    items: [
+      {
+        label: "최종 규모",
+        value: "26.2조 원 (정부 원안 유지, 감액 내 증액)",
+      },
+      {
+        label: "고유가 피해지원금",
+        value: "소득 하위 70% · 1인당 10만~60만 원 · 4월 말 지급 시작",
+      },
+      {
+        label: "신규 반영",
+        value: "K패스 50% 할인 1,000억·농업 유가 보조금 2,000억·나프타 수급 안정 2,000억",
+      },
+      {
+        label: "본회의",
+        value: "오늘(4/10) 밤 10시 처리 예정",
+      },
+    ],
+    sources: [
+      {
+        title: "여야, 26.2조 추경 최종 합의…'소득하위 70% 유가 지원·K패스 반값' — 뉴스핌",
+        url: "https://www.newspim.com/news/view/20260410000843",
+      },
+      {
+        title: "여야, 추경 최종 합의…정부안 26.2조원 유지 — 헤럴드경제",
+        url: "https://biz.heraldcorp.com/article/10714590",
+      },
+      {
+        title: "여야 '감액 내 증액' 26.2조 추경안 합의…오후 본회의 처리 — 파이낸셜뉴스",
+        url: "https://www.fnnews.com/news/202604101334124547",
+      },
+    ],
+    active: true,
+  },
+  {
     id: "2026-04-09-supplementary-budget-final",
     title: "추경 31.4조 → 감액 심사 중 — 내일 본회의 의결 예정",
     description:
@@ -40,7 +81,7 @@ const breakingNews: BreakingNewsItem[] = [
         url: "https://biz.heraldcorp.com/article/10713499",
       },
     ],
-    active: true,
+    active: false,
   },
   {
     id: "2026-04-06-constitutional-amendment-cabinet",
