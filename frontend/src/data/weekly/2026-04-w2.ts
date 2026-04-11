@@ -5,8 +5,7 @@ const article: WeeklyArticle = {
   title: "4월 2주차",
   period: "2026.04.07 ~ 04.11",
   publishedDate: "2026-04-12",
-  summary:
-    "26.2조 '전쟁 추경' 역대 최단기 국회 통과 — 개헌안 공고 20일 시작, 이탈표 30표 논란",
+  summary: "26.2조 '전쟁 추경' 역대 최단기 국회 통과 — 개헌안 공고 20일 시작, 이탈표 30표 논란",
   tags: ["전쟁 추경", "본회의 통과", "고유가 피해지원금", "개헌 공고", "이탈표"],
   stats: {
     billsPassed: 1,
@@ -38,20 +37,17 @@ const article: WeeklyArticle = {
       proposer: "정부",
       sources: [
         {
-          title:
-            "'26조 추경' 본회의 통과...소득하위 70% 지원금 / YTN",
+          title: "'26조 추경' 본회의 통과...소득하위 70% 지원금 / YTN",
           url: "https://www.youtube.com/watch?v=LaYRkp0UQiw",
           type: "youtube",
         },
         {
-          title:
-            "여야 \"26.2조 추경안 오늘(10일) 처리\"…'국민 70% 지원금' 유지 [9시 뉴스] / KBS",
+          title: "여야 \"26.2조 추경안 오늘(10일) 처리\"…'국민 70% 지원금' 유지 [9시 뉴스] / KBS",
           url: "https://www.youtube.com/watch?v=fQ2E9V9NMKM",
           type: "youtube",
         },
         {
-          title:
-            "26조 2천억 추경 본회의 통과… 여야 합의 무색한 '이탈표 30표' 논란 — 굿모닝충청",
+          title: "26조 2천억 추경 본회의 통과… 여야 합의 무색한 '이탈표 30표' 논란 — 굿모닝충청",
           url: "https://www.goodmorningcc.com/news/articleView.html?idxno=444458",
           type: "article",
         },
@@ -75,20 +71,17 @@ const article: WeeklyArticle = {
       ],
       sources: [
         {
-          title:
-            "'지방선거·개헌 동시투표' 급물살…국힘 이탈표 10명 나와야 / MBN",
+          title: "'지방선거·개헌 동시투표' 급물살…국힘 이탈표 10명 나와야 / MBN",
           url: "https://www.youtube.com/watch?v=oa6cviiW-rY",
           type: "youtube",
         },
         {
-          title:
-            "개헌안, 다시 국회로…'반대' 국힘 이탈표 나올까 / 연합뉴스TV",
+          title: "개헌안, 다시 국회로…'반대' 국힘 이탈표 나올까 / 연합뉴스TV",
           url: "https://www.youtube.com/watch?v=rG0jUUf1XIY",
           type: "youtube",
         },
         {
-          title:
-            "국민 61% \"지방선거 동시 개헌 국민투표 찬성\"…반대는 23% — 파이낸셜뉴스",
+          title: '국민 61% "지방선거 동시 개헌 국민투표 찬성"…반대는 23% — 파이낸셜뉴스',
           url: "https://www.fnnews.com/news/202604091232523103",
           type: "article",
         },
