@@ -2,6 +2,48 @@ import type { BreakingNewsItem } from "./types";
 
 const breakingNews: BreakingNewsItem[] = [
   {
+    id: "2026-04-11-supplementary-budget-execution",
+    title: "26.2조 추경 국무회의 의결 — 고유가 피해지원금 4/27 지급 시작",
+    description:
+      "4월 10일 밤 국회 본회의를 통과한 26.2조 원 추경안이 11일 국무회의에서 최종 의결되었습니다. 정부는 신속집행 대상 10.5조 원을 상반기 내 85% 이상 집행할 계획이며, 고유가 피해지원금(소득 하위 70%, 1인당 10만~60만 원)은 4월 27일부터 1차 지급을 시작합니다. K패스 50% 할인, 농업 유가 보조금, 나프타 수급 안정 등도 순차 집행됩니다.",
+    date: "2026-04-11",
+    category: "legislation",
+    items: [
+      {
+        label: "국무회의 의결",
+        value: "4/11 추경안 최종 의결 완료",
+      },
+      {
+        label: "고유가 피해지원금",
+        value: "1차 4/27~5/8 · 2차 5/18~7/3 · 소득 하위 70% 3,256만 명 대상",
+      },
+      {
+        label: "신속집행",
+        value: "10.5조 원 상반기 85% 이상 집행 목표",
+      },
+      {
+        label: "본회의 표결",
+        value: "찬성 214 · 반대 11 · 기권 19 (역대 최단 29일 처리)",
+      },
+    ],
+    sources: [
+      {
+        title:
+          "추경 신속집행 대상 10.5조, 상반기 85% 집행…고유가지원금 27일부터 지급 — 파이낸셜뉴스",
+        url: "https://www.fnnews.com/news/202604111230480193",
+      },
+      {
+        title: "정부, 26.2조 '전쟁 추경' 국무회의 의결…3256만명에 지급 — 서울신문",
+        url: "https://www.seoul.co.kr/news/politics/congress/2026/04/11/20260411500010",
+      },
+      {
+        title: "고유가 피해지원금 등 10조 5000억 신속 집행…상반기 내 85% 이상 — 정책브리핑",
+        url: "https://www.korea.kr/news/policyNewsView.do?newsId=148962498",
+      },
+    ],
+    active: true,
+  },
+  {
     id: "2026-04-10-supplementary-budget-passed",
     title: "26.2조 '전쟁 추경' 여야 합의 — 오늘 밤 본회의 처리",
     description:
@@ -23,7 +65,7 @@ const breakingNews: BreakingNewsItem[] = [
       },
       {
         label: "본회의",
-        value: "오늘(4/10) 밤 10시 처리 예정",
+        value: "4/10 밤 본회의 통과 (찬성 214·반대 11·기권 19)",
       },
     ],
     sources: [
@@ -40,7 +82,7 @@ const breakingNews: BreakingNewsItem[] = [
         url: "https://www.fnnews.com/news/202604101334124547",
       },
     ],
-    active: true,
+    active: false,
   },
   {
     id: "2026-04-09-supplementary-budget-final",
