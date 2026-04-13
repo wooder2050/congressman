@@ -126,6 +126,43 @@ const breakingNews: BreakingNewsItem[] = [
     active: false,
   },
   {
+    id: "2026-04-13-constitutional-amendment-d50",
+    title: "개헌 국민투표 D-50 — 국민의힘 이탈표 10명이 관건",
+    description:
+      "6·3 지방선거까지 50일, 개헌안 공고가 진행 중입니다. 4월 27일경 공고 기간이 만료되면 국회 표결이 가능해지며, 5월 4~10일 사이 본회의에서 재적의원 2/3(197명) 이상 찬성으로 가결되면 6·3 지방선거와 동시에 국민투표가 실시됩니다. 여야 6당 187명이 발의에 참여했으므로 국민의힘에서 최소 10명의 찬성이 필요하며, 김용태·조경태 의원이 호의적 입장을 밝히고 있습니다.",
+    date: "2026-04-13",
+    category: "politics",
+    items: [
+      {
+        label: "공고 기간",
+        value: "4/7~4/27 (20일간 공고 진행 중)",
+      },
+      {
+        label: "국회 표결",
+        value: "5월 4~10일 본회의 의결 필요 (197명 이상 찬성)",
+      },
+      {
+        label: "이탈표 동향",
+        value: "국민의힘 10명 필요 — 김용태·조경태 호의적, 당론은 반대",
+      },
+      {
+        label: "국민투표",
+        value: "6·3 지방선거 동시 실시 목표 (D-50)",
+      },
+    ],
+    sources: [
+      {
+        title: "[지선 D-50] 개헌 투표 이뤄질까…국힘 '10명 찬성'이 관건 — 파이낸셜뉴스",
+        url: "https://www.fnnews.com/news/202604120515541751",
+      },
+      {
+        title: "'6·3 지방선거 동시 개헌 국민투표' 공고안, 국무회의 의결 — 경향신문",
+        url: "https://www.khan.co.kr/article/202604061310001",
+      },
+    ],
+    active: true,
+  },
+  {
     id: "2026-04-06-constitutional-amendment-cabinet",
     title: "개헌안 국무회의 의결 — 20일 공고 후 국회 표결·국민투표 수순",
     description:
@@ -160,7 +197,7 @@ const breakingNews: BreakingNewsItem[] = [
         url: "https://biz.heraldcorp.com/article/10709638",
       },
     ],
-    active: true,
+    active: false,
   },
   {
     id: "2026-04-08-supplementary-budget-review",
