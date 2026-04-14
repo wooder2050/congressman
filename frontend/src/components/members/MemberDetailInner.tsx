@@ -14,7 +14,7 @@ import MemberDetailTabContent from "./MemberDetailTabs";
 const ActivityHeatmap = dynamic(() => import("./ActivityHeatmap"), {
   ssr: false,
   loading: () => (
-    <div className="flex h-[200px] items-center justify-center rounded-xl border border-(--color-border-primary) bg-(--color-bg-primary)">
+    <div className="flex h-50 items-center justify-center rounded-xl border border-(--color-border-primary) bg-(--color-bg-primary)">
       <span className="text-sm text-(--color-text-tertiary)">불러오는 중...</span>
     </div>
   ),

@@ -382,7 +382,7 @@ function MemberPropertyRow({
             <div className="text-base font-bold text-(--color-text-primary)">
               {formatPropertyAmount(m.maxSingleHousingAmount)}
             </div>
-            <div className="max-w-[160px] truncate text-xs text-(--color-text-tertiary)">
+            <div className="max-w-40 truncate text-xs text-(--color-text-tertiary)">
               {extractLocation(m.maxSingleHousingItem)}
             </div>
             <div className="text-xs text-(--color-text-tertiary)">{m.maxSingleHousingRelation}</div>
