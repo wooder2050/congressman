@@ -340,7 +340,7 @@ export default function ActivityHeatmap({
 
       {/* 히트맵 */}
       {isLoading ? (
-        <div className="flex h-[140px] items-center justify-center">
+        <div className="flex h-35 items-center justify-center">
           <div className="text-sm text-(--color-text-tertiary)">불러오는 중...</div>
         </div>
       ) : (

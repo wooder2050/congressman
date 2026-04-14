@@ -2,6 +2,45 @@ import type { BreakingNewsItem } from "./types";
 
 const breakingNews: BreakingNewsItem[] = [
   {
+    id: "2026-04-14-by-elections-mini-general",
+    title: "6·3 재보궐선거 '미니 총선' — 국회의원 최대 17석 교체",
+    description:
+      "6·3 지방선거와 동시에 치러지는 국회의원 재보궐선거가 역대 최다 규모로 확대되고 있습니다. 현재 대통령 당선·당선무효형 등으로 5곳이 확정되었고, 광역단체장 출마를 위해 추미애·박찬대·전재수·김상욱·이원택 의원이 사퇴를 예고해 5곳이 추가됩니다. 제주·충남·광주전남 등 경선이 진행 중인 지역에서 현역 의원이 후보로 확정되면 최대 17곳까지 늘어날 전망입니다. 의원직 사퇴 기한은 4월 30일입니다.",
+    date: "2026-04-14",
+    category: "election",
+    items: [
+      {
+        label: "확정 5곳",
+        value:
+          "인천 계양을(이재명 대통령)·충남 아산을(강훈식 비서실장)·경기 안산갑·평택을·전북 군산김제부안갑(당선무효)",
+      },
+      {
+        label: "사퇴 예정 5곳",
+        value:
+          "경기 하남갑(추미애)·인천 연수갑(박찬대)·부산 북구갑(전재수)·울산 남구갑(김상욱)·전북 군산김제부안을(이원택)",
+      },
+      {
+        label: "경선 진행 중",
+        value: "제주(위성곤·문대림 결선)·충남(박수현·양승조 결선)·광주전남(민형배·김영록 결선) 등",
+      },
+      {
+        label: "사퇴 기한",
+        value: "4월 30일까지 — 5월 1일 이후 사퇴 시 2027년 4월 보궐선거",
+      },
+    ],
+    sources: [
+      {
+        title: "전국 최대 17곳 의원 자리 빈다…'미니총선' 된 재보선 — 파이낸셜뉴스",
+        url: "https://www.fnnews.com/news/202604121823383932",
+      },
+      {
+        title: "최대 17곳 판 커진 '미니 총선'… 한동훈·조국 참전 생존 게임 — 디지털타임스",
+        url: "https://www.dt.co.kr/article/12056922",
+      },
+    ],
+    active: true,
+  },
+  {
     id: "2026-04-11-supplementary-budget-execution",
     title: "26.2조 추경 국무회의 의결 — 고유가 피해지원금 4/27 지급 시작",
     description:
@@ -41,7 +80,7 @@ const breakingNews: BreakingNewsItem[] = [
         url: "https://www.korea.kr/news/policyNewsView.do?newsId=148962498",
       },
     ],
-    active: true,
+    active: false,
   },
   {
     id: "2026-04-10-supplementary-budget-passed",

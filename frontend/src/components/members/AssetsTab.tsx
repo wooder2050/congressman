@@ -355,7 +355,7 @@ function MultiEntryTable({ item }: { item: string }) {
   return (
     <div className="mt-1.5">
       {hasPrefix && <p className="mb-1 text-xs font-medium text-(--color-text-tertiary)">{type}</p>}
-      <div className="divide-y divide-(--color-border-primary)/50 text-xs sm:text-sm">
+      <div className="divide-border-primary/50 divide-y text-xs sm:text-sm">
         {parsed.map((p, i) => (
           <div key={i} className="flex items-baseline justify-between gap-2 py-1 sm:py-1.5">
             <span className="min-w-0 shrink text-(--color-text-secondary)">{p.name}</span>
@@ -656,7 +656,7 @@ export default function AssetsTab({ memberId }: AssetsTabProps) {
     return (
       <div className="py-12 text-center">
         <p className="text-(--color-text-tertiary)">재산 신고 데이터가 없습니다.</p>
-        <p className="mt-1 text-sm text-(--color-text-tertiary)/60">
+        <p className="text-text-tertiary/60 mt-1 text-sm">
           초선 의원의 경우 다음 신고 기간 이후 공개될 수 있습니다.
         </p>
       </div>

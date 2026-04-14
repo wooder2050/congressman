@@ -58,7 +58,7 @@ export default function Pagination({ currentPage, totalPages, onPageChange }: Pa
       </Button>
 
       {/* 모바일: 간단 텍스트 */}
-      <span className="min-w-[4rem] text-center text-sm text-(--color-text-secondary) sm:hidden">
+      <span className="min-w-16 text-center text-sm text-(--color-text-secondary) sm:hidden">
         {currentPage} / {totalPages}
       </span>
 
