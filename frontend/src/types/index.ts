@@ -496,3 +496,60 @@ export interface ScorecardRankingItem {
 export interface ScorecardRankingResponse {
   rankings: ScorecardRankingItem[];
 }
+
+// ====== 재보궐선거 ======
+
+export interface ByElectionSummary {
+  id: string;
+  name: string;
+  electionDate: string;
+  status: "upcoming" | "active" | "completed";
+  districtCount: number;
+}
+
+export interface ByElectionDetail {
+  id: string;
+  name: string;
+  electionDate: string;
+  status: "upcoming" | "active" | "completed";
+  description: string;
+  districts: ElectionDistrictInfo[];
+}
+
+export interface ElectionDistrictInfo {
+  id: number;
+  district: string;
+  region: string;
+  vacancyReason: string;
+  confirmed: boolean;
+  status: string;
+  previousMember: {
+    id: string | null;
+    name: string;
+    photoUrl: string;
+    party: Party | null;
+  } | null;
+  candidates: ElectionCandidate[];
+}
+
+export interface CandidatePledge {
+  category: string;
+  title: string;
+  description: string;
+}
+
+export interface ElectionCandidate {
+  id: number;
+  name: string;
+  party: Party | null;
+  photoUrl: string | null;
+  birthDate: string | null;
+  career: string | null;
+  education: string | null;
+  slogan: string | null;
+  pledges: CandidatePledge[];
+  assets: string | null;
+  candidateNumber: number | null;
+  status: string;
+  memberIdRef: string | null;
+}

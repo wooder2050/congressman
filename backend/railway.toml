@@ -1,5 +1,5 @@
 [build]
-buildCommand = "npx prisma generate && npx nest build"
+buildCommand = "npx prisma db push --skip-generate && npx prisma generate && npx nest build"
 
 [deploy]
 startCommand = "node dist/main"

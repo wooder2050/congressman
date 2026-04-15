@@ -32,7 +32,9 @@ model Party {
   shortName String // "민주당"
   color     String // "#1B56DB"
 
-  memberTerms MemberTerm[]
+  memberTerms        MemberTerm[]
+  electionDistricts  ElectionDistrict[]
+  candidates         Candidate[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -46,10 +48,11 @@ model Member {
   electedCount Int     @default(1)
   career       String? // MEM_TITLE: 경력사항 텍스트 (줄바꿈 구분)
 
-  memberTerms   MemberTerm[]
-  memberVotes   MemberVote[]
-  assets        Asset[]
-  billProposers BillProposer[]
+  memberTerms       MemberTerm[]
+  memberVotes       MemberVote[]
+  assets            Asset[]
+  billProposers     BillProposer[]
+  electionDistricts ElectionDistrict[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -277,4 +280,69 @@ model SyncLog {
   errorMsg    String?
   startedAt   DateTime  @default(now())
   completedAt DateTime?
+}
+
+// ====== 재보궐선거 ======
+
+model ByElection {
+  id           String   @id // "2026-06-03"
+  name         String // "6·3 재보궐선거"
+  electionDate DateTime
+  description  String   @default("")
+  status       String   @default("upcoming") // upcoming | active | completed
+
+  districts ElectionDistrict[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model ElectionDistrict {
+  id                 Int     @id @default(autoincrement())
+  electionId         String
+  district           String // "인천 계양을" (MemberTerm.district 형식)
+  region             String  @default("") // "인천"
+  vacancyReason      String // "대통령 당선"
+  previousMemberId   String?
+  previousMemberName String  @default("")
+  previousPartyId    String?
+  confirmed          Boolean @default(true)
+  status             String  @default("upcoming")
+
+  election       ByElection @relation(fields: [electionId], references: [id])
+  previousMember Member?    @relation(fields: [previousMemberId], references: [id])
+  previousParty  Party?     @relation(fields: [previousPartyId], references: [id])
+  candidates     Candidate[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([electionId, district])
+  @@index([electionId])
+}
+
+model Candidate {
+  id              Int    @id @default(autoincrement())
+  districtId      Int
+  name            String
+  partyId         String?
+  photoUrl        String?
+  birthDate       String?
+  career          String? // 줄바꿈 구분
+  education       String?
+  slogan          String?
+  pledges         Json    @default("[]") // [{category, title, description}]
+  assets          String? // 재산 요약 텍스트
+  memberIdRef     String? // 기존 의원이면 Member.id 참조
+  candidateNumber Int? // 기호 번호
+  status          String  @default("registered")
+
+  district ElectionDistrict @relation(fields: [districtId], references: [id])
+  party    Party?           @relation(fields: [partyId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([districtId, name])
+  @@index([districtId])
 }

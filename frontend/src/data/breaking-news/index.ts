@@ -38,6 +38,7 @@ const breakingNews: BreakingNewsItem[] = [
         url: "https://www.fnnews.com/news/202604121823383932",
       },
     ],
+    linkUrl: "/elections/2026-06-03",
     active: true,
   },
   {
