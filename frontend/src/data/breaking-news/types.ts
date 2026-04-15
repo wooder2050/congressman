@@ -13,6 +13,8 @@ export interface BreakingNewsItem {
   items?: BreakingNewsDetail[];
   /** 관련 뉴스 출처 */
   sources?: { title: string; url: string }[];
+  /** 상세 페이지 링크 */
+  linkUrl?: string;
   /** 활성 여부 — false면 홈에서 숨김 */
   active: boolean;
 }

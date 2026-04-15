@@ -27,6 +27,8 @@ import type {
   PropertyStatsResponse,
   MemberScorecard,
   ScorecardRankingResponse,
+  ByElectionSummary,
+  ByElectionDetail,
 } from "@/types";
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL;
@@ -307,3 +309,16 @@ Object.defineProperty(getPropertyStats, "queryKey", { value: "propertyStats" });
 Object.defineProperty(getMemberScorecard, "queryKey", { value: "memberScorecard" });
 Object.defineProperty(getScorecardRanking, "queryKey", { value: "scorecardRanking" });
 Object.defineProperty(getLastSync, "queryKey", { value: "lastSync" });
+
+// ====== 재보궐선거 ======
+
+export async function getElections(): Promise<ByElectionSummary[]> {
+  return fetchApi("/api/elections");
+}
+
+export async function getElection(id: string): Promise<ByElectionDetail | null> {
+  return fetchApi(`/api/elections/${id}`);
+}
+
+Object.defineProperty(getElections, "queryKey", { value: "elections" });
+Object.defineProperty(getElection, "queryKey", { value: "election" });

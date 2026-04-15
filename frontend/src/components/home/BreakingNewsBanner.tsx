@@ -90,6 +90,18 @@ export default function BreakingNewsBanner() {
               </div>
             )}
 
+            {/* 상세 페이지 링크 */}
+            {item.linkUrl && (
+              <div className="border-t border-amber-200 px-4 py-2.5 sm:px-5 dark:border-amber-800/40">
+                <Link
+                  href={item.linkUrl}
+                  className="inline-flex items-center gap-1 rounded-lg bg-amber-600 px-3 py-1.5 text-xs font-semibold text-white no-underline transition-colors hover:bg-amber-700 dark:bg-amber-500 dark:hover:bg-amber-600"
+                >
+                  선거구·후보 자세히 보기 →
+                </Link>
+              </div>
+            )}
+
             {/* 출처 */}
             {item.sources && item.sources.length > 0 && (
               <div className="border-t border-amber-200 px-4 py-1.5 sm:px-5 dark:border-amber-800/40">
