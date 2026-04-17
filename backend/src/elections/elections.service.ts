@@ -42,8 +42,7 @@ export class ElectionsService {
       where: { id },
       include: {
         districts: {
-          where: { confirmed: true },
-          orderBy: { id: 'asc' },
+          orderBy: [{ confirmed: 'desc' }, { id: 'asc' }],
           include: {
             previousMember: true,
             previousParty: true,
