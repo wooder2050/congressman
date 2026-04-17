@@ -114,12 +114,68 @@ async function main() {
 
   console.log(`✅ 재보궐선거 시드 완료: 확정 ${confirmedDistricts.length}곳`);
 
+  // 3. 사퇴 예정 선거구 (경선 승리 확정, 의원직 사퇴 예정)
+  const pendingDistricts = [
+    {
+      electionId: '2026-06-03',
+      district: '경기 하남시갑',
+      region: '경기',
+      vacancyReason: '추미애 경기도지사 출마 사퇴',
+      previousMemberId: 'URV1689Q',
+      previousMemberName: '추미애',
+      previousPartyId: 'democratic',
+    },
+    {
+      electionId: '2026-06-03',
+      district: '부산 북구갑',
+      region: '부산',
+      vacancyReason: '전재수 부산시장 출마 사퇴',
+      previousMemberId: '9YO73104',
+      previousMemberName: '전재수',
+      previousPartyId: 'democratic',
+    },
+    {
+      electionId: '2026-06-03',
+      district: '충남 공주시부여군청양군',
+      region: '충남',
+      vacancyReason: '박수현 충남도지사 출마 사퇴',
+      previousMemberId: '5TQ6306B',
+      previousMemberName: '박수현',
+      previousPartyId: 'democratic',
+    },
+  ];
+
+  for (const d of pendingDistricts) {
+    const resolvedMemberId = await resolveMemberId(d.previousMemberId);
+    const resolvedPartyId = await resolvePartyId(d.previousPartyId);
+
+    const data = {
+      electionId: d.electionId,
+      district: d.district,
+      region: d.region,
+      vacancyReason: d.vacancyReason,
+      previousMemberId: resolvedMemberId,
+      previousMemberName: d.previousMemberName,
+      previousPartyId: resolvedPartyId,
+      confirmed: false,
+      status: 'upcoming',
+    };
+
+    await prisma.electionDistrict.upsert({
+      where: {
+        electionId_district: { electionId: d.electionId, district: d.district },
+      },
+      update: data,
+      create: data,
+    });
+  }
+
+  console.log(`✅ 사퇴 예정 선거구 시드 완료: ${pendingDistricts.length}곳`);
+
   // ──────────────────────────────────────────────
-  // 사퇴 예정 선거구 (확정 시 confirmed: true 로 변경)
+  // 추가 사퇴 예정 선거구 (경선 진행 중 또는 미확정)
   // ──────────────────────────────────────────────
-  // { district: '경기 하남시갑',          vacancyReason: '추미애 경기도지사 출마 사퇴',   previousMemberName: '추미애' }
   // { district: '인천 연수구갑',          vacancyReason: '박찬대 인천시장 출마 사퇴',     previousMemberName: '박찬대' }
-  // { district: '부산 북구갑',            vacancyReason: '전재수 부산시장 출마 사퇴',     previousMemberName: '전재수' }
   // { district: '울산 남구갑',            vacancyReason: '김상욱 울산시장 출마 사퇴',     previousMemberName: '김상욱' }
   // { district: '전북 군산시김제시부안군을', vacancyReason: '이원택 전북도지사 출마 사퇴',  previousMemberName: '이원택' }
   // ──────────────────────────────────────────────

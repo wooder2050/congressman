@@ -2,11 +2,11 @@ import type { BreakingNewsItem } from "./types";
 
 const breakingNews: BreakingNewsItem[] = [
   {
-    id: "2026-04-16-by-elections-schedule",
+    id: "2026-04-17-by-elections-schedule",
     title: "재보궐선거 17일 선거구획정 처리 — 29~30일 출마 의원 사퇴",
     description:
       "여야가 17일 본회의에서 재보궐선거 선거구획정과 정치개혁 법안을 처리하기로 합의했습니다. 4월 임시국회는 28일까지 운영하고, 29~30일에 지방선거 광역단체장 출마 의원들의 사직을 처리합니다. 추미애(경기도지사)·전재수(부산시장)·박수현(충남도지사) 경선 승리로 사퇴 예정 선거구가 구체화되고 있으며, 최대 17곳까지 확대될 전망입니다.",
-    date: "2026-04-16",
+    date: "2026-04-17",
     category: "election",
     items: [
       {
@@ -166,11 +166,11 @@ const breakingNews: BreakingNewsItem[] = [
     active: false,
   },
   {
-    id: "2026-04-15-constitutional-amendment-d47",
+    id: "2026-04-17-constitutional-amendment-d47",
     title: "개헌 국민투표 D-47 — 예비비 196억 의결, 국민의힘 이탈표 관건",
     description:
       "정부가 4월 14일 국무회의에서 개헌 국민투표 준비를 위한 예비비 196억 원을 의결했습니다. 재외국민·선상투표 명부 작성 등 사전 준비에 투입됩니다. 4월 27일 공고 기간 만료 후 5월 4~10일 사이 본회의에서 재적의원 2/3(197명) 이상 찬성으로 가결되면 6·3 지방선거와 동시에 국민투표가 실시됩니다. 여야 6당 187명이 발의에 참여했으므로 국민의힘에서 최소 10명의 찬성이 필요하며, 김용태·조경태 의원이 호의적 입장을 밝히고 있습니다.",
-    date: "2026-04-15",
+    date: "2026-04-17",
     category: "politics",
     items: [
       {
