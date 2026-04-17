@@ -38,9 +38,16 @@ export default function DistrictSection({ district }: { district: ElectionDistri
               <span>{district.vacancyReason}</span>
             </div>
           </div>
-          <span className="shrink-0 rounded-md bg-(--color-bg-secondary) px-2 py-1 text-xs font-medium text-(--color-text-tertiary)">
-            {district.region}
-          </span>
+          <div className="flex shrink-0 flex-col items-end gap-1">
+            {!district.confirmed && (
+              <span className="rounded-md bg-amber-100 px-2 py-0.5 text-[10px] font-bold text-amber-700 dark:bg-amber-900/40 dark:text-amber-300">
+                사퇴 예정
+              </span>
+            )}
+            <span className="rounded-md bg-(--color-bg-secondary) px-2 py-1 text-xs font-medium text-(--color-text-tertiary)">
+              {district.region}
+            </span>
+          </div>
         </div>
 
         {/* 전임 의원 */}
