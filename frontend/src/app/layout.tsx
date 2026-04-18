@@ -65,6 +65,12 @@ export default function RootLayout({
           rel="stylesheet"
           href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css"
         />
+        <link
+          rel="alternate"
+          type="application/rss+xml"
+          title="lawmake — 주간 국회 뉴스"
+          href="https://www.lawmake.kr/feed.xml"
+        />
         <JsonLd
           data={{
             "@context": "https://schema.org",
