@@ -1,5 +1,5 @@
 import { NextRequest } from "next/server";
-import { getBillIds, getVoteIds } from "@/lib/api";
+import { getBillIds, getVoteIds, getElections } from "@/lib/api";
 import { getAllWeeklyArticles } from "@/data/weekly";
 import { BASE, BILLS_PER_SITEMAP, xmlResponse, urlEntry, urlset } from "../route";
 
@@ -21,14 +21,12 @@ async function buildSitemap(id: number) {
       urlEntry(`${BASE}/compare`, { changefreq: "monthly", priority: 0.5 }),
       urlEntry(`${BASE}/committees`, { changefreq: "weekly", priority: 0.7 }),
       urlEntry(`${BASE}/guide`, { changefreq: "monthly", priority: 0.6 }),
+      urlEntry(`${BASE}/guide/roles`, { changefreq: "monthly", priority: 0.5 }),
+      urlEntry(`${BASE}/guide/budget`, { changefreq: "monthly", priority: 0.5 }),
       urlEntry(`${BASE}/glossary`, { changefreq: "monthly", priority: 0.5 }),
       urlEntry(`${BASE}/about`, { changefreq: "monthly", priority: 0.5 }),
       urlEntry(`${BASE}/members/property`, { changefreq: "weekly", priority: 0.7 }),
       urlEntry(`${BASE}/members/scorecard`, { changefreq: "daily", priority: 0.7 }),
-      urlEntry(`${BASE}/support`, { changefreq: "monthly", priority: 0.4 }),
-      urlEntry(`${BASE}/ads-policy`, { changefreq: "yearly", priority: 0.3 }),
-      urlEntry(`${BASE}/privacy`, { changefreq: "yearly", priority: 0.3 }),
-      urlEntry(`${BASE}/terms`, { changefreq: "yearly", priority: 0.3 }),
       urlEntry(`${BASE}/weekly`, { changefreq: "weekly", priority: 0.8 }),
     ];
 
@@ -96,6 +94,18 @@ async function buildSitemap(id: number) {
               urlEntry(`${BASE}/committees/${encodeURIComponent(c.name)}`, {
                 changefreq: "weekly",
                 priority: 0.6,
+              }),
+            );
+          }
+        }
+
+        const elections = await getElections();
+        if (elections) {
+          for (const e of elections) {
+            entries.push(
+              urlEntry(`${BASE}/elections/${e.id}`, {
+                changefreq: "weekly",
+                priority: 0.7,
               }),
             );
           }

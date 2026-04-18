@@ -7,6 +7,7 @@ export const metadata: Metadata = {
   description:
     "국회의원 의정활동 정보 서비스(lawmake.kr)의 이용약관입니다. 서비스 이용 조건, 데이터 출처, 면책 사항 등을 안내합니다.",
   alternates: { canonical: "https://www.lawmake.kr/terms" },
+  robots: { index: false, follow: true },
 };
 
 export default function TermsPage() {

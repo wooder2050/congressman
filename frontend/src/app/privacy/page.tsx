@@ -6,6 +6,7 @@ export const metadata: Metadata = {
   description:
     "국회의원 의정활동 정보 서비스(lawmake.kr)의 개인정보처리방침입니다. 수집하는 개인정보 항목, 이용 목적, 보유 기간 등을 안내합니다.",
   alternates: { canonical: "https://www.lawmake.kr/privacy" },
+  robots: { index: false, follow: true },
 };
 
 export default function PrivacyPage() {
