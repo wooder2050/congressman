@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import JsonLd from "@/components/seo/JsonLd";
 import CongressWrapper from "@/common/CongressWrapper";
 import PageIntro from "@/components/ui/page-intro";
 import BillListInner from "@/components/bills/BillListInner";
@@ -28,6 +29,24 @@ export default async function BillsPage({ searchParams }: BillsPageProps) {
 
   return (
     <div className="mx-auto max-w-7xl">
+      <JsonLd
+        data={{
+          "@context": "https://schema.org",
+          "@type": "Dataset",
+          name: "22대 국회 발의 법안 데이터",
+          description:
+            "22대 국회 17,200건 이상의 발의 법안 목록. 법안 제목, 발의자, 심사 상태, AI 요약 포함",
+          url: "https://www.lawmake.kr/bills",
+          keywords: ["법안", "발의", "국회", "입법", "법률안"],
+          license: "https://www.data.go.kr/ugs/selectPublicDataUseGuide.do",
+          temporalCoverage: "2024-05-30/..",
+          creator: {
+            "@type": "Organization",
+            name: "lawmake.kr",
+            url: "https://www.lawmake.kr",
+          },
+        }}
+      />
       <div className="mb-4 space-y-3">
         <h1 className="text-2xl font-bold">법안 목록</h1>
         <PageIntro

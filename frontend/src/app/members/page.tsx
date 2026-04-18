@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import JsonLd from "@/components/seo/JsonLd";
 import CongressWrapper from "@/common/CongressWrapper";
 import PageIntro from "@/components/ui/page-intro";
 import DistrictFinder from "@/components/members/DistrictFinder";
@@ -30,6 +31,23 @@ export default async function MembersPage({ searchParams }: MembersPageProps) {
 
   return (
     <div className="mx-auto max-w-7xl space-y-6">
+      <JsonLd
+        data={{
+          "@context": "https://schema.org",
+          "@type": "Dataset",
+          name: "22대 국회의원 의정활동 데이터",
+          description: "22대 국회의원 295명의 법안 발의, 본회의 표결, 출석률, 재산 현황 데이터",
+          url: "https://www.lawmake.kr/members",
+          keywords: ["국회의원", "의정활동", "법안 발의", "표결", "출석률"],
+          license: "https://www.data.go.kr/ugs/selectPublicDataUseGuide.do",
+          temporalCoverage: "2024-05-30/..",
+          creator: {
+            "@type": "Organization",
+            name: "lawmake.kr",
+            url: "https://www.lawmake.kr",
+          },
+        }}
+      />
       <div className="space-y-3">
         <h1 className="text-2xl font-bold">의원 목록</h1>
         <PageIntro
