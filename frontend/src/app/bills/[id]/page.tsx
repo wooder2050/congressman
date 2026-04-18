@@ -16,20 +16,35 @@ export async function generateMetadata({ params }: BillDetailPageProps): Promise
   if (!bill) return { title: "법안 정보 없음" };
 
   const statusText =
-    bill.status === "passed" ? "가결" : bill.status === "discarded" ? "폐기" : "심사 중";
-  const committeeText = bill.committee ? ` | ${bill.committee}` : "";
-  const description = `${bill.title} — ${bill.proposerName} 외 ${bill.coProposerCount}인 발의${committeeText}. 현재 상태: ${statusText}. 법안 요약, 심사 경과, 발의 의원 정보를 확인하세요.`;
+    bill.status === "passed"
+      ? "가결"
+      : bill.status === "discarded"
+        ? "폐기"
+        : bill.status === "committee"
+          ? "위원회 심사 중"
+          : "계류";
+  const coSuffix = bill.coProposerCount > 0 ? ` 외 ${bill.coProposerCount}인 발의` : " 발의";
+  const shortTitle = bill.title.length > 40 ? bill.title.slice(0, 38) + "…" : bill.title;
+  const title = `${shortTitle} — ${statusText} | ${bill.proposerName}${coSuffix}`;
+
+  const descParts = [
+    `${bill.title} (${statusText}).`,
+    `${bill.proposerName}${coSuffix}, ${bill.proposedDate}.`,
+    bill.simpleSummary || "",
+    "법안 원문, 심사 경과, 관련 표결 기록을 확인하세요.",
+  ];
+  const description = descParts.filter(Boolean).join(" ").slice(0, 160);
 
   return {
-    title: `${bill.title} - 법안 상세`,
+    title,
     description,
     alternates: { canonical: `https://www.lawmake.kr/bills/${id}` },
     openGraph: {
-      title: `${bill.title} | 22대 국회 법안`,
+      title,
       description,
       url: `https://www.lawmake.kr/bills/${id}`,
     },
-    twitter: { card: "summary", title: bill.title, description },
+    twitter: { card: "summary_large_image", title: shortTitle, description },
   };
 }
 

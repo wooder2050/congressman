@@ -24,6 +24,15 @@ export const metadata: Metadata = {
     type: "website",
     locale: "ko_KR",
     url: "https://www.lawmake.kr",
+    images: [
+      {
+        url: "/opengraph-image",
+        width: 1200,
+        height: 630,
+        alt: "국회의원 의정활동 정보 | lawmake",
+        type: "image/png",
+      },
+    ],
   },
   twitter: {
     card: "summary_large_image",
