@@ -4,9 +4,9 @@ import MapSkeleton from "@/components/skeletons/MapSkeleton";
 import MapPageInner from "@/components/map/MapDynamic";
 
 export const metadata: Metadata = {
-  title: "선거구 지도 - 우리 동네 국회의원 찾기 | 지역구별 의원 검색",
+  title: "선거구 지도 — 내 지역 국회의원 찾기·지역구별 의원 검색",
   description:
-    "22대 국회 254개 선거구 지도에서 우리 동네 국회의원을 찾아보세요. 전국 시도별 드릴다운, 정당 색상 표시, 지역구별 의원 정보를 한눈에 확인할 수 있습니다.",
+    "지도에서 지역구를 클릭해 내 지역 국회의원을 바로 확인하세요. 254개 지역구의 현역 의원, 정당, 의정활동 성적표를 한눈에 볼 수 있습니다.",
   alternates: { canonical: "https://www.lawmake.kr/map" },
 };
 

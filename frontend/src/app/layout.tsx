@@ -14,11 +14,11 @@ const GTM_ID = "GTM-5BXVCW6Z";
 export const metadata: Metadata = {
   metadataBase: new URL("https://www.lawmake.kr"),
   title: {
-    default: "lawmake — 국회의원 의정활동 · 법안 · 표결 정보",
+    default: "lawmake — 국회의원 법안 발의·표결·출석률 한눈에",
     template: "%s | lawmake",
   },
   description:
-    "22대 국회의원 295명의 법안 발의, 본회의 표결 결과, 출석률, 재산 현황을 한눈에 확인하세요. 국회 일정, 위원회 활동, 선거구 지도, 의원 비교까지 — 열린국회정보 공공데이터 기반 의정활동 플랫폼입니다.",
+    "내 지역 국회의원은 누구? 22대 국회의원 295명의 출석률·법안 발의·표결 기록을 검색하고 비교하세요. 의원별 성적표, AI 법안 요약, 선거구 지도까지. 공공데이터 기반 의정활동 플랫폼.",
   openGraph: {
     siteName: "lawmake — 국회의원 의정활동 정보",
     type: "website",
