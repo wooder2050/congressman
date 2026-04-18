@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import JsonLd from "@/components/seo/JsonLd";
 import CongressWrapper from "@/common/CongressWrapper";
 import PageIntro from "@/components/ui/page-intro";
 import VoteListInner from "@/components/votes/VoteListInner";
@@ -27,6 +28,24 @@ export default async function VotesPage({ searchParams }: VotesPageProps) {
 
   return (
     <div className="mx-auto max-w-7xl">
+      <JsonLd
+        data={{
+          "@context": "https://schema.org",
+          "@type": "Dataset",
+          name: "22대 국회 본회의 표결 데이터",
+          description:
+            "22대 국회 본회의 1,290건 이상의 표결 결과. 찬성·반대·기권·불참 투표 내역과 의원별 표결 기록",
+          url: "https://www.lawmake.kr/votes",
+          keywords: ["표결", "본회의", "국회", "찬반투표", "가결", "부결"],
+          license: "https://www.data.go.kr/ugs/selectPublicDataUseGuide.do",
+          temporalCoverage: "2024-05-30/..",
+          creator: {
+            "@type": "Organization",
+            name: "lawmake.kr",
+            url: "https://www.lawmake.kr",
+          },
+        }}
+      />
       <div className="mb-4 space-y-3">
         <h1 className="text-2xl font-bold">표결 현황</h1>
         <PageIntro

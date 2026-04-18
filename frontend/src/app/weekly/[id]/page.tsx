@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import JsonLd from "@/components/seo/JsonLd";
+import WeeklyArticleJsonLd from "@/components/seo/WeeklyArticleJsonLd";
 import { getWeeklyArticle, getWeeklyArticleIds } from "@/data/weekly";
 import WeeklyDetailContent from "@/components/weekly/WeeklyDetailContent";
 
@@ -65,6 +66,7 @@ export default async function WeeklyDetailPage({ params }: WeeklyDetailPageProps
           ],
         }}
       />
+      <WeeklyArticleJsonLd article={article} />
       <WeeklyDetailContent article={article} />
     </>
   );
