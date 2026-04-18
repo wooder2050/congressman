@@ -6,6 +6,7 @@ export const metadata: Metadata = {
   description:
     "국회의원 의정활동 정보 서비스(lawmake.kr)의 광고 게재 정책입니다. Google 애드센스를 통한 광고 운영 방식, 이용자 데이터 처리, 광고 관련 권리를 안내합니다.",
   alternates: { canonical: "https://www.lawmake.kr/ads-policy" },
+  robots: { index: false, follow: true },
 };
 
 export default function AdsPolicyPage() {

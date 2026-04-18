@@ -6,6 +6,7 @@ export const metadata: Metadata = {
   description:
     "국회의원 의정활동 정보 앱에 대한 지원 정보입니다. 문의, 버그 신고, 기능 요청은 이 페이지를 통해 안내받으실 수 있습니다.",
   alternates: { canonical: "https://www.lawmake.kr/support" },
+  robots: { index: false, follow: true },
 };
 
 export default function SupportPage() {
