@@ -1,18 +1,18 @@
 import type { Metadata } from "next";
+import JsonLd from "@/components/seo/JsonLd";
 import CongressWrapper from "@/common/CongressWrapper";
 import PageIntro from "@/components/ui/page-intro";
 import VoteListInner from "@/components/votes/VoteListInner";
 import VoteListSkeleton from "@/components/skeletons/VoteListSkeleton";
 
 export const metadata: Metadata = {
-  title: "국회 표결 결과 — 22대 본회의 법안 찬반 투표 현황",
+  title: "국회 본회의 표결 — 의원별·정당별 찬반 기록 | 22대 국회",
   description:
-    "22대 국회 본회의 표결 결과를 확인하세요. 1,290건 법안의 찬성·반대·기권·불참 투표 내역과 의원별 표결 기록을 투명하게 공개합니다. 가결·부결·수정안 등 표결 유형별로 검색할 수 있습니다.",
+    "22대 국회 본회의 표결 1,370건+의 의원별 찬반 기록. 정당별 투표 성향, 찬반 팽팽한 법안까지 투명하게 확인하세요. 법안별 가결·부결·수정안 결과 검색.",
   alternates: { canonical: "https://www.lawmake.kr/votes" },
   openGraph: {
-    title: "국회 표결 결과 — 본회의 법안 찬반 투표 현황",
-    description:
-      "22대 국회 본회의 표결 결과. 찬성·반대·기권 투표 내역과 의원별 표결 기록을 확인하세요.",
+    title: "국회 본회의 표결 — 의원별·정당별 찬반 기록",
+    description: "22대 국회 본회의 표결 1,370건+의 의원별·정당별 찬반 기록을 투명하게 확인하세요.",
     url: "https://www.lawmake.kr/votes",
   },
 };
@@ -27,6 +27,24 @@ export default async function VotesPage({ searchParams }: VotesPageProps) {
 
   return (
     <div className="mx-auto max-w-7xl">
+      <JsonLd
+        data={{
+          "@context": "https://schema.org",
+          "@type": "Dataset",
+          name: "22대 국회 본회의 표결 데이터",
+          description:
+            "22대 국회 본회의 1,290건 이상의 표결 결과. 찬성·반대·기권·불참 투표 내역과 의원별 표결 기록",
+          url: "https://www.lawmake.kr/votes",
+          keywords: ["표결", "본회의", "국회", "찬반투표", "가결", "부결"],
+          license: "https://www.data.go.kr/ugs/selectPublicDataUseGuide.do",
+          temporalCoverage: "2024-05-30/..",
+          creator: {
+            "@type": "Organization",
+            name: "lawmake.kr",
+            url: "https://www.lawmake.kr",
+          },
+        }}
+      />
       <div className="mb-4 space-y-3">
         <h1 className="text-2xl font-bold">표결 현황</h1>
         <PageIntro

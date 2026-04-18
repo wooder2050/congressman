@@ -1,17 +1,19 @@
 import type { Metadata } from "next";
+import JsonLd from "@/components/seo/JsonLd";
 import CongressWrapper from "@/common/CongressWrapper";
 import PageIntro from "@/components/ui/page-intro";
 import BillListInner from "@/components/bills/BillListInner";
 import BillListSkeleton from "@/components/skeletons/BillListSkeleton";
 
 export const metadata: Metadata = {
-  title: "국회 법안 검색 — 22대 발의 법안 17,200건 · AI 요약 제공",
+  title: "법안 AI 요약·검색 — 22대 국회 발의 법안 17,200건",
   description:
-    "22대 국회 17,200건의 발의 법안을 검색하세요. 법안 발의 검색, 통과 여부, 위원회별·주제별 필터, 심사 경과 추적, AI 요약까지 제공합니다. 우리 생활에 영향을 미치는 법안을 쉽게 찾아보세요.",
+    "22대 국회 발의 법안 17,200건+를 검색하세요. AI가 법안을 한 줄로 요약하고, 원문 PDF와 심사 경과를 한 화면에서 확인할 수 있습니다. 위원회·주제별 필터 제공.",
   alternates: { canonical: "https://www.lawmake.kr/bills" },
   openGraph: {
-    title: "국회 법안 검색 — 22대 발의 법안 17,200건",
-    description: "발의 법안 검색, AI 요약, 심사 경과 추적. 22대 국회 법안을 쉽게 찾아보세요.",
+    title: "법안 AI 요약·검색 — 22대 국회 발의 법안 17,200건",
+    description:
+      "AI가 법안을 한 줄로 요약. 22대 국회 발의 법안 17,200건+를 검색하고 심사 경과를 추적하세요.",
     url: "https://www.lawmake.kr/bills",
   },
 };
@@ -28,6 +30,24 @@ export default async function BillsPage({ searchParams }: BillsPageProps) {
 
   return (
     <div className="mx-auto max-w-7xl">
+      <JsonLd
+        data={{
+          "@context": "https://schema.org",
+          "@type": "Dataset",
+          name: "22대 국회 발의 법안 데이터",
+          description:
+            "22대 국회 17,200건 이상의 발의 법안 목록. 법안 제목, 발의자, 심사 상태, AI 요약 포함",
+          url: "https://www.lawmake.kr/bills",
+          keywords: ["법안", "발의", "국회", "입법", "법률안"],
+          license: "https://www.data.go.kr/ugs/selectPublicDataUseGuide.do",
+          temporalCoverage: "2024-05-30/..",
+          creator: {
+            "@type": "Organization",
+            name: "lawmake.kr",
+            url: "https://www.lawmake.kr",
+          },
+        }}
+      />
       <div className="mb-4 space-y-3">
         <h1 className="text-2xl font-bold">법안 목록</h1>
         <PageIntro
