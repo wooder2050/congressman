@@ -1,15 +1,64 @@
 "use client";
 
+import { useState, useMemo } from "react";
+import Image from "next/image";
 import { useCongressSuspenseQuery } from "@/hooks/useCongressQuery";
 import { getElection } from "@/lib/api";
-import type { ByElectionDetail } from "@/types";
+import type { ByElectionDetail, ElectionDistrictInfo } from "@/types";
 import ElectionHeader from "./ElectionHeader";
 import DistrictSection from "./DistrictSection";
+
+/** 지역별 정렬 순서 */
+const REGION_ORDER = [
+  "서울",
+  "인천",
+  "경기",
+  "부산",
+  "대구",
+  "광주",
+  "대전",
+  "울산",
+  "세종",
+  "강원",
+  "충북",
+  "충남",
+  "전북",
+  "전남",
+  "경북",
+  "경남",
+  "제주",
+];
+
+function groupByRegion(districts: ElectionDistrictInfo[]) {
+  const map = new Map<string, ElectionDistrictInfo[]>();
+  for (const d of districts) {
+    const region = d.region || "기타";
+    if (!map.has(region)) map.set(region, []);
+    map.get(region)!.push(d);
+  }
+  return [...map.entries()].sort(
+    ([a], [b]) => (REGION_ORDER.indexOf(a) ?? 99) - (REGION_ORDER.indexOf(b) ?? 99),
+  );
+}
+
+function getReasonIcon(reason: string): string {
+  if (reason.includes("대통령") || reason.includes("비서실장")) return "\u{1F3DB}\uFE0F";
+  if (reason.includes("당선무효")) return "\u2696\uFE0F";
+  return "\u{1F4CB}";
+}
 
 export default function ElectionPageInner({ electionId }: { electionId: string }) {
   const { data: election } = useCongressSuspenseQuery<ByElectionDetail | null, string>(
     getElection,
     electionId,
+  );
+
+  const [expandedRegion, setExpandedRegion] = useState<string | null>(null);
+  const [selectedDistrict, setSelectedDistrict] = useState<number | null>(null);
+
+  const regionGroups = useMemo(
+    () => (election ? groupByRegion(election.districts) : []),
+    [election],
   );
 
   if (!election) {
@@ -22,28 +71,243 @@ export default function ElectionPageInner({ electionId }: { electionId: string }
     );
   }
 
+  const toggleRegion = (region: string) => {
+    setExpandedRegion((prev) => (prev === region ? null : region));
+    setSelectedDistrict(null);
+  };
+
+  const toggleDistrict = (id: number) => {
+    setSelectedDistrict((prev) => (prev === id ? null : id));
+  };
+
   return (
     <div className="space-y-6">
       <ElectionHeader election={election} />
 
-      {/* 선거구 목차 */}
-      <nav className="flex flex-wrap gap-2">
-        {election.districts.map((d) => (
-          <a
-            key={d.id}
-            href={`#district-${d.id}`}
-            className="rounded-lg bg-(--color-bg-secondary) px-3 py-1.5 text-sm font-medium text-(--color-text-secondary) no-underline transition-colors hover:bg-(--color-bg-tertiary) hover:text-(--color-text-primary)"
-          >
-            {d.district}
-          </a>
-        ))}
-      </nav>
+      {/* 요약 테이블 */}
+      <section className="overflow-hidden rounded-xl border border-(--color-border-primary) bg-(--color-bg-primary)">
+        <div className="border-b border-(--color-border-primary) px-4 py-3 sm:px-5">
+          <h2 className="text-base font-bold text-(--color-text-primary)">전체 선거구 현황</h2>
+        </div>
+        <div className="overflow-x-auto">
+          <table className="w-full text-sm">
+            <thead>
+              <tr className="border-b border-(--color-border-primary) bg-(--color-bg-secondary) text-left text-xs font-semibold text-(--color-text-tertiary)">
+                <th className="px-4 py-2.5 sm:px-5">지역</th>
+                <th className="px-4 py-2.5 sm:px-5">선거구</th>
+                <th className="hidden px-4 py-2.5 sm:table-cell sm:px-5">공석 사유</th>
+                <th className="hidden px-4 py-2.5 md:table-cell md:px-5">전임</th>
+                <th className="px-4 py-2.5 text-center sm:px-5">후보</th>
+              </tr>
+            </thead>
+            <tbody>
+              {election.districts.map((d) => {
+                const prev = d.previousMember;
+                const partyColor = prev?.party?.color ?? "#9ca3af";
+                return (
+                  <tr
+                    key={d.id}
+                    className="cursor-pointer border-b border-(--color-border-primary) transition-colors last:border-b-0 hover:bg-(--color-bg-hover)"
+                    onClick={() => {
+                      setExpandedRegion(d.region || "기타");
+                      setSelectedDistrict(d.id);
+                      setTimeout(() => {
+                        document.getElementById(`district-${d.id}`)?.scrollIntoView({
+                          behavior: "smooth",
+                          block: "center",
+                        });
+                      }, 100);
+                    }}
+                  >
+                    <td className="px-4 py-2.5 sm:px-5">
+                      <span className="rounded bg-(--color-bg-tertiary) px-1.5 py-0.5 text-xs font-medium text-(--color-text-secondary)">
+                        {d.region}
+                      </span>
+                    </td>
+                    <td className="px-4 py-2.5 font-medium text-(--color-text-primary) sm:px-5">
+                      <div className="flex items-center gap-2">
+                        <span
+                          className="h-2 w-2 shrink-0 rounded-full"
+                          style={{ backgroundColor: partyColor }}
+                        />
+                        {d.district}
+                      </div>
+                    </td>
+                    <td className="hidden px-4 py-2.5 text-(--color-text-secondary) sm:table-cell sm:px-5">
+                      {d.vacancyReason}
+                    </td>
+                    <td className="hidden px-4 py-2.5 md:table-cell md:px-5">
+                      {prev && prev.name !== "공석" ? (
+                        <div className="flex items-center gap-1.5">
+                          {prev.photoUrl ? (
+                            <Image
+                              src={prev.photoUrl}
+                              alt={prev.name}
+                              width={20}
+                              height={20}
+                              className="h-5 w-5 rounded-full object-cover"
+                            />
+                          ) : (
+                            <div
+                              className="flex h-5 w-5 items-center justify-center rounded-full text-[8px] font-bold text-white"
+                              style={{ backgroundColor: partyColor }}
+                            >
+                              {prev.name.slice(0, 1)}
+                            </div>
+                          )}
+                          <span className="text-sm text-(--color-text-secondary)">{prev.name}</span>
+                        </div>
+                      ) : (
+                        <span className="text-xs text-(--color-text-tertiary)">-</span>
+                      )}
+                    </td>
+                    <td className="px-4 py-2.5 text-center sm:px-5">
+                      {d.candidates.length > 0 ? (
+                        <span className="rounded-full bg-blue-100 px-2 py-0.5 text-xs font-bold text-blue-700 dark:bg-blue-900/40 dark:text-blue-300">
+                          {d.candidates.length}명
+                        </span>
+                      ) : (
+                        <span className="text-xs text-(--color-text-tertiary)">-</span>
+                      )}
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+      </section>
 
-      {/* 선거구별 섹션 */}
-      <div className="space-y-6">
-        {election.districts.map((d) => (
-          <DistrictSection key={d.id} district={d} />
-        ))}
+      {/* 지역별 그룹 (접이식) */}
+      <div className="space-y-3">
+        {regionGroups.map(([region, districts]) => {
+          const isExpanded = expandedRegion === region;
+          const totalCandidates = districts.reduce((sum, d) => sum + d.candidates.length, 0);
+
+          return (
+            <section
+              key={region}
+              className="overflow-hidden rounded-xl border border-(--color-border-primary) bg-(--color-bg-primary)"
+            >
+              {/* 지역 헤더 (토글) */}
+              <button
+                onClick={() => toggleRegion(region)}
+                className="flex w-full items-center justify-between px-4 py-3.5 text-left transition-colors hover:bg-(--color-bg-hover) sm:px-5"
+              >
+                <div className="flex items-center gap-3">
+                  <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-(--color-bg-tertiary) text-sm font-bold text-(--color-text-secondary)">
+                    {region.slice(0, 1)}
+                  </span>
+                  <div>
+                    <h3 className="text-base font-bold text-(--color-text-primary)">{region}</h3>
+                    <p className="mt-0.5 text-xs text-(--color-text-tertiary)">
+                      {districts.length}개 선거구
+                      {totalCandidates > 0 && ` · 후보 ${totalCandidates}명`}
+                    </p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-2">
+                  {/* 선거구 미니 프리뷰 (접힌 상태) */}
+                  {!isExpanded && (
+                    <div className="hidden items-center gap-1 sm:flex">
+                      {districts.map((d) => {
+                        const color = d.previousMember?.party?.color ?? "#9ca3af";
+                        return (
+                          <span
+                            key={d.id}
+                            className="h-2.5 w-2.5 rounded-full"
+                            style={{ backgroundColor: color }}
+                            title={d.district}
+                          />
+                        );
+                      })}
+                    </div>
+                  )}
+                  <span
+                    className={`text-sm text-(--color-text-tertiary) transition-transform ${isExpanded ? "rotate-180" : ""}`}
+                  >
+                    ▼
+                  </span>
+                </div>
+              </button>
+
+              {/* 펼쳐진 선거구 목록 */}
+              {isExpanded && (
+                <div className="border-t border-(--color-border-primary)">
+                  {districts.map((d) => {
+                    const isDistrictExpanded = selectedDistrict === d.id;
+                    const prev = d.previousMember;
+                    const partyColor = prev?.party?.color ?? "#9ca3af";
+
+                    return (
+                      <div
+                        key={d.id}
+                        id={`district-${d.id}`}
+                        className="scroll-mt-20 border-b border-(--color-border-primary) last:border-b-0"
+                      >
+                        {/* 선거구 요약 행 */}
+                        <button
+                          onClick={() => toggleDistrict(d.id)}
+                          className="flex w-full items-center gap-3 px-4 py-3 text-left transition-colors hover:bg-(--color-bg-hover) sm:px-5"
+                        >
+                          <span
+                            className="h-full w-1 shrink-0 self-stretch rounded-full"
+                            style={{ backgroundColor: partyColor }}
+                          />
+                          <div className="min-w-0 flex-1">
+                            <div className="flex items-center gap-2">
+                              <span className="font-bold text-(--color-text-primary)">
+                                {d.district}
+                              </span>
+                              {!d.confirmed && (
+                                <span className="rounded bg-amber-100 px-1.5 py-0.5 text-[10px] font-bold text-amber-700 dark:bg-amber-900/40 dark:text-amber-300">
+                                  사퇴 예정
+                                </span>
+                              )}
+                            </div>
+                            <div className="mt-0.5 flex flex-wrap items-center gap-x-3 gap-y-0.5 text-xs text-(--color-text-tertiary)">
+                              <span>
+                                {getReasonIcon(d.vacancyReason)} {d.vacancyReason}
+                              </span>
+                              {prev && prev.name !== "공석" && (
+                                <span className="flex items-center gap-1">
+                                  {prev.party && (
+                                    <span
+                                      className="inline-block h-2 w-2 rounded-full"
+                                      style={{ backgroundColor: partyColor }}
+                                    />
+                                  )}
+                                  전임 {prev.name}
+                                </span>
+                              )}
+                              {d.candidates.length > 0 && (
+                                <span className="font-medium text-blue-600 dark:text-blue-400">
+                                  후보 {d.candidates.length}명
+                                </span>
+                              )}
+                            </div>
+                          </div>
+                          <span
+                            className={`shrink-0 text-xs text-(--color-text-tertiary) transition-transform ${isDistrictExpanded ? "rotate-180" : ""}`}
+                          >
+                            ▼
+                          </span>
+                        </button>
+
+                        {/* 선거구 상세 (펼쳐질 때) */}
+                        {isDistrictExpanded && (
+                          <div className="bg-(--color-bg-secondary) px-4 pb-4 sm:px-5">
+                            <DistrictSection district={d} />
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+            </section>
+          );
+        })}
       </div>
     </div>
   );
