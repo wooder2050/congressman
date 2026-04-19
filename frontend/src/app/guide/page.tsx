@@ -317,7 +317,7 @@ export default function GuidePage() {
       {/* 더 알아보기 */}
       <section className="space-y-4">
         <h2 className="text-2xl font-bold">더 알아보기</h2>
-        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
           <Link
             href="/guide/roles"
             className="rounded-xl border border-(--color-border-primary) bg-(--color-bg-primary) p-5 no-underline transition-colors hover:bg-(--color-bg-secondary)"
@@ -338,6 +338,15 @@ export default function GuidePage() {
             </h3>
             <p className="mt-2 text-sm leading-relaxed text-(--color-text-secondary)">
               국가 예산의 구성, 편성 과정, 국회의 심의·확정 역할을 알아봅니다.
+            </p>
+          </Link>
+          <Link
+            href="/guide/topics"
+            className="rounded-xl border border-(--color-border-primary) bg-(--color-bg-primary) p-5 no-underline transition-colors hover:bg-(--color-bg-secondary)"
+          >
+            <h3 className="text-base font-bold text-(--color-text-primary)">주제별 법안 가이드</h3>
+            <p className="mt-2 text-sm leading-relaxed text-(--color-text-secondary)">
+              보건의료, 부동산, 경제 등 15개 분야별 핵심 쟁점과 입법 동향을 살펴봅니다.
             </p>
           </Link>
         </div>

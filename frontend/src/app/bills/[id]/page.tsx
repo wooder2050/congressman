@@ -38,6 +38,7 @@ export async function generateMetadata({ params }: BillDetailPageProps): Promise
   return {
     title,
     description,
+    robots: !bill.simpleSummary && !bill.summary ? { index: false, follow: true } : undefined,
     alternates: { canonical: `https://www.lawmake.kr/bills/${id}` },
     openGraph: {
       title,

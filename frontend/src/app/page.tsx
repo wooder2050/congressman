@@ -13,6 +13,8 @@ import LatestWeeklyNews from "@/components/home/LatestWeeklyNews";
 import PropertyHighlight from "@/components/home/PropertyHighlight";
 import ScorecardHighlight from "@/components/home/ScorecardHighlight";
 import BreakingNewsBanner from "@/components/home/BreakingNewsBanner";
+import CivicKnowledge from "@/components/home/CivicKnowledge";
+import TopicGuide from "@/components/home/TopicGuide";
 import {
   HomeStatsSkeleton,
   TopicSectionSkeleton,
@@ -102,8 +104,12 @@ export default async function HomePage({ searchParams }: HomePageProps) {
         {/* 헤더 */}
         <section>
           <h1 className="text-3xl font-extrabold tracking-tight">국회의원 의정활동 정보</h1>
-          <p className="mt-1 text-sm text-(--color-text-secondary)">
-            대한민국 국회의원의 의정활동 정보를 한눈에 확인하세요.
+          <p className="mt-2 text-sm leading-relaxed text-(--color-text-secondary)">
+            lawmake는 대한민국 국회의원의 법안 발의, 본회의 표결, 출석 현황 등 핵심 의정활동
+            데이터를 시민 누구나 쉽게 확인할 수 있도록 만든 플랫폼입니다. 열린국회정보 공공 API에서
+            제공하는 객관적 데이터를 기반으로, 의원별 성적표 비교부터 AI 법안 요약까지 다양한 분석을
+            제공합니다. 내 지역 국회의원이 어떤 활동을 하고 있는지, 어떤 법안에 찬성하고 반대했는지
+            직접 확인해 보세요.
           </p>
         </section>
 
@@ -129,6 +135,9 @@ export default async function HomePage({ searchParams }: HomePageProps) {
         {/* 주간 국회 뉴스 */}
         <LatestWeeklyNews />
 
+        {/* 국회 상식 */}
+        <CivicKnowledge />
+
         {/* 다가오는 일정 — 현재 대수(22대)만 표시 */}
         {termId === 22 && (
           <CongressWrapper key={`schedules-${termId}`} fallback={<UpcomingSchedulesSkeleton />}>
@@ -145,6 +154,9 @@ export default async function HomePage({ searchParams }: HomePageProps) {
             </CongressWrapper>
           </section>
         )}
+
+        {/* 주제별 법안 가이드 — 22대만 표시 */}
+        {termId === 22 && <TopicGuide />}
 
         {/* 최근 활동 */}
         <section className="space-y-3">

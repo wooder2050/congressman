@@ -60,6 +60,29 @@ export default async function MembersPage({ searchParams }: MembersPageProps) {
         />
       </div>
 
+      {/* 국회의원 구성 안내 */}
+      <section className="space-y-4 rounded-xl border border-(--color-border-primary) bg-(--color-bg-primary) p-5">
+        <h2 className="text-lg font-bold">22대 국회의원 구성</h2>
+        <div className="space-y-3 text-sm leading-relaxed text-(--color-text-secondary)">
+          <p>
+            22대 국회는 2024년 5월 30일에 개원하여 2028년 5월 29일까지 4년간의 임기를 수행합니다. 총
+            300석 중 지역구 254석, 비례대표 46석으로 구성되어 있으며, 현재 295명의 의원이 활동하고
+            있습니다.
+          </p>
+          <p>
+            국회의원의 주요 권한으로는 법률안 발의권, 예산안 심의·확정권, 국정감사·조사권,
+            탄핵소추권 등이 있습니다. 국회의원은 헌법에 의해 불체포특권과 면책특권이 보장되며, 국회
+            회기 중 체포되지 않을 권리와 국회에서의 발언에 대해 원외에서 책임지지 않을 권리를
+            가집니다.
+          </p>
+          <p>
+            국회에는 18개의 상임위원회가 있으며, 각 위원회는 해당 분야의 법안 심사, 청원 심사, 소관
+            부처 감독 등의 역할을 수행합니다. 의원들은 최소 1개 이상의 상임위원회에 소속되어 전문
+            분야별 입법 활동을 합니다.
+          </p>
+        </div>
+      </section>
+
       {/* 부동산 현황 배너 */}
       <Link
         href="/members/property"

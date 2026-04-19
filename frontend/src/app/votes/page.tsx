@@ -56,6 +56,32 @@ export default async function VotesPage({ searchParams }: VotesPageProps) {
           ]}
         />
       </div>
+
+      {/* 본회의 표결 안내 */}
+      <section className="mb-4 space-y-4 rounded-xl border border-(--color-border-primary) bg-(--color-bg-primary) p-5">
+        <h2 className="text-lg font-bold">본회의 표결의 의미와 중요성</h2>
+        <div className="space-y-3 text-sm leading-relaxed text-(--color-text-secondary)">
+          <p>
+            본회의 표결은 대한민국 국회의 최종 의사결정 절차입니다. 위원회 심사를 통과한 법안이
+            국회의원 전원이 참석하는 본회의에서 찬반을 가려 최종 확정됩니다. 헌법 제49조에 따라
+            재적의원 과반수의 출석과 출석의원 과반수의 찬성으로 의결되며, 헌법 개정안 등 특별한
+            사안은 가중 의결 정족수가 적용됩니다.
+          </p>
+          <p>
+            국회의원의 표결은 전자투표 방식으로 진행되며, 찬성·반대·기권으로 의사를 표시합니다.
+            표결에 불참한 의원은 &apos;불참&apos;으로 기록됩니다. 22대 국회에서는 현재까지 1,370건
+            이상의 본회의 표결이 진행되었으며, 표결 결과는 원안가결, 수정가결, 부결 등으로
+            구분됩니다.
+          </p>
+          <p>
+            각 의원의 표결 내역은 공개 원칙에 따라 누구나 확인할 수 있습니다. 정당별 투표 성향을
+            분석하면 여야 간 정책적 차이를 이해할 수 있으며, 찬반이 팽팽했던 표결은 사회적으로
+            논란이 큰 쟁점법안인 경우가 많습니다. 이러한 투명한 정보 공개는 민주주의의 핵심 가치인
+            국민의 알 권리를 보장합니다.
+          </p>
+        </div>
+      </section>
+
       <CongressWrapper key={termId} fallback={<VoteListSkeleton />}>
         <VoteListInner termId={termId} />
       </CongressWrapper>

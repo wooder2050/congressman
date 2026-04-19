@@ -59,6 +59,31 @@ export default async function BillsPage({ searchParams }: BillsPageProps) {
           ]}
         />
       </div>
+
+      {/* 입법 과정 안내 */}
+      <section className="mb-4 space-y-4 rounded-xl border border-(--color-border-primary) bg-(--color-bg-primary) p-5">
+        <h2 className="text-lg font-bold">대한민국 입법 과정의 이해</h2>
+        <div className="space-y-3 text-sm leading-relaxed text-(--color-text-secondary)">
+          <p>
+            대한민국의 법안은 국회의원 10인 이상의 찬성 또는 정부 제출로 발의됩니다. 발의된 법안은
+            국회의장이 소관 상임위원회에 회부하며, 위원회에서는 전문위원의 검토 보고를 거쳐
+            대체토론과 축조심사를 진행합니다. 위원회를 통과한 법안은 법제사법위원회의 체계·자구
+            심사를 거쳐 본회의에 상정됩니다.
+          </p>
+          <p>
+            본회의에서는 재적의원 과반수의 출석과 출석의원 과반수의 찬성으로 법안이 의결됩니다. 22대
+            국회에서는 현재까지 17,200건 이상의 법안이 발의되었으며, 이 중 약 10%가 위원회 심사를
+            통과하여 본회의에서 처리되었습니다. 법안의 심사 진행 상황은 &apos;계류&apos;,
+            &apos;위원회 심사 중&apos;, &apos;가결&apos;, &apos;폐기&apos; 등의 상태로 구분됩니다.
+          </p>
+          <p>
+            lawmake에서는 모든 법안에 대해 AI 기술을 활용한 한 줄 요약과 구조화된 분석을 제공하여,
+            시민 누구나 복잡한 법안 내용을 쉽게 이해할 수 있도록 돕고 있습니다. 법안 원문 PDF와 심사
+            경과를 함께 확인하여 입법 과정을 투명하게 모니터링해 보세요.
+          </p>
+        </div>
+      </section>
+
       <CongressWrapper
         key={`${termId}-${topic ?? ""}-${committee ?? ""}`}
         fallback={<BillListSkeleton />}
