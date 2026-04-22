@@ -114,7 +114,7 @@ async function main() {
 
   console.log(`✅ 재보궐선거 시드 완료: 확정 ${confirmedDistricts.length}곳`);
 
-  // 3. 사퇴 예정 선거구 (경선 승리 확정, 의원직 사퇴 예정)
+  // 3. 사퇴 예정 선거구 (경선 승리 확정, 의원직 사퇴 예정 — 4/29~30 일괄 사직)
   const pendingDistricts = [
     {
       electionId: '2026-06-03',
@@ -143,6 +143,51 @@ async function main() {
       previousMemberName: '박수현',
       previousPartyId: 'democratic',
     },
+    {
+      electionId: '2026-06-03',
+      district: '인천 연수구갑',
+      region: '인천',
+      vacancyReason: '박찬대 인천시장 출마 사퇴',
+      previousMemberId: 'BT62420K',
+      previousMemberName: '박찬대',
+      previousPartyId: 'democratic',
+    },
+    {
+      electionId: '2026-06-03',
+      district: '울산 남구갑',
+      region: '울산',
+      vacancyReason: '김상욱 울산시장 출마 사퇴',
+      previousMemberId: 'VDN5593C',
+      previousMemberName: '김상욱',
+      previousPartyId: 'democratic',
+    },
+    {
+      electionId: '2026-06-03',
+      district: '전북 군산시김제시부안군을',
+      region: '전북',
+      vacancyReason: '이원택 전북도지사 출마 사퇴',
+      previousMemberId: 'DAV7257X',
+      previousMemberName: '이원택',
+      previousPartyId: 'democratic',
+    },
+    {
+      electionId: '2026-06-03',
+      district: '광주 광산구을',
+      region: '광주',
+      vacancyReason: '민형배 전남광주통합특별시장 출마 사퇴',
+      previousMemberId: 'VRY5522V',
+      previousMemberName: '민형배',
+      previousPartyId: 'democratic',
+    },
+    {
+      electionId: '2026-06-03',
+      district: '제주 서귀포시',
+      region: '제주',
+      vacancyReason: '위성곤 제주도지사 출마 사퇴',
+      previousMemberId: 'RQQ3807K',
+      previousMemberName: '위성곤',
+      previousPartyId: 'democratic',
+    },
   ];
 
   for (const d of pendingDistricts) {
@@ -157,7 +202,7 @@ async function main() {
       previousMemberId: resolvedMemberId,
       previousMemberName: d.previousMemberName,
       previousPartyId: resolvedPartyId,
-      confirmed: false,
+      confirmed: true,
       status: 'upcoming',
     };
 
@@ -173,11 +218,9 @@ async function main() {
   console.log(`✅ 사퇴 예정 선거구 시드 완료: ${pendingDistricts.length}곳`);
 
   // ──────────────────────────────────────────────
-  // 추가 사퇴 예정 선거구 (경선 진행 중 또는 미확정)
+  // 추가 사퇴 예정 선거구 (미확정)
   // ──────────────────────────────────────────────
-  // { district: '인천 연수구갑',          vacancyReason: '박찬대 인천시장 출마 사퇴',     previousMemberName: '박찬대' }
-  // { district: '울산 남구갑',            vacancyReason: '김상욱 울산시장 출마 사퇴',     previousMemberName: '김상욱' }
-  // { district: '전북 군산시김제시부안군을', vacancyReason: '이원택 전북도지사 출마 사퇴',  previousMemberName: '이원택' }
+  // { district: '대구 ???',  vacancyReason: '추경호 or 유영하 대구시장 출마 사퇴', 4/26 본경선 결과 발표 후 확정 }
   // ──────────────────────────────────────────────
 }
 
