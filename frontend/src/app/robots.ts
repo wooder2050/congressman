@@ -5,13 +5,13 @@ export default function robots(): MetadataRoute.Robots {
     rules: [
       {
         userAgent: ["Googlebot", "Bingbot", "Yeti", "Daumoa"],
-        allow: "/",
-        disallow: ["/api/", "/_next/"],
+        allow: ["/_next/static/", "/"],
+        disallow: ["/api/", "/_next/data/"],
       },
       {
         userAgent: "*",
-        allow: "/",
-        disallow: ["/api/", "/_next/"],
+        allow: ["/_next/static/", "/"],
+        disallow: ["/api/", "/_next/data/"],
       },
     ],
     sitemap: "https://www.lawmake.kr/sitemap.xml",
