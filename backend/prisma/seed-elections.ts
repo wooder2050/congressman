@@ -71,18 +71,18 @@ async function main() {
       electionId: '2026-06-03',
       district: '경기 평택시을',
       region: '경기',
-      vacancyReason: '당선무효 (선거법 위반)',
-      previousMemberId: null,
-      previousMemberName: '공석',
+      vacancyReason: '이병진 당선무효 (선거법 위반)',
+      previousMemberId: null, // 이병진 — DB에 미존재 (당선무효로 삭제됨)
+      previousMemberName: '이병진',
       previousPartyId: 'democratic',
     },
     {
       electionId: '2026-06-03',
       district: '전북 군산시김제시부안군갑',
       region: '전북',
-      vacancyReason: '당선무효 (선거법 위반)',
-      previousMemberId: null,
-      previousMemberName: '공석',
+      vacancyReason: '신영대 당선무효 (선거법 위반)',
+      previousMemberId: 'AFH96856', // 신영대
+      previousMemberName: '신영대',
       previousPartyId: 'democratic',
     },
   ];
