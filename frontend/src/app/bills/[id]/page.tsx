@@ -27,8 +27,10 @@ export async function generateMetadata({ params }: BillDetailPageProps): Promise
   const shortTitle = bill.title.length > 40 ? bill.title.slice(0, 38) + "…" : bill.title;
   const title = `${shortTitle} — ${statusText} | ${bill.proposerName}${coSuffix}`;
 
+  const topicText = bill.topic ? `[${bill.topic}]` : "";
   const descParts = [
     `${bill.title} (${statusText}).`,
+    topicText,
     `${bill.proposerName}${coSuffix}, ${bill.proposedDate}.`,
     bill.simpleSummary || "",
     "법안 원문, 심사 경과, 관련 표결 기록을 확인하세요.",
