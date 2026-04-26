@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { getTermsByCategory, getAllTerms } from "@/lib/glossary";
 import JsonLd from "@/components/seo/JsonLd";
 
@@ -64,15 +65,16 @@ export default function GlossaryPage() {
 
             <div className="space-y-3">
               {terms.map((term) => (
-                <div
+                <Link
                   key={term.term}
-                  className="rounded-xl border border-(--color-border-primary) bg-(--color-bg-primary) p-4"
+                  href={`/glossary/${encodeURIComponent(term.term)}`}
+                  className="block rounded-xl border border-(--color-border-primary) bg-(--color-bg-primary) p-4 no-underline transition-colors hover:bg-(--color-bg-hover)"
                 >
                   <h3 className="text-lg font-bold text-(--color-text-primary)">{term.term}</h3>
                   <p className="mt-2 text-sm leading-relaxed text-(--color-text-secondary)">
                     {term.fullDesc || term.shortDesc}
                   </p>
-                </div>
+                </Link>
               ))}
             </div>
           </section>

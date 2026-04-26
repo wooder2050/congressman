@@ -269,15 +269,16 @@ export default function GuidePage() {
         <h2 className="text-2xl font-bold">알아두면 좋은 용어</h2>
         <div className="space-y-3">
           {terms.map((item) => (
-            <div
+            <Link
               key={item.term}
-              className="rounded-xl border border-(--color-border-primary) bg-(--color-bg-primary) p-4"
+              href={`/glossary/${encodeURIComponent(item.term)}`}
+              className="block rounded-xl border border-(--color-border-primary) bg-(--color-bg-primary) p-4 no-underline transition-colors hover:bg-(--color-bg-hover)"
             >
               <h3 className="text-base font-bold text-(--color-text-primary)">{item.term}</h3>
               <p className="mt-1.5 text-sm leading-relaxed text-(--color-text-secondary)">
                 {item.desc}
               </p>
-            </div>
+            </Link>
           ))}
         </div>
         <p className="text-sm text-(--color-text-tertiary)">
