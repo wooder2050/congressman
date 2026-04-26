@@ -8,7 +8,7 @@ import VoteListSkeleton from "@/components/skeletons/VoteListSkeleton";
 export const metadata: Metadata = {
   title: "국회 본회의 표결 — 의원별·정당별 찬반 기록 | 22대 국회",
   description:
-    "22대 국회 본회의 표결 1,370건+의 의원별 찬반 기록. 정당별 투표 성향, 찬반 팽팽한 법안까지 투명하게 확인하세요. 법안별 가결·부결·수정안 결과 검색.",
+    "22대 국회 표결 결과 1,370건+를 한눈에. 의원별 찬반 기록, 정당별 투표 성향, 찬반 팽팽한 법안까지 투명하게 확인하세요. 본회의 표결 가결·부결·수정안 결과 검색.",
   alternates: { canonical: "https://www.lawmake.kr/votes" },
   openGraph: {
     title: "국회 본회의 표결 — 의원별·정당별 찬반 기록",
