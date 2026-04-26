@@ -6,14 +6,14 @@ import BillListInner from "@/components/bills/BillListInner";
 import BillListSkeleton from "@/components/skeletons/BillListSkeleton";
 
 export const metadata: Metadata = {
-  title: "법안 AI 요약·검색 — 22대 국회 발의 법안 17,200건",
+  title: "국회 법안 발의 검색 — 22대 국회 17,200건+ AI 요약",
   description:
-    "22대 국회 발의 법안 17,200건+를 검색하세요. AI가 법안을 한 줄로 요약하고, 원문 PDF와 심사 경과를 한 화면에서 확인할 수 있습니다. 위원회·주제별 필터 제공.",
+    "22대 국회 법안 발의 17,200건+를 검색하세요. AI가 법안을 한 줄로 요약하고, 원문 PDF와 심사 경과를 한 화면에서 확인할 수 있습니다. 위원회·주제별 필터 제공.",
   alternates: { canonical: "https://www.lawmake.kr/bills" },
   openGraph: {
-    title: "법안 AI 요약·검색 — 22대 국회 발의 법안 17,200건",
+    title: "국회 법안 발의 검색 — 22대 국회 17,200건+ AI 요약",
     description:
-      "AI가 법안을 한 줄로 요약. 22대 국회 발의 법안 17,200건+를 검색하고 심사 경과를 추적하세요.",
+      "AI가 법안을 한 줄로 요약. 22대 국회 법안 발의 17,200건+를 검색하고 심사 경과를 추적하세요.",
     url: "https://www.lawmake.kr/bills",
   },
 };

@@ -36,6 +36,26 @@ export default function WeeklyPage() {
           ],
         }}
       />
+      <JsonLd
+        data={{
+          "@context": "https://schema.org",
+          "@type": "CollectionPage",
+          name: "주간 국회 뉴스",
+          description:
+            "매주 국회에서 통과된 법안, 본회의 표결, 위원회 활동을 쉽게 정리합니다.",
+          url: "https://www.lawmake.kr/weekly",
+          mainEntity: {
+            "@type": "ItemList",
+            numberOfItems: articles.length,
+            itemListElement: articles.slice(0, 10).map((article, i) => ({
+              "@type": "ListItem",
+              position: i + 1,
+              url: `https://www.lawmake.kr/weekly/${article.id}`,
+              name: article.title,
+            })),
+          },
+        }}
+      />
 
       <section>
         <h1 className="text-3xl font-extrabold tracking-tight">주간 국회 뉴스</h1>
