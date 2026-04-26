@@ -10,7 +10,7 @@ interface GlossaryTermPageProps {
 }
 
 export function generateStaticParams() {
-  return getAllTermSlugs().map(({ slug }) => ({ term: encodeURIComponent(slug) }));
+  return getAllTermSlugs().map(({ slug }) => ({ term: slug }));
 }
 
 export async function generateMetadata({ params }: GlossaryTermPageProps): Promise<Metadata> {
