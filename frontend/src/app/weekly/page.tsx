@@ -41,8 +41,7 @@ export default function WeeklyPage() {
           "@context": "https://schema.org",
           "@type": "CollectionPage",
           name: "주간 국회 뉴스",
-          description:
-            "매주 국회에서 통과된 법안, 본회의 표결, 위원회 활동을 쉽게 정리합니다.",
+          description: "매주 국회에서 통과된 법안, 본회의 표결, 위원회 활동을 쉽게 정리합니다.",
           url: "https://www.lawmake.kr/weekly",
           mainEntity: {
             "@type": "ItemList",
