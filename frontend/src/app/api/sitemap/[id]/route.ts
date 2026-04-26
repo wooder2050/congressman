@@ -1,6 +1,7 @@
 import { NextRequest } from "next/server";
 import { getBillIds, getVoteIds, getElections } from "@/lib/api";
 import { getAllWeeklyArticles } from "@/data/weekly";
+import { getAllTermSlugs } from "@/lib/glossary";
 import { BASE, BILLS_PER_SITEMAP, xmlResponse, urlEntry, urlset } from "../route";
 
 export const dynamic = "force-dynamic";
@@ -25,6 +26,12 @@ async function buildSitemap(id: number) {
       urlEntry(`${BASE}/guide/budget`, { changefreq: "monthly", priority: 0.5 }),
       urlEntry(`${BASE}/guide/topics`, { changefreq: "monthly", priority: 0.6 }),
       urlEntry(`${BASE}/glossary`, { changefreq: "monthly", priority: 0.5 }),
+      ...getAllTermSlugs().map(({ slug }) =>
+        urlEntry(`${BASE}/glossary/${encodeURIComponent(slug)}`, {
+          changefreq: "monthly",
+          priority: 0.5,
+        }),
+      ),
       urlEntry(`${BASE}/about`, { changefreq: "monthly", priority: 0.5 }),
       urlEntry(`${BASE}/members/property`, { changefreq: "weekly", priority: 0.7 }),
       urlEntry(`${BASE}/members/scorecard`, { changefreq: "daily", priority: 0.7 }),

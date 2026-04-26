@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { getMember, getMemberTerms } from "@/lib/api";
+import { getMember, getMemberTerms, getMemberScorecard } from "@/lib/api";
 import { getElectedLabel } from "@/lib/utils";
 import CongressWrapper from "@/common/CongressWrapper";
 import MemberDetailInner from "@/components/members/MemberDetailInner";
@@ -14,7 +14,11 @@ interface MemberDetailPageProps {
 
 export async function generateMetadata({ params }: MemberDetailPageProps): Promise<Metadata> {
   const { id } = await params;
-  const [member, terms] = await Promise.all([getMember(id), getMemberTerms(id)]);
+  const [member, terms, scorecard] = await Promise.all([
+    getMember(id),
+    getMemberTerms(id),
+    getMemberScorecard({ memberId: id, termId: 22 }).catch(() => null),
+  ]);
   if (!member) return { title: "의원 정보 없음" };
 
   const currentTerm = terms.find((t) => t.termId === 22) ?? terms[0];
@@ -22,8 +26,20 @@ export async function generateMetadata({ params }: MemberDetailPageProps): Promi
   const district = currentTerm?.district ?? "";
   const location = currentTerm?.proportional ? "비례대표" : district || "비례대표";
   const electedLabel = getElectedLabel(currentTerm?.electedCount ?? member.electedCount);
+
+  const statsSnippets: string[] = [];
+  if (scorecard) {
+    statsSnippets.push(`출석률 ${Math.round(scorecard.attendance.rate)}%`);
+    statsSnippets.push(`법안 ${scorecard.billProposal.representativeCount}건 대표발의`);
+    if (scorecard.billPassRate.passedCount > 0) {
+      statsSnippets.push(`${scorecard.billPassRate.passedCount}건 통과`);
+    }
+    statsSnippets.push(`의정활동 ${scorecard.grade}등급`);
+  }
+  const statsText = statsSnippets.length > 0 ? ` ${statsSnippets.join(", ")}.` : "";
+
   const title = `${member.name} 의원 — ${partyName} ${location} · ${electedLabel} | 22대 국회`;
-  const description = `${partyName} 소속 ${member.name} 의원 (${location}, ${electedLabel})의 의정활동 정보. 출석률, 법안 발의 현황, 본회의 표결 기록, 재산 신고 내역을 확인하세요.`;
+  const description = `${partyName} ${member.name} 의원 (${location}, ${electedLabel}).${statsText} 본회의 표결 기록, 재산 신고 내역까지 확인하세요.`;
 
   return {
     title,

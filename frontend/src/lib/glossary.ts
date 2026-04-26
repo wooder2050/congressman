@@ -276,3 +276,23 @@ export function searchTerms(query: string): GlossaryTerm[] {
 export function getTerm(key: string): GlossaryTerm | undefined {
   return GLOSSARY[key];
 }
+
+/**
+ * 용어명(slug)으로 key와 용어 조회
+ */
+export function getTermBySlug(slug: string): { key: string; term: GlossaryTerm } | undefined {
+  const decoded = decodeURIComponent(slug);
+  const entry = Object.entries(GLOSSARY).find(([, v]) => v.term === decoded);
+  if (!entry) return undefined;
+  return { key: entry[0], term: entry[1] };
+}
+
+/**
+ * 모든 용어의 key-term 목록 (정적 생성용)
+ */
+export function getAllTermSlugs(): { key: string; slug: string }[] {
+  return Object.entries(GLOSSARY).map(([key, v]) => ({
+    key,
+    slug: v.term,
+  }));
+}
