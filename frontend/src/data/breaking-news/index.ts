@@ -2,6 +2,47 @@ import type { BreakingNewsItem } from "./types";
 
 const breakingNews: BreakingNewsItem[] = [
   {
+    id: "2026-04-27-oil-relief-payment",
+    title: "고유가 피해지원금 오늘 1차 지급 시작 — 기초수급자·차상위 최대 55만 원",
+    description:
+      "26.2조 추경의 핵심인 고유가 피해지원금 1차 지급이 4월 27일 오전 9시 시작되었습니다. 1차 대상은 기초생활수급자(55만 원)·차상위계층·한부모가족(45만 원)이며, 첫 주는 출생연도 끝자리 요일제로 운영됩니다. 2차(소득 하위 70%, 5/18~7/3)까지 총 3,256만 명에게 1인당 10만~60만 원이 지급됩니다.",
+    date: "2026-04-27",
+    category: "legislation",
+    items: [
+      {
+        label: "1차 대상",
+        value: "기초수급자 55만 원 · 차상위·한부모 45만 원 (4/27~5/8)",
+      },
+      {
+        label: "2차 대상",
+        value: "소득 하위 70% 일반 가구 · 1인당 10만~60만 원 (5/18~7/3)",
+      },
+      {
+        label: "첫 주 요일제",
+        value: "출생연도 끝자리 기준 — 1·6 월요일, 2·7 화요일, 3·8 수요일, 4·9 목요일, 5·0 금요일",
+      },
+      {
+        label: "신청 방법",
+        value: "카드사 앱·홈페이지 또는 주민센터·은행 방문 · 지역사랑상품권·카드 선택",
+      },
+    ],
+    sources: [
+      {
+        title: "27일부터 '고유가 피해지원금' 지급…신청날짜·방법은 — 뉴스1",
+        url: "https://www.news1.kr/local/seoul/6148999",
+      },
+      {
+        title: "'내 신청일 언제?' 고유가 피해지원금 27일 시작…첫주 요일제 — 서울시",
+        url: "https://mediahub.seoul.go.kr/archives/2017900",
+      },
+      {
+        title: "고유가 피해지원금 신청 4월 27일부터 시작 — KB의 생각",
+        url: "https://kbthink.com/life/daily/high-oil-price-relief-fund.html",
+      },
+    ],
+    active: true,
+  },
+  {
     id: "2026-04-23-plenary-115-bills",
     title: "본회의 법안 115건 처리 — 전세사기특별법·국립의전원법 등 민생 입법 쏟아져",
     description:
@@ -41,6 +82,49 @@ const breakingNews: BreakingNewsItem[] = [
         url: "https://www.newsis.com/view/NISX20260423_0003604327",
       },
     ],
+    active: false,
+  },
+  {
+    id: "2026-04-27-by-elections-update",
+    title: "재보궐 14곳 공천 마무리 — 민주 이광재·김용남·김남국 전략공천, 29일 의원 8명 일괄 사퇴",
+    description:
+      "민주당이 27일 경기 하남갑 이광재·평택을 김용남·안산갑 김남국을 전략공천하며 재보궐 공천을 마무리했습니다. 이재명 대통령 측근 김용 전 민주연구원 부원장은 사법리스크로 공천에서 배제되었습니다. 29일 광역단체장 출마 현역 의원 8명이 일괄 사퇴하며, 4월 30일이 보궐선거 동시실시 사퇴 기한입니다.",
+    date: "2026-04-27",
+    category: "election",
+    items: [
+      {
+        label: "민주 경기 전략공천(4/27)",
+        value:
+          "하남갑: 이광재 · 평택을: 김용남(보수 출신) · 안산갑: 김남국 — 김용은 사법리스크로 배제",
+      },
+      {
+        label: "국힘 공천 확정",
+        value: "대구시장: 추경호(본경선 승리) · 평택을: 유의동(단수추천)",
+      },
+      {
+        label: "29일 일괄 사퇴",
+        value: "민주당 광역단체장 출마 현역 의원 8명 일괄 의원직 사퇴 예정",
+      },
+      {
+        label: "사퇴 기한",
+        value: "4/30 사퇴 마감 · 5/15 후보등록 마감 · 6/3 투표일",
+      },
+    ],
+    sources: [
+      {
+        title: "[속보] 與, 하남갑 이광재·평택을 김용남·안산갑 김남국 전략공천 — 머니투데이",
+        url: "https://www.mt.co.kr/politics/2026/04/27/2026042718032986862",
+      },
+      {
+        title: "'정청래 픽' 이광재·김용남·김남국 공천..김용 무산 — 파이낸셜뉴스",
+        url: "https://www.fnnews.com/news/202604271843566488",
+      },
+      {
+        title: "민주당 의원 8명 29일 일괄 사퇴…6·3 '미니 총선' 14곳 — 이투데이",
+        url: "https://www.etoday.co.kr/news/view/2579227",
+      },
+    ],
+    linkUrl: "/elections/2026-06-03",
     active: true,
   },
   {
@@ -85,7 +169,44 @@ const breakingNews: BreakingNewsItem[] = [
       },
     ],
     linkUrl: "/elections/2026-06-03",
-    active: true,
+    active: false,
+  },
+  {
+    id: "2026-04-26-constitutional-amendment-d38",
+    title: "개헌 국민투표 D-38 — 내일(27일) 공고 만료, 재외투표 신청 마감",
+    description:
+      "내일(4월 27일) 헌법개정안 공고 기간이 만료됩니다. 재외국민투표 신고·신청도 내일까지 마쳐야 합니다. 공고 만료 후 5월 4~10일 사이 국회 본회의에서 재적의원 2/3 이상 찬성으로 가결되면 6·3 지방선거와 동시에 국민투표가 실시됩니다. 의원 사퇴로 재적의원 수가 줄어들면 의결 정족수도 낮아지지만, 국민의힘은 당론으로 반대를 유지하고 있어 이탈표 확보가 최대 관건입니다.",
+    date: "2026-04-26",
+    category: "politics",
+    items: [
+      {
+        label: "공고 만료",
+        value: "4/27 공고 기간 만료 · 재외국민투표 신청 마감",
+      },
+      {
+        label: "국회 표결",
+        value: "5월 4~10일 본회의 의결 필요 (재적의원 2/3 이상 찬성)",
+      },
+      {
+        label: "이탈표 동향",
+        value: "국민의힘 이탈표 필요 — 우원식 의장 자유투표 촉구, 당론은 반대",
+      },
+      {
+        label: "재외투표",
+        value: "국민투표 실시 시 5/20~25 재외투표소에서 투표 가능",
+      },
+    ],
+    sources: [
+      {
+        title: "4월 27일까지 개헌 위한 재외국민투표 투표권 신청해야 — 코리아헤럴드",
+        url: "https://heraldk.com/2026/04/21/4%EC%9B%94-27%EC%9D%BC%EA%B9%8C%EC%A7%80-%EA%B0%9C%ED%97%8C-%EC%9C%84%ED%95%9C-%EC%9E%AC%EC%99%B8%EA%B5%AD%EB%AF%BC%ED%88%AC%ED%91%9C-%ED%88%AC%ED%91%9C%EA%B6%8C-%EC%8B%A0%EC%B2%AD%ED%95%B4%EC%95%BC/",
+      },
+      {
+        title: "개헌안 의결 전에… 국민투표 예산 196억 예비비 의결 — 서울신문",
+        url: "https://www.seoul.co.kr/news/politics/local-election2026/2026/04/15/20260415010005",
+      },
+    ],
+    active: false,
   },
   {
     id: "2026-04-11-supplementary-budget-execution",
@@ -212,24 +333,24 @@ const breakingNews: BreakingNewsItem[] = [
     active: false,
   },
   {
-    id: "2026-04-26-constitutional-amendment-d38",
-    title: "개헌 국민투표 D-38 — 내일(27일) 공고 만료, 재외투표 신청 마감",
+    id: "2026-04-27-constitutional-amendment-d37",
+    title: "개헌 국민투표 D-37 — 공고 만료 완료, 5월 7일 국회 표결이 최대 고비",
     description:
-      "내일(4월 27일) 헌법개정안 공고 기간이 만료됩니다. 재외국민투표 신고·신청도 내일까지 마쳐야 합니다. 공고 만료 후 5월 4~10일 사이 국회 본회의에서 재적의원 2/3 이상 찬성으로 가결되면 6·3 지방선거와 동시에 국민투표가 실시됩니다. 의원 사퇴로 재적의원 수가 줄어들면 의결 정족수도 낮아지지만, 국민의힘은 당론으로 반대를 유지하고 있어 이탈표 확보가 최대 관건입니다.",
-    date: "2026-04-26",
+      "4월 27일 헌법개정안 공고 기간이 만료되고 재외국민투표 신청도 마감되었습니다. 여당은 5월 7일 본회의 표결을 예고하고 있으며, 재적의원 2/3 이상 찬성이 필요합니다. 의원 사퇴로 재적의원 수가 줄어들면 의결 정족수도 낮아지지만, 국민의힘은 당론으로 반대를 유지하고 있어 이탈표 확보가 최대 관건입니다.",
+    date: "2026-04-27",
     category: "politics",
     items: [
       {
         label: "공고 만료",
-        value: "4/27 공고 기간 만료 · 재외국민투표 신청 마감",
+        value: "4/27 공고 기간 만료 완료 · 재외국민투표 신청 마감",
       },
       {
         label: "국회 표결",
-        value: "5월 4~10일 본회의 의결 필요 (재적의원 2/3 이상 찬성)",
+        value: "여당, 5/7 본회의 처리 예고 (헌법상 5/10까지 의결 시한)",
       },
       {
         label: "이탈표 동향",
-        value: "국민의힘 이탈표 필요 — 우원식 의장 자유투표 촉구, 당론은 반대",
+        value: "국민의힘 이탈표 필요 — 우원식 의장 자유투표 촉구, 당론은 반대 유지",
       },
       {
         label: "재외투표",
@@ -237,6 +358,10 @@ const breakingNews: BreakingNewsItem[] = [
       },
     ],
     sources: [
+      {
+        title: "與, 5월 7일 개헌안 처리 예고…에너지 대전환·세제 개편도 '드라이브' — 디지털타임스",
+        url: "https://www.dt.co.kr/article/12056113",
+      },
       {
         title: "4월 27일까지 개헌 위한 재외국민투표 투표권 신청해야 — 코리아헤럴드",
         url: "https://heraldk.com/2026/04/21/4%EC%9B%94-27%EC%9D%BC%EA%B9%8C%EC%A7%80-%EA%B0%9C%ED%97%8C-%EC%9C%84%ED%95%9C-%EC%9E%AC%EC%99%B8%EA%B5%AD%EB%AF%BC%ED%88%AC%ED%91%9C-%ED%88%AC%ED%91%9C%EA%B6%8C-%EC%8B%A0%EC%B2%AD%ED%95%B4%EC%95%BC/",
