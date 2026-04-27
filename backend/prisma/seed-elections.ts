@@ -377,13 +377,14 @@ async function main() {
       continue;
     }
     const resolvedPartyId = await resolvePartyId(c.partyId);
+    const resolvedMemberIdRef = await resolveMemberId((c as any).memberIdRef ?? null);
     await prisma.candidate.upsert({
       where: { districtId_name: { districtId: districtRecord.id, name: c.name } },
       update: {
         partyId: resolvedPartyId,
         career: c.career,
         status: 'nominated',
-        memberIdRef: (c as any).memberIdRef ?? null,
+        memberIdRef: resolvedMemberIdRef,
       },
       create: {
         districtId: districtRecord.id,
@@ -391,7 +392,7 @@ async function main() {
         partyId: resolvedPartyId,
         career: c.career,
         status: 'nominated',
-        memberIdRef: (c as any).memberIdRef ?? null,
+        memberIdRef: resolvedMemberIdRef,
       },
     });
   }
