@@ -260,31 +260,112 @@ async function main() {
   // 5. 후보자 시드
   const candidates = [
     // 인천 계양을
-    { district: '인천 계양구을', name: '김남준', partyId: 'democratic', career: '전 청와대 대변인\n전 대통령비서실 선임행정관' },
+    {
+      district: '인천 계양구을',
+      name: '김남준',
+      partyId: 'democratic',
+      career: '전 청와대 대변인\n전 대통령비서실 선임행정관',
+    },
     // 충남 아산을
     { district: '충남 아산시을', name: '김민경', partyId: 'ppp', career: '국민의힘 아산시을 후보' },
-    { district: '충남 아산시을', name: '전은수', partyId: 'democratic', career: '전 대통령비서실 대변인\n언론인 출신' },
+    {
+      district: '충남 아산시을',
+      name: '전은수',
+      partyId: 'democratic',
+      career: '전 대통령비서실 대변인\n언론인 출신',
+    },
     // 경기 안산갑
-    { district: '경기 안산시갑', name: '김석훈', partyId: 'ppp', career: '전 안산시의회 의장\n국민의힘 경기도당 수석대변인' },
-    { district: '경기 안산시갑', name: '김남국', partyId: 'democratic', career: '전 대통령비서실 국민디지털소통비서관\n전 22대 국회의원 (경기 안산시단원구갑)\n민주당 대변인' },
+    {
+      district: '경기 안산시갑',
+      name: '김석훈',
+      partyId: 'ppp',
+      career: '전 안산시의회 의장\n국민의힘 경기도당 수석대변인',
+    },
+    {
+      district: '경기 안산시갑',
+      name: '김남국',
+      partyId: 'democratic',
+      career:
+        '전 대통령비서실 국민디지털소통비서관\n전 22대 국회의원 (경기 안산시단원구갑)\n민주당 대변인',
+    },
     // 경기 평택을
-    { district: '경기 평택시을', name: '조국', partyId: 'rebuilding', career: '조국혁신당 대표\n전 법무부 장관\n전 청와대 민정수석', memberIdRef: null },
-    { district: '경기 평택시을', name: '유의동', partyId: 'ppp', career: '전 국민의힘 정책위의장\n21대 국회의원 (경기 평택시을)\n20대 국회의원 (경기 평택시을)', memberIdRef: 'MRK4871S' },
-    { district: '경기 평택시을', name: '김용남', partyId: 'democratic', career: '전 19대 국회의원 (경기 평택시)\n전 한나라당 경기도당위원장\n보수 출신 민주당 전략공천' },
+    {
+      district: '경기 평택시을',
+      name: '조국',
+      partyId: 'rebuilding',
+      career: '조국혁신당 대표\n전 법무부 장관\n전 청와대 민정수석',
+      memberIdRef: null,
+    },
+    {
+      district: '경기 평택시을',
+      name: '유의동',
+      partyId: 'ppp',
+      career:
+        '전 국민의힘 정책위의장\n21대 국회의원 (경기 평택시을)\n20대 국회의원 (경기 평택시을)',
+      memberIdRef: 'MRK4871S',
+    },
+    {
+      district: '경기 평택시을',
+      name: '김용남',
+      partyId: 'democratic',
+      career:
+        '전 19대 국회의원 (경기 평택시)\n전 한나라당 경기도당위원장\n보수 출신 민주당 전략공천',
+    },
     // 전북 군산김제부안갑
-    { district: '전북 군산시김제시부안군갑', name: '오지성', partyId: 'ppp', career: '전 군산·김제·부안갑 당협위원장' },
+    {
+      district: '전북 군산시김제시부안군갑',
+      name: '오지성',
+      partyId: 'ppp',
+      career: '전 군산·김제·부안갑 당협위원장',
+    },
     // 경기 하남갑
-    { district: '경기 하남시갑', name: '이광재', partyId: 'democratic', career: '전 강원도지사\n전 3선 국회의원\n전 열린우리당 최고위원' },
+    {
+      district: '경기 하남시갑',
+      name: '이광재',
+      partyId: 'democratic',
+      career: '전 강원도지사\n전 3선 국회의원\n전 열린우리당 최고위원',
+    },
     // 부산 북구갑
-    { district: '부산 북구갑', name: '한동훈', partyId: 'independent', career: '전 국민의힘 대표\n전 법무부 장관' },
-    { district: '부산 북구갑', name: '하정우', partyId: 'democratic', career: '전 대통령비서실 AI미래기획수석\n법조인 출신' },
-    { district: '부산 북구갑', name: '박민식', partyId: 'ppp', career: '전 국가보훈부 장관\n전 20대 국회의원 (부산 북구갑)' },
+    {
+      district: '부산 북구갑',
+      name: '한동훈',
+      partyId: 'independent',
+      career: '전 국민의힘 대표\n전 법무부 장관',
+    },
+    {
+      district: '부산 북구갑',
+      name: '하정우',
+      partyId: 'democratic',
+      career: '전 대통령비서실 AI미래기획수석\n법조인 출신',
+    },
+    {
+      district: '부산 북구갑',
+      name: '박민식',
+      partyId: 'ppp',
+      career: '전 국가보훈부 장관\n전 20대 국회의원 (부산 북구갑)',
+    },
     // 인천 연수갑
-    { district: '인천 연수구갑', name: '송영길', partyId: 'democratic', career: '전 더불어민주당 대표\n20대 국회의원 (인천 연수구갑)\n전 인천시장', memberIdRef: 'PAO22428' },
+    {
+      district: '인천 연수구갑',
+      name: '송영길',
+      partyId: 'democratic',
+      career: '전 더불어민주당 대표\n20대 국회의원 (인천 연수구갑)\n전 인천시장',
+      memberIdRef: 'PAO22428',
+    },
     // 울산 남구갑
-    { district: '울산 남구갑', name: '전태진', partyId: 'democratic', career: '변호사\n더불어민주당 1호 전략공천' },
+    {
+      district: '울산 남구갑',
+      name: '전태진',
+      partyId: 'democratic',
+      career: '변호사\n더불어민주당 1호 전략공천',
+    },
     // 광주 광산을
-    { district: '광주 광산구을', name: '신지혜', partyId: 'basic-income', career: '전 기본소득당 대표\n기본소득당 최고위원' },
+    {
+      district: '광주 광산구을',
+      name: '신지혜',
+      partyId: 'basic-income',
+      career: '전 기본소득당 대표\n기본소득당 최고위원',
+    },
   ];
 
   for (const c of candidates) {
