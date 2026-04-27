@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { RedisService } from '../redis/redis.service';
 
-const TTL_HOUR = 60 * 60;
+const TTL_6H = 60 * 60 * 6;
 
 @Injectable()
 export class StatsService {
@@ -84,7 +84,7 @@ export class StatsService {
       })),
     };
 
-    await this.redis.set(key, result, TTL_HOUR);
+    await this.redis.set(key, result, TTL_6H);
     return result;
   }
 
@@ -174,7 +174,7 @@ export class StatsService {
       bottom: bottomRaw.map(mapItem),
     };
 
-    await this.redis.set(key, result, TTL_HOUR);
+    await this.redis.set(key, result, TTL_6H);
     return result;
   }
 
@@ -347,7 +347,7 @@ export class StatsService {
       rejectedVotes: rejectedVotesRaw.map(mapVote),
     };
 
-    await this.redis.set(key, result, TTL_HOUR);
+    await this.redis.set(key, result, TTL_6H);
     return result;
   }
 }

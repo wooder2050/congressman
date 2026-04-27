@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { RedisService } from '../redis/redis.service';
 
-const TTL_HOUR = 60 * 60;
+const TTL_6H = 60 * 60 * 6;
 
 /** 정부조직법 개정 등으로 변경된 위원회명 → 현행 위원회명 매핑 */
 const COMMITTEE_NAME_MAP: Record<string, string> = {
@@ -136,7 +136,7 @@ export class CommitteesService {
       };
     });
 
-    await this.redis.set(key, result, TTL_HOUR);
+    await this.redis.set(key, result, TTL_6H);
     return result;
   }
 
@@ -199,7 +199,7 @@ export class CommitteesService {
       })),
     };
 
-    await this.redis.set(key, result, TTL_HOUR);
+    await this.redis.set(key, result, TTL_6H);
     return result;
   }
 
@@ -236,7 +236,7 @@ export class CommitteesService {
       totalPages: Math.ceil(total / pageSize),
     };
 
-    await this.redis.set(key, result, TTL_HOUR);
+    await this.redis.set(key, result, TTL_6H);
     return result;
   }
 }

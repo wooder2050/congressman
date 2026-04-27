@@ -3,6 +3,7 @@ import { PrismaService } from '../prisma/prisma.service';
 import { RedisService } from '../redis/redis.service';
 
 const TTL_DAY = 60 * 60 * 24; // 24h
+const TTL_6H = 60 * 60 * 6; // 6h
 const TTL_HOUR = 60 * 60; // 1h
 
 /** BigInt → Number 안전 변환 (MAX_SAFE_INTEGER 초과 시 0 반환 + 경고) */
@@ -764,7 +765,7 @@ export class MembersService {
       },
     };
 
-    await this.redis.set(key, result, TTL_HOUR);
+    await this.redis.set(key, result, TTL_6H);
     return result;
   }
 
@@ -884,7 +885,7 @@ export class MembersService {
     rankings.sort((a, b) => b.totalScore - a.totalScore);
 
     const result = { rankings };
-    await this.redis.set(key, result, TTL_HOUR);
+    await this.redis.set(key, result, TTL_6H);
     return result;
   }
 }
