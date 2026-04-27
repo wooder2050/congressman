@@ -7,6 +7,7 @@ import TermSelector from "@/components/layout/TermSelector";
 import BottomNav from "@/components/layout/BottomNav";
 import Footer from "@/components/layout/Footer";
 import ScrollToTop from "@/components/layout/ScrollToTop";
+import ElectionFab from "@/components/layout/ElectionFab";
 import JsonLd from "@/components/seo/JsonLd";
 
 const GTM_ID = "GTM-5BXVCW6Z";
@@ -129,6 +130,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
             {children}
           </main>
           <Footer />
+          <ElectionFab />
           <BottomNav />
         </Providers>
       </body>
