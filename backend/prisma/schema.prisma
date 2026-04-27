@@ -32,9 +32,9 @@ model Party {
   shortName String // "민주당"
   color     String // "#1B56DB"
 
-  memberTerms        MemberTerm[]
-  electionDistricts  ElectionDistrict[]
-  candidates         Candidate[]
+  memberTerms       MemberTerm[]
+  electionDistricts ElectionDistrict[]
+  candidates        Candidate[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -61,16 +61,16 @@ model Member {
 }
 
 model MemberTerm {
-  id           Int      @id @default(autoincrement())
-  memberId     String
-  termId       Int
-  partyId      String
-  district     String   @default("")
-  proportional Boolean  @default(false)
+  id               Int      @id @default(autoincrement())
+  memberId         String
+  termId           Int
+  partyId          String
+  district         String   @default("")
+  proportional     Boolean  @default(false)
   committees       String[] @default([])
   committeeHistory Json     @default("[]") // 전체 위원회 이력 [{name, startDate, endDate}]
   committeeRoles   Json     @default("{}") // {"법제사법위원회": "위원장", "예산결산특별위원회": "위원"}
-  electedCount   Int      @default(1) // 해당 대수 기준 선수
+  electedCount     Int      @default(1) // 해당 대수 기준 선수
 
   member Member @relation(fields: [memberId], references: [id])
   term   Term   @relation(fields: [termId], references: [id])
@@ -86,15 +86,15 @@ model MemberTerm {
 }
 
 model Attendance {
-  id            Int   @id @default(autoincrement())
+  id            Int    @id @default(autoincrement())
   memberId      String
   termId        Int
-  totalSessions Int   @default(0)
-  attended      Int   @default(0)
-  absent        Int   @default(0)
-  leave         Int   @default(0) // 청가
-  travel        Int   @default(0) // 출장
-  rate          Float @default(0)
+  totalSessions Int    @default(0)
+  attended      Int    @default(0)
+  absent        Int    @default(0)
+  leave         Int    @default(0) // 청가
+  travel        Int    @default(0) // 출장
+  rate          Float  @default(0)
 
   term Term @relation(fields: [termId], references: [id])
 
@@ -107,29 +107,29 @@ model Attendance {
 }
 
 model Bill {
-  id              String  @id // BILL_ID from API or mock id
-  title           String
-  proposerName    String  @default("")
-  coProposerCount Int     @default(0)
-  status          String  @default("pending") // passed, pending, discarded, committee
-  proposedDate    String
-  termId          Int
+  id                   String  @id // BILL_ID from API or mock id
+  title                String
+  proposerName         String  @default("")
+  coProposerCount      Int     @default(0)
+  status               String  @default("pending") // passed, pending, discarded, committee
+  proposedDate         String
+  termId               Int
   committee            String?
-  committeeDate        String?  // 위원회 회부일
-  committeePresentDate String?  // 위원회 상정일
-  committeeResultCode  String?  // 위원회 처리결과
-  committeeResultDate  String?  // 위원회 처리일
-  lawSubmitDate        String?  // 법사위 회부일
-  lawPresentDate       String?  // 법사위 상정일
-  lawResultCode        String?  // 법사위 처리결과
-  lawResultDate        String?  // 법사위 처리일
-  plenaryDate          String?  // 본회의 처리일
-  summary           String?  // 제안이유 및 주요내용
-  simpleSummary     String?  // AI 원라이너 요약
-  structuredSummary Json?    // { situation, problem, change, impact }
-  topic             String?  // 주제 카테고리
-  pdfBookId         String?  // 의안원문 PDF bookId
-  detailLink        String?  // 의안정보시스템 상세 URL
+  committeeDate        String? // 위원회 회부일
+  committeePresentDate String? // 위원회 상정일
+  committeeResultCode  String? // 위원회 처리결과
+  committeeResultDate  String? // 위원회 처리일
+  lawSubmitDate        String? // 법사위 회부일
+  lawPresentDate       String? // 법사위 상정일
+  lawResultCode        String? // 법사위 처리결과
+  lawResultDate        String? // 법사위 처리일
+  plenaryDate          String? // 본회의 처리일
+  summary              String? // 제안이유 및 주요내용
+  simpleSummary        String? // AI 원라이너 요약
+  structuredSummary    Json? // { situation, problem, change, impact }
+  topic                String? // 주제 카테고리
+  pdfBookId            String? // 의안원문 PDF bookId
+  detailLink           String? // 의안정보시스템 상세 URL
 
   term      Term           @relation(fields: [termId], references: [id])
   proposers BillProposer[]
@@ -201,16 +201,15 @@ model MemberVote {
 
   @@unique([memberId, voteId])
   @@index([memberId])
-  @@index([voteId])
-  @@index([result])
+  @@index([voteId, memberId, result])
 }
 
 model Asset {
-  id       Int    @id @default(autoincrement())
-  memberId String
-  year     Int
-  category String
-  item     String
+  id           Int    @id @default(autoincrement())
+  memberId     String
+  year         Int
+  category     String
+  item         String
   amount       BigInt @default(0)
   relation     String @default("본인")
   changeReason String @default("") // 변동사유 (신규등록, 가액변동, 매입 등)
@@ -227,16 +226,16 @@ model Asset {
 }
 
 model Schedule {
-  id            Int      @id @default(autoincrement())
+  id            Int    @id @default(autoincrement())
   type          String // "plenary" (본회의) | "committee" (위원회)
   title         String
   meetingDate   String // YYYY-MM-DD
-  meetingTime   String   @default("")
-  session       String   @default("")
-  degree        String   @default("")
-  committeeName String   @default("")
-  agenda        String   @default("")
-  linkUrl       String   @default("")
+  meetingTime   String @default("")
+  session       String @default("")
+  degree        String @default("")
+  committeeName String @default("")
+  agenda        String @default("")
+  linkUrl       String @default("")
   termId        Int
 
   term Term @relation(fields: [termId], references: [id])
@@ -252,13 +251,13 @@ model Schedule {
 }
 
 model MeetingMinutes {
-  id            String   @id              // CONF_ID
-  conferNum     String                    // CONFER_NUM (회의 번호)
-  title         String                    // TITLE
-  className     String   @default("")     // CLASS_NAME (회의 구분)
-  committeeName String                    // COMM_NAME
-  confDate      String                    // CONF_DATE (YYYY-MM-DD)
-  agendas       Json     @default("[]")   // [{subName, vodLinkUrl, confLinkUrl, pdfLinkUrl}]
+  id            String @id // CONF_ID
+  conferNum     String // CONFER_NUM (회의 번호)
+  title         String // TITLE
+  className     String @default("") // CLASS_NAME (회의 구분)
+  committeeName String // COMM_NAME
+  confDate      String // CONF_DATE (YYYY-MM-DD)
+  agendas       Json   @default("[]") // [{subName, vodLinkUrl, confLinkUrl, pdfLinkUrl}]
   termId        Int
 
   term Term @relation(fields: [termId], references: [id])
@@ -309,20 +308,19 @@ model ElectionDistrict {
   confirmed          Boolean @default(true)
   status             String  @default("upcoming")
 
-  election       ByElection @relation(fields: [electionId], references: [id])
-  previousMember Member?    @relation(fields: [previousMemberId], references: [id])
-  previousParty  Party?     @relation(fields: [previousPartyId], references: [id])
+  election       ByElection  @relation(fields: [electionId], references: [id])
+  previousMember Member?     @relation(fields: [previousMemberId], references: [id])
+  previousParty  Party?      @relation(fields: [previousPartyId], references: [id])
   candidates     Candidate[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   @@unique([electionId, district])
-  @@index([electionId])
 }
 
 model Candidate {
-  id              Int    @id @default(autoincrement())
+  id              Int     @id @default(autoincrement())
   districtId      Int
   name            String
   partyId         String?
@@ -344,5 +342,4 @@ model Candidate {
   updatedAt DateTime @updatedAt
 
   @@unique([districtId, name])
-  @@index([districtId])
 }
