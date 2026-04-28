@@ -33,11 +33,31 @@ import type {
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL;
 
-async function fetchApi<T>(path: string): Promise<T> {
+type FetchApiOptions = {
+  revalidate?: number;
+  tags?: string[];
+};
+
+async function fetchApi<T>(path: string, options?: FetchApiOptions): Promise<T> {
   if (!API_BASE) {
     throw new Error("NEXT_PUBLIC_API_URL 환경변수가 설정되지 않았습니다.");
   }
-  const res = await fetch(`${API_BASE}${path}`);
+
+  const init: RequestInit & { next?: { revalidate?: number; tags?: string[] } } = {};
+  const hasCacheHint = options?.revalidate !== undefined || !!options?.tags?.length;
+  if (hasCacheHint) {
+    init.next = {};
+    if (options?.revalidate !== undefined) init.next.revalidate = options.revalidate;
+    if (options?.tags?.length) init.next.tags = options.tags;
+    // Next.js 16 defaults fetch to no-store; force-cache is required to actually
+    // hit the data cache. Only apply server-side — client React Query manages
+    // its own cache and we don't want to interfere with browser cache semantics.
+    if (typeof window === "undefined") {
+      init.cache = "force-cache";
+    }
+  }
+
+  const res = await fetch(`${API_BASE}${path}`, init);
   if (res.status === 404) return null as T;
   if (!res.ok) throw new Error(`API error: ${res.status}`);
   const text = await res.text();
@@ -46,7 +66,7 @@ async function fetchApi<T>(path: string): Promise<T> {
 }
 
 export async function getTerms(): Promise<AssemblyTerm[]> {
-  return fetchApi("/api/terms");
+  return fetchApi("/api/terms", { revalidate: 3600, tags: ["terms"] });
 }
 
 export async function getMembers(termId: number): Promise<MemberWithTerm[]> {
@@ -106,7 +126,10 @@ export async function getBillSummary(termId: number): Promise<BillSummary> {
 }
 
 export async function getBillTopics(termId: number): Promise<{ topic: string; count: number }[]> {
-  return fetchApi(`/api/bills/topics?termId=${termId}`);
+  return fetchApi(`/api/bills/topics?termId=${termId}`, {
+    revalidate: 300,
+    tags: ["bills"],
+  });
 }
 
 export async function getBillCommittees(termId: number): Promise<string[]> {
@@ -198,15 +221,24 @@ export async function getVoteMemberVotes(voteId: string): Promise<VoteWithMember
 }
 
 export async function getAttendanceRanking(termId: number): Promise<AttendanceRanking> {
-  return fetchApi(`/api/stats/attendance-ranking?termId=${termId}`);
+  return fetchApi(`/api/stats/attendance-ranking?termId=${termId}`, {
+    revalidate: 300,
+    tags: ["rankings"],
+  });
 }
 
 export async function getHomeStats(termId: number): Promise<HomeStats> {
-  return fetchApi(`/api/stats/home?termId=${termId}`);
+  return fetchApi(`/api/stats/home?termId=${termId}`, {
+    revalidate: 60,
+    tags: ["home"],
+  });
 }
 
 export async function getUpcomingSchedules(termId: number): Promise<Schedule[]> {
-  return fetchApi(`/api/schedules/upcoming?termId=${termId}`);
+  return fetchApi(`/api/schedules/upcoming?termId=${termId}`, {
+    revalidate: 60,
+    tags: ["schedules"],
+  });
 }
 
 export async function getSchedules(params: {
