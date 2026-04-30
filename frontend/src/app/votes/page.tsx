@@ -26,7 +26,7 @@ export default async function VotesPage({ searchParams }: VotesPageProps) {
   const termId = Number(params.term) || 22;
 
   return (
-    <div className="mx-auto max-w-7xl">
+    <div>
       <JsonLd
         data={{
           "@context": "https://schema.org",
@@ -46,8 +46,11 @@ export default async function VotesPage({ searchParams }: VotesPageProps) {
         }}
       />
       <div className="mb-4 space-y-3">
-        <h1 className="text-2xl font-bold">표결 현황</h1>
+        <h1 className="text-2xl font-bold sm:text-3xl sm:font-extrabold sm:tracking-tight">
+          표결 현황
+        </h1>
         <PageIntro
+          collapsible
           description="국회 본회의에서 진행된 표결 결과를 확인할 수 있습니다. 본회의 표결은 위원회 심사를 마친 법안이 국회의원 전체 회의에서 최종 결정되는 절차입니다. 재적의원 과반수 출석에 출석의원 과반수 찬성으로 법안이 통과(가결)됩니다."
           details={[
             "원안가결(수정 없이 통과), 수정가결(일부 수정 후 통과), 부결(반대 다수로 미통과) 등 결과를 확인하세요.",

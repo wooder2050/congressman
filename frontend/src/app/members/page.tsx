@@ -30,7 +30,7 @@ export default async function MembersPage({ searchParams }: MembersPageProps) {
   const termId = Number(params.term) || 22;
 
   return (
-    <div className="mx-auto max-w-7xl space-y-6">
+    <div className="space-y-6">
       <JsonLd
         data={{
           "@context": "https://schema.org",
@@ -49,8 +49,11 @@ export default async function MembersPage({ searchParams }: MembersPageProps) {
         }}
       />
       <div className="space-y-3">
-        <h1 className="text-2xl font-bold">의원 목록</h1>
+        <h1 className="text-2xl font-bold sm:text-3xl sm:font-extrabold sm:tracking-tight">
+          의원 목록
+        </h1>
         <PageIntro
+          collapsible
           description="현재 제22대 국회는 300명의 국회의원으로 구성되어 있습니다. 국회의원은 국민의 대표로서 법률안을 발의하고, 본회의 표결에 참여하며, 정부를 감시하는 역할을 합니다. 지역구 의원(254명)은 각 선거구 주민의 투표로, 비례대표 의원(46명)은 정당 득표율에 따라 선출됩니다."
           details={[
             "지역구를 입력해 내 지역 국회의원을 빠르게 찾을 수 있습니다.",
@@ -94,7 +97,7 @@ export default async function MembersPage({ searchParams }: MembersPageProps) {
             2024년 재산신고 기준 다주택자·고가주택·부동산 과다보유 현황
           </div>
         </div>
-        <span className="shrink-0 text-sm font-semibold text-purple-600">보기 →</span>
+        <span className="shrink-0 text-sm font-semibold text-purple-600">재산 현황 보기 →</span>
       </Link>
 
       {/* 성적표 랭킹 배너 */}
@@ -111,7 +114,7 @@ export default async function MembersPage({ searchParams }: MembersPageProps) {
           </div>
         </div>
         <span className="shrink-0 text-sm font-semibold text-blue-600 dark:text-blue-300">
-          보기 →
+          성적표 랭킹 보기 →
         </span>
       </Link>
 

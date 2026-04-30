@@ -40,7 +40,9 @@ export default function ElectionHeader({ election }: { election: ByElectionDetai
         </span>
       </div>
 
-      <h1 className="text-2xl font-extrabold tracking-tight sm:text-3xl">{election.name}</h1>
+      <h1 className="text-2xl font-bold sm:text-3xl sm:font-extrabold sm:tracking-tight">
+        {election.name}
+      </h1>
 
       <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-(--color-text-secondary)">
         <span>투표일 {election.electionDate}</span>
