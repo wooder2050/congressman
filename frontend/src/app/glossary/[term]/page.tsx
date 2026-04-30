@@ -20,7 +20,8 @@ export async function generateMetadata({ params }: GlossaryTermPageProps): Promi
 
   const { term } = result;
   const title = `${term.term} 뜻 — 국회 용어 쉽게 설명`;
-  const description = term.fullDesc || term.shortDesc;
+  const rawDesc = `"${term.term}"이란 ${term.shortDesc}${term.fullDesc ? ` ${term.fullDesc}` : ""}`;
+  const description = rawDesc.slice(0, 155) + (rawDesc.length > 155 ? "…" : "");
 
   return {
     title,

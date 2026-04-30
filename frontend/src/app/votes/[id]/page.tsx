@@ -45,7 +45,7 @@ async function ServerVoteSummary({ id }: { id: string }) {
   const resultText =
     vote.resultCode === "passed" || vote.resultCode === "amended" ? "가결" : "부결";
   return (
-    <section className="sr-only" aria-hidden="true">
+    <section className="sr-only">
       <h1>{vote.billName} 표결 결과</h1>
       <p>결과: {resultText}</p>
       <p>

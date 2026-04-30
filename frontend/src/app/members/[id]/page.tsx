@@ -68,7 +68,7 @@ async function ServerMemberSummary({ id }: { id: string }) {
   const district = currentTerm?.district ?? "";
   const termList = terms.map((t) => `${t.termId}대`).join(", ");
   return (
-    <section className="sr-only" aria-hidden="true">
+    <section className="sr-only">
       <h1>{member.name} 국회의원</h1>
       <p>정당: {partyName}</p>
       {district && <p>지역구: {district}</p>}
