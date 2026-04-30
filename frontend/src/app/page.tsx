@@ -15,6 +15,7 @@ import ScorecardHighlight from "@/components/home/ScorecardHighlight";
 import BreakingNewsBanner from "@/components/home/BreakingNewsBanner";
 import CivicKnowledge from "@/components/home/CivicKnowledge";
 import TopicGuide from "@/components/home/TopicGuide";
+import HomeMoreSections from "@/components/home/HomeMoreSections";
 import {
   HomeStatsSkeleton,
   TopicSectionSkeleton,
@@ -100,10 +101,12 @@ export default async function HomePage({ searchParams }: HomePageProps) {
           },
         }}
       />
-      <div className="mx-auto max-w-7xl space-y-8">
+      <div className="space-y-8">
         {/* 헤더 */}
         <section>
-          <h1 className="text-3xl font-extrabold tracking-tight">국회의원 의정활동 정보</h1>
+          <h1 className="text-2xl font-bold sm:text-3xl sm:font-extrabold sm:tracking-tight">
+            국회의원 의정활동 정보
+          </h1>
           <p className="mt-2 text-sm leading-relaxed text-(--color-text-secondary)">
             lawmake는 대한민국 국회의원의 법안 발의, 본회의 표결, 출석 현황 등 핵심 의정활동
             데이터를 시민 누구나 쉽게 확인할 수 있도록 만든 플랫폼입니다. 열린국회정보 공공 API에서
@@ -116,17 +119,6 @@ export default async function HomePage({ searchParams }: HomePageProps) {
         {/* 속보 배너 */}
         <BreakingNewsBanner />
 
-        {/* 플랫폼 소개 */}
-        <PageIntro
-          description="lawmake.kr은 대한민국 국회의 의정활동 데이터를 시민이 쉽게 이해하고 활용할 수 있도록 정리한 플랫폼입니다. 열린국회정보 공공데이터를 기반으로, 국회의원의 법안 발의, 본회의 표결, 출석 현황 등 핵심 의정활동 정보를 제공합니다."
-          details={[
-            "의원별 법안 발의 건수, 표결 참여율, 출석률 등 의정활동 성적표를 한눈에 비교할 수 있습니다.",
-            "발의된 법안의 심사 진행 상황을 단계별로 추적하고, AI 요약으로 법안 내용을 쉽게 파악할 수 있습니다.",
-            "본회의 표결에서 각 의원이 어떻게 투표했는지 찬성·반대·기권 내역을 투명하게 공개합니다.",
-            "지역구·정당별 의원 검색과 비교 기능으로 내 지역 국회의원의 활동을 확인해 보세요.",
-          ]}
-        />
-
         {/* 통계 요약 */}
         <CongressWrapper key={`stats-${termId}`} fallback={<HomeStatsSkeleton />}>
           <HomeStats termId={termId} />
@@ -134,29 +126,6 @@ export default async function HomePage({ searchParams }: HomePageProps) {
 
         {/* 주간 국회 뉴스 */}
         <LatestWeeklyNews />
-
-        {/* 국회 상식 */}
-        <CivicKnowledge />
-
-        {/* 다가오는 일정 — 현재 대수(22대)만 표시 */}
-        {termId === 22 && (
-          <CongressWrapper key={`schedules-${termId}`} fallback={<UpcomingSchedulesSkeleton />}>
-            <UpcomingSchedules termId={termId} />
-          </CongressWrapper>
-        )}
-
-        {/* 주제별 법안 — AI 요약이 있는 22대만 표시 */}
-        {termId === 22 && (
-          <section className="space-y-3">
-            <h2 className="text-xl font-bold">지금 국회에서 논의 중인 주제</h2>
-            <CongressWrapper key={`topics-${termId}`} fallback={<TopicSectionSkeleton />}>
-              <TopicSection termId={termId} />
-            </CongressWrapper>
-          </section>
-        )}
-
-        {/* 주제별 법안 가이드 — 22대만 표시 */}
-        {termId === 22 && <TopicGuide />}
 
         {/* 최근 활동 */}
         <section className="space-y-3">
@@ -166,41 +135,78 @@ export default async function HomePage({ searchParams }: HomePageProps) {
           </CongressWrapper>
         </section>
 
-        {/* 의정활동 성적표 — 22대만 표시 */}
-        {termId === 22 && (
+        {/* 모바일: 접기 / 데스크톱: 항상 표시 */}
+        <HomeMoreSections>
+          {/* 플랫폼 소개 */}
+          <PageIntro
+            description="lawmake.kr은 대한민국 국회의 의정활동 데이터를 시민이 쉽게 이해하고 활용할 수 있도록 정리한 플랫폼입니다. 열린국회정보 공공데이터를 기반으로, 국회의원의 법안 발의, 본회의 표결, 출석 현황 등 핵심 의정활동 정보를 제공합니다."
+            details={[
+              "의원별 법안 발의 건수, 표결 참여율, 출석률 등 의정활동 성적표를 한눈에 비교할 수 있습니다.",
+              "발의된 법안의 심사 진행 상황을 단계별로 추적하고, AI 요약으로 법안 내용을 쉽게 파악할 수 있습니다.",
+              "본회의 표결에서 각 의원이 어떻게 투표했는지 찬성·반대·기권 내역을 투명하게 공개합니다.",
+              "지역구·정당별 의원 검색과 비교 기능으로 내 지역 국회의원의 활동을 확인해 보세요.",
+            ]}
+          />
+
+          {/* 국회 상식 */}
+          <CivicKnowledge />
+
+          {/* 다가오는 일정 — 현재 대수(22대)만 표시 */}
+          {termId === 22 && (
+            <CongressWrapper key={`schedules-${termId}`} fallback={<UpcomingSchedulesSkeleton />}>
+              <UpcomingSchedules termId={termId} />
+            </CongressWrapper>
+          )}
+
+          {/* 주제별 법안 — AI 요약이 있는 22대만 표시 */}
+          {termId === 22 && (
+            <section className="space-y-3">
+              <h2 className="text-xl font-bold">지금 국회에서 논의 중인 주제</h2>
+              <CongressWrapper key={`topics-${termId}`} fallback={<TopicSectionSkeleton />}>
+                <TopicSection termId={termId} />
+              </CongressWrapper>
+            </section>
+          )}
+
+          {/* 주제별 법안 가이드 — 22대만 표시 */}
+          {termId === 22 && <TopicGuide />}
+
+          {/* 의정활동 성적표 — 22대만 표시 */}
+          {termId === 22 && (
+            <section className="space-y-3">
+              <h2 className="text-xl font-bold">의정활동 성적표</h2>
+              <CongressWrapper key="scorecard" fallback={<AttendanceRankingSkeleton />}>
+                <ScorecardHighlight />
+              </CongressWrapper>
+            </section>
+          )}
+
+          {/* 출석 랭킹 */}
           <section className="space-y-3">
-            <h2 className="text-xl font-bold">의정활동 성적표</h2>
-            <CongressWrapper key="scorecard" fallback={<AttendanceRankingSkeleton />}>
-              <ScorecardHighlight />
+            <h2 className="text-xl font-bold">출석 랭킹</h2>
+            <CongressWrapper key={`attendance-${termId}`} fallback={<AttendanceRankingSkeleton />}>
+              <AttendanceRanking termId={termId} />
             </CongressWrapper>
           </section>
-        )}
 
-        {/* 출석 랭킹 */}
-        <section className="space-y-3">
-          <h2 className="text-xl font-bold">출석 랭킹</h2>
-          <CongressWrapper key={`attendance-${termId}`} fallback={<AttendanceRankingSkeleton />}>
-            <AttendanceRanking termId={termId} />
-          </CongressWrapper>
-        </section>
+          {/* 국회의원 부동산 현황 — 22대만 표시 */}
+          {termId === 22 && (
+            <section className="space-y-3">
+              <h2 className="text-xl font-bold">국회의원 부동산 보유 현황</h2>
+              <CongressWrapper key="property" fallback={<AttendanceRankingSkeleton />}>
+                <PropertyHighlight />
+              </CongressWrapper>
+            </section>
+          )}
 
-        {/* 국회의원 부동산 현황 — 22대만 표시 */}
-        {termId === 22 && (
+          {/* 의정활동 하이라이트 */}
           <section className="space-y-3">
-            <h2 className="text-xl font-bold">국회의원 부동산 보유 현황</h2>
-            <CongressWrapper key="property" fallback={<AttendanceRankingSkeleton />}>
-              <PropertyHighlight />
+            <h2 className="text-xl font-bold">의정활동 하이라이트</h2>
+            <CongressWrapper key={`highlights-${termId}`} fallback={<ActivityHighlightsSkeleton />}>
+              <ActivityHighlights termId={termId} />
             </CongressWrapper>
           </section>
-        )}
-
-        {/* 의정활동 하이라이트 */}
-        <section className="space-y-3">
-          <h2 className="text-xl font-bold">의정활동 하이라이트</h2>
-          <CongressWrapper key={`highlights-${termId}`} fallback={<ActivityHighlightsSkeleton />}>
-            <ActivityHighlights termId={termId} />
-          </CongressWrapper>
-        </section>
+        </HomeMoreSections>
       </div>
     </HydrationBoundary>
   );

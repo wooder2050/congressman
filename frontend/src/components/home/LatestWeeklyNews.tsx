@@ -46,7 +46,7 @@ export default function LatestWeeklyNews() {
       <div className="flex items-center justify-between">
         <h2 className="text-xl font-bold">주간 국회 뉴스</h2>
         <Link href="/weekly" className="text-sm font-semibold text-(--color-primary) no-underline">
-          전체 보기 →
+          주간뉴스 전체 보기 →
         </Link>
       </div>
 
@@ -127,7 +127,9 @@ export default function LatestWeeklyNews() {
                 </span>
               ))}
             </div>
-            <span className="text-xs font-semibold text-(--color-primary)">자세히 보기 →</span>
+            <span className="text-xs font-semibold text-(--color-primary)">
+              이번 주 뉴스 읽기 →
+            </span>
           </div>
         </div>
       </Link>

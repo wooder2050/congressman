@@ -129,6 +129,8 @@ export default function ElectionPageInner({ electionId }: { electionId: string }
                         <span
                           className="h-2 w-2 shrink-0 rounded-full"
                           style={{ backgroundColor: partyColor }}
+                          role="img"
+                          aria-label={prev?.party?.name ?? "무소속"}
                         />
                         {d.district}
                       </div>
@@ -217,7 +219,9 @@ export default function ElectionPageInner({ electionId }: { electionId: string }
                             key={d.id}
                             className="h-2.5 w-2.5 rounded-full"
                             style={{ backgroundColor: color }}
-                            title={d.district}
+                            title={`${d.district} (${d.previousMember?.party?.name ?? "무소속"})`}
+                            role="img"
+                            aria-label={`${d.district}: ${d.previousMember?.party?.name ?? "무소속"}`}
                           />
                         );
                       })}
@@ -275,6 +279,7 @@ export default function ElectionPageInner({ electionId }: { electionId: string }
                                     <span
                                       className="inline-block h-2 w-2 rounded-full"
                                       style={{ backgroundColor: partyColor }}
+                                      aria-hidden="true"
                                     />
                                   )}
                                   전임 {prev.name}
