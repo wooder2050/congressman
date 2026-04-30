@@ -350,6 +350,8 @@ export default function ActivityHeatmap({
             height={svgHeight}
             viewBox={`0 0 ${svgWidth} ${svgHeight}`}
             className="block"
+            role="img"
+            aria-label={`${headerLabel}: 의정활동 히트맵`}
           >
             {/* 월 라벨 */}
             {monthLabels.map(({ label, weekIndex }) => (
@@ -397,11 +399,27 @@ export default function ActivityHeatmap({
                     height={CELL_SIZE}
                     rx={CELL_RADIUS}
                     fill={levelColors[level]}
-                    className="cursor-pointer"
+                    className="cursor-pointer outline-none focus-visible:stroke-(--color-text-primary) focus-visible:stroke-2"
+                    tabIndex={score > 0 ? 0 : -1}
+                    role={score > 0 ? "button" : undefined}
+                    aria-label={
+                      score > 0
+                        ? `${day.date}: 대표발의 ${day.representativeBills}건, 공동발의 ${day.coBills}건, 표결참여 ${day.votes}건`
+                        : `${day.date}: 활동 없음`
+                    }
                     onMouseEnter={(e) => handleCellEnter(e, day, d)}
                     onMouseLeave={handleCellLeave}
                     onTouchStart={(e) => handleCellEnter(e, day, d)}
                     onTouchEnd={handleCellLeave}
+                    onFocus={(e) => handleCellEnter(e as unknown as React.MouseEvent, day, d)}
+                    onBlur={handleCellLeave}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter" || e.key === " ") {
+                        e.preventDefault();
+                        handleCellEnter(e as unknown as React.MouseEvent, day, d);
+                      }
+                      if (e.key === "Escape") handleCellLeave();
+                    }}
                   />
                 );
               }),

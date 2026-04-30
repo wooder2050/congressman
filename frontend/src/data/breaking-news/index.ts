@@ -2,6 +2,89 @@ import type { BreakingNewsItem } from "./types";
 
 const breakingNews: BreakingNewsItem[] = [
   {
+    id: "2026-04-30-member-resignations",
+    title: "여야 의원 9명 사퇴 완료 · 오늘 보궐 동시실시 마감 — 재보궐 14곳 최종 확정",
+    description:
+      "29일 민주당 8명(박찬대·추미애·전재수·김상욱·민형배·이원택·박수현·위성곤)과 국민의힘 추경호 의원이 일제히 사퇴하며 6·3 재보궐선거 14곳이 확정되었습니다. 오늘(30일)이 보궐선거 동시실시 사퇴 마감일이며, 5월 1일 5월 임시국회가 자동 집회됩니다.",
+    date: "2026-04-30",
+    category: "election",
+    items: [
+      {
+        label: "사퇴 완료(4/29)",
+        value: "민주 8명 + 국힘 추경호 · 재적의원 295→286명",
+      },
+      {
+        label: "재보궐 14곳",
+        value: "기존 5곳 + 사퇴 9곳 · 전국 300석 중 5% '미니 총선'",
+      },
+      {
+        label: "선거 일정",
+        value: "5/14~15 후보등록 · 5/24~28 사전투표 · 6/3 투표일",
+      },
+      {
+        label: "주요 대진표",
+        value: "평택을: 조국 vs 유의동 vs 김용남 · 부산 북갑: 한동훈 vs 하정우 vs 박민식",
+      },
+    ],
+    sources: [
+      {
+        title: "여야 의원 9인 일괄 사퇴…6·3 재보선 14곳 개최 확정 — 아이뉴스24",
+        url: "https://inews24.com/view/1964587",
+      },
+      {
+        title: "현역 9명, 배지 던지고 '지선 앞으로' — 헤럴드경제",
+        url: "https://biz.heraldcorp.com/article/10728321",
+      },
+      {
+        title: "추경호, 대구시장 출마 위해 의원직 사퇴 — 아주경제",
+        url: "https://www.ajunews.com/view/20260429091324336",
+      },
+    ],
+    linkUrl: "/elections/2026-06-03",
+    active: true,
+  },
+  {
+    id: "2026-04-30-oil-relief-payment",
+    title: "고유가 피해지원금 1차 신청 진행 중 — 오늘 끝자리 4·9, 5/5부터 요일제 해제",
+    description:
+      "고유가 피해지원금 1차 지급이 4월 27일부터 진행 중입니다. 오늘(30일 목요일)은 출생연도 끝자리 4·9 신청일이며, 내일(5/1 금요일) 끝자리 5·0을 마지막으로 요일제가 해제됩니다. 1차 대상은 기초생활수급자(55만 원)·차상위계층·한부모가족(45만 원)이며 5월 8일까지 신청 가능합니다.",
+    date: "2026-04-30",
+    category: "legislation",
+    items: [
+      {
+        label: "오늘 신청",
+        value: "출생연도 끝자리 4·9 → 목요일 (5·0 금요일, 5/5부터 요일제 해제)",
+      },
+      {
+        label: "1차 대상",
+        value: "기초수급자 55만 원 · 차상위·한부모 45만 원 (4/27~5/8)",
+      },
+      {
+        label: "2차 일정",
+        value: "소득 하위 70% 일반 가구 · 1인당 10만~60만 원 (5/18~7/3)",
+      },
+      {
+        label: "신청 방법",
+        value: "카드사 앱·홈페이지 또는 주민센터·은행 방문 · 사용기한 8/31",
+      },
+    ],
+    sources: [
+      {
+        title: "행정안전부 고유가 피해지원금 안내",
+        url: "https://www.mois.go.kr/frt/sub/a06/b07/highOilPriceSupport/screen.do",
+      },
+      {
+        title: "고유가 피해지원금 대상자, 지급액, 신청 방법 — KB의 생각",
+        url: "https://kbthink.com/life/daily/high-oil-price-relief-fund.html",
+      },
+      {
+        title: "고유가 피해지원금 — 다음뉴스",
+        url: "https://issue.daum.net/focus/260427reliefpayment",
+      },
+    ],
+    active: true,
+  },
+  {
     id: "2026-04-29-oil-relief-payment",
     title: "고유가 피해지원금 1차 107만 명 신청 — 오늘(29일) 끝자리 3·8 신청일",
     description:
@@ -40,7 +123,7 @@ const breakingNews: BreakingNewsItem[] = [
         url: "https://issue.daum.net/focus/260427reliefpayment",
       },
     ],
-    active: true,
+    active: false,
   },
   {
     id: "2026-04-23-plenary-115-bills",
@@ -124,7 +207,7 @@ const breakingNews: BreakingNewsItem[] = [
       },
     ],
     linkUrl: "/elections/2026-06-03",
-    active: true,
+    active: false,
   },
   {
     id: "2026-04-26-by-elections-update",
@@ -332,6 +415,48 @@ const breakingNews: BreakingNewsItem[] = [
     active: false,
   },
   {
+    id: "2026-04-30-constitutional-amendment-vote-d7",
+    title: "개헌안 본회의 표결 D-7 — 5/7 표결 확정, 국힘 불참 시 5/8 재표결 추진",
+    description:
+      "5월 7일 오후 2시 개헌안 본회의 표결이 확정되었습니다. 의원 9명 사퇴로 재적의원이 286명으로 줄면서 의결 정족수가 191명으로 낮아졌습니다. 민주당은 국민의힘이 불참할 경우 이튿날(5/8) 다시 본회의를 열겠다고 밝혔습니다. 헌법상 의결 시한은 5월 10일입니다.",
+    date: "2026-04-30",
+    category: "politics",
+    items: [
+      {
+        label: "정족수",
+        value: "재적 286명 · 의결 정족수 191명 (2/3 이상 찬성)",
+      },
+      {
+        label: "표결 일정",
+        value: "5/7(수) 오후 2시 확정 · 불참 시 5/8 재표결 · 시한 5/10",
+      },
+      {
+        label: "국민의힘",
+        value: "졸속 개헌 반대 당론 유지 · 지선 후 개헌특위 구성 역제안",
+      },
+      {
+        label: "핵심 내용",
+        value:
+          "계엄 국회 승인권 도입 · 헌법 전문에 5·18·부마항쟁 수록 · 계엄해제요구권→해제권 강화",
+      },
+    ],
+    sources: [
+      {
+        title: '與 "개헌안 표결 野 불참시 이튿날 또 본회의" — 파이낸셜뉴스',
+        url: "https://www.fnnews.com/news/202604301037562039",
+      },
+      {
+        title: "개헌안 5월 7일 표결..우원식, 장동혁 만나 설득한다 — 파이낸셜뉴스",
+        url: "https://www.fnnews.com/news/202604281730005013",
+      },
+      {
+        title: "5월 7일 개헌안 표결..국민의힘 '지선 후 합의' 제안 — 파이낸셜뉴스",
+        url: "https://www.fnnews.com/news/202604281023465754",
+      },
+    ],
+    active: true,
+  },
+  {
     id: "2026-04-29-constitutional-amendment-vote-d8",
     title: "개헌안 본회의 표결 D-8 — 의원 9명 사퇴로 정족수 191명, 이탈표 확보 관건",
     description:
@@ -370,7 +495,7 @@ const breakingNews: BreakingNewsItem[] = [
         url: "https://www.fnnews.com/news/202604281023465754",
       },
     ],
-    active: true,
+    active: false,
   },
   {
     id: "2026-04-06-constitutional-amendment-cabinet",
