@@ -27,12 +27,10 @@ export async function generateMetadata({ params }: BillDetailPageProps): Promise
   const shortTitle = bill.title.length > 40 ? bill.title.slice(0, 38) + "…" : bill.title;
   const title = `${shortTitle} — ${statusText} | ${bill.proposerName}${coSuffix}`;
 
-  const topicText = bill.topic ? `[${bill.topic}]` : "";
   const descParts = [
-    `${bill.title} (${statusText}).`,
-    topicText,
+    bill.simpleSummary || `${bill.title} (${statusText}).`,
+    bill.topic ? `[${bill.topic}]` : "",
     `${bill.proposerName}${coSuffix}, ${bill.proposedDate}.`,
-    bill.simpleSummary || "",
     "법안 원문, 심사 경과, 관련 표결 기록을 확인하세요.",
   ];
   const description = descParts.filter(Boolean).join(" ").slice(0, 160);
@@ -62,7 +60,7 @@ async function ServerBillSummary({ id }: { id: string }) {
   const statusText =
     bill.status === "passed" ? "가결" : bill.status === "discarded" ? "폐기" : "심사 중";
   return (
-    <section className="sr-only" aria-hidden="true">
+    <section className="sr-only">
       <h1>{bill.title}</h1>
       <p>
         발의자: {bill.proposerName} 외 {bill.coProposerCount}인

@@ -165,6 +165,20 @@ export default function GuidePage() {
       <JsonLd
         data={{
           "@context": "https://schema.org",
+          "@type": "HowTo",
+          name: "국회 법안 통과 절차",
+          description: "법안 발의부터 본회의 의결까지 입법 과정을 4단계로 설명합니다.",
+          step: steps.map((s, i) => ({
+            "@type": "HowToStep",
+            position: i + 1,
+            name: s.title,
+            text: s.content,
+          })),
+        }}
+      />
+      <JsonLd
+        data={{
+          "@context": "https://schema.org",
           "@type": "FAQPage",
           mainEntity: faqs.map((faq) => ({
             "@type": "Question",
