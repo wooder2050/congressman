@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 
 const ALLOWED_HOST = "www.assembly.go.kr";
+const ALLOWED_PATH_PREFIX = "/static/portal/img/";
 const CACHE_SECONDS = 60 * 60 * 24 * 7; // 7일
 
 export async function GET(request: NextRequest) {
@@ -18,6 +19,10 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: "host not allowed" }, { status: 403 });
   }
 
+  if (!parsed.pathname.startsWith(ALLOWED_PATH_PREFIX)) {
+    return NextResponse.json({ error: "path not allowed" }, { status: 403 });
+  }
+
   const res = await fetch(url, {
     headers: {
       "User-Agent":
@@ -32,6 +37,9 @@ export async function GET(request: NextRequest) {
   }
 
   const contentType = res.headers.get("content-type") ?? "image/jpeg";
+  if (!contentType.startsWith("image/")) {
+    return NextResponse.json({ error: "not an image" }, { status: 403 });
+  }
   const body = await res.arrayBuffer();
 
   return new NextResponse(body, {
