@@ -3,7 +3,13 @@ import Link from "next/link";
 import type { ElectionDistrictInfo } from "@/types";
 import CandidateCard from "./CandidateCard";
 
-export default function DistrictSection({ district }: { district: ElectionDistrictInfo }) {
+export default function DistrictSection({
+  district,
+  electionId = "2026-06-03",
+}: {
+  district: ElectionDistrictInfo;
+  electionId?: string;
+}) {
   const prev = district.previousMember;
   const partyColor = prev?.party?.color ?? "#9ca3af";
 
@@ -66,7 +72,7 @@ export default function DistrictSection({ district }: { district: ElectionDistri
           </div>
           {district.candidates.length >= 2 && (
             <Link
-              href={`/elections/2026-06-03/races/${district.id}`}
+              href={`/elections/${electionId}/races/${district.id}`}
               className="inline-flex items-center gap-1 rounded-lg bg-(--color-bg-tertiary) px-3 py-2 text-xs font-medium text-(--color-text-secondary) transition-colors hover:bg-(--color-bg-hover)"
             >
               후보 비교하기 →

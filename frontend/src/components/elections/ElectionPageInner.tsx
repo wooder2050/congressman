@@ -308,7 +308,7 @@ export default function ElectionPageInner({ electionId }: { electionId: string }
                         {/* 선거구 상세 (펼쳐질 때) */}
                         {isDistrictExpanded && (
                           <div className="bg-(--color-bg-secondary) px-4 pb-4 sm:px-5">
-                            <DistrictSection district={d} />
+                            <DistrictSection district={d} electionId={electionId} />
                           </div>
                         )}
                       </div>
