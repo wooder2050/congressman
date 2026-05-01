@@ -118,6 +118,7 @@ function MemberCard({ member, termId }: { member: CommitteeMemberInfo; termId: n
           alt={member.name}
           width={36}
           height={36}
+          unoptimized
           className="rounded-full object-cover"
         />
       ) : (

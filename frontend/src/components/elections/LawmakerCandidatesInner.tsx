@@ -131,6 +131,7 @@ export default function LawmakerCandidatesInner({ electionId }: { electionId: st
                       src={proxyPhotoUrl(c.photoUrl)}
                       alt={c.name}
                       fill
+                      unoptimized
                       className="object-cover"
                       sizes="64px"
                     />

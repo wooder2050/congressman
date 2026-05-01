@@ -25,6 +25,7 @@ export default function DistrictSection({
               alt={prev.name}
               width={36}
               height={36}
+              unoptimized
               className="h-9 w-9 rounded-full object-cover"
             />
           ) : (

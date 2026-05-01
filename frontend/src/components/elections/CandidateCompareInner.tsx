@@ -89,6 +89,7 @@ function CandidateSummaryCard({ candidate: c }: { candidate: ElectionCandidate }
             alt={c.name}
             width={64}
             height={64}
+            unoptimized
             className="object-cover"
           />
         ) : (
