@@ -49,11 +49,7 @@ export default async function MayorListPage({ params }: Props) {
       <h1 className="text-2xl font-bold">기초단체장 (시장·군수·구청장)</h1>
 
       <CongressWrapper fallback={<LocalElectionSkeleton />}>
-        <RaceListInner
-          year={year}
-          electionId={`local-${year}`}
-          initialType="mayor"
-        />
+        <RaceListInner year={year} electionId={`local-${year}`} initialType="mayor" />
       </CongressWrapper>
     </div>
   );

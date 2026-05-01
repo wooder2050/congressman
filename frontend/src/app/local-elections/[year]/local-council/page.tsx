@@ -49,11 +49,7 @@ export default async function LocalCouncilListPage({ params }: Props) {
       <h1 className="text-2xl font-bold">기초의원 (구시군의회의원)</h1>
 
       <CongressWrapper fallback={<LocalElectionSkeleton />}>
-        <RaceListInner
-          year={year}
-          electionId={`local-${year}`}
-          initialType="local-council"
-        />
+        <RaceListInner year={year} electionId={`local-${year}`} initialType="local-council" />
       </CongressWrapper>
     </div>
   );

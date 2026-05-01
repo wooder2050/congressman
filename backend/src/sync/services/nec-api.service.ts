@@ -25,9 +25,7 @@ export class NecApiService {
     let totalCount = Infinity;
 
     while (allItems.length < totalCount) {
-      const url = new URL(
-        `https://apis.data.go.kr/9760000/${serviceName}/${operationName}`,
-      );
+      const url = new URL(`https://apis.data.go.kr/9760000/${serviceName}/${operationName}`);
       url.searchParams.set('ServiceKey', this.serviceKey);
       url.searchParams.set('resultType', 'json');
       url.searchParams.set('pageNo', String(pageNo));
@@ -36,9 +34,7 @@ export class NecApiService {
         url.searchParams.set(k, v);
       }
 
-      console.log(
-        `[NEC-API] Fetching ${serviceName}/${operationName} page ${pageNo} ...`,
-      );
+      console.log(`[NEC-API] Fetching ${serviceName}/${operationName} page ${pageNo} ...`);
 
       const res = await fetch(url.toString(), {
         headers: { 'User-Agent': 'Mozilla/5.0' },
@@ -76,9 +72,7 @@ export class NecApiService {
       const rows: T[] = Array.isArray(items) ? items : [items];
       allItems.push(...rows);
 
-      console.log(
-        `[NEC-API]   Got ${rows.length} rows (total: ${allItems.length}/${totalCount})`,
-      );
+      console.log(`[NEC-API]   Got ${rows.length} rows (total: ${allItems.length}/${totalCount})`);
 
       if (allItems.length >= totalCount) break;
       pageNo++;

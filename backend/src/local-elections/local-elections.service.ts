@@ -98,8 +98,7 @@ export class LocalElectionsService {
         regionMap.set(r.sido, { raceCounts: {}, totalCandidates: 0 });
       }
       const region = regionMap.get(r.sido)!;
-      region.raceCounts[r.electionType] =
-        (region.raceCounts[r.electionType] ?? 0) + 1;
+      region.raceCounts[r.electionType] = (region.raceCounts[r.electionType] ?? 0) + 1;
       region.totalCandidates += r._count.candidates;
     }
 
@@ -284,8 +283,7 @@ export class LocalElectionsService {
         regionMap.set(r.sido, { raceCounts: {}, totalCandidates: 0 });
       }
       const region = regionMap.get(r.sido)!;
-      region.raceCounts[r.electionType] =
-        (region.raceCounts[r.electionType] ?? 0) + 1;
+      region.raceCounts[r.electionType] = (region.raceCounts[r.electionType] ?? 0) + 1;
       region.totalCandidates += r._count.candidates;
     }
 
@@ -323,11 +321,7 @@ export class LocalElectionsService {
         },
         _count: { select: { candidates: true } },
       },
-      orderBy: [
-        { electionType: 'asc' },
-        { sigungu: 'asc' },
-        { district: 'asc' },
-      ],
+      orderBy: [{ electionType: 'asc' }, { sigungu: 'asc' }, { district: 'asc' }],
     });
 
     const result = {
@@ -394,8 +388,7 @@ export class LocalElectionsService {
     // 유형별 후보 수
     const candidatesByType: Record<string, number> = {};
     for (const c of candidates) {
-      candidatesByType[c.race.electionType] =
-        (candidatesByType[c.race.electionType] ?? 0) + 1;
+      candidatesByType[c.race.electionType] = (candidatesByType[c.race.electionType] ?? 0) + 1;
     }
 
     const result = {

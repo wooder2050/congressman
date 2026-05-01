@@ -54,10 +54,7 @@ export class LocalElectionsController {
   @ApiOperation({ summary: 'race 상세 + 후보자 전체' })
   @ApiParam({ name: 'id' })
   @ApiParam({ name: 'raceId' })
-  async getRaceDetail(
-    @Param('id') id: string,
-    @Param('raceId') raceId: string,
-  ) {
+  async getRaceDetail(@Param('id') id: string, @Param('raceId') raceId: string) {
     const race = await this.service.getRaceDetail(id, parseInt(raceId, 10));
     if (!race) throw new NotFoundException();
     return race;

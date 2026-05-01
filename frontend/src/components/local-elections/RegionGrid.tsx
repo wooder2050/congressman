@@ -15,9 +15,7 @@ export default function RegionGrid({ regions, baseUrl }: Props) {
     <div className="grid grid-cols-3 gap-3 sm:grid-cols-4 lg:grid-cols-6">
       {SIDO_LIST.map((sido) => {
         const region = regionMap.get(sido.id);
-        const totalRaces = region
-          ? Object.values(region.raceCounts).reduce((a, b) => a + b, 0)
-          : 0;
+        const totalRaces = region ? Object.values(region.raceCounts).reduce((a, b) => a + b, 0) : 0;
 
         return (
           <Link
@@ -25,13 +23,9 @@ export default function RegionGrid({ regions, baseUrl }: Props) {
             href={`${baseUrl}/${encodeURIComponent(sido.id)}`}
             className="flex flex-col items-center justify-center gap-1 rounded-xl border border-(--color-border-primary) bg-(--color-bg-primary) p-4 transition-colors hover:border-(--color-primary) hover:bg-(--color-bg-secondary)"
           >
-            <span className="text-base font-bold text-(--color-text-primary)">
-              {sido.short}
-            </span>
+            <span className="text-base font-bold text-(--color-text-primary)">{sido.short}</span>
             {totalRaces > 0 && (
-              <span className="text-xs text-(--color-text-tertiary)">
-                {totalRaces}개 선거
-              </span>
+              <span className="text-xs text-(--color-text-tertiary)">{totalRaces}개 선거</span>
             )}
             {region && region.totalCandidates > 0 && (
               <span className="text-xs text-(--color-text-tertiary)">

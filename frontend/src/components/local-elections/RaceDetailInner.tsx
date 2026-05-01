@@ -31,12 +31,9 @@ export default function RaceDetailInner({ electionId, raceId }: Props) {
         <span className="inline-block rounded bg-(--color-bg-tertiary) px-2 py-0.5 text-xs font-medium text-(--color-text-tertiary)">
           {electionTypeLabel(race.electionType)}
         </span>
-        <h1 className="text-2xl font-bold text-(--color-text-primary)">
-          {race.displayName}
-        </h1>
+        <h1 className="text-2xl font-bold text-(--color-text-primary)">{race.displayName}</h1>
         <p className="text-sm text-(--color-text-secondary)">
-          후보 {race.candidates.length}명
-          {race.seatCount > 1 && ` · ${race.seatCount}석 선출`}
+          후보 {race.candidates.length}명{race.seatCount > 1 && ` · ${race.seatCount}석 선출`}
         </p>
       </section>
 

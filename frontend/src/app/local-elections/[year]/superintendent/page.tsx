@@ -49,11 +49,7 @@ export default async function SuperintendentListPage({ params }: Props) {
       <h1 className="text-2xl font-bold">교육감</h1>
 
       <CongressWrapper fallback={<LocalElectionSkeleton />}>
-        <RaceListInner
-          year={year}
-          electionId={`local-${year}`}
-          initialType="superintendent"
-        />
+        <RaceListInner year={year} electionId={`local-${year}`} initialType="superintendent" />
       </CongressWrapper>
     </div>
   );

@@ -49,11 +49,7 @@ export default async function GovernorListPage({ params }: Props) {
       <h1 className="text-2xl font-bold">광역단체장 (시도지사)</h1>
 
       <CongressWrapper fallback={<LocalElectionSkeleton />}>
-        <RaceListInner
-          year={year}
-          electionId={`local-${year}`}
-          initialType="governor"
-        />
+        <RaceListInner year={year} electionId={`local-${year}`} initialType="governor" />
       </CongressWrapper>
     </div>
   );

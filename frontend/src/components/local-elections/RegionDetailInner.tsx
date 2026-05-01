@@ -46,9 +46,7 @@ export default function RegionDetailInner({ year, electionId, sido }: Props) {
               <h2 className="text-lg font-bold text-(--color-text-primary)">
                 {electionTypeLabel(t.id)}
               </h2>
-              <span className="text-sm text-(--color-text-tertiary)">
-                {races.length}개 선거구
-              </span>
+              <span className="text-sm text-(--color-text-tertiary)">{races.length}개 선거구</span>
             </div>
             <div className="grid gap-3 sm:grid-cols-2">
               {races.map((race) => (

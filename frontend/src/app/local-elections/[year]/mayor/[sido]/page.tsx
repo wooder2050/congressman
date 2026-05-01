@@ -61,12 +61,7 @@ export default async function MayorSidoPage({ params }: Props) {
       <h1 className="text-2xl font-bold">{short} 기초단체장</h1>
 
       <CongressWrapper fallback={<LocalElectionSkeleton />}>
-        <RaceListInner
-          year={year}
-          electionId={`local-${year}`}
-          initialType="mayor"
-          sido={sido}
-        />
+        <RaceListInner year={year} electionId={`local-${year}`} initialType="mayor" sido={sido} />
       </CongressWrapper>
     </div>
   );

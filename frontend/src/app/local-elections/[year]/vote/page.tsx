@@ -76,9 +76,7 @@ export default async function VoteGuidePage({ params }: Props) {
         }}
       />
 
-      <h1 className="text-2xl font-bold">
-        {year} 지방선거 투표 안내
-      </h1>
+      <h1 className="text-2xl font-bold">{year} 지방선거 투표 안내</h1>
 
       {/* 일정 */}
       <section className="rounded-xl border border-(--color-border-primary) bg-(--color-bg-primary) p-5">
@@ -86,12 +84,8 @@ export default async function VoteGuidePage({ params }: Props) {
         <div className="space-y-3">
           {SCHEDULE.map((s) => (
             <div key={s.label} className="flex items-center justify-between">
-              <span className="text-sm font-medium text-(--color-text-primary)">
-                {s.label}
-              </span>
-              <span className="text-sm text-(--color-text-secondary)">
-                {s.date}
-              </span>
+              <span className="text-sm font-medium text-(--color-text-primary)">{s.label}</span>
+              <span className="text-sm text-(--color-text-secondary)">{s.date}</span>
             </div>
           ))}
         </div>
@@ -110,9 +104,7 @@ export default async function VoteGuidePage({ params }: Props) {
               className="flex flex-col items-center gap-1 rounded-lg p-3"
               style={{ backgroundColor: `${b.color}30` }}
             >
-              <span className="text-lg font-bold text-(--color-text-primary)">
-                {i + 1}
-              </span>
+              <span className="text-lg font-bold text-(--color-text-primary)">{i + 1}</span>
               <span className="text-center text-xs font-medium text-(--color-text-secondary)">
                 {b.name}
               </span>
@@ -140,12 +132,8 @@ export default async function VoteGuidePage({ params }: Props) {
         <div className="space-y-4">
           {FAQ.map((f, i) => (
             <div key={i}>
-              <h3 className="text-sm font-bold text-(--color-text-primary)">
-                Q. {f.q}
-              </h3>
-              <p className="mt-1 text-sm text-(--color-text-secondary)">
-                {f.a}
-              </p>
+              <h3 className="text-sm font-bold text-(--color-text-primary)">Q. {f.q}</h3>
+              <p className="mt-1 text-sm text-(--color-text-secondary)">{f.a}</p>
             </div>
           ))}
         </div>

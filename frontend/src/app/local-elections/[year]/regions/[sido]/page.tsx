@@ -61,11 +61,7 @@ export default async function RegionSidoPage({ params }: Props) {
       <h1 className="text-2xl font-bold">{short} 지방선거</h1>
 
       <CongressWrapper fallback={<LocalElectionSkeleton />}>
-        <RegionDetailInner
-          year={year}
-          electionId={`local-${year}`}
-          sido={sido}
-        />
+        <RegionDetailInner year={year} electionId={`local-${year}`} sido={sido} />
       </CongressWrapper>
     </div>
   );

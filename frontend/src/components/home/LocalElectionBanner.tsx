@@ -20,7 +20,7 @@ export default function LocalElectionBanner() {
         className="group block overflow-hidden rounded-xl border border-rose-200 bg-gradient-to-r from-rose-50 to-orange-50 transition-colors hover:border-rose-300 dark:border-rose-900/40 dark:from-rose-950/30 dark:to-orange-950/30 dark:hover:border-rose-700"
       >
         <div className="flex items-center justify-between gap-4 px-5 py-4">
-          <div className="flex items-center gap-3 min-w-0">
+          <div className="flex min-w-0 items-center gap-3">
             <span className="shrink-0 rounded-lg bg-rose-500 px-2.5 py-1 text-xs font-bold text-white">
               {dday}
             </span>

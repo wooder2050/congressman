@@ -35,9 +35,7 @@ export default function ElectionTypeSelector({ selected, onChange, raceCounts }:
             }`}
           >
             {t.label}
-            {count != null && count > 0 && (
-              <span className="ml-1 text-xs opacity-70">{count}</span>
-            )}
+            {count != null && count > 0 && <span className="ml-1 text-xs opacity-70">{count}</span>}
           </button>
         );
       })}

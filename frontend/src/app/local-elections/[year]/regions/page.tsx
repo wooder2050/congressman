@@ -48,10 +48,7 @@ export default async function RegionsPage({ params }: Props) {
 
       <h1 className="text-2xl font-bold">지역별 현황</h1>
 
-      <RegionGrid
-        regions={regions ?? []}
-        baseUrl={`/local-elections/${year}/regions`}
-      />
+      <RegionGrid regions={regions ?? []} baseUrl={`/local-elections/${year}/regions`} />
     </div>
   );
 }

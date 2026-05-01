@@ -34,15 +34,11 @@ export default function RaceCard({ race, year }: Props) {
               key={c.id}
               className="inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-medium"
               style={{
-                backgroundColor: c.party?.color
-                  ? `${c.party.color}18`
-                  : "var(--color-bg-tertiary)",
+                backgroundColor: c.party?.color ? `${c.party.color}18` : "var(--color-bg-tertiary)",
                 color: c.party?.color ?? "var(--color-text-secondary)",
               }}
             >
-              {c.candidateNumber != null && (
-                <span className="font-bold">{c.candidateNumber}</span>
-              )}
+              {c.candidateNumber != null && <span className="font-bold">{c.candidateNumber}</span>}
               {c.name}
             </span>
           ))}

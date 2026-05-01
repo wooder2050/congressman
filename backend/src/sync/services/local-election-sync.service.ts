@@ -70,16 +70,10 @@ export class LocalElectionSyncService {
       if (!election) throw new Error(`LocalElection not found: ${electionId}`);
 
       // sgId 추출 (예: "20260603")
-      const sgId =
-        election.electionDate
-          .toISOString()
-          .slice(0, 10)
-          .replace(/-/g, '') ?? '';
+      const sgId = election.electionDate.toISOString().slice(0, 10).replace(/-/g, '') ?? '';
 
       // 선거유형별로 후보자 데이터 동기화
-      for (const [necCode, electionType] of Object.entries(
-        NEC_TYPE_TO_ELECTION_TYPE,
-      )) {
+      for (const [necCode, electionType] of Object.entries(NEC_TYPE_TO_ELECTION_TYPE)) {
         console.log(
           `[LocalElectionSync] Syncing candidates for type ${electionType} (code ${necCode})...`,
         );
@@ -93,10 +87,8 @@ export class LocalElectionSyncService {
         for (const row of rows) {
           // race upsert
           const sido = row.sdName;
-          const sigungu = ['2', '10'].includes(necCode) ? '' : row.wiwName ?? '';
-          const district = ['2', '3', '10'].includes(necCode)
-            ? ''
-            : row.sggName ?? '';
+          const sigungu = ['2', '10'].includes(necCode) ? '' : (row.wiwName ?? '');
+          const district = ['2', '3', '10'].includes(necCode) ? '' : (row.sggName ?? '');
           const displayName = this.buildDisplayName(
             electionType,
             sido,
@@ -148,9 +140,7 @@ export class LocalElectionSyncService {
           }
 
           // candidate upsert
-          const career = [row.career1, row.career2]
-            .filter(Boolean)
-            .join('\n');
+          const career = [row.career1, row.career2].filter(Boolean).join('\n');
 
           await this.prisma.localElectionCandidate.upsert({
             where: {
@@ -184,14 +174,9 @@ export class LocalElectionSyncService {
       }
 
       await this.syncLog.complete(log.id, totalCount);
-      console.log(
-        `[LocalElectionSync] Synced ${totalCount} candidates total`,
-      );
+      console.log(`[LocalElectionSync] Synced ${totalCount} candidates total`);
     } catch (error) {
-      await this.syncLog.fail(
-        log.id,
-        error instanceof Error ? error.message : String(error),
-      );
+      await this.syncLog.fail(log.id, error instanceof Error ? error.message : String(error));
       throw error;
     }
   }
@@ -209,11 +194,7 @@ export class LocalElectionSyncService {
       });
       if (!election) throw new Error(`LocalElection not found: ${electionId}`);
 
-      const sgId =
-        election.electionDate
-          .toISOString()
-          .slice(0, 10)
-          .replace(/-/g, '') ?? '';
+      const sgId = election.electionDate.toISOString().slice(0, 10).replace(/-/g, '') ?? '';
 
       for (const necCode of Object.keys(NEC_TYPE_TO_ELECTION_TYPE)) {
         const rows = await this.necApi.fetchAll<NecWinnerRow>(
@@ -226,10 +207,9 @@ export class LocalElectionSyncService {
           // huboid로 후보자 찾아서 결과 업데이트
           if (!row.huboid) continue;
 
-          const candidate =
-            await this.prisma.localElectionCandidate.findFirst({
-              where: { huboid: row.huboid },
-            });
+          const candidate = await this.prisma.localElectionCandidate.findFirst({
+            where: { huboid: row.huboid },
+          });
 
           if (candidate) {
             await this.prisma.localElectionCandidate.update({
@@ -253,20 +233,13 @@ export class LocalElectionSyncService {
           data: { status: 'completed' },
         });
       } else {
-        console.log(
-          `[LocalElectionSync] No winners found, keeping election status unchanged`,
-        );
+        console.log(`[LocalElectionSync] No winners found, keeping election status unchanged`);
       }
 
       await this.syncLog.complete(log.id, totalCount);
-      console.log(
-        `[LocalElectionSync] Updated ${totalCount} winners`,
-      );
+      console.log(`[LocalElectionSync] Updated ${totalCount} winners`);
     } catch (error) {
-      await this.syncLog.fail(
-        log.id,
-        error instanceof Error ? error.message : String(error),
-      );
+      await this.syncLog.fail(log.id, error instanceof Error ? error.message : String(error));
       throw error;
     }
   }

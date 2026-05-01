@@ -425,9 +425,7 @@ export async function getLocalElectionRace(params: {
   return fetchApi(`/api/local-elections/${params.id}/races/${params.raceId}`);
 }
 
-export async function getLocalElectionRegions(
-  id: string,
-): Promise<LocalElectionRegionSummary[]> {
+export async function getLocalElectionRegions(id: string): Promise<LocalElectionRegionSummary[]> {
   return fetchApi(`/api/local-elections/${id}/regions`);
 }
 
@@ -435,9 +433,7 @@ export async function getLocalElectionRegion(params: {
   id: string;
   sido: string;
 }): Promise<LocalElectionRegionDetail> {
-  return fetchApi(
-    `/api/local-elections/${params.id}/regions/${encodeURIComponent(params.sido)}`,
-  );
+  return fetchApi(`/api/local-elections/${params.id}/regions/${encodeURIComponent(params.sido)}`);
 }
 
 export async function getLocalElectionStats(id: string): Promise<LocalElectionStats> {

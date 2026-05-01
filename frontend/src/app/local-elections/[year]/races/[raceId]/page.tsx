@@ -61,10 +61,7 @@ export default async function RaceDetailPage({ params }: Props) {
       />
 
       <CongressWrapper fallback={<LocalElectionSkeleton />}>
-        <RaceDetailInner
-          electionId={`local-${year}`}
-          raceId={parseInt(raceId, 10)}
-        />
+        <RaceDetailInner electionId={`local-${year}`} raceId={parseInt(raceId, 10)} />
       </CongressWrapper>
     </div>
   );

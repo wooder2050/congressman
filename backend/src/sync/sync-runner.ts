@@ -67,10 +67,7 @@ async function invalidateCache(command: string) {
   if (command === 'meeting-minutes') {
     prefixes.push('committees:');
   }
-  if (
-    command === 'local-elections' ||
-    command === 'local-election-results'
-  ) {
+  if (command === 'local-elections' || command === 'local-election-results') {
     prefixes.push('local-elections:');
   }
 
@@ -103,7 +100,14 @@ async function main() {
   console.log(`[SyncRunner] Running sync: "${command}" for term ${termId}`);
 
   // API 키가 필요 없는 명령은 AssemblyApiService를 생성하지 않음
-  const needsApi = !['assets', 'attendance', 'bill-content', 'committees', 'local-elections', 'local-election-results'].includes(command);
+  const needsApi = ![
+    'assets',
+    'attendance',
+    'bill-content',
+    'committees',
+    'local-elections',
+    'local-election-results',
+  ].includes(command);
   const api = needsApi ? new AssemblyApiService() : (null as unknown as AssemblyApiService);
 
   try {

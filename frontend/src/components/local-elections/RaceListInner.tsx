@@ -14,15 +14,8 @@ interface Props {
   sido?: string;
 }
 
-export default function RaceListInner({
-  year,
-  electionId,
-  initialType,
-  sido,
-}: Props) {
-  const [selectedType, setSelectedType] = useState<LocalElectionType | null>(
-    initialType ?? null,
-  );
+export default function RaceListInner({ year, electionId, initialType, sido }: Props) {
+  const [selectedType, setSelectedType] = useState<LocalElectionType | null>(initialType ?? null);
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
   const [query, setQuery] = useState("");
@@ -96,9 +89,7 @@ export default function RaceListInner({
           <p className="text-sm text-(--color-text-tertiary)">
             총 {data.total}개 선거구
             {query && (
-              <span className="ml-1 text-(--color-primary)">
-                &ldquo;{query}&rdquo; 검색 결과
-              </span>
+              <span className="ml-1 text-(--color-primary)">&ldquo;{query}&rdquo; 검색 결과</span>
             )}
           </p>
           <div className="grid gap-3 sm:grid-cols-2">

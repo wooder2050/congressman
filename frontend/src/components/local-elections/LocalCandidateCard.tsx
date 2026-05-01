@@ -17,13 +17,7 @@ export default function LocalCandidateCard({ candidate: c }: Props) {
           style={{ borderColor: partyColor }}
         >
           {c.photoUrl ? (
-            <Image
-              src={c.photoUrl}
-              alt={c.name}
-              fill
-              className="object-cover"
-              unoptimized
-            />
+            <Image src={c.photoUrl} alt={c.name} fill className="object-cover" unoptimized />
           ) : (
             <div
               className="flex size-full items-center justify-center text-lg font-bold text-white"
@@ -43,9 +37,7 @@ export default function LocalCandidateCard({ candidate: c }: Props) {
                 {c.candidateNumber}
               </span>
             )}
-            <h3 className="truncate text-base font-bold text-(--color-text-primary)">
-              {c.name}
-            </h3>
+            <h3 className="truncate text-base font-bold text-(--color-text-primary)">{c.name}</h3>
             {c.isWinner && (
               <span className="rounded bg-green-100 px-1.5 py-0.5 text-[11px] font-bold text-green-700 dark:bg-green-900/40 dark:text-green-300">
                 당선
@@ -79,7 +71,7 @@ export default function LocalCandidateCard({ candidate: c }: Props) {
 
       {/* 슬로건 */}
       {c.slogan && (
-        <p className="mt-3 text-sm italic text-(--color-text-secondary)">
+        <p className="mt-3 text-sm text-(--color-text-secondary) italic">
           &ldquo;{c.slogan}&rdquo;
         </p>
       )}
@@ -87,10 +79,8 @@ export default function LocalCandidateCard({ candidate: c }: Props) {
       {/* 경력 */}
       {c.career && (
         <div className="mt-3">
-          <h4 className="mb-1 text-xs font-bold text-(--color-text-tertiary)">
-            경력
-          </h4>
-          <p className="whitespace-pre-line text-xs leading-relaxed text-(--color-text-secondary)">
+          <h4 className="mb-1 text-xs font-bold text-(--color-text-tertiary)">경력</h4>
+          <p className="text-xs leading-relaxed whitespace-pre-line text-(--color-text-secondary)">
             {c.career}
           </p>
         </div>
@@ -99,9 +89,7 @@ export default function LocalCandidateCard({ candidate: c }: Props) {
       {/* 학력 */}
       {c.education && (
         <div className="mt-2">
-          <h4 className="mb-1 text-xs font-bold text-(--color-text-tertiary)">
-            학력
-          </h4>
+          <h4 className="mb-1 text-xs font-bold text-(--color-text-tertiary)">학력</h4>
           <p className="text-xs text-(--color-text-secondary)">{c.education}</p>
         </div>
       )}
@@ -109,19 +97,13 @@ export default function LocalCandidateCard({ candidate: c }: Props) {
       {/* 공약 */}
       {c.pledges.length > 0 && (
         <div className="mt-3">
-          <h4 className="mb-1 text-xs font-bold text-(--color-text-tertiary)">
-            주요 공약
-          </h4>
+          <h4 className="mb-1 text-xs font-bold text-(--color-text-tertiary)">주요 공약</h4>
           <ul className="space-y-1">
             {c.pledges.map((p, i) => (
               <li key={i} className="text-xs text-(--color-text-secondary)">
-                <span className="font-medium text-(--color-text-primary)">
-                  {p.title}
-                </span>
+                <span className="font-medium text-(--color-text-primary)">{p.title}</span>
                 {p.description && (
-                  <span className="text-(--color-text-tertiary)">
-                    {" "}— {p.description}
-                  </span>
+                  <span className="text-(--color-text-tertiary)"> — {p.description}</span>
                 )}
               </li>
             ))}
@@ -132,9 +114,7 @@ export default function LocalCandidateCard({ candidate: c }: Props) {
       {/* 재산 */}
       {c.assets && (
         <div className="mt-2">
-          <h4 className="mb-1 text-xs font-bold text-(--color-text-tertiary)">
-            재산
-          </h4>
+          <h4 className="mb-1 text-xs font-bold text-(--color-text-tertiary)">재산</h4>
           <p className="text-xs text-(--color-text-secondary)">{c.assets}</p>
         </div>
       )}
