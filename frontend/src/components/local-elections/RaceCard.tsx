@@ -22,9 +22,15 @@ export default function RaceCard({ race, year }: Props) {
             {race.displayName}
           </h3>
         </div>
-        <span className="shrink-0 text-xs text-(--color-text-tertiary)">
-          {race.candidateCount}명
-        </span>
+        {race.candidateCount > 0 ? (
+          <span className="shrink-0 text-xs text-(--color-text-tertiary)">
+            {race.candidateCount}명
+          </span>
+        ) : (
+          <span className="shrink-0 rounded bg-amber-100 px-1.5 py-0.5 text-[11px] font-medium text-amber-700 dark:bg-amber-900/30 dark:text-amber-300">
+            등록 전
+          </span>
+        )}
       </div>
 
       {race.topCandidates.length > 0 && (
