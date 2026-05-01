@@ -2,6 +2,7 @@
 
 import { useState, useMemo } from "react";
 import Image from "next/image";
+import Link from "next/link";
 import { useCongressSuspenseQuery } from "@/hooks/useCongressQuery";
 import { getElection } from "@/lib/api";
 import type { ByElectionDetail, ElectionDistrictInfo } from "@/types";
@@ -319,6 +320,20 @@ export default function ElectionPageInner({ electionId }: { electionId: string }
           );
         })}
       </div>
+
+      {/* 국회의원 출신 후보 성적표 링크 */}
+      <section className="rounded-xl border border-(--color-border-primary) bg-(--color-bg-primary) p-4 sm:p-5">
+        <h2 className="text-lg font-bold">국회의원 출신 후보 성적표</h2>
+        <p className="mt-1 text-sm text-(--color-text-secondary)">
+          출마한 전·현직 국회의원의 출석률, 표결참여율, 법안 발의·가결, 재산을 비교하세요.
+        </p>
+        <Link
+          href={`/elections/${electionId}/lawmaker-candidates`}
+          className="mt-3 inline-flex items-center gap-1 rounded-lg bg-(--color-primary) px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-(--color-primary-hover)"
+        >
+          성적표 보기 →
+        </Link>
+      </section>
 
       {/* 투표 안내 프리뷰 */}
       <VoteGuidePreview electionId={electionId} />
