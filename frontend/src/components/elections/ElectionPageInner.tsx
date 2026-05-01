@@ -335,6 +335,20 @@ export default function ElectionPageInner({ electionId }: { electionId: string }
         </Link>
       </section>
 
+      {/* 지역별 선거 정보 */}
+      <section className="rounded-xl border border-(--color-border-primary) bg-(--color-bg-primary) p-4 sm:p-5">
+        <h2 className="text-lg font-bold">지역별 선거 정보</h2>
+        <p className="mt-1 text-sm text-(--color-text-secondary)">
+          17개 시도별 재보궐 선거구, 후보자, 투표 안내를 확인하세요.
+        </p>
+        <Link
+          href={`/elections/${electionId}/regions`}
+          className="mt-3 inline-flex items-center gap-1 rounded-lg bg-(--color-bg-tertiary) px-4 py-2 text-sm font-medium text-(--color-text-secondary) transition-colors hover:bg-(--color-bg-hover)"
+        >
+          지역 선택하기 →
+        </Link>
+      </section>
+
       {/* 투표 안내 프리뷰 */}
       <VoteGuidePreview electionId={electionId} />
     </div>
