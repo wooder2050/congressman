@@ -14,14 +14,14 @@ export async function generateMetadata({ params }: ElectionPageProps): Promise<M
   const election = await getElection(id);
   if (!election) return { title: "선거 정보 없음" };
 
-  const description = `${election.name} — ${election.districts.length}개 선거구 재보궐선거 정보. 선거구별 공석 사유, 후보자 경력·공약·재산을 한눈에 비교하세요.`;
+  const description = `2026년 6월 3일 지방선거와 재보궐선거 정보를 한곳에서 확인하세요. ${election.districts.length}개 선거구 후보자 경력·공약·재산, 투표 일정·안내, 국회의원 출신 후보 성적표를 제공합니다.`;
 
   return {
-    title: `${election.name} — 선거구·후보 한눈에 보기`,
+    title: `${election.name} — 지방선거·재보궐 종합 정보`,
     description,
     alternates: { canonical: `https://www.lawmake.kr/elections/${id}` },
     openGraph: {
-      title: `${election.name} 재보궐선거 종합 정보`,
+      title: `${election.name} — 지방선거·재보궐 종합 정보`,
       description,
       type: "website",
       url: `https://www.lawmake.kr/elections/${id}`,
@@ -44,7 +44,7 @@ export default async function ElectionPage({ params }: ElectionPageProps) {
             {
               "@type": "ListItem",
               position: 2,
-              name: "재보궐선거",
+              name: "6·3 선거",
               item: `https://www.lawmake.kr/elections/${id}`,
             },
           ],

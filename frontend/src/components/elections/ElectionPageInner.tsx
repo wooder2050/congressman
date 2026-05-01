@@ -6,6 +6,8 @@ import { useCongressSuspenseQuery } from "@/hooks/useCongressQuery";
 import { getElection } from "@/lib/api";
 import type { ByElectionDetail, ElectionDistrictInfo } from "@/types";
 import ElectionHeader from "./ElectionHeader";
+import ElectionTimeline from "./ElectionTimeline";
+import VoteGuidePreview from "./VoteGuidePreview";
 import DistrictSection from "./DistrictSection";
 
 /** 지역별 정렬 순서 */
@@ -83,6 +85,9 @@ export default function ElectionPageInner({ electionId }: { electionId: string }
   return (
     <div className="space-y-6">
       <ElectionHeader election={election} />
+
+      {/* 일정 타임라인 */}
+      <ElectionTimeline />
 
       {/* 요약 테이블 */}
       <section className="overflow-hidden rounded-xl border border-(--color-border-primary) bg-(--color-bg-primary)">
@@ -314,6 +319,9 @@ export default function ElectionPageInner({ electionId }: { electionId: string }
           );
         })}
       </div>
+
+      {/* 투표 안내 프리뷰 */}
+      <VoteGuidePreview electionId={electionId} />
     </div>
   );
 }
