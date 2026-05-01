@@ -9,12 +9,14 @@ import type { LawmakerCandidate } from "@/lib/api";
 
 type SortKey = "attendance" | "vote" | "bills" | "passRate" | "asset";
 
-function formatAsset(amount: number | null): string {
-  if (amount === null) return "-";
-  const billion = amount / 100000000;
-  if (billion >= 1) return `${billion.toFixed(1)}억`;
-  const man = amount / 10000;
-  return `${Math.round(man)}만`;
+function formatAsset(amountInThousandWon: number | null): string {
+  if (amountInThousandWon === null) return "-";
+  const won = amountInThousandWon * 1000;
+  const billion = won / 100000000;
+  if (Math.abs(billion) >= 1) return `${billion.toFixed(1)}억`;
+  const man = won / 10000;
+  if (Math.abs(man) >= 1) return `${Math.round(man)}만`;
+  return `${Math.round(won)}원`;
 }
 
 export default function LawmakerCandidatesInner({ electionId }: { electionId: string }) {

@@ -176,39 +176,41 @@ export class ElectionsService {
       });
       if (!member) continue;
 
-      // MemberTerm에서 22대 정보
-      const term = await this.prisma.memberTerm.findUnique({
-        where: { memberId_termId: { memberId, termId: 22 } },
+      // 최신 대수 MemberTerm 조회 (22대 없으면 21대, 20대 순)
+      const term = await this.prisma.memberTerm.findFirst({
+        where: { memberId },
+        orderBy: { termId: 'desc' },
         include: { party: true },
       });
+      const termId = term?.termId ?? 22;
 
       // 출석률
       const attendance = await this.prisma.attendance.findUnique({
-        where: { memberId_termId: { memberId, termId: 22 } },
+        where: { memberId_termId: { memberId, termId } },
       });
 
       // 법안 발의 건수
       const billCount = await this.prisma.billProposer.count({
-        where: { memberId, bill: { termId: 22 }, role: 'representative' },
+        where: { memberId, bill: { termId }, role: 'representative' },
       });
 
       // 법안 가결
       const passedCount = await this.prisma.billProposer.count({
         where: {
           memberId,
-          bill: { termId: 22, status: 'passed' },
+          bill: { termId, status: 'passed' },
           role: 'representative',
         },
       });
 
       // 표결 참여
       const totalVotes = await this.prisma.memberVote.count({
-        where: { memberId, vote: { termId: 22 } },
+        where: { memberId, vote: { termId } },
       });
       const attendedVotes = await this.prisma.memberVote.count({
         where: {
           memberId,
-          vote: { termId: 22 },
+          vote: { termId },
           result: { in: ['yes', 'no', 'abstain'] },
         },
       });
@@ -231,16 +233,21 @@ export class ElectionsService {
       }
 
       // 출마 지역 확인
-      const districtInfo =
-        districts.find((d) => d.previousMemberId === memberId) ||
-        candidates.find((c) => c.memberIdRef === memberId);
-      const runningFor = districtInfo
-        ? 'vacancyReason' in districtInfo
-          ? districtInfo.district
-          : (districtInfo as (typeof candidates)[number]).district?.district || ''
-        : '';
-      const runningReason =
-        districtInfo && 'vacancyReason' in districtInfo ? districtInfo.vacancyReason : '';
+      const fromDistrict = districts.find((d) => d.previousMemberId === memberId);
+      const fromCandidate = candidates.find((c) => c.memberIdRef === memberId);
+
+      let runningFor = '';
+      let runningReason = '';
+      if (fromDistrict) {
+        runningReason = fromDistrict.vacancyReason;
+        // vacancyReason에서 출마 대상 추출 (예: "추미애 경기도지사 출마 사퇴" → "경기도지사")
+        const match = runningReason.match(
+          /(\S+(?:시장|도지사|특별시장|광역시장|도지사|특별자치시장|특별자치도지사))/,
+        );
+        runningFor = match ? match[1] : fromDistrict.district;
+      } else if (fromCandidate) {
+        runningFor = fromCandidate.district?.district || '';
+      }
 
       const attendanceRate = attendance
         ? Math.round(
