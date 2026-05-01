@@ -16,6 +16,8 @@ import { ScheduleSyncService } from './services/schedule-sync.service';
 import { CommitteeSyncService } from './services/committee-sync.service';
 import { BillJudgeSyncService } from './services/bill-judge-sync.service';
 import { MeetingMinutesSyncService } from './services/meeting-minutes-sync.service';
+import { NecApiService } from './services/nec-api.service';
+import { LocalElectionSyncService } from './services/local-election-sync.service';
 
 async function invalidateCache(command: string) {
   const url = process.env.UPSTASH_REDIS_REST_URL;
@@ -65,6 +67,12 @@ async function invalidateCache(command: string) {
   if (command === 'meeting-minutes') {
     prefixes.push('committees:');
   }
+  if (
+    command === 'local-elections' ||
+    command === 'local-election-results'
+  ) {
+    prefixes.push('local-elections:');
+  }
 
   for (const prefix of prefixes) {
     const scanAndDelete = async (cur: number): Promise<number> => {
@@ -95,7 +103,7 @@ async function main() {
   console.log(`[SyncRunner] Running sync: "${command}" for term ${termId}`);
 
   // API 키가 필요 없는 명령은 AssemblyApiService를 생성하지 않음
-  const needsApi = !['assets', 'attendance', 'bill-content', 'committees'].includes(command);
+  const needsApi = !['assets', 'attendance', 'bill-content', 'committees', 'local-elections', 'local-election-results'].includes(command);
   const api = needsApi ? new AssemblyApiService() : (null as unknown as AssemblyApiService);
 
   try {
@@ -142,6 +150,16 @@ async function main() {
       case 'meeting-minutes':
         await new MeetingMinutesSyncService(prisma, api, syncLog).syncMeetingMinutes(termId);
         break;
+      case 'local-elections': {
+        const necApi = new NecApiService();
+        await new LocalElectionSyncService(prisma, necApi, syncLog).syncAll('local-2026');
+        break;
+      }
+      case 'local-election-results': {
+        const necApi = new NecApiService();
+        await new LocalElectionSyncService(prisma, necApi, syncLog).syncResults('local-2026');
+        break;
+      }
       case 'all':
       default: {
         const allApi = new AssemblyApiService();

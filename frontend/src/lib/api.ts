@@ -376,3 +376,78 @@ export async function getLawmakerCandidates(electionId: string): Promise<Lawmake
 Object.defineProperty(getElections, "queryKey", { value: "elections" });
 Object.defineProperty(getElection, "queryKey", { value: "election" });
 Object.defineProperty(getLawmakerCandidates, "queryKey", { value: "lawmakerCandidates" });
+
+// ====== 지방선거 ======
+
+import type {
+  LocalElectionSummary,
+  LocalElectionOverview,
+  LocalElectionRaceSummary,
+  LocalElectionRaceDetail,
+  LocalElectionRegionSummary,
+  LocalElectionRegionDetail,
+  LocalElectionStats,
+  LocalElectionType,
+} from "@/types";
+
+export async function getLocalElections(): Promise<LocalElectionSummary[]> {
+  return fetchApi("/api/local-elections");
+}
+
+export async function getLocalElection(id: string): Promise<LocalElectionOverview | null> {
+  return fetchApi(`/api/local-elections/${id}`);
+}
+
+export async function getLocalElectionRaces(params: {
+  id: string;
+  type?: LocalElectionType;
+  sido?: string;
+  sigungu?: string;
+  q?: string;
+  page?: number;
+  limit?: number;
+}): Promise<{ races: LocalElectionRaceSummary[]; total: number }> {
+  const sp = new URLSearchParams();
+  if (params.type) sp.set("type", params.type);
+  if (params.sido) sp.set("sido", params.sido);
+  if (params.sigungu) sp.set("sigungu", params.sigungu);
+  if (params.q) sp.set("q", params.q);
+  if (params.page) sp.set("page", String(params.page));
+  if (params.limit) sp.set("limit", String(params.limit));
+  const qs = sp.toString();
+  return fetchApi(`/api/local-elections/${params.id}/races${qs ? `?${qs}` : ""}`);
+}
+
+export async function getLocalElectionRace(params: {
+  id: string;
+  raceId: number;
+}): Promise<LocalElectionRaceDetail | null> {
+  return fetchApi(`/api/local-elections/${params.id}/races/${params.raceId}`);
+}
+
+export async function getLocalElectionRegions(
+  id: string,
+): Promise<LocalElectionRegionSummary[]> {
+  return fetchApi(`/api/local-elections/${id}/regions`);
+}
+
+export async function getLocalElectionRegion(params: {
+  id: string;
+  sido: string;
+}): Promise<LocalElectionRegionDetail> {
+  return fetchApi(
+    `/api/local-elections/${params.id}/regions/${encodeURIComponent(params.sido)}`,
+  );
+}
+
+export async function getLocalElectionStats(id: string): Promise<LocalElectionStats> {
+  return fetchApi(`/api/local-elections/${id}/stats`);
+}
+
+Object.defineProperty(getLocalElections, "queryKey", { value: "localElections" });
+Object.defineProperty(getLocalElection, "queryKey", { value: "localElection" });
+Object.defineProperty(getLocalElectionRaces, "queryKey", { value: "localElectionRaces" });
+Object.defineProperty(getLocalElectionRace, "queryKey", { value: "localElectionRace" });
+Object.defineProperty(getLocalElectionRegions, "queryKey", { value: "localElectionRegions" });
+Object.defineProperty(getLocalElectionRegion, "queryKey", { value: "localElectionRegion" });
+Object.defineProperty(getLocalElectionStats, "queryKey", { value: "localElectionStats" });
