@@ -18,14 +18,14 @@ export const metadata: Metadata = {
 const SCHEDULE = [
   {
     title: "사전투표",
-    date: "5월 29일(목) ~ 30일(금)",
+    date: "5월 29일(금) ~ 30일(토)",
     time: "오전 6시 ~ 오후 6시",
     location: "전국 어디서나 (주소지 관계없이)",
     highlight: true,
   },
   {
     title: "본투표 (선거일)",
-    date: "6월 3일(화)",
+    date: "6월 3일(수)",
     time: "오전 6시 ~ 오후 6시",
     location: "주소지 관할 투표소",
     highlight: false,
