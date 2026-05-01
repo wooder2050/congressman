@@ -58,6 +58,7 @@ export default function RegionalElectionInner({
           <DistrictCard
             key={d.id}
             district={d}
+            electionId={electionId}
             isExpanded={selectedDistrict === d.id}
             onToggle={() => setSelectedDistrict((prev) => (prev === d.id ? null : d.id))}
           />
@@ -69,10 +70,12 @@ export default function RegionalElectionInner({
 
 function DistrictCard({
   district: d,
+  electionId,
   isExpanded,
   onToggle,
 }: {
   district: ElectionDistrictInfo;
+  electionId: string;
   isExpanded: boolean;
   onToggle: () => void;
 }) {
@@ -118,7 +121,7 @@ function DistrictCard({
       </button>
       {isExpanded && (
         <div className="border-t border-(--color-border-primary) bg-(--color-bg-secondary) px-4 pb-4">
-          <DistrictSection district={d} />
+          <DistrictSection district={d} electionId={electionId} />
         </div>
       )}
     </div>
