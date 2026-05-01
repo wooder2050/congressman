@@ -5,6 +5,7 @@ import Image from "next/image";
 import { useCongressSuspenseQuery } from "@/hooks/useCongressQuery";
 import { getCommitteeStats } from "@/lib/api";
 import { formatDate } from "@/lib/utils";
+import { proxyPhotoUrl } from "@/lib/photo";
 import type { CommitteeStats } from "@/types";
 
 interface CommitteeListInnerProps {
@@ -43,7 +44,7 @@ function CommitteeCard({ committee, termId }: { committee: CommitteeStats; termI
       {committee.chair && (
         <div className="mt-2 flex items-center gap-2">
           <Image
-            src={committee.chair.photoUrl}
+            src={proxyPhotoUrl(committee.chair.photoUrl)}
             alt={committee.chair.name}
             width={28}
             height={28}

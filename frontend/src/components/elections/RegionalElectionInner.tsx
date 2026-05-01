@@ -6,6 +6,7 @@ import Image from "next/image";
 import { useCongressSuspenseQuery } from "@/hooks/useCongressQuery";
 import { getElection } from "@/lib/api";
 import type { ByElectionDetail, ElectionDistrictInfo } from "@/types";
+import { proxyPhotoUrl } from "@/lib/photo";
 import DistrictSection from "./DistrictSection";
 
 export default function RegionalElectionInner({
@@ -93,7 +94,7 @@ function DistrictCard({
       >
         {prev && prev.photoUrl ? (
           <Image
-            src={prev.photoUrl}
+            src={proxyPhotoUrl(prev.photoUrl)}
             alt={prev.name}
             width={40}
             height={40}

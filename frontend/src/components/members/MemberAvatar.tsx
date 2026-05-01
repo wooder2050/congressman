@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Image from "next/image";
+import { proxyPhotoUrl } from "@/lib/photo";
 
 interface MemberAvatarProps {
   name: string;
@@ -22,7 +23,8 @@ export default function MemberAvatar({
 }: MemberAvatarProps) {
   const [imgError, setImgError] = useState(false);
   const initials = name.slice(0, 1);
-  const showImage = photoUrl && !imgError;
+  const proxied = proxyPhotoUrl(photoUrl);
+  const showImage = proxied && !imgError;
 
   return (
     <div
@@ -35,7 +37,7 @@ export default function MemberAvatar({
     >
       {showImage ? (
         <Image
-          src={photoUrl}
+          src={proxied}
           alt={`${name} 프로필`}
           width={size}
           height={size}

@@ -6,6 +6,7 @@ import Image from "next/image";
 import { useCongressSuspenseQuery, useCongressQuery } from "@/hooks/useCongressQuery";
 import { getCommitteeDetail, getCommitteeMinutes } from "@/lib/api";
 import { formatDate } from "@/lib/utils";
+import { proxyPhotoUrl } from "@/lib/photo";
 import Pagination from "@/components/ui/pagination";
 import type { CommitteeMemberInfo, MeetingMinutesSummary, CommitteeNextSchedule } from "@/types";
 
@@ -113,7 +114,7 @@ function MemberCard({ member, termId }: { member: CommitteeMemberInfo; termId: n
     >
       {member.photoUrl ? (
         <Image
-          src={member.photoUrl}
+          src={proxyPhotoUrl(member.photoUrl)}
           alt={member.name}
           width={36}
           height={36}

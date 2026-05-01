@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useCongressSuspenseQuery } from "@/hooks/useCongressQuery";
 import { getElection } from "@/lib/api";
 import type { ByElectionDetail, ElectionCandidate } from "@/types";
+import { proxyPhotoUrl } from "@/lib/photo";
 
 export default function CandidateCompareInner({
   electionId,
@@ -83,7 +84,13 @@ function CandidateSummaryCard({ candidate: c }: { candidate: ElectionCandidate }
     >
       <div className="mx-auto h-16 w-16 overflow-hidden rounded-full">
         {c.photoUrl ? (
-          <Image src={c.photoUrl} alt={c.name} width={64} height={64} className="object-cover" />
+          <Image
+            src={proxyPhotoUrl(c.photoUrl)}
+            alt={c.name}
+            width={64}
+            height={64}
+            className="object-cover"
+          />
         ) : (
           <div
             className="flex h-full w-full items-center justify-center text-xl font-bold text-white"

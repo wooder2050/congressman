@@ -6,6 +6,7 @@ import Link from "next/link";
 import { useCongressSuspenseQuery } from "@/hooks/useCongressQuery";
 import { getElection } from "@/lib/api";
 import type { ByElectionDetail, ElectionDistrictInfo } from "@/types";
+import { proxyPhotoUrl } from "@/lib/photo";
 import ElectionHeader from "./ElectionHeader";
 import ElectionTimeline from "./ElectionTimeline";
 import VoteGuidePreview from "./VoteGuidePreview";
@@ -149,7 +150,7 @@ export default function ElectionPageInner({ electionId }: { electionId: string }
                         <div className="flex items-center gap-1.5">
                           {prev.photoUrl ? (
                             <Image
-                              src={prev.photoUrl}
+                              src={proxyPhotoUrl(prev.photoUrl)}
                               alt={prev.name}
                               width={20}
                               height={20}
