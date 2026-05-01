@@ -11,10 +11,10 @@ function getActiveStep(): number {
   const now = new Date();
   now.setHours(0, 0, 0, 0);
   const dates = [
-    new Date("2026-05-14"),
-    new Date("2026-05-21"),
-    new Date("2026-05-29"),
-    new Date("2026-06-03"),
+    new Date(2026, 4, 14),
+    new Date(2026, 4, 21),
+    new Date(2026, 4, 29),
+    new Date(2026, 5, 3),
   ];
   for (let i = dates.length - 1; i >= 0; i--) {
     if (now >= dates[i]) return i;
