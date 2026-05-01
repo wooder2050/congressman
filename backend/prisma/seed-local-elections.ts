@@ -396,6 +396,62 @@ async function main() {
 
   console.log(`[Seed] Created ${mayorCount} mayor races`);
 
+  // 5. 광역의원 시도별 정수 시드
+  // 출처: 공직선거법 별표2 (개정 2026.4.22) — 지역구 750명 + 증원정수 4명 = 754명
+  // 서울 103, 경기 146은 법령/뉴스로 교차 확인 완료
+  // 나머지는 2022년(제8회) 대비 증원분을 반영한 추정치 (5/14 NEC 동기화 시 정확한 데이터로 대체)
+  const metroCouncilByDo: { sido: string; count: number; verified: boolean }[] = [
+    { sido: '서울특별시', count: 103, verified: true },
+    { sido: '부산광역시', count: 47, verified: false },
+    { sido: '대구광역시', count: 29, verified: false },
+    { sido: '인천광역시', count: 37, verified: false },
+    { sido: '광주광역시', count: 22, verified: false },
+    { sido: '대전광역시', count: 19, verified: false },
+    { sido: '울산광역시', count: 19, verified: false },
+    { sido: '세종특별자치시', count: 17, verified: false },
+    { sido: '경기도', count: 146, verified: true },
+    { sido: '강원특별자치도', count: 42, verified: false },
+    { sido: '충청북도', count: 30, verified: false },
+    { sido: '충청남도', count: 38, verified: false },
+    { sido: '전북특별자치도', count: 35, verified: false },
+    { sido: '전라남도', count: 52, verified: false },
+    { sido: '경상북도', count: 55, verified: false },
+    { sido: '경상남도', count: 52, verified: false },
+    { sido: '제주특별자치도', count: 11, verified: false },
+  ];
+
+  let metroCouncilCount = 0;
+  for (const entry of metroCouncilByDo) {
+    // 시도별 "제1선거구" ~ "제N선거구" 형태로 placeholder race 생성
+    for (let i = 1; i <= entry.count; i++) {
+      const district = `제${i}선거구`;
+      await prisma.localElectionRace.upsert({
+        where: {
+          electionId_electionType_sido_sigungu_district: {
+            electionId: 'local-2026',
+            electionType: 'metro-council',
+            sido: entry.sido,
+            sigungu: '',
+            district,
+          },
+        },
+        update: {},
+        create: {
+          electionId: 'local-2026',
+          electionType: 'metro-council',
+          sido: entry.sido,
+          sigungu: '',
+          district,
+          displayName: `${entry.sido} ${district}`,
+          sgTypecode: '4',
+        },
+      });
+      metroCouncilCount++;
+    }
+  }
+
+  console.log(`[Seed] Created ${metroCouncilCount} metro-council races`);
+
   console.log('[Seed] Local election seed completed!');
 }
 
