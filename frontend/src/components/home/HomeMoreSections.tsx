@@ -8,7 +8,7 @@ export default function HomeMoreSections({ children }: { children: React.ReactNo
   return (
     <>
       {/* 데스크톱: 항상 표시 */}
-      <div className="hidden lg:contents">{children}</div>
+      <div className="hidden space-y-8 lg:block">{children}</div>
 
       {/* 모바일: 토글 */}
       <div className="lg:hidden">
