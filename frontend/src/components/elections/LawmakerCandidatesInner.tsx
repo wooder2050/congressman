@@ -6,6 +6,7 @@ import Link from "next/link";
 import { useCongressSuspenseQuery } from "@/hooks/useCongressQuery";
 import { getLawmakerCandidates } from "@/lib/api";
 import type { LawmakerCandidate } from "@/lib/api";
+import { proxyPhotoUrl } from "@/lib/photo";
 
 type SortKey = "attendance" | "vote" | "bills" | "passRate" | "asset";
 
@@ -127,7 +128,7 @@ export default function LawmakerCandidatesInner({ electionId }: { electionId: st
                 <div className="relative h-14 w-14 shrink-0 overflow-hidden rounded-full sm:h-16 sm:w-16">
                   {c.photoUrl ? (
                     <Image
-                      src={c.photoUrl}
+                      src={proxyPhotoUrl(c.photoUrl)}
                       alt={c.name}
                       fill
                       className="object-cover"

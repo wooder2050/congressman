@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import type { ElectionDistrictInfo } from "@/types";
+import { proxyPhotoUrl } from "@/lib/photo";
 import CandidateCard from "./CandidateCard";
 
 export default function DistrictSection({
@@ -20,7 +21,7 @@ export default function DistrictSection({
         <div className="flex items-center gap-3 rounded-lg bg-(--color-bg-primary) px-3 py-2.5">
           {prev.photoUrl ? (
             <Image
-              src={prev.photoUrl}
+              src={proxyPhotoUrl(prev.photoUrl)}
               alt={prev.name}
               width={36}
               height={36}
