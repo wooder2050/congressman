@@ -48,6 +48,7 @@ function CommitteeCard({ committee, termId }: { committee: CommitteeStats; termI
             alt={committee.chair.name}
             width={28}
             height={28}
+            unoptimized
             className="rounded-full object-cover"
           />
           <span className="text-sm text-(--color-text-secondary)">

@@ -154,6 +154,7 @@ export default function ElectionPageInner({ electionId }: { electionId: string }
                               alt={prev.name}
                               width={20}
                               height={20}
+                              unoptimized
                               className="h-5 w-5 rounded-full object-cover"
                             />
                           ) : (
