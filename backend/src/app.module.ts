@@ -10,6 +10,7 @@ import { StatsModule } from './stats/stats.module';
 import { SchedulesModule } from './schedules/schedules.module';
 import { CommitteesModule } from './committees/committees.module';
 import { ElectionsModule } from './elections/elections.module';
+import { LocalElectionsModule } from './local-elections/local-elections.module';
 import { HealthModule } from './health/health.module';
 import { RedisModule } from './redis/redis.module';
 
@@ -28,6 +29,7 @@ import { RedisModule } from './redis/redis.module';
     SchedulesModule,
     CommitteesModule,
     ElectionsModule,
+    LocalElectionsModule,
   ],
 })
 export class AppModule {}

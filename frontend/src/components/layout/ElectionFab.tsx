@@ -28,15 +28,15 @@ export default function ElectionFab() {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  if (pathname.startsWith("/elections")) return null;
+  if (pathname.startsWith("/elections") || pathname.startsWith("/local-elections")) return null;
 
   return (
     <Link
-      href="/elections/2026-06-03"
+      href="/local-elections/2026"
       className={`fixed right-4 bottom-20 z-40 flex items-center gap-2 rounded-full bg-rose-500 px-4 py-3 text-sm font-semibold text-white shadow-lg transition-[transform,opacity,background-color] duration-300 hover:bg-rose-600 hover:shadow-xl active:scale-95 lg:bottom-6 ${
         hidden ? "pointer-events-none translate-y-24 opacity-0" : "translate-y-0 opacity-100"
       }`}
-      aria-label="6·3 재보궐선거 보기"
+      aria-label="6·3 지방선거 보기"
       tabIndex={hidden ? -1 : undefined}
     >
       <svg
@@ -52,7 +52,7 @@ export default function ElectionFab() {
         <path d="M9 11l3 3L22 4" />
         <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11" />
       </svg>
-      <span>6·3 재보궐</span>
+      <span>6·3 지방선거</span>
     </Link>
   );
 }
