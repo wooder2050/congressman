@@ -2,6 +2,205 @@ import type { BreakingNewsItem } from "./types";
 
 const breakingNews: BreakingNewsItem[] = [
   {
+    id: "2026-05-01-labor-day-holiday",
+    title: "노동절 첫 법정공휴일 — 63년 만에 '빨간 날', 청와대 기념식 개최",
+    description:
+      "5월 1일 노동절이 올해부터 법정공휴일로 지정되었습니다. 1963년 이후 63년 만에 고용 형태와 관계없이 모든 국민이 쉬는 공휴일이 되었으며, 청와대 영빈관에서 사상 첫 노동절 기념식이 개최되었습니다. 이재명 대통령은 \"친노동은 반기업, 친기업은 반노동이라는 낡은 이분법을 깰 때\"라며 노동·기업 상생을 강조했습니다.",
+    date: "2026-05-01",
+    category: "legislation",
+    items: [
+      {
+        label: "법정공휴일 지정",
+        value: "공휴일법 개정안 본회의 통과 (찬성 194·반대 2·기권 3)",
+      },
+      {
+        label: "적용 대상 확대",
+        value: "공무원·교원·특수고용직 등 종전 제외 대상 포함 → 전 국민 적용",
+      },
+      {
+        label: "청와대 기념식",
+        value: "양대 노총·노동계 원로·경영계 등 120명 참석",
+      },
+      {
+        label: "함께 지정",
+        value: "제헌절(7/17)도 법정공휴일로 복원 — 올해부터 달력에 빨간 날 2개 추가",
+      },
+    ],
+    sources: [
+      {
+        title: "노동절 공휴일 법안 국회 본회의 통과 — MBC",
+        url: "https://imnews.imbc.com/news/2026/politics/article/6811610_36911.html",
+      },
+      {
+        title: "달력에 빨간 날 2개 추가…노동절·제헌절 올해부터 공휴일 — 머니투데이",
+        url: "https://www.mt.co.kr/policy/2026/04/28/2026042808250174216",
+      },
+    ],
+    active: true,
+  },
+  {
+    id: "2026-05-01-oil-relief-no-rotation",
+    title: "고유가 피해지원금 요일제 해제 — 오늘부터 누구나 신청, 모든 주유소 사용 가능",
+    description:
+      "오늘(5/1)부터 고유가 피해지원금 1차 요일제가 해제되어 출생연도와 관계없이 누구나 신청할 수 있습니다. 3일간(4/27~29) 152만 6,513명(대상의 47.3%)이 신청해 8,697억 원이 지급되었습니다. 또한 이재명 대통령의 지시로 연 매출 30억 초과 주유소에도 사용이 허용되어 모든 주유소에서 지원금을 사용할 수 있게 되었습니다.",
+    date: "2026-05-01",
+    category: "legislation",
+    items: [
+      {
+        label: "요일제 해제",
+        value: "5/1부터 출생연도 무관 신청 가능 (1차 마감 5/8)",
+      },
+      {
+        label: "신청 현황",
+        value: "152만 6,513명 신청(47.3%) · 8,697억 원 지급 (4/29 기준)",
+      },
+      {
+        label: "주유소 전면 개방",
+        value: "연 매출 30억 초과 주유소도 사용 허용 → 모든 주유소 이용 가능",
+      },
+      {
+        label: "2차 일정",
+        value: "소득 하위 70% 일반 가구 · 1인당 10만~60만 원 (5/18~7/3)",
+      },
+    ],
+    sources: [
+      {
+        title: "고유가 지원금, 오늘부터 요일제 해제…모든 주유소 사용 — 파이낸셜뉴스",
+        url: "https://www.fnnews.com/news/202605010530272833",
+      },
+      {
+        title: "행정안전부 고유가 피해지원금 안내",
+        url: "https://www.mois.go.kr/frt/sub/a06/b07/highOilPriceSupport/screen.do",
+      },
+      {
+        title: "고유가 피해지원금 대상자, 지급액, 신청 방법 — KB의 생각",
+        url: "https://kbthink.com/life/daily/high-oil-price-relief-fund.html",
+      },
+    ],
+    active: true,
+  },
+  {
+    id: "2026-05-01-constitutional-amendment-vote-d6",
+    title: "개헌안 본회의 표결 D-6 — 5/7 표결, 부결 시 5/10까지 연속 본회의 추진",
+    description:
+      "개헌안 본회의 표결이 6일 앞으로 다가왔습니다. 5월 7일 오후 2시 표결이 확정되었으며, 국민의힘이 불참할 경우 5/8 재표결, 최종 시한인 5/10까지 연속 본회의를 열겠다는 방침입니다. 우원식 의장은 장동혁 국민의힘 대표에게 자유투표를 촉구하고 있으나, 국민의힘은 당론 반대를 유지하고 있습니다.",
+    date: "2026-05-01",
+    category: "politics",
+    items: [
+      {
+        label: "정족수",
+        value: "재적 286명 · 의결 정족수 191명 (2/3 이상 찬성)",
+      },
+      {
+        label: "표결 일정",
+        value: "5/7(수) 오후 2시 → 불참 시 5/8 재표결 → 최종 시한 5/10",
+      },
+      {
+        label: "국민의힘",
+        value: "졸속 개헌 반대 당론 유지 · 지선 후 개헌특위 구성 역제안",
+      },
+      {
+        label: "핵심 내용",
+        value:
+          "계엄 국회 승인권 도입 · 헌법 전문에 5·18·부마항쟁 수록 · 6/3 국민투표 동시 실시",
+      },
+    ],
+    sources: [
+      {
+        title: "與 \"개헌안 표결 野 불참시 이튿날 또 본회의\" — 파이낸셜뉴스",
+        url: "https://www.fnnews.com/news/202604301037562039",
+      },
+      {
+        title: "39년만 개헌 표결 D-10, 우원식 \"국힘 반대 당론 열어 소신 투표해야\" — 오마이뉴스",
+        url: "https://www.ohmynews.com/NWS_Web/View/at_pg.aspx?CNTN_CD=A0003228695&PAGE_CD=N0002&CMPT_CD=M0112",
+      },
+      {
+        title: "개헌안 5월 7일 표결…우원식, 장동혁 만나 설득한다 — 파이낸셜뉴스",
+        url: "https://www.fnnews.com/news/202604281730005013",
+      },
+    ],
+    active: true,
+  },
+  {
+    id: "2026-05-01-fake-indictment-special-counsel",
+    title: "민주당 '조작기소 특검법' 발의 — 12개 사건 이첩, 공소취소권 포함 논란",
+    description:
+      "더불어민주당이 4월 30일 '조작기소 진상규명 특검법'을 발의했습니다. 대장동·쌍방울 대북송금 등 이재명 대통령 관련 12개 사건에 대해 특검에 수사 이첩과 공소취소 권한을 부여하는 내용입니다. 대검은 \"재판 독립성에 영향\"이라고 우려했고, 국민의힘은 \"셀프 면죄 특검\"이라고 반발하고 있습니다.",
+    date: "2026-05-01",
+    category: "politics",
+    items: [
+      {
+        label: "수사 대상",
+        value: "대장동·쌍방울 대북송금 등 12개 사건 (이재명 대통령 관련 재판 다수 포함)",
+      },
+      {
+        label: "핵심 조항",
+        value: "특검에 공소취소 판단 권한 부여 · 검찰 사건 이첩 요구권",
+      },
+      {
+        label: "대검 입장",
+        value: "\"진행 중 재판에 부당한 영향\" 우려 표명",
+      },
+      {
+        label: "국민의힘",
+        value: "\"이재명 셀프면죄 특검\" 규탄 · 송언석 원내대표 강력 반발",
+      },
+    ],
+    sources: [
+      {
+        title: "민주, 조작기소 특검법 발의…李 대통령 '공소 취소' 가능 규정 담겨 — 뉴스핌",
+        url: "https://www.newspim.com/news/view/20260430001343",
+      },
+      {
+        title: "민주당, 조작기소 특검법 발의… 논란의 '공소취소권' 포함 — 프레시안",
+        url: "https://www.pressian.com/pages/articles/2026043018123002840",
+      },
+      {
+        title: "與, 조작기소 특검법 발의…공소취소 조항도 포함 — 이데일리",
+        url: "https://www.edaily.co.kr/News/Read?newsId=07006086645421368&mediaCodeNo=257",
+      },
+    ],
+    active: true,
+  },
+  {
+    id: "2026-05-01-by-election-update",
+    title: "6·3 재보궐 14곳 D-33 — 5/14~15 후보등록, 역대 두 번째 규모 '미니 총선'",
+    description:
+      "6·3 재보궐선거가 33일 앞으로 다가왔습니다. 14곳 중 12곳이 민주당 의석이었으며, 5월 14~15일 후보등록이 시작됩니다. 송영길·한동훈·조국·이광재 등 당대표급이 격돌하는 역대 두 번째 규모의 재보궐선거입니다.",
+    date: "2026-05-01",
+    category: "election",
+    items: [
+      {
+        label: "재보궐 규모",
+        value: "14곳 (역대 두 번째) · 민주 12석 + 국힘 2석 궐석",
+      },
+      {
+        label: "후보등록",
+        value: "5/14~15 등록 · 5/24~28 사전투표 · 6/3 투표일",
+      },
+      {
+        label: "주요 대진표",
+        value: "평택을: 조국 vs 유의동 vs 김용남 · 부산 북갑: 한동훈 · 인천 연수갑: 송영길",
+      },
+      {
+        label: "의석 변동",
+        value: "재적의원 286명 · 사퇴 9명(민주 8+국힘 1) + 기존 궐석 5곳",
+      },
+    ],
+    sources: [
+      {
+        title: "여야 의원 9인 일괄 사퇴…6·3 재보선 14곳 개최 확정 — 아이뉴스24",
+        url: "https://inews24.com/view/1964587",
+      },
+      {
+        title: "현역 9명, 배지 던지고 '지선 앞으로' — 헤럴드경제",
+        url: "https://biz.heraldcorp.com/article/10728321",
+      },
+    ],
+    linkUrl: "/elections/2026-06-03",
+    active: true,
+  },
+  {
     id: "2026-04-30-member-resignations",
     title: "여야 의원 9명 사퇴 완료 · 오늘 보궐 동시실시 마감 — 재보궐 14곳 최종 확정",
     description:
@@ -41,7 +240,7 @@ const breakingNews: BreakingNewsItem[] = [
       },
     ],
     linkUrl: "/elections/2026-06-03",
-    active: true,
+    active: false,
   },
   {
     id: "2026-04-30-oil-relief-payment",
@@ -82,7 +281,7 @@ const breakingNews: BreakingNewsItem[] = [
         url: "https://issue.daum.net/focus/260427reliefpayment",
       },
     ],
-    active: true,
+    active: false,
   },
   {
     id: "2026-04-29-oil-relief-payment",
@@ -454,7 +653,7 @@ const breakingNews: BreakingNewsItem[] = [
         url: "https://www.fnnews.com/news/202604281023465754",
       },
     ],
-    active: true,
+    active: false,
   },
   {
     id: "2026-04-29-constitutional-amendment-vote-d8",
