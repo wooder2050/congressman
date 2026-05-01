@@ -79,8 +79,8 @@ export class LocalElectionSyncService {
         );
 
         const rows = await this.necApi.fetchAll<NecCandidateRow>(
-          'PofelcddInfoInqireService2',
-          'getHuboInfoInqire',
+          'PofelcddInfoInqireService',
+          'getPofelcddRegistSttusInfoInqire',
           { sgId, sgTypecode: necCode },
         );
 
@@ -198,7 +198,7 @@ export class LocalElectionSyncService {
 
       for (const necCode of Object.keys(NEC_TYPE_TO_ELECTION_TYPE)) {
         const rows = await this.necApi.fetchAll<NecWinnerRow>(
-          'WinnerInfoInqireService2',
+          'WinnerInfoInqireService',
           'getWinnerInfoInqire',
           { sgId, sgTypecode: necCode },
         );
