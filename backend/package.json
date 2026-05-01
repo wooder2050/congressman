@@ -28,7 +28,10 @@
     "sync:bill-content": "tsx src/sync/sync-runner.ts bill-content",
     "sync:schedules": "tsx src/sync/sync-runner.ts schedules",
     "sync:daily": "tsx src/sync/sync-daily.ts",
-    "sync:weekly": "tsx src/sync/sync-weekly.ts"
+    "sync:weekly": "tsx src/sync/sync-weekly.ts",
+    "sync:local-elections": "tsx src/sync/sync-runner.ts local-elections",
+    "sync:local-election-results": "tsx src/sync/sync-runner.ts local-election-results",
+    "seed:local-elections": "tsx prisma/seed-local-elections.ts"
   },
   "dependencies": {
     "@nestjs/common": "^11.0.0",

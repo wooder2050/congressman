@@ -553,3 +553,98 @@ export interface ElectionCandidate {
   status: string;
   memberIdRef: string | null;
 }
+
+// ====== 지방선거 ======
+
+export type LocalElectionType =
+  | "governor"
+  | "mayor"
+  | "metro-council"
+  | "local-council"
+  | "superintendent";
+
+export interface LocalElectionSummary {
+  id: string;
+  name: string;
+  electionDate: string;
+  status: "upcoming" | "active" | "completed";
+  raceCounts: Record<LocalElectionType, number>;
+}
+
+export interface LocalElectionRegionSummary {
+  sido: string;
+  sidoShort: string;
+  raceCounts: Record<LocalElectionType, number>;
+  totalCandidates: number;
+}
+
+export interface LocalElectionOverview extends LocalElectionSummary {
+  description: string;
+  ordinal: number;
+  totalCandidates: number;
+  regionSummary: LocalElectionRegionSummary[];
+}
+
+export interface LocalElectionCandidatePreview {
+  id: number;
+  name: string;
+  party: Party | null;
+  candidateNumber: number | null;
+  photoUrl: string | null;
+}
+
+export interface LocalElectionRaceSummary {
+  id: number;
+  electionType: LocalElectionType;
+  sido: string;
+  sigungu: string;
+  district: string;
+  displayName: string;
+  seatCount: number;
+  candidateCount: number;
+  topCandidates: LocalElectionCandidatePreview[];
+}
+
+export interface LocalElectionCandidateDetail {
+  id: number;
+  name: string;
+  party: Party | null;
+  photoUrl: string | null;
+  birthDate: string | null;
+  gender: string | null;
+  career: string | null;
+  education: string | null;
+  slogan: string | null;
+  pledges: CandidatePledge[];
+  assets: string | null;
+  candidateNumber: number | null;
+  status: string;
+  voteCount: number | null;
+  voteRate: number | null;
+  isWinner: boolean;
+  memberIdRef: string | null;
+}
+
+export interface LocalElectionRaceDetail {
+  id: number;
+  electionType: LocalElectionType;
+  sido: string;
+  sigungu: string;
+  district: string;
+  displayName: string;
+  seatCount: number;
+  candidates: LocalElectionCandidateDetail[];
+}
+
+export interface LocalElectionRegionDetail {
+  sido: string;
+  races: LocalElectionRaceSummary[];
+}
+
+export interface LocalElectionStats {
+  totalRaces: number;
+  totalCandidates: number;
+  racesByType: Record<string, number>;
+  candidatesByType: Record<string, number>;
+  candidatesByParty: Record<string, number>;
+}

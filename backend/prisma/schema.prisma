@@ -36,6 +36,8 @@ model Party {
   electionDistricts ElectionDistrict[]
   candidates        Candidate[]
 
+  localElectionCandidates LocalElectionCandidate[]
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
@@ -342,4 +344,76 @@ model Candidate {
   updatedAt DateTime @updatedAt
 
   @@unique([districtId, name])
+}
+
+// ====== 지방선거 ======
+
+model LocalElection {
+  id           String   @id // "local-2026"
+  name         String // "제9회 전국동시지방선거"
+  electionDate DateTime
+  description  String   @default("")
+  status       String   @default("upcoming") // upcoming | active | completed
+  ordinal      Int // 9 (회차)
+
+  races LocalElectionRace[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model LocalElectionRace {
+  id           Int    @id @default(autoincrement())
+  electionId   String
+  electionType String // "governor" | "mayor" | "metro-council" | "local-council" | "superintendent"
+  sido         String // "서울특별시"
+  sigungu      String @default("") // "수원시" (governor/superintendent는 빈 문자열)
+  district     String @default("") // "가", "나" (council용)
+  displayName  String // "서울특별시장", "수원시장" 등
+  seatCount    Int    @default(1) // 기초의원 중선거구는 2~4석
+
+  sgId       String @default("") // NEC 선거ID
+  sgTypecode String @default("") // NEC 선거종류코드
+
+  election   LocalElection          @relation(fields: [electionId], references: [id])
+  candidates LocalElectionCandidate[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([electionId, electionType, sido, sigungu, district])
+  @@index([electionId, electionType])
+  @@index([electionId, sido])
+}
+
+model LocalElectionCandidate {
+  id              Int     @id @default(autoincrement())
+  raceId          Int
+  name            String
+  partyId         String?
+  photoUrl        String?
+  birthDate       String?
+  gender          String?
+  career          String? // 줄바꿈 구분
+  education       String?
+  slogan          String?
+  pledges         Json    @default("[]") // [{category, title, description}]
+  assets          String? // 재산 요약 텍스트
+  candidateNumber Int? // 기호 번호
+  status          String  @default("registered") // registered | elected | defeated
+  voteCount       Int?
+  voteRate        Float?
+  isWinner        Boolean @default(false)
+  huboid          String  @default("") // NEC 후보자 ID
+  memberIdRef     String? // 현직 의원이면 Member.id
+
+  race  LocalElectionRace @relation(fields: [raceId], references: [id])
+  party Party?            @relation(fields: [partyId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([raceId, name])
+  @@index([raceId])
+  @@index([partyId])
 }
