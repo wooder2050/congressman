@@ -24,6 +24,7 @@ export default function MemberAvatar({
   const [imgError, setImgError] = useState(false);
   const initials = name.slice(0, 1);
   const proxied = proxyPhotoUrl(photoUrl);
+  const isProxied = proxied.startsWith("/api/photo");
   const showImage = proxied && !imgError;
 
   return (
@@ -44,6 +45,7 @@ export default function MemberAvatar({
           className="h-full w-full object-cover"
           loading="lazy"
           placeholder="empty"
+          unoptimized={isProxied}
           style={{ backgroundColor: bgColor }}
           onError={() => setImgError(true)}
         />

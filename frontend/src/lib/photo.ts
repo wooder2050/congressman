@@ -8,3 +8,8 @@ export function proxyPhotoUrl(url: string | null | undefined): string {
   if (!url.includes("assembly.go.kr")) return url;
   return `/api/photo?url=${encodeURIComponent(url)}`;
 }
+
+/** 프록시 URL인지 확인 (Next.js Image unoptimized 필요) */
+export function isProxiedUrl(url: string): boolean {
+  return url.startsWith("/api/photo");
+}
