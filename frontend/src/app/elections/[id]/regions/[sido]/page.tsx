@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { notFound } from "next/navigation";
 import BreadcrumbJsonLd from "@/components/seo/BreadcrumbJsonLd";
 import JsonLd from "@/components/seo/JsonLd";
 import CongressWrapper from "@/common/CongressWrapper";
@@ -29,9 +30,13 @@ interface RegionalPageProps {
   params: Promise<{ id: string; sido: string }>;
 }
 
+const VALID_REGIONS = new Set(Object.keys(REGION_NAMES));
+
 export async function generateMetadata({ params }: RegionalPageProps): Promise<Metadata> {
   const { sido } = await params;
-  const regionName = REGION_NAMES[decodeURIComponent(sido)] ?? decodeURIComponent(sido);
+  const decoded = decodeURIComponent(sido);
+  if (!VALID_REGIONS.has(decoded)) return { title: "지역 정보 없음" };
+  const regionName = REGION_NAMES[decoded];
 
   return {
     title: `${regionName} 6·3 선거 정보 — 재보궐·투표 안내`,
@@ -45,7 +50,8 @@ export async function generateMetadata({ params }: RegionalPageProps): Promise<M
 export default async function RegionalElectionPage({ params }: RegionalPageProps) {
   const { id, sido } = await params;
   const decodedSido = decodeURIComponent(sido);
-  const regionName = REGION_NAMES[decodedSido] ?? decodedSido;
+  if (!VALID_REGIONS.has(decodedSido)) notFound();
+  const regionName = REGION_NAMES[decodedSido];
 
   return (
     <div className="mx-auto max-w-3xl space-y-8">
