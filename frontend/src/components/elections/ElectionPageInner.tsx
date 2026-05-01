@@ -2,10 +2,14 @@
 
 import { useState, useMemo } from "react";
 import Image from "next/image";
+import Link from "next/link";
 import { useCongressSuspenseQuery } from "@/hooks/useCongressQuery";
 import { getElection } from "@/lib/api";
 import type { ByElectionDetail, ElectionDistrictInfo } from "@/types";
+import { proxyPhotoUrl } from "@/lib/photo";
 import ElectionHeader from "./ElectionHeader";
+import ElectionTimeline from "./ElectionTimeline";
+import VoteGuidePreview from "./VoteGuidePreview";
 import DistrictSection from "./DistrictSection";
 
 /** 지역별 정렬 순서 */
@@ -84,6 +88,9 @@ export default function ElectionPageInner({ electionId }: { electionId: string }
     <div className="space-y-6">
       <ElectionHeader election={election} />
 
+      {/* 일정 타임라인 */}
+      <ElectionTimeline />
+
       {/* 요약 테이블 */}
       <section className="overflow-hidden rounded-xl border border-(--color-border-primary) bg-(--color-bg-primary)">
         <div className="border-b border-(--color-border-primary) px-4 py-3 sm:px-5">
@@ -143,7 +150,7 @@ export default function ElectionPageInner({ electionId }: { electionId: string }
                         <div className="flex items-center gap-1.5">
                           {prev.photoUrl ? (
                             <Image
-                              src={prev.photoUrl}
+                              src={proxyPhotoUrl(prev.photoUrl)}
                               alt={prev.name}
                               width={20}
                               height={20}
@@ -302,7 +309,7 @@ export default function ElectionPageInner({ electionId }: { electionId: string }
                         {/* 선거구 상세 (펼쳐질 때) */}
                         {isDistrictExpanded && (
                           <div className="bg-(--color-bg-secondary) px-4 pb-4 sm:px-5">
-                            <DistrictSection district={d} />
+                            <DistrictSection district={d} electionId={electionId} />
                           </div>
                         )}
                       </div>
@@ -314,6 +321,37 @@ export default function ElectionPageInner({ electionId }: { electionId: string }
           );
         })}
       </div>
+
+      {/* 국회의원 출신 후보 성적표 링크 */}
+      <section className="rounded-xl border border-(--color-border-primary) bg-(--color-bg-primary) p-4 sm:p-5">
+        <h2 className="text-lg font-bold">국회의원 출신 후보 성적표</h2>
+        <p className="mt-1 text-sm text-(--color-text-secondary)">
+          출마한 전·현직 국회의원의 출석률, 표결참여율, 법안 발의·가결, 재산을 비교하세요.
+        </p>
+        <Link
+          href={`/elections/${electionId}/lawmaker-candidates`}
+          className="mt-3 inline-flex items-center gap-1 rounded-lg bg-(--color-primary) px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-(--color-primary-hover)"
+        >
+          성적표 보기 →
+        </Link>
+      </section>
+
+      {/* 지역별 선거 정보 */}
+      <section className="rounded-xl border border-(--color-border-primary) bg-(--color-bg-primary) p-4 sm:p-5">
+        <h2 className="text-lg font-bold">지역별 선거 정보</h2>
+        <p className="mt-1 text-sm text-(--color-text-secondary)">
+          17개 시도별 재보궐 선거구, 후보자, 투표 안내를 확인하세요.
+        </p>
+        <Link
+          href={`/elections/${electionId}/regions`}
+          className="mt-3 inline-flex items-center gap-1 rounded-lg bg-(--color-bg-tertiary) px-4 py-2 text-sm font-medium text-(--color-text-secondary) transition-colors hover:bg-(--color-bg-hover)"
+        >
+          지역 선택하기 →
+        </Link>
+      </section>
+
+      {/* 투표 안내 프리뷰 */}
+      <VoteGuidePreview electionId={electionId} />
     </div>
   );
 }

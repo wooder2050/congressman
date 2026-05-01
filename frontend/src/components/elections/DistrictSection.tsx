@@ -1,9 +1,16 @@
 import Image from "next/image";
 import Link from "next/link";
 import type { ElectionDistrictInfo } from "@/types";
+import { proxyPhotoUrl } from "@/lib/photo";
 import CandidateCard from "./CandidateCard";
 
-export default function DistrictSection({ district }: { district: ElectionDistrictInfo }) {
+export default function DistrictSection({
+  district,
+  electionId = "2026-06-03",
+}: {
+  district: ElectionDistrictInfo;
+  electionId?: string;
+}) {
   const prev = district.previousMember;
   const partyColor = prev?.party?.color ?? "#9ca3af";
 
@@ -14,7 +21,7 @@ export default function DistrictSection({ district }: { district: ElectionDistri
         <div className="flex items-center gap-3 rounded-lg bg-(--color-bg-primary) px-3 py-2.5">
           {prev.photoUrl ? (
             <Image
-              src={prev.photoUrl}
+              src={proxyPhotoUrl(prev.photoUrl)}
               alt={prev.name}
               width={36}
               height={36}
@@ -64,6 +71,14 @@ export default function DistrictSection({ district }: { district: ElectionDistri
               <CandidateCard key={c.id} candidate={c} />
             ))}
           </div>
+          {district.candidates.length >= 2 && (
+            <Link
+              href={`/elections/${electionId}/races/${district.id}`}
+              className="inline-flex items-center gap-1 rounded-lg bg-(--color-bg-tertiary) px-3 py-2 text-xs font-medium text-(--color-text-secondary) transition-colors hover:bg-(--color-bg-hover)"
+            >
+              후보 비교하기 →
+            </Link>
+          )}
         </div>
       ) : (
         <div className="rounded-lg bg-(--color-bg-primary) py-4 text-center">
