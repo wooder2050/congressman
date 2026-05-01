@@ -24,4 +24,14 @@ export class ElectionsController {
     if (!election) throw new NotFoundException();
     return election;
   }
+
+  @Get(':id/lawmaker-candidates')
+  @ApiOperation({
+    summary: '국회의원 출신 후보',
+    description: '선거에 출마한 전·현직 국회의원의 의정활동 성적표를 반환합니다',
+  })
+  @ApiParam({ name: 'id', description: '선거 ID' })
+  async getLawmakerCandidates(@Param('id') id: string) {
+    return this.electionsService.getLawmakerCandidates(id);
+  }
 }

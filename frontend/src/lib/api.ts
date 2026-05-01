@@ -352,5 +352,27 @@ export async function getElection(id: string): Promise<ByElectionDetail | null> 
   return fetchApi(`/api/elections/${id}`);
 }
 
+export interface LawmakerCandidate {
+  memberId: string;
+  name: string;
+  photoUrl: string;
+  party: { id: string; name: string; shortName: string; color: string } | null;
+  district: string;
+  runningFor: string;
+  runningReason: string;
+  attendanceRate: number;
+  voteParticipationRate: number;
+  billCount: number;
+  passedCount: number;
+  passRate: number;
+  totalAsset: number | null;
+  assetYear: number | null;
+}
+
+export async function getLawmakerCandidates(electionId: string): Promise<LawmakerCandidate[]> {
+  return fetchApi(`/api/elections/${electionId}/lawmaker-candidates`);
+}
+
 Object.defineProperty(getElections, "queryKey", { value: "elections" });
 Object.defineProperty(getElection, "queryKey", { value: "election" });
+Object.defineProperty(getLawmakerCandidates, "queryKey", { value: "lawmakerCandidates" });
