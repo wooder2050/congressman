@@ -47,7 +47,11 @@ export default function ShareButton({ title, text, url }: ShareButtonProps) {
       title="공유하기"
     >
       {copied ? (
-        <span className="text-xs font-medium text-(--color-primary)" role="status" aria-live="polite">
+        <span
+          className="text-xs font-medium text-(--color-primary)"
+          role="status"
+          aria-live="polite"
+        >
           복사됨!
         </span>
       ) : (

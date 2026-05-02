@@ -408,123 +408,127 @@ function MemberReport({ member, termId }: { member: MemberWithTerm; termId: numb
           </div>
         </>
       ) : (
-      <>
-      {/* 활동 통계 */}
-      <div className="rounded-xl border border-(--color-border-primary) bg-(--color-bg-primary) p-5">
-        <h3 className="mb-4 text-lg font-bold text-(--color-text-primary)">활동 통계</h3>
-        {isLoading ? (
-          <div className="grid grid-cols-2 gap-3">
-            {[1, 2, 3, 4].map((i) => (
-              <div key={i} className="h-20 animate-pulse rounded-lg bg-(--color-bg-tertiary)" />
-            ))}
+        <>
+          {/* 활동 통계 */}
+          <div className="rounded-xl border border-(--color-border-primary) bg-(--color-bg-primary) p-5">
+            <h3 className="mb-4 text-lg font-bold text-(--color-text-primary)">활동 통계</h3>
+            {isLoading ? (
+              <div className="grid grid-cols-2 gap-3">
+                {[1, 2, 3, 4].map((i) => (
+                  <div key={i} className="h-20 animate-pulse rounded-lg bg-(--color-bg-tertiary)" />
+                ))}
+              </div>
+            ) : scorecard ? (
+              <div className="grid grid-cols-2 gap-3">
+                <StatCard
+                  label="출석률"
+                  value={formatPercent(scorecard.attendance.rate)}
+                  sub={`${scorecard.attendance.rank}위 / ${scorecard.attendance.totalMembers}명`}
+                />
+                <StatCard
+                  label="표결 참여율"
+                  value={formatPercent(scorecard.voteParticipation.rate)}
+                  sub={`${scorecard.voteParticipation.rank}위 / ${scorecard.voteParticipation.totalMembers}명`}
+                />
+                <StatCard
+                  label="대표 발의"
+                  value={`${scorecard.billProposal.representativeCount}건`}
+                  sub={`${scorecard.billProposal.rank}위 / ${scorecard.billProposal.totalMembers}명`}
+                />
+                <StatCard
+                  label="법안 통과율"
+                  value={formatPercent(scorecard.billPassRate.rate)}
+                  sub={`가결 ${scorecard.billPassRate.passedCount} / 대표발의 ${scorecard.billPassRate.totalRepresentative}건`}
+                />
+              </div>
+            ) : (
+              <p className="text-sm text-(--color-text-tertiary)">활동 통계 데이터가 없습니다.</p>
+            )}
           </div>
-        ) : scorecard ? (
-          <div className="grid grid-cols-2 gap-3">
-            <StatCard
-              label="출석률"
-              value={formatPercent(scorecard.attendance.rate)}
-              sub={`${scorecard.attendance.rank}위 / ${scorecard.attendance.totalMembers}명`}
-            />
-            <StatCard
-              label="표결 참여율"
-              value={formatPercent(scorecard.voteParticipation.rate)}
-              sub={`${scorecard.voteParticipation.rank}위 / ${scorecard.voteParticipation.totalMembers}명`}
-            />
-            <StatCard
-              label="대표 발의"
-              value={`${scorecard.billProposal.representativeCount}건`}
-              sub={`${scorecard.billProposal.rank}위 / ${scorecard.billProposal.totalMembers}명`}
-            />
-            <StatCard
-              label="법안 통과율"
-              value={formatPercent(scorecard.billPassRate.rate)}
-              sub={`가결 ${scorecard.billPassRate.passedCount} / 대표발의 ${scorecard.billPassRate.totalRepresentative}건`}
-            />
-          </div>
-        ) : (
-          <p className="text-sm text-(--color-text-tertiary)">활동 통계 데이터가 없습니다.</p>
-        )}
-      </div>
 
-      {/* 최근 법안 */}
-      <div className="rounded-xl border border-(--color-border-primary) bg-(--color-bg-primary) p-5">
-        <h3 className="mb-4 text-lg font-bold text-(--color-text-primary)">최근 대표 발의 법안</h3>
-        {isLoading ? (
-          <div className="space-y-3">
-            {[1, 2, 3].map((i) => (
-              <div key={i} className="h-14 animate-pulse rounded-lg bg-(--color-bg-tertiary)" />
-            ))}
+          {/* 최근 법안 */}
+          <div className="rounded-xl border border-(--color-border-primary) bg-(--color-bg-primary) p-5">
+            <h3 className="mb-4 text-lg font-bold text-(--color-text-primary)">
+              최근 대표 발의 법안
+            </h3>
+            {isLoading ? (
+              <div className="space-y-3">
+                {[1, 2, 3].map((i) => (
+                  <div key={i} className="h-14 animate-pulse rounded-lg bg-(--color-bg-tertiary)" />
+                ))}
+              </div>
+            ) : bills.length > 0 ? (
+              <div className="space-y-2">
+                {bills.map((bill) => (
+                  <Link
+                    key={bill.id}
+                    href={`/bills/${bill.id}`}
+                    className="block rounded-lg bg-(--color-bg-secondary) p-3 no-underline transition-colors hover:bg-(--color-bg-tertiary)"
+                  >
+                    <p className="text-sm font-semibold text-(--color-text-primary)">
+                      {bill.title}
+                    </p>
+                    <div className="mt-1 flex items-center gap-2 text-xs text-(--color-text-tertiary)">
+                      {bill.topic && (
+                        <span className="rounded bg-(--color-bg-tertiary) px-1.5 py-0.5 text-xs">
+                          {bill.topic}
+                        </span>
+                      )}
+                      <span className="ml-auto">{formatDate(bill.proposedDate)}</span>
+                    </div>
+                  </Link>
+                ))}
+              </div>
+            ) : (
+              <p className="text-sm text-(--color-text-tertiary)">대표 발의 법안이 없습니다.</p>
+            )}
           </div>
-        ) : bills.length > 0 ? (
-          <div className="space-y-2">
-            {bills.map((bill) => (
-              <Link
-                key={bill.id}
-                href={`/bills/${bill.id}`}
-                className="block rounded-lg bg-(--color-bg-secondary) p-3 no-underline transition-colors hover:bg-(--color-bg-tertiary)"
-              >
-                <p className="text-sm font-semibold text-(--color-text-primary)">{bill.title}</p>
-                <div className="mt-1 flex items-center gap-2 text-xs text-(--color-text-tertiary)">
-                  {bill.topic && (
-                    <span className="rounded bg-(--color-bg-tertiary) px-1.5 py-0.5 text-xs">
-                      {bill.topic}
-                    </span>
-                  )}
-                  <span className="ml-auto">{formatDate(bill.proposedDate)}</span>
-                </div>
-              </Link>
-            ))}
-          </div>
-        ) : (
-          <p className="text-sm text-(--color-text-tertiary)">대표 발의 법안이 없습니다.</p>
-        )}
-      </div>
 
-      {/* 최근 표결 */}
-      <div className="rounded-xl border border-(--color-border-primary) bg-(--color-bg-primary) p-5">
-        <h3 className="mb-4 text-lg font-bold text-(--color-text-primary)">최근 표결 참여</h3>
-        {isLoading ? (
-          <div className="space-y-3">
-            {[1, 2, 3].map((i) => (
-              <div key={i} className="h-14 animate-pulse rounded-lg bg-(--color-bg-tertiary)" />
-            ))}
+          {/* 최근 표결 */}
+          <div className="rounded-xl border border-(--color-border-primary) bg-(--color-bg-primary) p-5">
+            <h3 className="mb-4 text-lg font-bold text-(--color-text-primary)">최근 표결 참여</h3>
+            {isLoading ? (
+              <div className="space-y-3">
+                {[1, 2, 3].map((i) => (
+                  <div key={i} className="h-14 animate-pulse rounded-lg bg-(--color-bg-tertiary)" />
+                ))}
+              </div>
+            ) : votes.length > 0 ? (
+              <div className="space-y-2">
+                {votes.map((vote) => (
+                  <Link
+                    key={vote.voteId}
+                    href={`/votes/${vote.voteId}`}
+                    className="block rounded-lg bg-(--color-bg-secondary) p-3 no-underline transition-colors hover:bg-(--color-bg-tertiary)"
+                  >
+                    <div className="flex items-start justify-between gap-2">
+                      <p className="min-w-0 flex-1 text-sm font-semibold text-(--color-text-primary)">
+                        {vote.billName}
+                      </p>
+                      <MemberVoteBadge result={vote.memberResult} />
+                    </div>
+                    <div className="mt-1 flex items-center gap-2 text-xs text-(--color-text-tertiary)">
+                      <span>{vote.procResult}</span>
+                      <span className="ml-auto">{formatDate(vote.procDate)}</span>
+                    </div>
+                  </Link>
+                ))}
+              </div>
+            ) : (
+              <p className="text-sm text-(--color-text-tertiary)">표결 참여 기록이 없습니다.</p>
+            )}
           </div>
-        ) : votes.length > 0 ? (
-          <div className="space-y-2">
-            {votes.map((vote) => (
-              <Link
-                key={vote.voteId}
-                href={`/votes/${vote.voteId}`}
-                className="block rounded-lg bg-(--color-bg-secondary) p-3 no-underline transition-colors hover:bg-(--color-bg-tertiary)"
-              >
-                <div className="flex items-start justify-between gap-2">
-                  <p className="min-w-0 flex-1 text-sm font-semibold text-(--color-text-primary)">
-                    {vote.billName}
-                  </p>
-                  <MemberVoteBadge result={vote.memberResult} />
-                </div>
-                <div className="mt-1 flex items-center gap-2 text-xs text-(--color-text-tertiary)">
-                  <span>{vote.procResult}</span>
-                  <span className="ml-auto">{formatDate(vote.procDate)}</span>
-                </div>
-              </Link>
-            ))}
-          </div>
-        ) : (
-          <p className="text-sm text-(--color-text-tertiary)">표결 참여 기록이 없습니다.</p>
-        )}
-      </div>
 
-      {/* 상세 페이지 링크 */}
-      <div className="text-center">
-        <Link
-          href={`/members/${member.id}?term=${termId}`}
-          className="inline-block rounded-xl border border-(--color-border-primary) px-6 py-3 text-sm font-semibold text-(--color-primary) no-underline transition-colors hover:bg-(--color-bg-secondary)"
-        >
-          의원 상세 보기 →
-        </Link>
-      </div>
-      </>
+          {/* 상세 페이지 링크 */}
+          <div className="text-center">
+            <Link
+              href={`/members/${member.id}?term=${termId}`}
+              className="inline-block rounded-xl border border-(--color-border-primary) px-6 py-3 text-sm font-semibold text-(--color-primary) no-underline transition-colors hover:bg-(--color-bg-secondary)"
+            >
+              의원 상세 보기 →
+            </Link>
+          </div>
+        </>
       )}
     </div>
   );
