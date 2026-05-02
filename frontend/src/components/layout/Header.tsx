@@ -6,6 +6,7 @@ import AuthButton from "@/components/auth/AuthButton";
 
 const navItems = [
   { href: "/", label: "홈" },
+  { href: "/today", label: "오늘" },
   { href: "/members", label: "의원" },
   { href: "/map", label: "지도" },
   { href: "/votes", label: "표결" },

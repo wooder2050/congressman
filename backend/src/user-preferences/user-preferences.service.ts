@@ -57,7 +57,7 @@ export class UserPreferencesService {
           "updatedAt" = now()
       WHERE "userId" = ${userId}
         AND NOT (${billId} = ANY("bookmarkedBills"))
-        AND array_length("bookmarkedBills", 1) < ${MAX_BOOKMARKS}
+        AND COALESCE(array_length("bookmarkedBills", 1), 0) < ${MAX_BOOKMARKS}
     `;
 
     return this.prisma.userPreference.findUnique({ where: { userId } });
@@ -87,7 +87,7 @@ export class UserPreferencesService {
           "updatedAt" = now()
       WHERE "userId" = ${userId}
         AND NOT (${memberId} = ANY("bookmarkedMembers"))
-        AND array_length("bookmarkedMembers", 1) < ${MAX_BOOKMARKS}
+        AND COALESCE(array_length("bookmarkedMembers", 1), 0) < ${MAX_BOOKMARKS}
     `;
 
     return this.prisma.userPreference.findUnique({ where: { userId } });

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
+import Link from "next/link";
 import { useAuth } from "@/lib/auth-context";
 
 export default function UserMenu() {
@@ -62,6 +63,21 @@ export default function UserMenu() {
               <p className="truncate text-xs text-(--color-text-tertiary)">{user.email}</p>
             )}
           </div>
+          <Link
+            href="/my-district"
+            onClick={() => setOpen(false)}
+            className="block px-4 py-2.5 text-sm text-(--color-text-secondary) no-underline transition-colors hover:bg-(--color-bg-secondary)"
+          >
+            내 지역구
+          </Link>
+          <Link
+            href="/bookmarks"
+            onClick={() => setOpen(false)}
+            className="block px-4 py-2.5 text-sm text-(--color-text-secondary) no-underline transition-colors hover:bg-(--color-bg-secondary)"
+          >
+            저장한 법안
+          </Link>
+          <div className="border-t border-(--color-border-primary)" />
           <button
             type="button"
             onClick={() => {

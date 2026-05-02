@@ -17,6 +17,7 @@ import LocalElectionBanner from "@/components/home/LocalElectionBanner";
 import CivicKnowledge from "@/components/home/CivicKnowledge";
 import TopicGuide from "@/components/home/TopicGuide";
 import HomeMoreSections from "@/components/home/HomeMoreSections";
+import PersonalizedFeed from "@/components/home/PersonalizedFeed";
 import {
   HomeStatsSkeleton,
   TopicSectionSkeleton,
@@ -167,6 +168,9 @@ export default async function HomePage({ searchParams }: HomePageProps) {
         <CongressWrapper key={`stats-${termId}`} fallback={<HomeStatsSkeleton />}>
           <HomeStats termId={termId} />
         </CongressWrapper>
+
+        {/* 내 관심 이슈 레이더 */}
+        <PersonalizedFeed termId={termId} />
 
         {/* 주간 국회 뉴스 */}
         <LatestWeeklyNews />
