@@ -87,7 +87,10 @@ async function main() {
             where: { id: item.id },
             data: {
               simpleSummary: item.simpleSummary,
-              structuredSummary: item.structuredSummary,
+              structuredSummary:
+                typeof item.structuredSummary === 'string'
+                  ? JSON.parse(item.structuredSummary)
+                  : item.structuredSummary,
               topic: item.topic,
             },
           });
