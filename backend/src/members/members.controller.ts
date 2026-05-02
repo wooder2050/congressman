@@ -109,6 +109,27 @@ export class MembersController {
     return this.membersService.getCommitteeActivity(id, termId);
   }
 
+  @Get(':id/recent-activity')
+  @ApiOperation({
+    summary: '의원 최근 활동',
+    description: '의원의 최근 N일간 활동 요약(대표발의, 표결 참여/불참, 최근 법안)을 반환합니다',
+  })
+  @ApiParam({ name: 'id', description: '의원 ID' })
+  @ApiQuery({ name: 'termId', required: false, type: Number, description: '국회 대수 (기본: 22)' })
+  @ApiQuery({ name: 'days', required: false, type: Number, description: '기간 (기본: 7일)' })
+  async getRecentActivity(
+    @Param('id') id: string,
+    @Query('termId') termId?: string,
+    @Query('days') days?: string,
+  ) {
+    if (!id || id.length > 64 || !/^[\w-]+$/.test(id)) {
+      throw new BadRequestException('유효하지 않은 의원 ID입니다.');
+    }
+    const parsedTermId = Math.min(Math.max(parseInt(termId ?? '', 10) || 22, 1), 30);
+    const parsedDays = Math.min(Math.max(parseInt(days ?? '', 10) || 7, 1), 90);
+    return this.membersService.getRecentActivity(id, parsedTermId, parsedDays);
+  }
+
   @Get(':id/district-report')
   @ApiOperation({
     summary: '지역구 의원 활동 리포트',

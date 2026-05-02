@@ -769,6 +769,68 @@ export class MembersService {
     return result;
   }
 
+  // ====== 최근 N일 활동 요약 ======
+
+  async getRecentActivity(memberId: string, termId: number, days: number = 7) {
+    const key = `member:recent-activity:${memberId}:${termId}:${days}`;
+    const cached = await this.redis.get(key);
+    if (cached) return cached;
+
+    const [billStats, voteStats, recentBills] = await Promise.all([
+      // 최근 N일 대표발의 건수
+      this.prisma.$queryRaw<{ cnt: bigint }[]>`
+        SELECT COUNT(*)::bigint AS cnt
+        FROM "BillProposer" bp
+        JOIN "Bill" b ON b.id = bp."billId"
+        WHERE bp."memberId" = ${memberId}
+          AND bp.role = 'representative'
+          AND b."termId" = ${termId}
+          AND b."proposedDate" >= ((CURRENT_TIMESTAMP AT TIME ZONE 'Asia/Seoul')::date - ${days}::int * INTERVAL '1 day')::date::text
+      `,
+      // 최근 N일 표결 참여/불참
+      this.prisma.$queryRaw<{ participated: bigint; missed: bigint }[]>`
+        SELECT
+          COUNT(*) FILTER (WHERE mv.result != 'absent')::bigint AS participated,
+          COUNT(*) FILTER (WHERE mv.result = 'absent')::bigint AS missed
+        FROM "MemberVote" mv
+        JOIN "Vote" v ON v.id = mv."voteId"
+        WHERE mv."memberId" = ${memberId}
+          AND v."termId" = ${termId}
+          AND v."procDate" >= ((CURRENT_TIMESTAMP AT TIME ZONE 'Asia/Seoul')::date - ${days}::int * INTERVAL '1 day')::date::text
+      `,
+      // 최근 대표발의 법안 3건 제목
+      this.prisma.bill.findMany({
+        where: {
+          termId,
+          proposers: { some: { memberId, role: 'representative' } },
+          proposedDate: {
+            gte: new Date(Date.now() - days * 86400000).toISOString().slice(0, 10),
+          },
+        },
+        orderBy: { proposedDate: 'desc' },
+        take: 3,
+        select: { id: true, title: true, proposedDate: true },
+      }),
+    ]);
+
+    const result = {
+      memberId,
+      termId,
+      days,
+      billsProposed: Number(billStats[0]?.cnt ?? 0n),
+      votesParticipated: Number(voteStats[0]?.participated ?? 0n),
+      votesMissed: Number(voteStats[0]?.missed ?? 0n),
+      recentBills: recentBills.map((b) => ({
+        id: b.id,
+        title: b.title,
+        proposedDate: b.proposedDate,
+      })),
+    };
+
+    await this.redis.set(key, result, TTL_HOUR);
+    return result;
+  }
+
   // ====== 지역구 의원 활동 리포트 (통합 API) ======
 
   async getDistrictReport(memberId: string, termId: number) {

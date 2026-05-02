@@ -13,14 +13,26 @@ export function generateStaticParams() {
   return getAllTermSlugs().map(({ slug }) => ({ term: slug }));
 }
 
+const TERM_SEO_OVERRIDES: Record<string, { title: string; description: string }> = {
+  alternative_discard: {
+    title: "대안반영폐기 뜻, 의미, 사례 — 국회 법안 용어 쉽게 설명",
+    description:
+      "대안반영폐기란 법안의 핵심 내용이 위원회 대안에 반영되어, 원래 법안만 형식적으로 폐기 처리된 것입니다. 부정적 폐기가 아닌 긍정적 결과입니다.",
+  },
+};
+
 export async function generateMetadata({ params }: GlossaryTermPageProps): Promise<Metadata> {
   const { term: slug } = await params;
   const result = getTermBySlug(slug);
   if (!result) return { title: "용어 없음" };
 
-  const { term } = result;
-  const title = `${term.term} 뜻 — 국회 용어 쉽게 설명`;
-  const rawDesc = `"${term.term}"이란 ${term.shortDesc}${term.fullDesc ? ` ${term.fullDesc}` : ""}`;
+  const { key, term } = result;
+  const override = TERM_SEO_OVERRIDES[key];
+
+  const title = override?.title ?? `${term.term} 뜻 — 국회 용어 쉽게 설명`;
+  const rawDesc =
+    override?.description ??
+    `"${term.term}"이란 ${term.shortDesc}${term.fullDesc ? ` ${term.fullDesc}` : ""}`;
   const description = rawDesc.slice(0, 155) + (rawDesc.length > 155 ? "…" : "");
 
   return {
