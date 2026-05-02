@@ -772,12 +772,9 @@ export class MembersService {
   // ====== 지역구 의원 활동 리포트 (통합 API) ======
 
   async getDistrictReport(memberId: string, termId: number) {
-    const key = `member:district-report:${memberId}:${termId}`;
-    const cached = await this.redis.get(key);
-    if (cached) return cached;
-
+    // 개별 쿼리가 각자 Redis 캐시를 사용하므로 래퍼 캐시 없이 병렬 실행
     const [scorecard, billsData, votesData] = await Promise.all([
-      this.getScorecard(memberId, termId),
+      this.getScorecard(memberId, termId), // 6시간 캐시
       this.prisma.bill.findMany({
         where: {
           termId,
@@ -801,14 +798,11 @@ export class MembersService {
 
     if (!scorecard) return null;
 
-    const result = {
+    return {
       scorecard,
       recentBills: billsData,
       recentVotes: votesData,
     };
-
-    await this.redis.set(key, result, 60 * 30); // 30분 캐시
-    return result;
   }
 
   // ====== 전체 의원 성적표 랭킹 ======

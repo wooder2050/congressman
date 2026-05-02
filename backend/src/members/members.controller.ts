@@ -1,4 +1,12 @@
-import { Controller, Get, Param, Query, ParseIntPipe, NotFoundException } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Param,
+  Query,
+  ParseIntPipe,
+  NotFoundException,
+  BadRequestException,
+} from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiParam, ApiQuery } from '@nestjs/swagger';
 import { MembersService } from './members.service';
 
@@ -109,6 +117,9 @@ export class MembersController {
   @ApiParam({ name: 'id', description: '의원 ID' })
   @ApiQuery({ name: 'termId', required: false, type: Number, description: '국회 대수 (기본: 22)' })
   async getDistrictReport(@Param('id') id: string, @Query('termId') termId?: string) {
+    if (!id || id.length > 64 || !/^[\w-]+$/.test(id)) {
+      throw new BadRequestException('유효하지 않은 의원 ID입니다.');
+    }
     const parsedTermId = Math.min(Math.max(parseInt(termId ?? '', 10) || 22, 1), 30);
     const result = await this.membersService.getDistrictReport(id, parsedTermId);
     if (!result) throw new NotFoundException();
