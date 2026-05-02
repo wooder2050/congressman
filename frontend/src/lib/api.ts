@@ -32,6 +32,7 @@ import type {
   RadarResult,
   TodayBriefing,
   BillSummaryItem,
+  DistrictReport,
 } from "@/types";
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL;
@@ -367,6 +368,14 @@ Object.defineProperty(getPropertyStats, "queryKey", { value: "propertyStats" });
 Object.defineProperty(getMemberScorecard, "queryKey", { value: "memberScorecard" });
 Object.defineProperty(getScorecardRanking, "queryKey", { value: "scorecardRanking" });
 Object.defineProperty(getLastSync, "queryKey", { value: "lastSync" });
+export async function getDistrictReport(params: {
+  memberId: string;
+  termId: number;
+}): Promise<DistrictReport | null> {
+  return fetchApi(`/api/members/${params.memberId}/district-report?termId=${params.termId}`);
+}
+
+Object.defineProperty(getDistrictReport, "queryKey", { value: "districtReport" });
 Object.defineProperty(getRadar, "queryKey", { value: "radar" });
 Object.defineProperty(getTodayBriefing, "queryKey", { value: "todayBriefing" });
 Object.defineProperty(getBillsBatch, "queryKey", { value: "billsBatch" });

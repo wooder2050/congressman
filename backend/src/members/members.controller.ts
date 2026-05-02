@@ -101,6 +101,20 @@ export class MembersController {
     return this.membersService.getCommitteeActivity(id, termId);
   }
 
+  @Get(':id/district-report')
+  @ApiOperation({
+    summary: '지역구 의원 활동 리포트',
+    description: '성적표 + 최근 법안 5건 + 최근 표결 5건을 통합 반환합니다',
+  })
+  @ApiParam({ name: 'id', description: '의원 ID' })
+  @ApiQuery({ name: 'termId', required: false, type: Number, description: '국회 대수 (기본: 22)' })
+  async getDistrictReport(@Param('id') id: string, @Query('termId') termId?: string) {
+    const parsedTermId = Math.min(Math.max(parseInt(termId ?? '', 10) || 22, 1), 30);
+    const result = await this.membersService.getDistrictReport(id, parsedTermId);
+    if (!result) throw new NotFoundException();
+    return result;
+  }
+
   @Get(':id/scorecard')
   @ApiOperation({
     summary: '의원 성적표',

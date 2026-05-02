@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useQuery } from "@tanstack/react-query";
 import { useAuth } from "@/lib/auth-context";
 import { useUserPreferences, useUpdatePreferences } from "@/hooks/useUserPreferences";
-import { getMembers, getMemberScorecard, getBills, getMemberVotes } from "@/lib/api";
+import { getMembers, getDistrictReport } from "@/lib/api";
 import { SIDO_LIST } from "@/lib/geo/district-mapping";
 import {
   Select,
@@ -111,6 +111,12 @@ export default function DistrictWatch({ termId }: DistrictWatchProps) {
   );
 }
 
+/** 구/군 이름을 선거구명에서 추출 (예: "강남구갑" → "강남구") */
+function extractGugun(district: string): string {
+  const match = district.match(/^(.+?[구군시])(?:[갑을병정무]|$)/);
+  return match?.[1] ?? district;
+}
+
 function DistrictSelector({
   localMembers,
   membersLoading,
@@ -123,41 +129,76 @@ function DistrictSelector({
   isLoggedIn: boolean;
 }) {
   const [selectedSido, setSelectedSido] = useState("");
+  const [selectedGugun, setSelectedGugun] = useState("");
   const [selectedDistrict, setSelectedDistrict] = useState("");
 
-  const districtsBySido = useMemo(() => {
-    const map = new Map<string, string[]>();
+  // 시도 → 구/군 → 선거구 3단 구조 생성
+  const { gugunsBySido, districtsByGugun, districtsBySido } = useMemo(() => {
+    const gugunMap = new Map<string, Set<string>>();
+    const distByGugun = new Map<string, string[]>();
+    const distBySido = new Map<string, string[]>();
+
     for (const m of localMembers) {
       const parts = m.term.district.split(" ");
       const sido = parts[0];
       const district = parts.slice(1).join(" ");
       if (!sido || !district) continue;
-      if (!map.has(sido)) map.set(sido, []);
-      const list = map.get(sido)!;
-      if (!list.includes(district)) list.push(district);
+
+      // 시도별 선거구 (기존 유지)
+      if (!distBySido.has(sido)) distBySido.set(sido, []);
+      const sidoList = distBySido.get(sido)!;
+      if (!sidoList.includes(district)) sidoList.push(district);
+
+      // 구/군 추출
+      const gugun = extractGugun(district);
+      if (!gugunMap.has(sido)) gugunMap.set(sido, new Set());
+      gugunMap.get(sido)!.add(gugun);
+
+      const gugunKey = `${sido}:${gugun}`;
+      if (!distByGugun.has(gugunKey)) distByGugun.set(gugunKey, []);
+      const gugunList = distByGugun.get(gugunKey)!;
+      if (!gugunList.includes(district)) gugunList.push(district);
     }
-    for (const [, list] of map) list.sort();
-    return map;
+
+    const guguns = new Map<string, string[]>();
+    for (const [sido, set] of gugunMap) {
+      guguns.set(sido, [...set].sort());
+    }
+    for (const [, list] of distBySido) list.sort();
+    for (const [, list] of distByGugun) list.sort();
+
+    return { gugunsBySido: guguns, districtsByGugun: distByGugun, districtsBySido: distBySido };
   }, [localMembers]);
 
-  const districts = selectedSido ? (districtsBySido.get(selectedSido) ?? []) : [];
+  const guguns = selectedSido ? (gugunsBySido.get(selectedSido) ?? []) : [];
+  const filteredDistricts = selectedGugun
+    ? (districtsByGugun.get(`${selectedSido}:${selectedGugun}`) ?? [])
+    : (districtsBySido.get(selectedSido) ?? []);
 
-  const matchedMembers = useMemo(() => {
-    if (!selectedSido || !selectedDistrict) return [];
-    const fullDistrict = `${selectedSido} ${selectedDistrict}`;
+  // 구/군에 선거구가 1개뿐이면 자동 선택
+  const autoSelectedDistrict =
+    selectedGugun && filteredDistricts.length === 1 ? filteredDistricts[0] : null;
+  const effectiveDistrict = selectedDistrict || (autoSelectedDistrict ?? "");
+
+  const matchedMembers = (() => {
+    if (!selectedSido || !effectiveDistrict) return [];
+    const fullDistrict = `${selectedSido} ${effectiveDistrict}`;
     return localMembers.filter((m) => m.term.district === fullDistrict);
-  }, [localMembers, selectedSido, selectedDistrict]);
+  })();
 
   const handleConfirm = () => {
-    if (selectedSido && selectedDistrict) {
-      onSelect(`${selectedSido} ${selectedDistrict}`);
+    if (selectedSido && effectiveDistrict) {
+      onSelect(`${selectedSido} ${effectiveDistrict}`);
     }
   };
 
   return (
     <div className="space-y-4">
       <div className="rounded-xl border border-(--color-border-primary) bg-(--color-bg-primary) p-5">
-        <h2 className="mb-4 text-lg font-bold text-(--color-text-primary)">지역구 선택</h2>
+        <h2 className="mb-2 text-lg font-bold text-(--color-text-primary)">내 지역구 찾기</h2>
+        <p className="mb-4 text-sm text-(--color-text-tertiary)">
+          시/도와 구/군을 선택하면 해당 선거구를 자동으로 찾아드립니다.
+        </p>
         {membersLoading ? (
           <div className="space-y-3">
             <div className="h-12 animate-pulse rounded-xl bg-(--color-bg-tertiary)" />
@@ -165,43 +206,64 @@ function DistrictSelector({
           </div>
         ) : (
           <div className="space-y-3">
-            <div className="grid grid-cols-2 gap-3">
+            {/* 1단: 시/도 */}
+            <Select
+              value={selectedSido}
+              onValueChange={(value) => {
+                setSelectedSido(value);
+                setSelectedGugun("");
+                setSelectedDistrict("");
+              }}
+            >
+              <SelectTrigger className="h-12 w-full rounded-xl border border-(--color-border-primary) bg-(--color-bg-primary) px-3 text-sm">
+                <SelectValue placeholder="시/도를 선택하세요" />
+              </SelectTrigger>
+              <SelectContent>
+                {SIDO_LIST.map((sido) => (
+                  <SelectItem key={sido} value={sido}>
+                    {sido}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+
+            {/* 2단: 구/군 */}
+            {selectedSido && guguns.length > 1 && (
               <Select
-                value={selectedSido}
+                value={selectedGugun}
                 onValueChange={(value) => {
-                  setSelectedSido(value);
+                  setSelectedGugun(value);
                   setSelectedDistrict("");
                 }}
               >
                 <SelectTrigger className="h-12 w-full rounded-xl border border-(--color-border-primary) bg-(--color-bg-primary) px-3 text-sm">
-                  <SelectValue placeholder="시/도 선택" />
+                  <SelectValue placeholder="구/군을 선택하세요" />
                 </SelectTrigger>
                 <SelectContent>
-                  {SIDO_LIST.map((sido) => (
-                    <SelectItem key={sido} value={sido}>
-                      {sido}
+                  {guguns.map((g) => (
+                    <SelectItem key={g} value={g}>
+                      {g}
                     </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
+            )}
 
-              <Select
-                value={selectedDistrict}
-                onValueChange={setSelectedDistrict}
-                disabled={!selectedSido}
-              >
+            {/* 3단: 선거구 (구/군에 여러 선거구가 있을 때만) */}
+            {selectedSido && filteredDistricts.length > 1 && (
+              <Select value={selectedDistrict} onValueChange={setSelectedDistrict}>
                 <SelectTrigger className="h-12 w-full rounded-xl border border-(--color-border-primary) bg-(--color-bg-primary) px-3 text-sm">
-                  <SelectValue placeholder="지역구 선택" />
+                  <SelectValue placeholder="선거구를 선택하세요" />
                 </SelectTrigger>
                 <SelectContent>
-                  {districts.map((d) => (
+                  {filteredDistricts.map((d) => (
                     <SelectItem key={d} value={d}>
                       {d}
                     </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
-            </div>
+            )}
 
             {matchedMembers.length > 0 && (
               <div className="space-y-2">
@@ -258,20 +320,14 @@ function DistrictSelector({
 }
 
 function MemberReport({ member, termId }: { member: MemberWithTerm; termId: number }) {
-  const { data: scorecard, isLoading: scorecardLoading } = useQuery({
-    queryKey: ["memberScorecard", member.id, termId],
-    queryFn: () => getMemberScorecard({ memberId: member.id, termId }),
+  const { data: report, isLoading } = useQuery({
+    queryKey: ["districtReport", member.id, termId],
+    queryFn: () => getDistrictReport({ memberId: member.id, termId }),
   });
 
-  const { data: billsData, isLoading: billsLoading } = useQuery({
-    queryKey: ["memberBills", member.id, termId],
-    queryFn: () => getBills({ memberId: member.id, termId, role: "representative", limit: 5 }),
-  });
-
-  const { data: votesData, isLoading: votesLoading } = useQuery({
-    queryKey: ["memberVotes", member.id, termId],
-    queryFn: () => getMemberVotes({ memberId: member.id, termId, limit: 5 }),
-  });
+  const scorecard = report?.scorecard ?? null;
+  const bills = report?.recentBills ?? [];
+  const votes = report?.recentVotes?.votes ?? [];
 
   return (
     <div className="space-y-4">
@@ -302,7 +358,7 @@ function MemberReport({ member, termId }: { member: MemberWithTerm; termId: numb
       {/* 활동 통계 */}
       <div className="rounded-xl border border-(--color-border-primary) bg-(--color-bg-primary) p-5">
         <h3 className="mb-4 text-lg font-bold text-(--color-text-primary)">활동 통계</h3>
-        {scorecardLoading ? (
+        {isLoading ? (
           <div className="grid grid-cols-2 gap-3">
             {[1, 2, 3, 4].map((i) => (
               <div key={i} className="h-20 animate-pulse rounded-lg bg-(--color-bg-tertiary)" />
@@ -339,15 +395,15 @@ function MemberReport({ member, termId }: { member: MemberWithTerm; termId: numb
       {/* 최근 법안 */}
       <div className="rounded-xl border border-(--color-border-primary) bg-(--color-bg-primary) p-5">
         <h3 className="mb-4 text-lg font-bold text-(--color-text-primary)">최근 대표 발의 법안</h3>
-        {billsLoading ? (
+        {isLoading ? (
           <div className="space-y-3">
             {[1, 2, 3].map((i) => (
               <div key={i} className="h-14 animate-pulse rounded-lg bg-(--color-bg-tertiary)" />
             ))}
           </div>
-        ) : billsData && billsData.bills.length > 0 ? (
+        ) : bills.length > 0 ? (
           <div className="space-y-2">
-            {billsData.bills.map((bill) => (
+            {bills.map((bill) => (
               <Link
                 key={bill.id}
                 href={`/bills/${bill.id}`}
@@ -373,15 +429,15 @@ function MemberReport({ member, termId }: { member: MemberWithTerm; termId: numb
       {/* 최근 표결 */}
       <div className="rounded-xl border border-(--color-border-primary) bg-(--color-bg-primary) p-5">
         <h3 className="mb-4 text-lg font-bold text-(--color-text-primary)">최근 표결 참여</h3>
-        {votesLoading ? (
+        {isLoading ? (
           <div className="space-y-3">
             {[1, 2, 3].map((i) => (
               <div key={i} className="h-14 animate-pulse rounded-lg bg-(--color-bg-tertiary)" />
             ))}
           </div>
-        ) : votesData && votesData.votes.length > 0 ? (
+        ) : votes.length > 0 ? (
           <div className="space-y-2">
-            {votesData.votes.map((vote) => (
+            {votes.map((vote) => (
               <Link
                 key={vote.voteId}
                 href={`/votes/${vote.voteId}`}

@@ -769,6 +769,48 @@ export class MembersService {
     return result;
   }
 
+  // ====== 지역구 의원 활동 리포트 (통합 API) ======
+
+  async getDistrictReport(memberId: string, termId: number) {
+    const key = `member:district-report:${memberId}:${termId}`;
+    const cached = await this.redis.get(key);
+    if (cached) return cached;
+
+    const [scorecard, billsData, votesData] = await Promise.all([
+      this.getScorecard(memberId, termId),
+      this.prisma.bill.findMany({
+        where: {
+          termId,
+          proposers: { some: { memberId, role: 'representative' } },
+        },
+        orderBy: { proposedDate: 'desc' },
+        take: 5,
+        select: {
+          id: true,
+          title: true,
+          proposerName: true,
+          status: true,
+          proposedDate: true,
+          committee: true,
+          simpleSummary: true,
+          topic: true,
+        },
+      }),
+      this.findMemberVotes(memberId, { termId, page: 1, limit: 5 }),
+    ]);
+
+    if (!scorecard) return null;
+
+    const result = {
+      scorecard,
+      recentBills: billsData,
+      recentVotes: votesData,
+    };
+
+    await this.redis.set(key, result, 60 * 30); // 30분 캐시
+    return result;
+  }
+
   // ====== 전체 의원 성적표 랭킹 ======
 
   async getScorecardRanking(termId: number) {

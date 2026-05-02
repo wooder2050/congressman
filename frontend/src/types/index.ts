@@ -663,6 +663,14 @@ export interface UserPreference {
   updatedAt: string;
 }
 
+// ====== 지역구 의원 활동 리포트 ======
+
+export interface DistrictReport {
+  scorecard: MemberScorecard;
+  recentBills: BillSummaryItem[];
+  recentVotes: MemberVotesResponse;
+}
+
 // ====== 법안 요약 (공통) ======
 
 export interface BillSummaryItem {
