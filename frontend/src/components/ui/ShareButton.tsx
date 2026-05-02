@@ -11,21 +11,31 @@ interface ShareButtonProps {
 export default function ShareButton({ title, text, url }: ShareButtonProps) {
   const [copied, setCopied] = useState(false);
 
+  const copyToClipboard = async (content: string) => {
+    try {
+      await navigator.clipboard.writeText(content);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch {
+      // clipboard API 미지원 또는 권한 없음 — 무시
+    }
+  };
+
   const handleShare = async () => {
     const shareUrl = url ?? (typeof window !== "undefined" ? window.location.href : "");
+    const content = text ? `${text}\n${shareUrl}` : shareUrl;
 
     if (navigator.share) {
       try {
         await navigator.share({ title, text, url: shareUrl });
-      } catch {
-        // user cancelled
+        return;
+      } catch (e) {
+        // 사용자 취소가 아닌 에러면 클립보드 fallback
+        if (e instanceof Error && e.name === "AbortError") return;
       }
-    } else {
-      const content = text ? `${text}\n${shareUrl}` : shareUrl;
-      await navigator.clipboard.writeText(content);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
     }
+
+    await copyToClipboard(content);
   };
 
   return (
@@ -37,7 +47,9 @@ export default function ShareButton({ title, text, url }: ShareButtonProps) {
       title="공유하기"
     >
       {copied ? (
-        <span className="text-xs font-medium text-(--color-primary)">복사됨!</span>
+        <span className="text-xs font-medium text-(--color-primary)" role="status" aria-live="polite">
+          복사됨!
+        </span>
       ) : (
         <svg
           xmlns="http://www.w3.org/2000/svg"

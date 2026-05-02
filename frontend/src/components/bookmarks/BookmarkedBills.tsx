@@ -139,7 +139,8 @@ export default function BookmarkedBills() {
               )}
               <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-(--color-text-tertiary)">
                 <span className="font-semibold text-(--color-text-secondary)">
-                  {bill.proposerName} 외 {bill.coProposerCount}인
+                  {bill.proposerName}
+                  {bill.coProposerCount ? ` 외 ${bill.coProposerCount}인` : ""}
                 </span>
                 <span>{formatDate(bill.proposedDate)}</span>
                 {bill.committee && <span>{bill.committee}</span>}

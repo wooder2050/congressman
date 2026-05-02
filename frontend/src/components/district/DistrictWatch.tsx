@@ -384,21 +384,31 @@ function MemberReport({ member, termId }: { member: MemberWithTerm; termId: numb
         </div>
       </div>
 
-      {isError && (
-        <div className="rounded-xl border border-red-200 bg-red-50 p-5 text-center dark:border-red-800/40 dark:bg-red-950/20">
-          <p className="text-sm font-semibold text-red-800 dark:text-red-200">
-            데이터를 불러오지 못했습니다
-          </p>
-          <button
-            type="button"
-            onClick={() => refetch()}
-            className="mt-2 text-sm font-medium text-(--color-primary) hover:underline"
-          >
-            다시 시도
-          </button>
-        </div>
-      )}
-
+      {isError ? (
+        <>
+          <div className="rounded-xl border border-red-200 bg-red-50 p-5 text-center dark:border-red-800/40 dark:bg-red-950/20">
+            <p className="text-sm font-semibold text-red-800 dark:text-red-200">
+              활동 데이터를 불러오지 못했습니다
+            </p>
+            <button
+              type="button"
+              onClick={() => refetch()}
+              className="mt-2 text-sm font-medium text-(--color-primary) hover:underline"
+            >
+              다시 시도
+            </button>
+          </div>
+          <div className="text-center">
+            <Link
+              href={`/members/${member.id}?term=${termId}`}
+              className="inline-block rounded-xl border border-(--color-border-primary) px-6 py-3 text-sm font-semibold text-(--color-primary) no-underline transition-colors hover:bg-(--color-bg-secondary)"
+            >
+              의원 상세 보기 →
+            </Link>
+          </div>
+        </>
+      ) : (
+      <>
       {/* 활동 통계 */}
       <div className="rounded-xl border border-(--color-border-primary) bg-(--color-bg-primary) p-5">
         <h3 className="mb-4 text-lg font-bold text-(--color-text-primary)">활동 통계</h3>
@@ -514,6 +524,8 @@ function MemberReport({ member, termId }: { member: MemberWithTerm; termId: numb
           의원 상세 보기 →
         </Link>
       </div>
+      </>
+      )}
     </div>
   );
 }
