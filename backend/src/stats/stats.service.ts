@@ -490,11 +490,12 @@ export class StatsService {
     return result;
   }
 
-  /** 한국 시간 기준 날짜 (YYYY-MM-DD) */
+  /** 한국 시간 기준 날짜 (YYYY-MM-DD) — 런타임 타임존 무관 */
   private getKoreanDate(offsetDays = 0): string {
-    const d = new Date(new Date().toLocaleString('en-US', { timeZone: 'Asia/Seoul' }));
-    d.setDate(d.getDate() + offsetDays);
-    return d.toISOString().slice(0, 10);
+    const KST_OFFSET_MS = 9 * 60 * 60 * 1000;
+    const now = new Date(Date.now() + KST_OFFSET_MS);
+    now.setUTCDate(now.getUTCDate() + offsetDays);
+    return now.toISOString().slice(0, 10);
   }
 
   /** 오늘 브리핑 */
