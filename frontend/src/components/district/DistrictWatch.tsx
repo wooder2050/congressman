@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useQuery } from "@tanstack/react-query";
 import { useAuth } from "@/lib/auth-context";
 import { useUserPreferences, useUpdatePreferences } from "@/hooks/useUserPreferences";
-import { getMembers, getDistrictReport } from "@/lib/api";
+import { getMembers, getDistrictReport, getRecentActivity } from "@/lib/api";
 import { SIDO_LIST } from "@/lib/geo/district-mapping";
 import {
   Select,
@@ -384,6 +384,9 @@ function MemberReport({ member, termId }: { member: MemberWithTerm; termId: numb
         </div>
       </div>
 
+      {/* 이번 주 활동 */}
+      <WeeklyActivitySection memberId={member.id} termId={termId} />
+
       {isError ? (
         <>
           <div className="rounded-xl border border-red-200 bg-red-50 p-5 text-center dark:border-red-800/40 dark:bg-red-950/20">
@@ -540,6 +543,50 @@ function StatCard({ label, value, sub }: { label: string; value: string; sub: st
       <p className="text-xs text-(--color-text-tertiary)">{label}</p>
       <p className="mt-1 text-lg font-bold text-(--color-text-primary)">{value}</p>
       <p className="mt-0.5 text-xs text-(--color-text-tertiary)">{sub}</p>
+    </div>
+  );
+}
+
+function WeeklyActivitySection({ memberId, termId }: { memberId: string; termId: number }) {
+  const { data, isLoading } = useQuery({
+    queryKey: ["recentActivity", memberId, termId, 7],
+    queryFn: () => getRecentActivity({ memberId, termId, days: 7 }),
+  });
+
+  if (isLoading) {
+    return (
+      <div className="rounded-xl border border-(--color-border-primary) bg-(--color-bg-primary) p-5">
+        <div className="mb-3 h-5 w-28 animate-pulse rounded bg-(--color-bg-tertiary)" />
+        <div className="h-12 animate-pulse rounded-lg bg-(--color-bg-tertiary)" />
+      </div>
+    );
+  }
+
+  if (!data) return null;
+
+  const hasActivity = data.billsProposed > 0 || data.votesParticipated > 0 || data.votesMissed > 0;
+
+  return (
+    <div className="rounded-xl border border-(--color-border-primary) bg-(--color-bg-primary) p-5">
+      <h3 className="mb-3 text-base font-bold text-(--color-text-primary)">이번 주 활동</h3>
+      {hasActivity ? (
+        <div className="flex items-center gap-4 text-sm">
+          <span className="text-(--color-text-secondary)">
+            대표발의 <strong className="text-(--color-text-primary)">{data.billsProposed}건</strong>
+          </span>
+          <span className="text-(--color-text-tertiary)">|</span>
+          <span className="text-(--color-text-secondary)">
+            표결 참여{" "}
+            <strong className="text-(--color-text-primary)">{data.votesParticipated}건</strong>
+          </span>
+          <span className="text-(--color-text-tertiary)">|</span>
+          <span className="text-(--color-text-secondary)">
+            불참 <strong className="text-(--color-text-primary)">{data.votesMissed}건</strong>
+          </span>
+        </div>
+      ) : (
+        <p className="text-sm text-(--color-text-tertiary)">이번 주는 활동 기록이 없습니다</p>
+      )}
     </div>
   );
 }

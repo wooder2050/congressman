@@ -10,7 +10,17 @@ interface BillListItemProps {
 }
 
 export default function BillListItem({ bill }: BillListItemProps) {
-  const statusInfo = BILL_STATUS_MAP[bill.status];
+  const isAlternativeDiscard =
+    bill.status === "discarded" && bill.committeeResultCode?.includes("대안반영");
+
+  const statusInfo = isAlternativeDiscard
+    ? {
+        label: "대안반영",
+        color: "#0D9488",
+        textColor: "#FFFFFF",
+        termKey: "alternative_discard" as const,
+      }
+    : BILL_STATUS_MAP[bill.status];
 
   return (
     <div className="flex items-start gap-2 rounded-xl border border-(--color-border-primary) bg-(--color-bg-primary) p-4 transition-colors hover:bg-(--color-bg-hover)">
@@ -27,6 +37,11 @@ export default function BillListItem({ bill }: BillListItemProps) {
             termHint={statusInfo.termKey}
           />
         </div>
+        {isAlternativeDiscard && (
+          <p className="mb-1 text-xs text-teal-600 dark:text-teal-400">
+            원안은 폐기되었으나 핵심 내용이 대안에 반영되었습니다
+          </p>
+        )}
         {bill.simpleSummary && (
           <p className="mt-1 line-clamp-1 text-sm text-(--color-text-secondary)">
             {bill.simpleSummary}
