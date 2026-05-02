@@ -36,7 +36,7 @@ const breakingNews: BreakingNewsItem[] = [
         url: "https://www.mt.co.kr/policy/2026/04/28/2026042808250174216",
       },
     ],
-    active: true,
+    active: false,
   },
   {
     id: "2026-05-01-oil-relief-no-rotation",
@@ -77,14 +77,14 @@ const breakingNews: BreakingNewsItem[] = [
         url: "https://kbthink.com/life/daily/high-oil-price-relief-fund.html",
       },
     ],
-    active: true,
+    active: false,
   },
   {
-    id: "2026-05-01-constitutional-amendment-vote-d6",
-    title: "개헌안 본회의 표결 D-6 — 5/7 표결, 부결 시 5/10까지 연속 본회의 추진",
+    id: "2026-05-02-constitutional-amendment-vote-d5",
+    title: "개헌안 본회의 표결 D-5 — 5/7 표결, 부결 시 5/10까지 연속 본회의 추진",
     description:
-      "개헌안 본회의 표결이 6일 앞으로 다가왔습니다. 5월 7일 오후 2시 표결이 확정되었으며, 국민의힘이 불참할 경우 5/8 재표결, 최종 시한인 5/10까지 연속 본회의를 열겠다는 방침입니다. 우원식 의장은 장동혁 국민의힘 대표에게 자유투표를 촉구하고 있으나, 국민의힘은 당론 반대를 유지하고 있습니다.",
-    date: "2026-05-01",
+      "개헌안 본회의 표결이 5일 앞으로 다가왔습니다. 5월 7일 오후 2시 표결이 확정되었으며, 국민의힘이 불참할 경우 5/8 재표결, 최종 시한인 5/10까지 연속 본회의를 열겠다는 방침입니다. 우원식 의장은 장동혁 국민의힘 대표에게 자유투표를 촉구하고 있으나, 국민의힘은 당론 반대를 유지하고 있습니다.",
+    date: "2026-05-02",
     category: "politics",
     items: [
       {
@@ -125,7 +125,7 @@ const breakingNews: BreakingNewsItem[] = [
     title: "민주당 '조작기소 특검법' 발의 — 12개 사건 이첩, 공소취소권 포함 논란",
     description:
       '더불어민주당이 4월 30일 \'조작기소 진상규명 특검법\'을 발의했습니다. 대장동·쌍방울 대북송금 등 이재명 대통령 관련 12개 사건에 대해 특검에 수사 이첩과 공소취소 권한을 부여하는 내용입니다. 대검은 "재판 독립성에 영향"이라고 우려했고, 국민의힘은 "셀프 면죄 특검"이라고 반발하고 있습니다.',
-    date: "2026-05-01",
+    date: "2026-05-02",
     category: "politics",
     items: [
       {
@@ -162,11 +162,11 @@ const breakingNews: BreakingNewsItem[] = [
     active: true,
   },
   {
-    id: "2026-05-01-by-election-update",
-    title: "6·3 재보궐 14곳 D-33 — 5/14~15 후보등록, 역대 두 번째 규모 '미니 총선'",
+    id: "2026-05-02-by-election-update",
+    title: "6·3 재보궐 14곳 D-32 — 5/14~15 후보등록, 역대 두 번째 규모 '미니 총선'",
     description:
-      "6·3 재보궐선거가 33일 앞으로 다가왔습니다. 14곳 중 12곳이 민주당 의석이었으며, 5월 14~15일 후보등록이 시작됩니다. 송영길·한동훈·조국·이광재 등 당대표급이 격돌하는 역대 두 번째 규모의 재보궐선거입니다.",
-    date: "2026-05-01",
+      "6·3 재보궐선거가 32일 앞으로 다가왔습니다. 14곳 중 12곳이 민주당 의석이었으며, 5월 14~15일 후보등록이 시작됩니다. 송영길·한동훈·조국·이광재 등 당대표급이 격돌하는 역대 두 번째 규모의 재보궐선거입니다.",
+    date: "2026-05-02",
     category: "election",
     items: [
       {
@@ -175,7 +175,7 @@ const breakingNews: BreakingNewsItem[] = [
       },
       {
         label: "후보등록",
-        value: "5/14~15 등록 · 5/24~28 사전투표 · 6/3 투표일",
+        value: "5/14~15 등록 · 5/29~30 사전투표 · 6/3 투표일",
       },
       {
         label: "주요 대진표",
@@ -217,7 +217,7 @@ const breakingNews: BreakingNewsItem[] = [
       },
       {
         label: "선거 일정",
-        value: "5/14~15 후보등록 · 5/24~28 사전투표 · 6/3 투표일",
+        value: "5/14~15 후보등록 · 5/29~30 사전투표 · 6/3 투표일",
       },
       {
         label: "주요 대진표",
@@ -387,7 +387,7 @@ const breakingNews: BreakingNewsItem[] = [
       },
       {
         label: "선거 일정",
-        value: "5/15 후보등록 마감 · 5/24~28 사전투표 · 6/3 투표일",
+        value: "5/15 후보등록 마감 · 5/29~30 사전투표 · 6/3 투표일",
       },
     ],
     sources: [
