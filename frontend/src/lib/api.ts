@@ -329,7 +329,9 @@ export async function getTodayBriefing(termId: number): Promise<TodayBriefing> {
 
 export async function getBillsBatch(ids: string[]): Promise<BillSummaryItem[]> {
   if (!ids.length) return [];
-  return fetchApi(`/api/bills/batch?ids=${ids.join(",")}`);
+  const sp = new URLSearchParams();
+  sp.set("ids", ids.join(","));
+  return fetchApi(`/api/bills/batch?${sp.toString()}`);
 }
 
 // Query Keys
