@@ -1,5 +1,6 @@
 import Link from "next/link";
 import ColorBadge from "@/components/ui/color-badge";
+import MemberBookmarkButton from "@/components/ui/MemberBookmarkButton";
 import MemberAvatar from "./MemberAvatar";
 import { getElectedLabel, getContrastColor, formatDistrict } from "@/lib/utils";
 import type { Member, MemberTerm } from "@/types";
@@ -34,9 +35,12 @@ export default function MemberProfile({ member, memberTerm, allTermIds }: Member
             className="border-2 border-white/30"
           />
           <div className="min-w-0 flex-1">
-            <h1 className="text-2xl font-bold" style={{ color: contrastColor }}>
-              {member.name}
-            </h1>
+            <div className="flex items-center gap-2">
+              <h1 className="text-2xl font-bold" style={{ color: contrastColor }}>
+                {member.name}
+              </h1>
+              <MemberBookmarkButton memberId={member.id} />
+            </div>
             <div className="mt-1 flex items-center gap-2">
               <ColorBadge label={memberTerm.party.name} color={memberTerm.party.color} />
               <span className="text-sm" style={{ color: contrastColor, opacity: 0.8 }}>

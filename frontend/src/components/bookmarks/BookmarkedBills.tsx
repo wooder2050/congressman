@@ -19,7 +19,12 @@ export default function BookmarkedBills() {
 
   const billIds = prefs?.bookmarkedBills ?? [];
 
-  const { data: bills, isLoading: billsLoading } = useQuery({
+  const {
+    data: bills,
+    isLoading: billsLoading,
+    isError,
+    refetch,
+  } = useQuery({
     queryKey: ["billsBatch", ...billIds],
     queryFn: () => getBillsBatch(billIds),
     enabled: billIds.length > 0,
@@ -73,6 +78,23 @@ export default function BookmarkedBills() {
     );
   }
 
+  if (isError) {
+    return (
+      <div className="rounded-xl border border-red-200 bg-red-50 p-5 text-center dark:border-red-800/40 dark:bg-red-950/20">
+        <p className="text-sm font-semibold text-red-800 dark:text-red-200">
+          데이터를 불러오지 못했습니다
+        </p>
+        <button
+          type="button"
+          onClick={() => refetch()}
+          className="mt-2 text-sm font-medium text-(--color-primary) hover:underline"
+        >
+          다시 시도
+        </button>
+      </div>
+    );
+  }
+
   if (billsLoading) {
     return (
       <div className="space-y-3">
@@ -117,7 +139,8 @@ export default function BookmarkedBills() {
               )}
               <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-(--color-text-tertiary)">
                 <span className="font-semibold text-(--color-text-secondary)">
-                  {bill.proposerName} 외 {bill.coProposerCount}인
+                  {bill.proposerName}
+                  {bill.coProposerCount ? ` 외 ${bill.coProposerCount}인` : ""}
                 </span>
                 <span>{formatDate(bill.proposedDate)}</span>
                 {bill.committee && <span>{bill.committee}</span>}
