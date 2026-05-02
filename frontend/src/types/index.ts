@@ -648,3 +648,17 @@ export interface LocalElectionStats {
   candidatesByType: Record<string, number>;
   candidatesByParty: Record<string, number>;
 }
+
+// ====== 유저 환경설정 ======
+
+export interface UserPreference {
+  id: number;
+  userId: string;
+  displayName: string | null;
+  district: string | null;
+  interests: string[];
+  bookmarkedBills: string[];
+  bookmarkedMembers: string[];
+  createdAt: string;
+  updatedAt: string;
+}
