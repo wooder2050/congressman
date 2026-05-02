@@ -29,7 +29,7 @@ export default function DistrictWatch({ termId }: DistrictWatchProps) {
 
   const savedDistrict = prefs?.district ?? null;
   const [localDistrict, setLocalDistrict] = useState<string | null>(null);
-  const activeDistrict = savedDistrict ?? localDistrict;
+  const activeDistrict = localDistrict ?? savedDistrict;
 
   const { data: members, isLoading: membersLoading } = useQuery({
     queryKey: ["members", termId],
@@ -48,10 +48,9 @@ export default function DistrictWatch({ termId }: DistrictWatchProps) {
 
   const handleDistrictSelect = useCallback(
     (district: string) => {
+      setLocalDistrict(district);
       if (user) {
         updatePrefs.mutate({ district });
-      } else {
-        setLocalDistrict(district);
       }
     },
     [user, updatePrefs],
