@@ -111,10 +111,9 @@ export default function DistrictWatch({ termId }: DistrictWatchProps) {
   );
 }
 
-/** 구/군 이름을 선거구명에서 추출 (예: "강남구갑" → "강남구") */
+/** 선거구명에서 구/군 부분 추출 (갑/을/병/정/무 접미사 제거) */
 function extractGugun(district: string): string {
-  const match = district.match(/^(.+?[구군시])(?:[갑을병정무]|$)/);
-  return match?.[1] ?? district;
+  return district.replace(/[갑을병정무]$/, "");
 }
 
 function DistrictSelector({
@@ -171,13 +170,16 @@ function DistrictSelector({
   }, [localMembers]);
 
   const guguns = selectedSido ? (gugunsBySido.get(selectedSido) ?? []) : [];
-  const filteredDistricts = selectedGugun
-    ? (districtsByGugun.get(`${selectedSido}:${selectedGugun}`) ?? [])
+
+  // 구/군이 1개면 자동 선택
+  const effectiveGugun = selectedGugun || (guguns.length === 1 ? guguns[0] : "");
+
+  const filteredDistricts = effectiveGugun
+    ? (districtsByGugun.get(`${selectedSido}:${effectiveGugun}`) ?? [])
     : (districtsBySido.get(selectedSido) ?? []);
 
-  // 구/군에 선거구가 1개뿐이면 자동 선택
-  const autoSelectedDistrict =
-    selectedGugun && filteredDistricts.length === 1 ? filteredDistricts[0] : null;
+  // 선거구가 1개뿐이면 자동 선택
+  const autoSelectedDistrict = filteredDistricts.length === 1 ? filteredDistricts[0] : null;
   const effectiveDistrict = selectedDistrict || (autoSelectedDistrict ?? "");
 
   const matchedMembers = (() => {
