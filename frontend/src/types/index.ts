@@ -648,3 +648,48 @@ export interface LocalElectionStats {
   candidatesByType: Record<string, number>;
   candidatesByParty: Record<string, number>;
 }
+
+// ====== 유저 환경설정 ======
+
+export interface UserPreference {
+  id: number;
+  userId: string;
+  displayName: string | null;
+  district: string | null;
+  interests: string[];
+  bookmarkedBills: string[];
+  bookmarkedMembers: string[];
+  createdAt: string;
+  updatedAt: string;
+}
+
+// ====== 법안 요약 (공통) ======
+
+export interface BillSummaryItem {
+  id: string;
+  title: string;
+  proposerName: string;
+  coProposerCount?: number;
+  status: string;
+  proposedDate: string;
+  termId?: number;
+  committee: string | null;
+  simpleSummary: string | null;
+  topic: string | null;
+}
+
+// ====== 이슈 레이더 ======
+
+export interface RadarResult {
+  bills: BillSummaryItem[];
+  topics: string[];
+}
+
+// ====== 오늘 브리핑 ======
+
+export interface TodayBriefing {
+  date: string;
+  schedules: Schedule[];
+  recentVotes: Vote[];
+  recentBills: BillSummaryItem[];
+}

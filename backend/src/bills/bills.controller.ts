@@ -83,6 +83,21 @@ export class BillsController {
     return this.billsService.getTopicCounts(parseInt(termId, 10) || 22);
   }
 
+  @Get('batch')
+  @ApiOperation({
+    summary: '법안 일괄 조회',
+    description: 'ID 목록으로 법안을 일괄 조회합니다 (최대 50건)',
+  })
+  @ApiQuery({ name: 'ids', required: true, description: '법안 ID (쉼표 구분, 최대 50건)' })
+  findByIds(@Query('ids') ids: string) {
+    const idList = (ids ?? '')
+      .split(',')
+      .map((id) => id.trim())
+      .filter(Boolean)
+      .slice(0, 50);
+    return this.billsService.findByIds(idList);
+  }
+
   @Get(':id')
   @ApiOperation({ summary: '법안 상세', description: '법안 상세 정보와 발의자 목록을 반환합니다' })
   @ApiParam({ name: 'id', description: '법안 ID' })

@@ -13,6 +13,8 @@ import { ElectionsModule } from './elections/elections.module';
 import { LocalElectionsModule } from './local-elections/local-elections.module';
 import { HealthModule } from './health/health.module';
 import { RedisModule } from './redis/redis.module';
+import { AuthModule } from './auth/auth.module';
+import { UserPreferencesModule } from './user-preferences/user-preferences.module';
 
 @Module({
   imports: [
@@ -30,6 +32,8 @@ import { RedisModule } from './redis/redis.module';
     CommitteesModule,
     ElectionsModule,
     LocalElectionsModule,
+    AuthModule,
+    UserPreferencesModule,
   ],
 })
 export class AppModule {}
