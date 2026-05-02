@@ -13,10 +13,7 @@ export function generateStaticParams() {
   return getAllTermSlugs().map(({ slug }) => ({ term: slug }));
 }
 
-const TERM_SEO_OVERRIDES: Record<
-  string,
-  { title: string; description: string }
-> = {
+const TERM_SEO_OVERRIDES: Record<string, { title: string; description: string }> = {
   alternative_discard: {
     title: "대안반영폐기 뜻, 의미, 사례 — 국회 법안 용어 쉽게 설명",
     description:
@@ -33,7 +30,8 @@ export async function generateMetadata({ params }: GlossaryTermPageProps): Promi
   const override = TERM_SEO_OVERRIDES[key];
 
   const title = override?.title ?? `${term.term} 뜻 — 국회 용어 쉽게 설명`;
-  const rawDesc = override?.description ??
+  const rawDesc =
+    override?.description ??
     `"${term.term}"이란 ${term.shortDesc}${term.fullDesc ? ` ${term.fullDesc}` : ""}`;
   const description = rawDesc.slice(0, 155) + (rawDesc.length > 155 ? "…" : "");
 
