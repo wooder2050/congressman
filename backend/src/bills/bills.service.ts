@@ -183,6 +183,7 @@ export class BillsService {
         committee: b.committee,
         simpleSummary: b.simpleSummary ?? null,
         topic: b.topic ? normalizeTopic(b.topic) : null,
+        committeeResultCode: b.committeeResultCode ?? null,
       })),
       total,
     };

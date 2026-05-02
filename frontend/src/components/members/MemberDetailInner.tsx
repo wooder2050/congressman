@@ -9,6 +9,7 @@ import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import dynamic from "next/dynamic";
 import MemberProfile from "./MemberProfile";
 import MemberActivitySummary from "./MemberActivitySummary";
+import MemberRecentActivityCard from "./MemberRecentActivityCard";
 import MemberDetailTabContent from "./MemberDetailTabs";
 
 const ActivityHeatmap = dynamic(() => import("./ActivityHeatmap"), {
@@ -90,6 +91,8 @@ export default function MemberDetailInner({ id, termId, defaultTab }: MemberDeta
       </Link>
 
       <MemberProfile member={member} memberTerm={currentMemberTerm} allTermIds={allTermIds} />
+
+      <MemberRecentActivityCard memberId={id} termId={termId} />
 
       <Suspense fallback={null}>
         <MemberActivitySummary

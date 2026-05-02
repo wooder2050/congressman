@@ -75,6 +75,7 @@ export interface Bill {
   committee?: string;
   simpleSummary?: string | null;
   topic?: string | null;
+  committeeResultCode?: string | null;
 }
 
 export interface BillSummary {
@@ -691,6 +692,18 @@ export interface BillSummaryItem {
 export interface RadarResult {
   bills: BillSummaryItem[];
   topics: string[];
+}
+
+// ====== 의원 최근 활동 ======
+
+export interface RecentActivity {
+  memberId: string;
+  termId: number;
+  days: number;
+  billsProposed: number;
+  votesParticipated: number;
+  votesMissed: number;
+  recentBills: { id: string; title: string; proposedDate: string }[];
 }
 
 // ====== 오늘 브리핑 ======
