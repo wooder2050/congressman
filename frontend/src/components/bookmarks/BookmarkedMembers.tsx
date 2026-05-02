@@ -18,15 +18,17 @@ export default function BookmarkedMembers() {
 
   const memberIds = prefs?.bookmarkedMembers ?? [];
 
+  const TERM_ID = 22; // 현재 대수
   const {
     data: allMembers,
     isLoading: membersLoading,
     isError,
     refetch,
   } = useQuery({
-    queryKey: ["members", 22],
-    queryFn: () => getMembers(22),
+    queryKey: ["members", JSON.stringify(TERM_ID)],
+    queryFn: () => getMembers(TERM_ID),
     enabled: memberIds.length > 0,
+    staleTime: 1000 * 60 * 5,
   });
 
   const members = (allMembers ?? []).filter((m) => memberIds.includes(m.id));
