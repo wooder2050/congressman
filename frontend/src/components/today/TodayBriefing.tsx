@@ -13,6 +13,8 @@ interface TodayBriefingProps {
 export default function TodayBriefing({ termId }: TodayBriefingProps) {
   const { data } = useCongressSuspenseQuery(getTodayBriefing, termId);
 
+  if (!data) return null;
+
   const hasSchedules = data.schedules.length > 0;
   const hasVotes = data.recentVotes.length > 0;
   const hasBills = data.recentBills.length > 0;
