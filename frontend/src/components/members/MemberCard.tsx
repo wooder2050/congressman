@@ -1,5 +1,6 @@
 import Link from "next/link";
 import ColorBadge from "@/components/ui/color-badge";
+import MemberBookmarkButton from "@/components/ui/MemberBookmarkButton";
 import MemberAvatar from "./MemberAvatar";
 import { getElectedLabel, formatDistrict } from "@/lib/utils";
 import type { MemberWithTerm } from "@/types";
@@ -12,43 +13,50 @@ export default function MemberCard({ member }: MemberCardProps) {
   const { term } = member;
 
   return (
-    <Link
-      href={`/members/${member.id}?term=${term.termId}`}
-      className="flex items-center gap-4 rounded-xl border border-l-4 border-(--color-border-primary) bg-(--color-bg-primary) p-4 no-underline transition-colors hover:bg-(--color-bg-hover)"
+    <div
+      className="flex items-center gap-2 rounded-xl border border-l-4 border-(--color-border-primary) bg-(--color-bg-primary) p-4 transition-colors hover:bg-(--color-bg-hover)"
       style={{
         borderLeftColor: term.party.color,
         contentVisibility: "auto",
         containIntrinsicSize: "0 88px",
       }}
     >
-      {/* 프로필 이미지 */}
-      <MemberAvatar
-        name={member.name}
-        photoUrl={member.photoUrl}
-        size={64}
-        bgColor={term.party.color}
-      />
+      <Link
+        href={`/members/${member.id}?term=${term.termId}`}
+        className="flex min-w-0 flex-1 items-center gap-4 no-underline"
+      >
+        {/* 프로필 이미지 */}
+        <MemberAvatar
+          name={member.name}
+          photoUrl={member.photoUrl}
+          size={64}
+          bgColor={term.party.color}
+        />
 
-      {/* 정보 */}
-      <div className="min-w-0 flex-1">
-        <div className="mb-1 flex flex-wrap items-center gap-1.5">
-          <span className="text-lg font-bold text-(--color-text-primary)">{member.name}</span>
-          <ColorBadge label={term.party.shortName} color={term.party.color} size="sm" />
-          {(() => {
-            const roles = Object.values(term.committeeRoles ?? {});
-            const topRole = roles.find((r) => r !== "위원");
-            return topRole ? (
-              <span className="rounded-full bg-amber-100 px-2 py-0.5 text-[11px] font-semibold text-amber-800 dark:bg-amber-900/30 dark:text-amber-300">
-                {topRole}
-              </span>
-            ) : null;
-          })()}
+        {/* 정보 */}
+        <div className="min-w-0 flex-1">
+          <div className="mb-1 flex flex-wrap items-center gap-1.5">
+            <span className="text-lg font-bold text-(--color-text-primary)">{member.name}</span>
+            <ColorBadge label={term.party.shortName} color={term.party.color} size="sm" />
+            {(() => {
+              const roles = Object.values(term.committeeRoles ?? {});
+              const topRole = roles.find((r) => r !== "위원");
+              return topRole ? (
+                <span className="rounded-full bg-amber-100 px-2 py-0.5 text-[11px] font-semibold text-amber-800 dark:bg-amber-900/30 dark:text-amber-300">
+                  {topRole}
+                </span>
+              ) : null;
+            })()}
+          </div>
+          <p className="text-sm text-(--color-text-secondary)">
+            {term.proportional ? "비례대표" : formatDistrict(term.district)}
+          </p>
+          <p className="text-xs text-(--color-text-tertiary)">
+            {getElectedLabel(term.electedCount)}
+          </p>
         </div>
-        <p className="text-sm text-(--color-text-secondary)">
-          {term.proportional ? "비례대표" : formatDistrict(term.district)}
-        </p>
-        <p className="text-xs text-(--color-text-tertiary)">{getElectedLabel(term.electedCount)}</p>
-      </div>
-    </Link>
+      </Link>
+      <MemberBookmarkButton memberId={member.id} />
+    </div>
   );
 }

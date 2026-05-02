@@ -11,6 +11,7 @@ import { formatDate, formatDistrict } from "@/lib/utils";
 import { BILL_STATUS_MAP } from "@/lib/constants";
 import BillProgressTimeline from "@/components/bills/BillProgressTimeline";
 import BookmarkButton from "@/components/ui/BookmarkButton";
+import ShareButton from "@/components/ui/ShareButton";
 import type { BillStructuredSummary } from "@/types";
 
 interface BillDetailInnerProps {
@@ -45,6 +46,7 @@ export default function BillDetailInner({ id }: BillDetailInnerProps) {
               textColor={statusInfo.textColor}
               termHint={statusInfo.termKey}
             />
+            <ShareButton title={bill.title} />
             <BookmarkButton billId={id} />
           </div>
         </div>
@@ -95,63 +97,6 @@ export default function BillDetailInner({ id }: BillDetailInnerProps) {
         </div>
       </div>
 
-      {/* 법안 현황 해설 */}
-      <div className="rounded-xl border border-(--color-border-primary) bg-(--color-bg-primary) p-5">
-        <h2 className="mb-3 text-base font-bold text-(--color-text-primary)">법안 현황 해설</h2>
-        <p className="text-sm leading-relaxed text-(--color-text-secondary)">
-          {bill.title}은(는) {formatDate(bill.proposedDate)}에{" "}
-          {bill.proposerName?.includes("위원장")
-            ? "위원회 대안으로 제안"
-            : bill.proposerName === "정부"
-              ? "정부가 제출"
-              : `${bill.proposerName} 의원${bill.coProposerCount > 0 ? ` 외 ${bill.coProposerCount}명` : ""}이 대표발의`}
-          한 법안입니다.
-          {bill.committee && <> 현재 {bill.committee}에서 소관하고 있습니다.</>}
-          {bill.status === "passed" && (
-            <>
-              {" "}
-              본 법안은 본회의를 통과하여 <strong>가결</strong>되었습니다. 가결된 법안은 정부로
-              이송되어 대통령이 15일 이내에 공포하며, 특별한 규정이 없으면 공포 후 20일 뒤
-              시행됩니다.
-            </>
-          )}
-          {bill.status === "pending" && (
-            <>
-              {" "}
-              본 법안은 현재 <strong>계류</strong> 상태로, 위원회 심사 또는 본회의 상정을 기다리고
-              있습니다. 국회의원 임기(4년) 내에 처리되지 않으면 자동으로 폐기됩니다.
-            </>
-          )}
-          {bill.status === "committee" && (
-            <>
-              {" "}
-              본 법안은 현재 <strong>위원회 심사</strong> 단계에 있습니다. 전문위원 검토 보고 →
-              대체토론 → 축조심사 → 찬반투표 순서로 진행되며, 통과 시 본회의에 상정됩니다.
-            </>
-          )}
-          {bill.status === "discarded" && (
-            <>
-              {" "}
-              본 법안은 <strong>폐기</strong>되었습니다.
-              {bill.progress?.committeeResult?.includes("대안반영")
-                ? " 법안의 핵심 내용이 위원회 대안에 반영되어, 원래 법안은 형식적으로 폐기 처리된 것입니다."
-                : " 임기 만료, 발의자 철회, 또는 위원회 부결 등의 사유로 더 이상 심사되지 않습니다."}
-            </>
-          )}
-        </p>
-        <p className="mt-2 text-xs text-(--color-text-tertiary)">
-          위 해설은 열린국회정보 공공데이터를 기반으로 자동 생성되었습니다.
-        </p>
-      </div>
-
-      {bill.progress && (
-        <BillProgressTimeline
-          progress={bill.progress}
-          proposedDate={bill.proposedDate}
-          status={bill.status}
-        />
-      )}
-
       {bill.simpleSummary && (
         <div className="space-y-4 rounded-xl border border-(--color-border-primary) bg-(--color-bg-primary) p-5">
           <h2 className="flex items-center gap-2 text-lg font-bold">
@@ -189,6 +134,14 @@ export default function BillDetailInner({ id }: BillDetailInnerProps) {
               );
             })()}
         </div>
+      )}
+
+      {bill.progress && (
+        <BillProgressTimeline
+          progress={bill.progress}
+          proposedDate={bill.proposedDate}
+          status={bill.status}
+        />
       )}
 
       {bill.topic && (
@@ -235,15 +188,6 @@ export default function BillDetailInner({ id }: BillDetailInnerProps) {
               데 참고하시기 바랍니다. 법안의 원문과 심사 경과를 확인하여 보다 깊이 있는 이해를 할 수
               있습니다.
             </p>
-          </div>
-        </div>
-      )}
-
-      {bill.summary && (
-        <div className="space-y-3 rounded-xl border border-(--color-border-primary) bg-(--color-bg-primary) p-5">
-          <h2 className="text-lg font-bold">제안이유 및 주요내용</h2>
-          <div className="text-sm leading-relaxed whitespace-pre-line text-(--color-text-secondary)">
-            {bill.summary}
           </div>
         </div>
       )}
@@ -319,6 +263,64 @@ export default function BillDetailInner({ id }: BillDetailInnerProps) {
                 ? "정부 제출 법안으로, 개별 발의자 정보가 없습니다."
                 : "이 법안의 개별 발의자 정보가 제공되지 않습니다."}
           </p>
+        </div>
+      )}
+
+      {/* 법안 현황 해설 */}
+      <div className="rounded-xl border border-(--color-border-primary) bg-(--color-bg-primary) p-5">
+        <h2 className="mb-3 text-base font-bold text-(--color-text-primary)">법안 현황 해설</h2>
+        <p className="text-sm leading-relaxed text-(--color-text-secondary)">
+          {bill.title}은(는) {formatDate(bill.proposedDate)}에{" "}
+          {bill.proposerName?.includes("위원장")
+            ? "위원회 대안으로 제안"
+            : bill.proposerName === "정부"
+              ? "정부가 제출"
+              : `${bill.proposerName} 의원${bill.coProposerCount > 0 ? ` 외 ${bill.coProposerCount}명` : ""}이 대표발의`}
+          한 법안입니다.
+          {bill.committee && <> 현재 {bill.committee}에서 소관하고 있습니다.</>}
+          {bill.status === "passed" && (
+            <>
+              {" "}
+              본 법안은 본회의를 통과하여 <strong>가결</strong>되었습니다. 가결된 법안은 정부로
+              이송되어 대통령이 15일 이내에 공포하며, 특별한 규정이 없으면 공포 후 20일 뒤
+              시행됩니다.
+            </>
+          )}
+          {bill.status === "pending" && (
+            <>
+              {" "}
+              본 법안은 현재 <strong>계류</strong> 상태로, 위원회 심사 또는 본회의 상정을 기다리고
+              있습니다. 국회의원 임기(4년) 내에 처리되지 않으면 자동으로 폐기됩니다.
+            </>
+          )}
+          {bill.status === "committee" && (
+            <>
+              {" "}
+              본 법안은 현재 <strong>위원회 심사</strong> 단계에 있습니다. 전문위원 검토 보고 →
+              대체토론 → 축조심사 → 찬반투표 순서로 진행되며, 통과 시 본회의에 상정됩니다.
+            </>
+          )}
+          {bill.status === "discarded" && (
+            <>
+              {" "}
+              본 법안은 <strong>폐기</strong>되었습니다.
+              {bill.progress?.committeeResult?.includes("대안반영")
+                ? " 법안의 핵심 내용이 위원회 대안에 반영되어, 원래 법안은 형식적으로 폐기 처리된 것입니다."
+                : " 임기 만료, 발의자 철회, 또는 위원회 부결 등의 사유로 더 이상 심사되지 않습니다."}
+            </>
+          )}
+        </p>
+        <p className="mt-2 text-xs text-(--color-text-tertiary)">
+          위 해설은 열린국회정보 공공데이터를 기반으로 자동 생성되었습니다.
+        </p>
+      </div>
+
+      {bill.summary && (
+        <div className="space-y-3 rounded-xl border border-(--color-border-primary) bg-(--color-bg-primary) p-5">
+          <h2 className="text-lg font-bold">제안이유 및 주요내용</h2>
+          <div className="text-sm leading-relaxed whitespace-pre-line text-(--color-text-secondary)">
+            {bill.summary}
+          </div>
         </div>
       )}
     </div>

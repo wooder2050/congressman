@@ -31,7 +31,12 @@ export default function DistrictWatch({ termId }: DistrictWatchProps) {
   const [localDistrict, setLocalDistrict] = useState<string | null>(null);
   const activeDistrict = localDistrict ?? savedDistrict;
 
-  const { data: members, isLoading: membersLoading } = useQuery({
+  const {
+    data: members,
+    isLoading: membersLoading,
+    isError: membersError,
+    refetch: membersRefetch,
+  } = useQuery({
     queryKey: ["members", termId],
     queryFn: () => getMembers(termId),
   });
@@ -62,6 +67,23 @@ export default function DistrictWatch({ termId }: DistrictWatchProps) {
     }
     setLocalDistrict(null);
   }, [user, updatePrefs]);
+
+  if (membersError) {
+    return (
+      <div className="rounded-xl border border-red-200 bg-red-50 p-5 text-center dark:border-red-800/40 dark:bg-red-950/20">
+        <p className="text-sm font-semibold text-red-800 dark:text-red-200">
+          데이터를 불러오지 못했습니다
+        </p>
+        <button
+          type="button"
+          onClick={() => membersRefetch()}
+          className="mt-2 text-sm font-medium text-(--color-primary) hover:underline"
+        >
+          다시 시도
+        </button>
+      </div>
+    );
+  }
 
   if (!activeDistrict) {
     return (
@@ -322,7 +344,12 @@ function DistrictSelector({
 }
 
 function MemberReport({ member, termId }: { member: MemberWithTerm; termId: number }) {
-  const { data: report, isLoading } = useQuery({
+  const {
+    data: report,
+    isLoading,
+    isError,
+    refetch,
+  } = useQuery({
     queryKey: ["districtReport", member.id, termId],
     queryFn: () => getDistrictReport({ memberId: member.id, termId }),
   });
@@ -356,6 +383,21 @@ function MemberReport({ member, termId }: { member: MemberWithTerm; termId: numb
           </div>
         </div>
       </div>
+
+      {isError && (
+        <div className="rounded-xl border border-red-200 bg-red-50 p-5 text-center dark:border-red-800/40 dark:bg-red-950/20">
+          <p className="text-sm font-semibold text-red-800 dark:text-red-200">
+            데이터를 불러오지 못했습니다
+          </p>
+          <button
+            type="button"
+            onClick={() => refetch()}
+            className="mt-2 text-sm font-medium text-(--color-primary) hover:underline"
+          >
+            다시 시도
+          </button>
+        </div>
+      )}
 
       {/* 활동 통계 */}
       <div className="rounded-xl border border-(--color-border-primary) bg-(--color-bg-primary) p-5">

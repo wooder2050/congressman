@@ -8,6 +8,7 @@ import ColorBadge from "@/components/ui/color-badge";
 import VoteResultBar from "./VoteResultBar";
 import PartyVoteGrid from "./PartyVoteGrid";
 import { formatDate } from "@/lib/utils";
+import ShareButton from "@/components/ui/ShareButton";
 import { VOTE_RESULT_MAP } from "@/lib/constants";
 
 interface VoteDetailInnerProps {
@@ -37,12 +38,15 @@ export default function VoteDetailInner({ id }: VoteDetailInnerProps) {
           <h1 className="text-xl font-bold text-(--color-text-primary) sm:text-2xl">
             {vote.billName}
           </h1>
-          <ColorBadge
-            label={resultInfo.label}
-            color={resultInfo.color}
-            textColor={resultInfo.textColor}
-            termHint={resultInfo.termKey}
-          />
+          <div className="flex shrink-0 items-center gap-2">
+            <ColorBadge
+              label={resultInfo.label}
+              color={resultInfo.color}
+              textColor={resultInfo.textColor}
+              termHint={resultInfo.termKey}
+            />
+            <ShareButton title={vote.billName} />
+          </div>
         </div>
 
         <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-(--color-text-tertiary)">
