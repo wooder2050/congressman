@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import CongressWrapper from "@/common/CongressWrapper";
 import TodayBriefing from "@/components/today/TodayBriefing";
 
+export const dynamic = "force-dynamic";
+
 export const metadata: Metadata = {
   title: "오늘의 국회 — 3분 브리핑",
   description:

@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import DistrictWatch from "@/components/district/DistrictWatch";
 
+export const dynamic = "force-dynamic";
+
 export const metadata: Metadata = {
   title: "내 지역구 의원 — 의정활동 리포트",
   description: "내 지역구 국회의원의 출석률, 법안 발의, 표결 참여 등 의정활동을 한눈에 확인하세요.",
