@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import AuthButton from "@/components/auth/AuthButton";
 
 const navItems = [
   { href: "/", label: "홈" },
@@ -53,6 +54,10 @@ export default function Header() {
             );
           })}
         </nav>
+
+        <div className="ml-auto hidden lg:flex">
+          <AuthButton />
+        </div>
       </div>
     </header>
   );

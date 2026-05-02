@@ -10,6 +10,7 @@ async function bootstrap() {
   app.setGlobalPrefix('api');
   app.enableCors({
     origin: config.get('CORS_ORIGIN', 'http://localhost:3000'),
+    credentials: true,
   });
 
   if (config.get('NODE_ENV', 'development') !== 'production') {
