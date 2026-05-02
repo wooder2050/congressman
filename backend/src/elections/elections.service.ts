@@ -167,72 +167,88 @@ export class ElectionsService {
       if (c.memberIdRef) memberIds.add(c.memberIdRef);
     }
 
-    // 3. 의원별 scorecard 정보 조회
+    // 3. 배치 조회로 모든 의원 데이터를 한 번에 가져오기
+    const ids = [...memberIds];
+    if (ids.length === 0) {
+      await this.redis.set(key, [], TTL_HOUR);
+      return [];
+    }
+
+    const [allMembers, allTerms, allAttendance, billStats, voteStats, assetStats] =
+      await Promise.all([
+        // 의원 기본 정보 배치
+        this.prisma.member.findMany({
+          where: { id: { in: ids } },
+          select: { id: true, name: true, photoUrl: true },
+        }),
+        // 최신 MemberTerm 배치 (정당 포함)
+        this.prisma.memberTerm.findMany({
+          where: { memberId: { in: ids } },
+          orderBy: { termId: 'desc' },
+          include: { party: true },
+        }),
+        // 출석률 배치
+        this.prisma.attendance.findMany({
+          where: { memberId: { in: ids }, termId: 22 },
+        }),
+        // 법안 발의 통계 (대표발의 + 가결) — 단일 쿼리
+        this.prisma.$queryRaw<{ memberId: string; billCount: bigint; passedCount: bigint }[]>`
+          SELECT bp."memberId",
+            COUNT(*)::bigint AS "billCount",
+            COUNT(*) FILTER (WHERE b.status = 'passed')::bigint AS "passedCount"
+          FROM "BillProposer" bp
+          JOIN "Bill" b ON b.id = bp."billId"
+          WHERE bp."memberId" = ANY(${ids})
+            AND bp.role = 'representative'
+            AND b."termId" = 22
+          GROUP BY bp."memberId"
+        `,
+        // 표결 참여 통계 — 단일 쿼리
+        this.prisma.$queryRaw<{ memberId: string; totalVotes: bigint; attendedVotes: bigint }[]>`
+          SELECT mv."memberId",
+            COUNT(*)::bigint AS "totalVotes",
+            COUNT(*) FILTER (WHERE mv.result IN ('yes', 'no', 'abstain'))::bigint AS "attendedVotes"
+          FROM "MemberVote" mv
+          JOIN "Vote" v ON v.id = mv."voteId"
+          WHERE mv."memberId" = ANY(${ids})
+            AND v."termId" = 22
+          GROUP BY mv."memberId"
+        `,
+        // 재산 합계 (최신 연도) — 단일 쿼리
+        this.prisma.$queryRaw<{ memberId: string; year: number; total: bigint }[]>`
+          SELECT a."memberId", a.year, SUM(a.amount)::bigint AS total
+          FROM "Asset" a
+          WHERE a."memberId" = ANY(${ids})
+            AND a.year = (
+              SELECT MAX(a2.year) FROM "Asset" a2 WHERE a2."memberId" = a."memberId"
+            )
+          GROUP BY a."memberId", a.year
+        `,
+      ]);
+
+    // 인덱스 맵 생성
+    const memberMap = new Map(allMembers.map((m) => [m.id, m]));
+    const termMap = new Map<string, (typeof allTerms)[0]>();
+    for (const t of allTerms) {
+      if (!termMap.has(t.memberId)) termMap.set(t.memberId, t);
+    }
+    const attendanceMap = new Map(allAttendance.map((a) => [a.memberId, a]));
+    const billMap = new Map(billStats.map((b) => [b.memberId, b]));
+    const voteMap = new Map(voteStats.map((v) => [v.memberId, v]));
+    const assetMap = new Map(assetStats.map((a) => [a.memberId, a]));
+
+    // 결과 조립
     const result = [];
-    for (const memberId of memberIds) {
-      const member = await this.prisma.member.findUnique({
-        where: { id: memberId },
-        select: { id: true, name: true, photoUrl: true },
-      });
+    for (const memberId of ids) {
+      const member = memberMap.get(memberId);
       if (!member) continue;
 
-      // 최신 대수 MemberTerm 조회 (22대 없으면 21대, 20대 순)
-      const term = await this.prisma.memberTerm.findFirst({
-        where: { memberId },
-        orderBy: { termId: 'desc' },
-        include: { party: true },
-      });
-      const termId = term?.termId ?? 22;
+      const term = termMap.get(memberId);
+      const attendance = attendanceMap.get(memberId);
+      const bills = billMap.get(memberId);
+      const votes = voteMap.get(memberId);
+      const asset = assetMap.get(memberId);
 
-      // 출석률
-      const attendance = await this.prisma.attendance.findUnique({
-        where: { memberId_termId: { memberId, termId } },
-      });
-
-      // 법안 발의 건수
-      const billCount = await this.prisma.billProposer.count({
-        where: { memberId, bill: { termId }, role: 'representative' },
-      });
-
-      // 법안 가결
-      const passedCount = await this.prisma.billProposer.count({
-        where: {
-          memberId,
-          bill: { termId, status: 'passed' },
-          role: 'representative',
-        },
-      });
-
-      // 표결 참여
-      const totalVotes = await this.prisma.memberVote.count({
-        where: { memberId, vote: { termId } },
-      });
-      const attendedVotes = await this.prisma.memberVote.count({
-        where: {
-          memberId,
-          vote: { termId },
-          result: { in: ['yes', 'no', 'abstain'] },
-        },
-      });
-
-      // 재산 (최신 연도의 합산)
-      const latestAssetYear = await this.prisma.asset.findFirst({
-        where: { memberId },
-        orderBy: { year: 'desc' },
-        select: { year: true },
-      });
-      let totalAssetAmount: bigint | null = null;
-      let assetYear: number | null = null;
-      if (latestAssetYear) {
-        assetYear = latestAssetYear.year;
-        const sum = await this.prisma.asset.aggregate({
-          where: { memberId, year: assetYear },
-          _sum: { amount: true },
-        });
-        totalAssetAmount = sum._sum.amount;
-      }
-
-      // 출마 지역 확인
       const fromDistrict = districts.find((d) => d.previousMemberId === memberId);
       const fromCandidate = candidates.find((c) => c.memberIdRef === memberId);
 
@@ -240,7 +256,6 @@ export class ElectionsService {
       let runningReason = '';
       if (fromDistrict) {
         runningReason = fromDistrict.vacancyReason;
-        // vacancyReason에서 출마 대상 추출 (예: "추미애 경기도지사 출마 사퇴" → "경기도지사")
         const match = runningReason.match(
           /(\S+(?:시장|도지사|특별시장|광역시장|도지사|특별자치시장|특별자치도지사))/,
         );
@@ -249,13 +264,13 @@ export class ElectionsService {
         runningFor = fromCandidate.district?.district || '';
       }
 
-      const attendanceRate = attendance
-        ? Math.round(
-            ((attendance.attended ?? 0) /
-              Math.max((attendance.attended ?? 0) + (attendance.absent ?? 0), 1)) *
-              100,
-          )
-        : 0;
+      const attended = attendance?.attended ?? 0;
+      const absent = attendance?.absent ?? 0;
+      const attendanceRate = Math.round((attended / Math.max(attended + absent, 1)) * 100);
+      const billCount = Number(bills?.billCount ?? 0n);
+      const passedCount = Number(bills?.passedCount ?? 0n);
+      const totalVotes = Number(votes?.totalVotes ?? 0n);
+      const attendedVotes = Number(votes?.attendedVotes ?? 0n);
       const voteRate = totalVotes > 0 ? Math.round((attendedVotes / totalVotes) * 100) : 0;
       const passRate = billCount > 0 ? Math.round((passedCount / billCount) * 100) : 0;
 
@@ -279,8 +294,8 @@ export class ElectionsService {
         billCount,
         passedCount,
         passRate,
-        totalAsset: totalAssetAmount !== null ? Number(totalAssetAmount) : null,
-        assetYear,
+        totalAsset: asset ? Number(asset.total) : null,
+        assetYear: asset?.year ?? null,
       });
     }
 
