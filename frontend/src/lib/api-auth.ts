@@ -7,9 +7,7 @@ async function fetchAuthApi<T>(path: string, options?: RequestInit): Promise<T> 
   if (!API_BASE) throw new Error("NEXT_PUBLIC_API_URL 환경변수가 설정되지 않았습니다.");
 
   const supabase = createClient();
-  const {
-    data: { session },
-  } = await supabase.auth.getSession();
+  const session = supabase ? (await supabase.auth.getSession()).data.session : null;
 
   const res = await fetch(`${API_BASE}${path}`, {
     ...options,
