@@ -31,6 +31,7 @@ import type {
   ByElectionDetail,
   RadarResult,
   TodayBriefing,
+  BillSummaryItem,
 } from "@/types";
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL;
@@ -313,7 +314,10 @@ export async function getLastSync(): Promise<{ lastSyncAt: string | null }> {
 // ====== 이슈 레이더 + 오늘 브리핑 + 법안 일괄 조회 ======
 
 export async function getRadar(params: { termId: number; topics: string[] }): Promise<RadarResult> {
-  return fetchApi(`/api/stats/radar?termId=${params.termId}&topics=${params.topics.join(",")}`);
+  const sp = new URLSearchParams();
+  sp.set("termId", String(params.termId));
+  sp.set("topics", params.topics.join(","));
+  return fetchApi(`/api/stats/radar?${sp.toString()}`);
 }
 
 export async function getTodayBriefing(termId: number): Promise<TodayBriefing> {
@@ -323,7 +327,7 @@ export async function getTodayBriefing(termId: number): Promise<TodayBriefing> {
   });
 }
 
-export async function getBillsBatch(ids: string[]): Promise<Bill[]> {
+export async function getBillsBatch(ids: string[]): Promise<BillSummaryItem[]> {
   if (!ids.length) return [];
   return fetchApi(`/api/bills/batch?ids=${ids.join(",")}`);
 }

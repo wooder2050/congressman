@@ -90,7 +90,8 @@ export default function BookmarkedBills() {
     <div className="space-y-3">
       <p className="text-sm text-(--color-text-tertiary)">{billIds.length}건 저장됨</p>
       {bills?.map((bill) => {
-        const statusInfo = BILL_STATUS_MAP[bill.status] ?? BILL_STATUS_MAP.pending;
+        const statusInfo =
+          BILL_STATUS_MAP[bill.status as keyof typeof BILL_STATUS_MAP] ?? BILL_STATUS_MAP.pending;
         return (
           <div
             key={bill.id}

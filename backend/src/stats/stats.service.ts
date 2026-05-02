@@ -351,6 +351,110 @@ export class StatsService {
     return result;
   }
 
+  /** 정규화된 토픽에 해당하는 모든 alias 키를 반환 */
+  private getTopicAliases(normalizedTopics: string[]): string[] {
+    // bills.service.ts의 TOPIC_NORMALIZE와 동일한 매핑
+    const TOPIC_NORMALIZE: Record<string, string> = {
+      '경제·산업': '경제·산업',
+      economy: '경제·산업',
+      '세금·경제': '경제·산업',
+      경제: '경제·산업',
+      금융: '경제·산업',
+      finance: '경제·산업',
+      tax: '경제·산업',
+      industry: '경제·산업',
+      산업: '경제·산업',
+      공정거래: '경제·산업',
+      조세: '경제·산업',
+      '법·사법': '법·사법',
+      law: '법·사법',
+      '사법·인권': '법·사법',
+      사법: '법·사법',
+      justice: '법·사법',
+      human_rights: '법·사법',
+      법무: '법·사법',
+      '환경·에너지': '환경·에너지',
+      environment: '환경·에너지',
+      환경: '환경·에너지',
+      에너지: '환경·에너지',
+      energy: '환경·에너지',
+      '노동·고용': '노동·고용',
+      labor: '노동·고용',
+      '노동·일자리': '노동·고용',
+      노동: '노동·고용',
+      고용: '노동·고용',
+      '보건·의료': '보건·의료',
+      health: '보건·의료',
+      '의료·건강': '보건·의료',
+      보건: '보건·의료',
+      '복지·건강': '보건·의료',
+      '교통·물류': '교통·물류',
+      transport: '교통·물류',
+      '교통·건설': '교통·물류',
+      교통: '교통·물류',
+      transportation: '교통·물류',
+      건설: '교통·물류',
+      국토: '교통·물류',
+      '부동산·주거': '부동산·주거',
+      housing: '부동산·주거',
+      부동산: '부동산·주거',
+      '복지·돌봄': '복지·돌봄',
+      welfare: '복지·돌봄',
+      복지: '복지·돌봄',
+      보훈: '복지·돌봄',
+      society: '복지·돌봄',
+      '육아·교육': '육아·교육',
+      education: '육아·교육',
+      교육: '육아·교육',
+      청년정책: '육아·교육',
+      youth: '육아·교육',
+      '행정·지방자치': '행정·지방자치',
+      administration: '행정·지방자치',
+      '행정·제도': '행정·지방자치',
+      행정: '행정·지방자치',
+      정치: '행정·지방자치',
+      politics: '행정·지방자치',
+      autonomy: '행정·지방자치',
+      regional: '행정·지방자치',
+      선거: '행정·지방자치',
+      지역발전: '행정·지방자치',
+      인구: '행정·지방자치',
+      '농업·식품': '농업·식품',
+      agriculture: '농업·식품',
+      '농림·수산': '농업·식품',
+      농업: '농업·식품',
+      농림: '농업·식품',
+      해양: '농업·식품',
+      maritime: '농업·식품',
+      '문화·체육': '문화·체육',
+      culture: '문화·체육',
+      문화: '문화·체육',
+      '통신·방송': '문화·체육',
+      관광: '문화·체육',
+      '과학기술·ICT': '과학기술·ICT',
+      technology: '과학기술·ICT',
+      '기술·AI': '과학기술·ICT',
+      '과학·기술': '과학기술·ICT',
+      science: '과학기술·ICT',
+      digital: '과학기술·ICT',
+      정보통신: '과학기술·ICT',
+      '외교·안보': '외교·안보',
+      diplomacy: '외교·안보',
+      '외교·국방': '외교·안보',
+      국방: '외교·안보',
+      defense: '외교·안보',
+      외교: '외교·안보',
+      '안전·치안': '안전·치안',
+      safety: '안전·치안',
+      안전: '안전·치안',
+    };
+
+    const topicSet = new Set(normalizedTopics);
+    return Object.entries(TOPIC_NORMALIZE)
+      .filter(([, v]) => topicSet.has(v))
+      .map(([k]) => k);
+  }
+
   /** 관심 토픽 기반 최근 법안 (이슈 레이더) */
   async getRadar(termId: number, topics: string[]) {
     if (!topics.length) return { bills: [], topics: [] };
@@ -359,10 +463,13 @@ export class StatsService {
     const cached = await this.redis.get(key);
     if (cached) return cached;
 
+    // 정규화된 토픽에 해당하는 모든 alias를 포함하여 검색
+    const expandedTopics = this.getTopicAliases(topics);
+
     const bills = await this.prisma.bill.findMany({
       where: {
         termId,
-        topic: { in: topics },
+        topic: { in: expandedTopics.length > 0 ? expandedTopics : topics },
       },
       orderBy: { proposedDate: 'desc' },
       take: 10,
@@ -383,17 +490,21 @@ export class StatsService {
     return result;
   }
 
+  /** 한국 시간 기준 날짜 (YYYY-MM-DD) */
+  private getKoreanDate(offsetDays = 0): string {
+    const d = new Date(new Date().toLocaleString('en-US', { timeZone: 'Asia/Seoul' }));
+    d.setDate(d.getDate() + offsetDays);
+    return d.toISOString().slice(0, 10);
+  }
+
   /** 오늘 브리핑 */
   async getTodayBriefing(termId: number) {
-    const today = new Date().toISOString().slice(0, 10);
+    const today = this.getKoreanDate();
     const key = `stats:today:${termId}:${today}`;
     const cached = await this.redis.get(key);
     if (cached) return cached;
 
-    // 최근 3일 기준 날짜
-    const threeDaysAgo = new Date();
-    threeDaysAgo.setDate(threeDaysAgo.getDate() - 3);
-    const since = threeDaysAgo.toISOString().slice(0, 10);
+    const since = this.getKoreanDate(-3);
 
     const [schedules, recentVotes, recentBills] = await Promise.all([
       this.prisma.schedule.findMany({

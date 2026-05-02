@@ -663,19 +663,25 @@ export interface UserPreference {
   updatedAt: string;
 }
 
+// ====== 법안 요약 (공통) ======
+
+export interface BillSummaryItem {
+  id: string;
+  title: string;
+  proposerName: string;
+  coProposerCount?: number;
+  status: string;
+  proposedDate: string;
+  termId?: number;
+  committee: string | null;
+  simpleSummary: string | null;
+  topic: string | null;
+}
+
 // ====== 이슈 레이더 ======
 
 export interface RadarResult {
-  bills: {
-    id: string;
-    title: string;
-    proposerName: string;
-    status: string;
-    proposedDate: string;
-    committee: string | null;
-    simpleSummary: string | null;
-    topic: string | null;
-  }[];
+  bills: BillSummaryItem[];
   topics: string[];
 }
 
@@ -685,14 +691,5 @@ export interface TodayBriefing {
   date: string;
   schedules: Schedule[];
   recentVotes: Vote[];
-  recentBills: {
-    id: string;
-    title: string;
-    proposerName: string;
-    status: string;
-    proposedDate: string;
-    committee: string | null;
-    simpleSummary: string | null;
-    topic: string | null;
-  }[];
+  recentBills: BillSummaryItem[];
 }
