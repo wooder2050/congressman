@@ -785,7 +785,7 @@ export class MembersService {
         WHERE bp."memberId" = ${memberId}
           AND bp.role = 'representative'
           AND b."termId" = ${termId}
-          AND b."proposedDate" >= (CURRENT_DATE - ${days}::int * INTERVAL '1 day')::date::text
+          AND b."proposedDate" >= ((CURRENT_TIMESTAMP AT TIME ZONE 'Asia/Seoul')::date - ${days}::int * INTERVAL '1 day')::date::text
       `,
       // 최근 N일 표결 참여/불참
       this.prisma.$queryRaw<{ participated: bigint; missed: bigint }[]>`
@@ -796,7 +796,7 @@ export class MembersService {
         JOIN "Vote" v ON v.id = mv."voteId"
         WHERE mv."memberId" = ${memberId}
           AND v."termId" = ${termId}
-          AND v."procDate" >= (CURRENT_DATE - ${days}::int * INTERVAL '1 day')::date::text
+          AND v."procDate" >= ((CURRENT_TIMESTAMP AT TIME ZONE 'Asia/Seoul')::date - ${days}::int * INTERVAL '1 day')::date::text
       `,
       // 최근 대표발의 법안 3건 제목
       this.prisma.bill.findMany({

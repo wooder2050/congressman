@@ -28,6 +28,7 @@ export async function generateMetadata({ params }: VoteDetailPageProps): Promise
       title: `${vote.billName} | 국회 본회의 표결`,
       description,
       url: `https://www.lawmake.kr/votes/${id}`,
+      images: [`https://www.lawmake.kr/api/share/vote-card?voteId=${id}`],
     },
     twitter: { card: "summary", title: `${vote.billName} 표결 결과`, description },
   };
