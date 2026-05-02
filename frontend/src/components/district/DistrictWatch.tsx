@@ -31,7 +31,12 @@ export default function DistrictWatch({ termId }: DistrictWatchProps) {
   const [localDistrict, setLocalDistrict] = useState<string | null>(null);
   const activeDistrict = localDistrict ?? savedDistrict;
 
-  const { data: members, isLoading: membersLoading } = useQuery({
+  const {
+    data: members,
+    isLoading: membersLoading,
+    isError: membersError,
+    refetch: membersRefetch,
+  } = useQuery({
     queryKey: ["members", termId],
     queryFn: () => getMembers(termId),
   });
@@ -62,6 +67,23 @@ export default function DistrictWatch({ termId }: DistrictWatchProps) {
     }
     setLocalDistrict(null);
   }, [user, updatePrefs]);
+
+  if (membersError) {
+    return (
+      <div className="rounded-xl border border-red-200 bg-red-50 p-5 text-center dark:border-red-800/40 dark:bg-red-950/20">
+        <p className="text-sm font-semibold text-red-800 dark:text-red-200">
+          데이터를 불러오지 못했습니다
+        </p>
+        <button
+          type="button"
+          onClick={() => membersRefetch()}
+          className="mt-2 text-sm font-medium text-(--color-primary) hover:underline"
+        >
+          다시 시도
+        </button>
+      </div>
+    );
+  }
 
   if (!activeDistrict) {
     return (
@@ -322,7 +344,12 @@ function DistrictSelector({
 }
 
 function MemberReport({ member, termId }: { member: MemberWithTerm; termId: number }) {
-  const { data: report, isLoading } = useQuery({
+  const {
+    data: report,
+    isLoading,
+    isError,
+    refetch,
+  } = useQuery({
     queryKey: ["districtReport", member.id, termId],
     queryFn: () => getDistrictReport({ memberId: member.id, termId }),
   });
@@ -357,121 +384,152 @@ function MemberReport({ member, termId }: { member: MemberWithTerm; termId: numb
         </div>
       </div>
 
-      {/* 활동 통계 */}
-      <div className="rounded-xl border border-(--color-border-primary) bg-(--color-bg-primary) p-5">
-        <h3 className="mb-4 text-lg font-bold text-(--color-text-primary)">활동 통계</h3>
-        {isLoading ? (
-          <div className="grid grid-cols-2 gap-3">
-            {[1, 2, 3, 4].map((i) => (
-              <div key={i} className="h-20 animate-pulse rounded-lg bg-(--color-bg-tertiary)" />
-            ))}
+      {isError ? (
+        <>
+          <div className="rounded-xl border border-red-200 bg-red-50 p-5 text-center dark:border-red-800/40 dark:bg-red-950/20">
+            <p className="text-sm font-semibold text-red-800 dark:text-red-200">
+              활동 데이터를 불러오지 못했습니다
+            </p>
+            <button
+              type="button"
+              onClick={() => refetch()}
+              className="mt-2 text-sm font-medium text-(--color-primary) hover:underline"
+            >
+              다시 시도
+            </button>
           </div>
-        ) : scorecard ? (
-          <div className="grid grid-cols-2 gap-3">
-            <StatCard
-              label="출석률"
-              value={formatPercent(scorecard.attendance.rate)}
-              sub={`${scorecard.attendance.rank}위 / ${scorecard.attendance.totalMembers}명`}
-            />
-            <StatCard
-              label="표결 참여율"
-              value={formatPercent(scorecard.voteParticipation.rate)}
-              sub={`${scorecard.voteParticipation.rank}위 / ${scorecard.voteParticipation.totalMembers}명`}
-            />
-            <StatCard
-              label="대표 발의"
-              value={`${scorecard.billProposal.representativeCount}건`}
-              sub={`${scorecard.billProposal.rank}위 / ${scorecard.billProposal.totalMembers}명`}
-            />
-            <StatCard
-              label="법안 통과율"
-              value={formatPercent(scorecard.billPassRate.rate)}
-              sub={`가결 ${scorecard.billPassRate.passedCount} / 대표발의 ${scorecard.billPassRate.totalRepresentative}건`}
-            />
+          <div className="text-center">
+            <Link
+              href={`/members/${member.id}?term=${termId}`}
+              className="inline-block rounded-xl border border-(--color-border-primary) px-6 py-3 text-sm font-semibold text-(--color-primary) no-underline transition-colors hover:bg-(--color-bg-secondary)"
+            >
+              의원 상세 보기 →
+            </Link>
           </div>
-        ) : (
-          <p className="text-sm text-(--color-text-tertiary)">활동 통계 데이터가 없습니다.</p>
-        )}
-      </div>
+        </>
+      ) : (
+        <>
+          {/* 활동 통계 */}
+          <div className="rounded-xl border border-(--color-border-primary) bg-(--color-bg-primary) p-5">
+            <h3 className="mb-4 text-lg font-bold text-(--color-text-primary)">활동 통계</h3>
+            {isLoading ? (
+              <div className="grid grid-cols-2 gap-3">
+                {[1, 2, 3, 4].map((i) => (
+                  <div key={i} className="h-20 animate-pulse rounded-lg bg-(--color-bg-tertiary)" />
+                ))}
+              </div>
+            ) : scorecard ? (
+              <div className="grid grid-cols-2 gap-3">
+                <StatCard
+                  label="출석률"
+                  value={formatPercent(scorecard.attendance.rate)}
+                  sub={`${scorecard.attendance.rank}위 / ${scorecard.attendance.totalMembers}명`}
+                />
+                <StatCard
+                  label="표결 참여율"
+                  value={formatPercent(scorecard.voteParticipation.rate)}
+                  sub={`${scorecard.voteParticipation.rank}위 / ${scorecard.voteParticipation.totalMembers}명`}
+                />
+                <StatCard
+                  label="대표 발의"
+                  value={`${scorecard.billProposal.representativeCount}건`}
+                  sub={`${scorecard.billProposal.rank}위 / ${scorecard.billProposal.totalMembers}명`}
+                />
+                <StatCard
+                  label="법안 통과율"
+                  value={formatPercent(scorecard.billPassRate.rate)}
+                  sub={`가결 ${scorecard.billPassRate.passedCount} / 대표발의 ${scorecard.billPassRate.totalRepresentative}건`}
+                />
+              </div>
+            ) : (
+              <p className="text-sm text-(--color-text-tertiary)">활동 통계 데이터가 없습니다.</p>
+            )}
+          </div>
 
-      {/* 최근 법안 */}
-      <div className="rounded-xl border border-(--color-border-primary) bg-(--color-bg-primary) p-5">
-        <h3 className="mb-4 text-lg font-bold text-(--color-text-primary)">최근 대표 발의 법안</h3>
-        {isLoading ? (
-          <div className="space-y-3">
-            {[1, 2, 3].map((i) => (
-              <div key={i} className="h-14 animate-pulse rounded-lg bg-(--color-bg-tertiary)" />
-            ))}
+          {/* 최근 법안 */}
+          <div className="rounded-xl border border-(--color-border-primary) bg-(--color-bg-primary) p-5">
+            <h3 className="mb-4 text-lg font-bold text-(--color-text-primary)">
+              최근 대표 발의 법안
+            </h3>
+            {isLoading ? (
+              <div className="space-y-3">
+                {[1, 2, 3].map((i) => (
+                  <div key={i} className="h-14 animate-pulse rounded-lg bg-(--color-bg-tertiary)" />
+                ))}
+              </div>
+            ) : bills.length > 0 ? (
+              <div className="space-y-2">
+                {bills.map((bill) => (
+                  <Link
+                    key={bill.id}
+                    href={`/bills/${bill.id}`}
+                    className="block rounded-lg bg-(--color-bg-secondary) p-3 no-underline transition-colors hover:bg-(--color-bg-tertiary)"
+                  >
+                    <p className="text-sm font-semibold text-(--color-text-primary)">
+                      {bill.title}
+                    </p>
+                    <div className="mt-1 flex items-center gap-2 text-xs text-(--color-text-tertiary)">
+                      {bill.topic && (
+                        <span className="rounded bg-(--color-bg-tertiary) px-1.5 py-0.5 text-xs">
+                          {bill.topic}
+                        </span>
+                      )}
+                      <span className="ml-auto">{formatDate(bill.proposedDate)}</span>
+                    </div>
+                  </Link>
+                ))}
+              </div>
+            ) : (
+              <p className="text-sm text-(--color-text-tertiary)">대표 발의 법안이 없습니다.</p>
+            )}
           </div>
-        ) : bills.length > 0 ? (
-          <div className="space-y-2">
-            {bills.map((bill) => (
-              <Link
-                key={bill.id}
-                href={`/bills/${bill.id}`}
-                className="block rounded-lg bg-(--color-bg-secondary) p-3 no-underline transition-colors hover:bg-(--color-bg-tertiary)"
-              >
-                <p className="text-sm font-semibold text-(--color-text-primary)">{bill.title}</p>
-                <div className="mt-1 flex items-center gap-2 text-xs text-(--color-text-tertiary)">
-                  {bill.topic && (
-                    <span className="rounded bg-(--color-bg-tertiary) px-1.5 py-0.5 text-xs">
-                      {bill.topic}
-                    </span>
-                  )}
-                  <span className="ml-auto">{formatDate(bill.proposedDate)}</span>
-                </div>
-              </Link>
-            ))}
-          </div>
-        ) : (
-          <p className="text-sm text-(--color-text-tertiary)">대표 발의 법안이 없습니다.</p>
-        )}
-      </div>
 
-      {/* 최근 표결 */}
-      <div className="rounded-xl border border-(--color-border-primary) bg-(--color-bg-primary) p-5">
-        <h3 className="mb-4 text-lg font-bold text-(--color-text-primary)">최근 표결 참여</h3>
-        {isLoading ? (
-          <div className="space-y-3">
-            {[1, 2, 3].map((i) => (
-              <div key={i} className="h-14 animate-pulse rounded-lg bg-(--color-bg-tertiary)" />
-            ))}
+          {/* 최근 표결 */}
+          <div className="rounded-xl border border-(--color-border-primary) bg-(--color-bg-primary) p-5">
+            <h3 className="mb-4 text-lg font-bold text-(--color-text-primary)">최근 표결 참여</h3>
+            {isLoading ? (
+              <div className="space-y-3">
+                {[1, 2, 3].map((i) => (
+                  <div key={i} className="h-14 animate-pulse rounded-lg bg-(--color-bg-tertiary)" />
+                ))}
+              </div>
+            ) : votes.length > 0 ? (
+              <div className="space-y-2">
+                {votes.map((vote) => (
+                  <Link
+                    key={vote.voteId}
+                    href={`/votes/${vote.voteId}`}
+                    className="block rounded-lg bg-(--color-bg-secondary) p-3 no-underline transition-colors hover:bg-(--color-bg-tertiary)"
+                  >
+                    <div className="flex items-start justify-between gap-2">
+                      <p className="min-w-0 flex-1 text-sm font-semibold text-(--color-text-primary)">
+                        {vote.billName}
+                      </p>
+                      <MemberVoteBadge result={vote.memberResult} />
+                    </div>
+                    <div className="mt-1 flex items-center gap-2 text-xs text-(--color-text-tertiary)">
+                      <span>{vote.procResult}</span>
+                      <span className="ml-auto">{formatDate(vote.procDate)}</span>
+                    </div>
+                  </Link>
+                ))}
+              </div>
+            ) : (
+              <p className="text-sm text-(--color-text-tertiary)">표결 참여 기록이 없습니다.</p>
+            )}
           </div>
-        ) : votes.length > 0 ? (
-          <div className="space-y-2">
-            {votes.map((vote) => (
-              <Link
-                key={vote.voteId}
-                href={`/votes/${vote.voteId}`}
-                className="block rounded-lg bg-(--color-bg-secondary) p-3 no-underline transition-colors hover:bg-(--color-bg-tertiary)"
-              >
-                <div className="flex items-start justify-between gap-2">
-                  <p className="min-w-0 flex-1 text-sm font-semibold text-(--color-text-primary)">
-                    {vote.billName}
-                  </p>
-                  <MemberVoteBadge result={vote.memberResult} />
-                </div>
-                <div className="mt-1 flex items-center gap-2 text-xs text-(--color-text-tertiary)">
-                  <span>{vote.procResult}</span>
-                  <span className="ml-auto">{formatDate(vote.procDate)}</span>
-                </div>
-              </Link>
-            ))}
-          </div>
-        ) : (
-          <p className="text-sm text-(--color-text-tertiary)">표결 참여 기록이 없습니다.</p>
-        )}
-      </div>
 
-      {/* 상세 페이지 링크 */}
-      <div className="text-center">
-        <Link
-          href={`/members/${member.id}?term=${termId}`}
-          className="inline-block rounded-xl border border-(--color-border-primary) px-6 py-3 text-sm font-semibold text-(--color-primary) no-underline transition-colors hover:bg-(--color-bg-secondary)"
-        >
-          의원 상세 보기 →
-        </Link>
-      </div>
+          {/* 상세 페이지 링크 */}
+          <div className="text-center">
+            <Link
+              href={`/members/${member.id}?term=${termId}`}
+              className="inline-block rounded-xl border border-(--color-border-primary) px-6 py-3 text-sm font-semibold text-(--color-primary) no-underline transition-colors hover:bg-(--color-bg-secondary)"
+            >
+              의원 상세 보기 →
+            </Link>
+          </div>
+        </>
+      )}
     </div>
   );
 }

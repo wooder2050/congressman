@@ -24,7 +24,12 @@ export default function PersonalizedFeed({ termId }: PersonalizedFeedProps) {
 
   const interests = prefs?.interests ?? [];
 
-  const { data: radar, isLoading: radarLoading } = useQuery({
+  const {
+    data: radar,
+    isLoading: radarLoading,
+    isError,
+    refetch,
+  } = useQuery({
     queryKey: ["radar", termId, ...interests],
     queryFn: () => getRadar({ termId, topics: interests }),
     enabled: !!user && interests.length > 0,
@@ -60,6 +65,26 @@ export default function PersonalizedFeed({ termId }: PersonalizedFeedProps) {
         <h2 className="text-xl font-bold">내 관심 이슈</h2>
         <div className="rounded-xl border border-(--color-border-primary) bg-(--color-bg-primary) p-5">
           <div className="h-20 animate-pulse rounded-lg bg-(--color-bg-secondary)" />
+        </div>
+      </section>
+    );
+  }
+
+  if (isError) {
+    return (
+      <section className="space-y-3">
+        <h2 className="text-xl font-bold">내 관심 이슈</h2>
+        <div className="rounded-xl border border-red-200 bg-red-50 p-5 text-center dark:border-red-800/40 dark:bg-red-950/20">
+          <p className="text-sm font-semibold text-red-800 dark:text-red-200">
+            데이터를 불러오지 못했습니다
+          </p>
+          <button
+            type="button"
+            onClick={() => refetch()}
+            className="mt-2 text-sm font-medium text-(--color-primary) hover:underline"
+          >
+            다시 시도
+          </button>
         </div>
       </section>
     );
