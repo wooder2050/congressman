@@ -75,7 +75,7 @@ export default function UserMenu() {
             onClick={() => setOpen(false)}
             className="block px-4 py-2.5 text-sm text-(--color-text-secondary) no-underline transition-colors hover:bg-(--color-bg-secondary)"
           >
-            저장한 법안
+            즐겨찾기
           </Link>
           <div className="border-t border-(--color-border-primary)" />
           <button
