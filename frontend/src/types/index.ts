@@ -662,3 +662,37 @@ export interface UserPreference {
   createdAt: string;
   updatedAt: string;
 }
+
+// ====== 이슈 레이더 ======
+
+export interface RadarResult {
+  bills: {
+    id: string;
+    title: string;
+    proposerName: string;
+    status: string;
+    proposedDate: string;
+    committee: string | null;
+    simpleSummary: string | null;
+    topic: string | null;
+  }[];
+  topics: string[];
+}
+
+// ====== 오늘 브리핑 ======
+
+export interface TodayBriefing {
+  date: string;
+  schedules: Schedule[];
+  recentVotes: Vote[];
+  recentBills: {
+    id: string;
+    title: string;
+    proposerName: string;
+    status: string;
+    proposedDate: string;
+    committee: string | null;
+    simpleSummary: string | null;
+    topic: string | null;
+  }[];
+}

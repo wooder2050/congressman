@@ -350,4 +350,82 @@ export class StatsService {
     await this.redis.set(key, result, TTL_6H);
     return result;
   }
+
+  /** 관심 토픽 기반 최근 법안 (이슈 레이더) */
+  async getRadar(termId: number, topics: string[]) {
+    if (!topics.length) return { bills: [], topics: [] };
+
+    const key = `stats:radar:${termId}:${topics.sort().join(',')}`;
+    const cached = await this.redis.get(key);
+    if (cached) return cached;
+
+    const bills = await this.prisma.bill.findMany({
+      where: {
+        termId,
+        topic: { in: topics },
+      },
+      orderBy: { proposedDate: 'desc' },
+      take: 10,
+      select: {
+        id: true,
+        title: true,
+        proposerName: true,
+        status: true,
+        proposedDate: true,
+        committee: true,
+        simpleSummary: true,
+        topic: true,
+      },
+    });
+
+    const result = { bills, topics };
+    await this.redis.set(key, result, TTL_6H);
+    return result;
+  }
+
+  /** 오늘 브리핑 */
+  async getTodayBriefing(termId: number) {
+    const today = new Date().toISOString().slice(0, 10);
+    const key = `stats:today:${termId}:${today}`;
+    const cached = await this.redis.get(key);
+    if (cached) return cached;
+
+    // 최근 3일 기준 날짜
+    const threeDaysAgo = new Date();
+    threeDaysAgo.setDate(threeDaysAgo.getDate() - 3);
+    const since = threeDaysAgo.toISOString().slice(0, 10);
+
+    const [schedules, recentVotes, recentBills] = await Promise.all([
+      this.prisma.schedule.findMany({
+        where: { termId, meetingDate: { gte: today } },
+        orderBy: [{ meetingDate: 'asc' }, { meetingTime: 'asc' }],
+        take: 10,
+      }),
+      this.prisma.vote.findMany({
+        where: { termId, procDate: { gte: since } },
+        orderBy: { procDate: 'desc' },
+        take: 5,
+      }),
+      this.prisma.bill.findMany({
+        where: { termId, proposedDate: { gte: since } },
+        orderBy: { proposedDate: 'desc' },
+        take: 5,
+        select: {
+          id: true,
+          title: true,
+          proposerName: true,
+          status: true,
+          proposedDate: true,
+          committee: true,
+          simpleSummary: true,
+          topic: true,
+        },
+      }),
+    ]);
+
+    const result = { date: today, schedules, recentVotes, recentBills };
+    // 30분 캐시 (자주 갱신)
+    await this.redis.set(key, result, 60 * 30);
+    return result;
+  }
 }

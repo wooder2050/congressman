@@ -342,4 +342,31 @@ export class BillsService {
     await this.redis.set(key, result, TTL_HOUR);
     return result;
   }
+
+  async findByIds(ids: string[]) {
+    if (!ids.length) return [];
+
+    const bills = await this.prisma.bill.findMany({
+      where: { id: { in: ids } },
+      orderBy: { proposedDate: 'desc' },
+      select: {
+        id: true,
+        title: true,
+        proposerName: true,
+        coProposerCount: true,
+        status: true,
+        proposedDate: true,
+        termId: true,
+        committee: true,
+        simpleSummary: true,
+        topic: true,
+      },
+    });
+
+    return bills.map((b) => ({
+      ...b,
+      simpleSummary: b.simpleSummary ?? null,
+      topic: b.topic ? normalizeTopic(b.topic) : null,
+    }));
+  }
 }

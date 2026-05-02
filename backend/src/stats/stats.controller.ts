@@ -49,4 +49,32 @@ export class StatsController {
     const parsedTermId = Math.min(Math.max(parseInt(termId ?? '', 10) || 22, 1), 30);
     return this.statsService.getHomeStats(parsedTermId);
   }
+
+  @Get('radar')
+  @ApiOperation({
+    summary: '이슈 레이더',
+    description: '관심 토픽 기반 최근 법안을 반환합니다',
+  })
+  @ApiQuery({ name: 'termId', required: false, type: Number, description: '국회 대수 (기본: 22)' })
+  @ApiQuery({ name: 'topics', required: true, description: '관심 토픽 (쉼표 구분)' })
+  getRadar(@Query('termId') termId?: string, @Query('topics') topics?: string) {
+    const parsedTermId = Math.min(Math.max(parseInt(termId ?? '', 10) || 22, 1), 30);
+    const topicList = (topics ?? '')
+      .split(',')
+      .map((t) => t.trim())
+      .filter(Boolean)
+      .slice(0, 15);
+    return this.statsService.getRadar(parsedTermId, topicList);
+  }
+
+  @Get('today')
+  @ApiOperation({
+    summary: '오늘 브리핑',
+    description: '오늘의 국회 일정, 최근 표결, 최근 법안을 반환합니다',
+  })
+  @ApiQuery({ name: 'termId', required: false, type: Number, description: '국회 대수 (기본: 22)' })
+  getTodayBriefing(@Query('termId') termId?: string) {
+    const parsedTermId = Math.min(Math.max(parseInt(termId ?? '', 10) || 22, 1), 30);
+    return this.statsService.getTodayBriefing(parsedTermId);
+  }
 }

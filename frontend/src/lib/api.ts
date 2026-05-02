@@ -29,6 +29,8 @@ import type {
   ScorecardRankingResponse,
   ByElectionSummary,
   ByElectionDetail,
+  RadarResult,
+  TodayBriefing,
 } from "@/types";
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL;
@@ -308,6 +310,24 @@ export async function getLastSync(): Promise<{ lastSyncAt: string | null }> {
   return fetchApi("/api/health/last-sync");
 }
 
+// ====== 이슈 레이더 + 오늘 브리핑 + 법안 일괄 조회 ======
+
+export async function getRadar(params: { termId: number; topics: string[] }): Promise<RadarResult> {
+  return fetchApi(`/api/stats/radar?termId=${params.termId}&topics=${params.topics.join(",")}`);
+}
+
+export async function getTodayBriefing(termId: number): Promise<TodayBriefing> {
+  return fetchApi(`/api/stats/today?termId=${termId}`, {
+    revalidate: 60,
+    tags: ["today"],
+  });
+}
+
+export async function getBillsBatch(ids: string[]): Promise<Bill[]> {
+  if (!ids.length) return [];
+  return fetchApi(`/api/bills/batch?ids=${ids.join(",")}`);
+}
+
 // Query Keys
 Object.defineProperty(getTerms, "queryKey", { value: "terms" });
 Object.defineProperty(getMembers, "queryKey", { value: "members" });
@@ -341,6 +361,9 @@ Object.defineProperty(getPropertyStats, "queryKey", { value: "propertyStats" });
 Object.defineProperty(getMemberScorecard, "queryKey", { value: "memberScorecard" });
 Object.defineProperty(getScorecardRanking, "queryKey", { value: "scorecardRanking" });
 Object.defineProperty(getLastSync, "queryKey", { value: "lastSync" });
+Object.defineProperty(getRadar, "queryKey", { value: "radar" });
+Object.defineProperty(getTodayBriefing, "queryKey", { value: "todayBriefing" });
+Object.defineProperty(getBillsBatch, "queryKey", { value: "billsBatch" });
 
 // ====== 재보궐선거 ======
 

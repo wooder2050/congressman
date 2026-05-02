@@ -10,6 +10,7 @@ import MemberAvatar from "@/components/members/MemberAvatar";
 import { formatDate, formatDistrict } from "@/lib/utils";
 import { BILL_STATUS_MAP } from "@/lib/constants";
 import BillProgressTimeline from "@/components/bills/BillProgressTimeline";
+import BookmarkButton from "@/components/ui/BookmarkButton";
 import type { BillStructuredSummary } from "@/types";
 
 interface BillDetailInnerProps {
@@ -37,12 +38,15 @@ export default function BillDetailInner({ id }: BillDetailInnerProps) {
           <h1 className="text-xl font-bold text-(--color-text-primary) sm:text-2xl">
             {bill.title}
           </h1>
-          <ColorBadge
-            label={statusInfo.label}
-            color={statusInfo.color}
-            textColor={statusInfo.textColor}
-            termHint={statusInfo.termKey}
-          />
+          <div className="flex shrink-0 items-center gap-2">
+            <ColorBadge
+              label={statusInfo.label}
+              color={statusInfo.color}
+              textColor={statusInfo.textColor}
+              termHint={statusInfo.termKey}
+            />
+            <BookmarkButton billId={id} />
+          </div>
         </div>
 
         <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-(--color-text-tertiary)">
