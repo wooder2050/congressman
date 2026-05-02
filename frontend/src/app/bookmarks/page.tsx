@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import BookmarkedBills from "@/components/bookmarks/BookmarkedBills";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 0;
 
 export const metadata: Metadata = {
   title: "저장한 법안 — lawmake",

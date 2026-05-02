@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import DistrictWatch from "@/components/district/DistrictWatch";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 0;
 
 export const metadata: Metadata = {
   title: "내 지역구 의원 — 의정활동 리포트",
