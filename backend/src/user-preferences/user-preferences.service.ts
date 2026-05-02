@@ -2,18 +2,11 @@ import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 
 const MAX_BOOKMARKS = 50;
-const MAX_INTERESTS = 15;
-const MAX_STRING_LENGTH = 200;
 
-interface UpdatePreferenceDto {
+interface UpdatePreferenceData {
   displayName?: string;
   district?: string | null;
   interests?: string[];
-}
-
-function sanitizeString(val: unknown, maxLen = MAX_STRING_LENGTH): string | undefined {
-  if (typeof val !== 'string') return undefined;
-  return val.slice(0, maxLen).trim();
 }
 
 @Injectable()
@@ -28,24 +21,19 @@ export class UserPreferencesService {
     });
   }
 
-  async update(userId: string, data: UpdatePreferenceDto) {
+  async update(userId: string, data: UpdatePreferenceData) {
     const sanitized: Record<string, unknown> = {};
 
     if (data.displayName !== undefined) {
-      sanitized.displayName = sanitizeString(data.displayName) ?? null;
+      sanitized.displayName = data.displayName?.trim() || null;
     }
     if (data.district !== undefined) {
-      sanitized.district = data.district === null ? null : (sanitizeString(data.district) ?? null);
+      sanitized.district = data.district === null ? null : data.district?.trim() || null;
     }
     if (data.interests !== undefined) {
-      if (!Array.isArray(data.interests)) {
-        sanitized.interests = [];
-      } else {
-        sanitized.interests = data.interests
-          .filter((t): t is string => typeof t === 'string')
-          .slice(0, MAX_INTERESTS)
-          .map((t) => t.slice(0, MAX_STRING_LENGTH).trim());
-      }
+      sanitized.interests = Array.isArray(data.interests)
+        ? data.interests.filter((t): t is string => typeof t === 'string').map((t) => t.trim())
+        : [];
     }
 
     return this.prisma.userPreference.upsert({
@@ -56,72 +44,63 @@ export class UserPreferencesService {
   }
 
   async addBillBookmark(userId: string, billId: string) {
-    return this.prisma.$transaction(async (tx) => {
-      const pref = await tx.userPreference.upsert({
-        where: { userId },
-        create: { userId },
-        update: {},
-      });
-
-      if (pref.bookmarkedBills.includes(billId)) return pref;
-      if (pref.bookmarkedBills.length >= MAX_BOOKMARKS) return pref;
-
-      return tx.userPreference.update({
-        where: { userId },
-        data: { bookmarkedBills: [...pref.bookmarkedBills, billId] },
-      });
+    // upsert로 레코드 보장 후, 원자적 array_append (중복/개수 제한 포함)
+    await this.prisma.userPreference.upsert({
+      where: { userId },
+      create: { userId },
+      update: {},
     });
+
+    await this.prisma.$executeRaw`
+      UPDATE "UserPreference"
+      SET "bookmarkedBills" = array_append("bookmarkedBills", ${billId}),
+          "updatedAt" = now()
+      WHERE "userId" = ${userId}
+        AND NOT (${billId} = ANY("bookmarkedBills"))
+        AND array_length("bookmarkedBills", 1) < ${MAX_BOOKMARKS}
+    `;
+
+    return this.prisma.userPreference.findUnique({ where: { userId } });
   }
 
   async removeBillBookmark(userId: string, billId: string) {
-    return this.prisma.$transaction(async (tx) => {
-      const pref = await tx.userPreference.upsert({
-        where: { userId },
-        create: { userId },
-        update: {},
-      });
+    await this.prisma.$executeRaw`
+      UPDATE "UserPreference"
+      SET "bookmarkedBills" = array_remove("bookmarkedBills", ${billId}),
+          "updatedAt" = now()
+      WHERE "userId" = ${userId}
+    `;
 
-      return tx.userPreference.update({
-        where: { userId },
-        data: {
-          bookmarkedBills: pref.bookmarkedBills.filter((id) => id !== billId),
-        },
-      });
-    });
+    return this.prisma.userPreference.findUniqueOrThrow({ where: { userId } });
   }
 
   async addMemberBookmark(userId: string, memberId: string) {
-    return this.prisma.$transaction(async (tx) => {
-      const pref = await tx.userPreference.upsert({
-        where: { userId },
-        create: { userId },
-        update: {},
-      });
-
-      if (pref.bookmarkedMembers.includes(memberId)) return pref;
-      if (pref.bookmarkedMembers.length >= MAX_BOOKMARKS) return pref;
-
-      return tx.userPreference.update({
-        where: { userId },
-        data: { bookmarkedMembers: [...pref.bookmarkedMembers, memberId] },
-      });
+    await this.prisma.userPreference.upsert({
+      where: { userId },
+      create: { userId },
+      update: {},
     });
+
+    await this.prisma.$executeRaw`
+      UPDATE "UserPreference"
+      SET "bookmarkedMembers" = array_append("bookmarkedMembers", ${memberId}),
+          "updatedAt" = now()
+      WHERE "userId" = ${userId}
+        AND NOT (${memberId} = ANY("bookmarkedMembers"))
+        AND array_length("bookmarkedMembers", 1) < ${MAX_BOOKMARKS}
+    `;
+
+    return this.prisma.userPreference.findUnique({ where: { userId } });
   }
 
   async removeMemberBookmark(userId: string, memberId: string) {
-    return this.prisma.$transaction(async (tx) => {
-      const pref = await tx.userPreference.upsert({
-        where: { userId },
-        create: { userId },
-        update: {},
-      });
+    await this.prisma.$executeRaw`
+      UPDATE "UserPreference"
+      SET "bookmarkedMembers" = array_remove("bookmarkedMembers", ${memberId}),
+          "updatedAt" = now()
+      WHERE "userId" = ${userId}
+    `;
 
-      return tx.userPreference.update({
-        where: { userId },
-        data: {
-          bookmarkedMembers: pref.bookmarkedMembers.filter((id) => id !== memberId),
-        },
-      });
-    });
+    return this.prisma.userPreference.findUniqueOrThrow({ where: { userId } });
   }
 }

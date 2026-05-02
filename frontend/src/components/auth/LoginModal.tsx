@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useCallback } from "react";
+import { Dialog } from "radix-ui";
 import { useAuth } from "@/lib/auth-context";
 
 interface LoginModalProps {
@@ -11,63 +11,41 @@ interface LoginModalProps {
 export default function LoginModal({ open, onClose }: LoginModalProps) {
   const { signInWithGoogle } = useAuth();
 
-  const handleKeyDown = useCallback(
-    (e: KeyboardEvent) => {
-      if (e.key === "Escape") onClose();
-    },
-    [onClose],
-  );
-
-  useEffect(() => {
-    if (!open) return;
-    document.addEventListener("keydown", handleKeyDown);
-    return () => document.removeEventListener("keydown", handleKeyDown);
-  }, [open, handleKeyDown]);
-
-  if (!open) return null;
-
   return (
-    <>
-      {/* 백드롭 */}
-      <div className="fixed inset-0 z-70 bg-black/40" onClick={onClose} aria-hidden="true" />
-
-      {/* 모달 */}
-      <div
-        className="fixed inset-0 z-80 flex items-center justify-center p-4"
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby="login-modal-title"
-      >
-        <div className="w-full max-w-sm rounded-2xl bg-(--color-bg-primary) p-6 shadow-xl">
+    <Dialog.Root open={open} onOpenChange={(v) => !v && onClose()}>
+      <Dialog.Portal>
+        <Dialog.Overlay className="fixed inset-0 z-70 bg-black/40" />
+        <Dialog.Content className="fixed top-1/2 left-1/2 z-80 w-[calc(100%-2rem)] max-w-sm -translate-x-1/2 -translate-y-1/2 rounded-2xl bg-(--color-bg-primary) p-6 shadow-xl focus:outline-none">
           <div className="mb-1 flex items-center justify-between">
-            <h2 id="login-modal-title" className="text-lg font-bold text-(--color-text-primary)">
+            <Dialog.Title className="text-lg font-bold text-(--color-text-primary)">
               로그인
-            </h2>
-            <button
-              type="button"
-              onClick={onClose}
-              className="rounded-full p-1.5 text-(--color-text-tertiary) hover:bg-(--color-bg-secondary)"
-              aria-label="닫기"
-            >
-              <svg
-                width="20"
-                height="20"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
+            </Dialog.Title>
+            <Dialog.Close asChild>
+              <button
+                type="button"
+                className="rounded-full p-1.5 text-(--color-text-tertiary) hover:bg-(--color-bg-secondary)"
+                aria-label="닫기"
               >
-                <line x1="18" y1="6" x2="6" y2="18" />
-                <line x1="6" y1="6" x2="18" y2="18" />
-              </svg>
-            </button>
+                <svg
+                  width="20"
+                  height="20"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <line x1="18" y1="6" x2="6" y2="18" />
+                  <line x1="6" y1="6" x2="18" y2="18" />
+                </svg>
+              </button>
+            </Dialog.Close>
           </div>
 
-          <p className="mb-5 text-sm text-(--color-text-tertiary)">
+          <Dialog.Description className="mb-5 text-sm text-(--color-text-tertiary)">
             로그인하면 관심 법안 저장, 지역구 설정 등 맞춤 기능을 이용할 수 있습니다.
-          </p>
+          </Dialog.Description>
 
           <div className="space-y-3">
             <button
@@ -96,8 +74,8 @@ export default function LoginModal({ open, onClose }: LoginModalProps) {
               Google로 시작하기
             </button>
           </div>
-        </div>
-      </div>
-    </>
+        </Dialog.Content>
+      </Dialog.Portal>
+    </Dialog.Root>
   );
 }
