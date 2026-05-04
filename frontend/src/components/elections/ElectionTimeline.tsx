@@ -2,7 +2,7 @@
 
 const MILESTONES = [
   { label: "후보등록", date: "5/14~15", key: "registration" },
-  { label: "선거운동", date: "5/21~", key: "campaign" },
+  { label: "선거운동", date: "5/22~", key: "campaign" },
   { label: "사전투표", date: "5/29~30", key: "early" },
   { label: "본투표", date: "6/3", key: "election" },
 ];
@@ -12,7 +12,7 @@ function getActiveStep(): number {
   now.setHours(0, 0, 0, 0);
   const dates = [
     new Date(2026, 4, 14),
-    new Date(2026, 4, 21),
+    new Date(2026, 4, 22),
     new Date(2026, 4, 29),
     new Date(2026, 5, 3),
   ];

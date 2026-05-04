@@ -13,6 +13,7 @@ async function main() {
     { id: 'basic-income', name: '기본소득당', shortName: '기본소득당', color: '#00D2C3' },
     { id: 'social-democratic', name: '사회민주당', shortName: '사민당', color: '#F58400' },
     { id: 'new-future', name: '새로운미래', shortName: '새미래', color: '#45BABD' },
+    { id: 'freedom-innovation', name: '자유와혁신', shortName: '자유혁신', color: '#A50034' },
     { id: 'independent', name: '무소속', shortName: '무소속', color: '#999999' },
   ];
 
