@@ -496,6 +496,95 @@ export class MembersService {
     return 'D';
   }
 
+  /**
+   * 성적표 산출에 공통으로 쓰이는 4종 풀스캔 집계.
+   * `getScorecard`(의원별)와 `getScorecardRanking`(전체)이 동일 데이터를 쓰므로
+   * termId 단위로 묶어 캐시한다. 296명 모든 의원 조회가 풀스캔 1회를 공유.
+   * Redis 직렬화/역직렬화 후 number/bigint 타입이 string으로 바뀌므로 정규화한다.
+   */
+  private async getScorecardAggregates(termId: number) {
+    const key = `scorecard:aggregates:${termId}`;
+    const cached = await this.redis.get<{
+      attendanceRows: { memberId: string; rate: number }[];
+      voteRows: { memberId: string; total: number; participated: number; rate: number }[];
+      billRows: { memberId: string; cnt: number }[];
+      passRows: { memberId: string; total_rep: number; passed: number; rate: number }[];
+    }>(key);
+    if (cached) return cached;
+
+    const [attendanceRowsRaw, voteRowsRaw, billRowsRaw, passRowsRaw] = await Promise.all([
+      this.prisma.$queryRaw<{ memberId: string; rate: number }[]>`
+        SELECT "memberId", rate
+        FROM "Attendance"
+        WHERE "termId" = ${termId} AND "totalSessions" > 0
+        ORDER BY rate DESC
+      `,
+      this.prisma.$queryRaw<
+        { memberId: string; total: bigint; participated: bigint; rate: number }[]
+      >`
+        SELECT mv."memberId",
+               COUNT(*)::bigint as total,
+               COUNT(*) FILTER (WHERE mv.result != 'absent')::bigint as participated,
+               CASE WHEN COUNT(*) > 0
+                 THEN (COUNT(*) FILTER (WHERE mv.result != 'absent'))::float / COUNT(*) * 100
+                 ELSE 0
+               END as rate
+        FROM "MemberVote" mv
+        JOIN "Vote" v ON v.id = mv."voteId"
+        WHERE v."termId" = ${termId}
+        GROUP BY mv."memberId"
+        ORDER BY rate DESC
+      `,
+      this.prisma.$queryRaw<{ memberId: string; cnt: bigint }[]>`
+        SELECT bp."memberId", COUNT(*)::bigint as cnt
+        FROM "BillProposer" bp
+        JOIN "Bill" b ON b.id = bp."billId"
+        WHERE bp.role = 'representative' AND b."termId" = ${termId}
+        GROUP BY bp."memberId"
+        ORDER BY cnt DESC
+      `,
+      this.prisma.$queryRaw<
+        { memberId: string; total_rep: bigint; passed: bigint; rate: number }[]
+      >`
+        SELECT bp."memberId",
+               COUNT(*)::bigint as total_rep,
+               COUNT(*) FILTER (WHERE b.status = 'passed')::bigint as passed,
+               CASE WHEN COUNT(*) > 0
+                 THEN (COUNT(*) FILTER (WHERE b.status = 'passed'))::float / COUNT(*) * 100
+                 ELSE 0
+               END as rate
+        FROM "BillProposer" bp
+        JOIN "Bill" b ON b.id = bp."billId"
+        WHERE bp.role = 'representative' AND b."termId" = ${termId}
+        GROUP BY bp."memberId"
+        ORDER BY rate DESC
+      `,
+    ]);
+
+    const result = {
+      attendanceRows: attendanceRowsRaw,
+      voteRows: voteRowsRaw.map((r) => ({
+        memberId: r.memberId,
+        total: safeBigIntToNumber(r.total),
+        participated: safeBigIntToNumber(r.participated),
+        rate: r.rate,
+      })),
+      billRows: billRowsRaw.map((r) => ({
+        memberId: r.memberId,
+        cnt: safeBigIntToNumber(r.cnt),
+      })),
+      passRows: passRowsRaw.map((r) => ({
+        memberId: r.memberId,
+        total_rep: safeBigIntToNumber(r.total_rep),
+        passed: safeBigIntToNumber(r.passed),
+        rate: r.rate,
+      })),
+    };
+
+    await this.redis.set(key, result, TTL_6H);
+    return result;
+  }
+
   async getScorecard(memberId: string, termId: number) {
     const key = `member:scorecard:${memberId}:${termId}`;
     const cached = await this.redis.get(key);
@@ -511,85 +600,32 @@ export class MembersService {
     // 전체 의원 수
     const totalMembers = await this.prisma.memberTerm.count({ where: { termId } });
 
-    // 병렬 데이터 조회: 전체 의원 통계 (순위 계산용)
-    const [attendanceRows, voteRows, billRows, passRows, recentBills, recentVotes] =
-      await Promise.all([
-        // (1) 출석률 전체 랭킹
-        this.prisma.$queryRaw<{ memberId: string; rate: number }[]>`
-          SELECT "memberId", rate
-          FROM "Attendance"
-          WHERE "termId" = ${termId} AND "totalSessions" > 0
-          ORDER BY rate DESC
-        `,
-
-        // (2) 표결 참여율 전체 랭킹
-        this.prisma.$queryRaw<
-          { memberId: string; total: bigint; participated: bigint; rate: number }[]
-        >`
-          SELECT mv."memberId",
-                 COUNT(*)::bigint as total,
-                 COUNT(*) FILTER (WHERE mv.result != 'absent')::bigint as participated,
-                 CASE WHEN COUNT(*) > 0
-                   THEN (COUNT(*) FILTER (WHERE mv.result != 'absent'))::float / COUNT(*) * 100
-                   ELSE 0
-                 END as rate
-          FROM "MemberVote" mv
-          JOIN "Vote" v ON v.id = mv."voteId"
-          WHERE v."termId" = ${termId}
-          GROUP BY mv."memberId"
-          ORDER BY rate DESC
-        `,
-
-        // (3) 대표발의 건수 전체 랭킹
-        this.prisma.$queryRaw<{ memberId: string; cnt: bigint }[]>`
-          SELECT bp."memberId", COUNT(*)::bigint as cnt
-          FROM "BillProposer" bp
-          JOIN "Bill" b ON b.id = bp."billId"
-          WHERE bp.role = 'representative' AND b."termId" = ${termId}
-          GROUP BY bp."memberId"
-          ORDER BY cnt DESC
-        `,
-
-        // (4) 법안 통과율 전체 랭킹
-        this.prisma.$queryRaw<
-          { memberId: string; total_rep: bigint; passed: bigint; rate: number }[]
-        >`
-          SELECT bp."memberId",
-                 COUNT(*)::bigint as total_rep,
-                 COUNT(*) FILTER (WHERE b.status = 'passed')::bigint as passed,
-                 CASE WHEN COUNT(*) > 0
-                   THEN (COUNT(*) FILTER (WHERE b.status = 'passed'))::float / COUNT(*) * 100
-                   ELSE 0
-                 END as rate
-          FROM "BillProposer" bp
-          JOIN "Bill" b ON b.id = bp."billId"
-          WHERE bp.role = 'representative' AND b."termId" = ${termId}
-          GROUP BY bp."memberId"
-          ORDER BY rate DESC
-        `,
-
-        // (5) 최근 30일 대표발의
-        this.prisma.$queryRaw<{ cnt: bigint }[]>`
-          SELECT COUNT(*)::bigint as cnt
-          FROM "BillProposer" bp
-          JOIN "Bill" b ON b.id = bp."billId"
-          WHERE bp."memberId" = ${memberId}
-            AND bp.role = 'representative'
-            AND b."termId" = ${termId}
-            AND b."proposedDate" >= (CURRENT_DATE - INTERVAL '30 days')::text
-        `,
-
-        // (6) 최근 30일 표결
-        this.prisma.$queryRaw<{ total: bigint; attended: bigint }[]>`
-          SELECT COUNT(*)::bigint as total,
-                 COUNT(*) FILTER (WHERE mv.result != 'absent')::bigint as attended
-          FROM "MemberVote" mv
-          JOIN "Vote" v ON v.id = mv."voteId"
-          WHERE mv."memberId" = ${memberId}
-            AND v."termId" = ${termId}
-            AND v."procDate" >= (CURRENT_DATE - INTERVAL '30 days')::text
-        `,
-      ]);
+    // 전체 의원 통계 4종은 termId 단위로 캐시되는 공통 헬퍼에서 조회한다.
+    // 의원 본인 전용 데이터(최근 30일)만 별도로 병렬 조회.
+    const [aggregates, recentBills, recentVotes] = await Promise.all([
+      this.getScorecardAggregates(termId),
+      // (5) 최근 30일 대표발의
+      this.prisma.$queryRaw<{ cnt: bigint }[]>`
+        SELECT COUNT(*)::bigint as cnt
+        FROM "BillProposer" bp
+        JOIN "Bill" b ON b.id = bp."billId"
+        WHERE bp."memberId" = ${memberId}
+          AND bp.role = 'representative'
+          AND b."termId" = ${termId}
+          AND b."proposedDate" >= (CURRENT_DATE - INTERVAL '30 days')::text
+      `,
+      // (6) 최근 30일 표결
+      this.prisma.$queryRaw<{ total: bigint; attended: bigint }[]>`
+        SELECT COUNT(*)::bigint as total,
+               COUNT(*) FILTER (WHERE mv.result != 'absent')::bigint as attended
+        FROM "MemberVote" mv
+        JOIN "Vote" v ON v.id = mv."voteId"
+        WHERE mv."memberId" = ${memberId}
+          AND v."termId" = ${termId}
+          AND v."procDate" >= (CURRENT_DATE - INTERVAL '30 days')::text
+      `,
+    ]);
+    const { attendanceRows, voteRows, billRows, passRows } = aggregates;
 
     // === 출석률 점수 ===
     const myAttendance = attendanceRows.find((r) => r.memberId === memberId);
@@ -882,55 +918,9 @@ export class MembersService {
       include: { member: true, party: true },
     });
 
-    // 전체 통계 병렬 조회
-    const [attendanceRows, voteRows, billRows, passRows] = await Promise.all([
-      this.prisma.$queryRaw<{ memberId: string; rate: number }[]>`
-        SELECT "memberId", rate
-        FROM "Attendance"
-        WHERE "termId" = ${termId} AND "totalSessions" > 0
-        ORDER BY rate DESC
-      `,
-      this.prisma.$queryRaw<
-        { memberId: string; total: bigint; participated: bigint; rate: number }[]
-      >`
-        SELECT mv."memberId",
-               COUNT(*)::bigint as total,
-               COUNT(*) FILTER (WHERE mv.result != 'absent')::bigint as participated,
-               CASE WHEN COUNT(*) > 0
-                 THEN (COUNT(*) FILTER (WHERE mv.result != 'absent'))::float / COUNT(*) * 100
-                 ELSE 0
-               END as rate
-        FROM "MemberVote" mv
-        JOIN "Vote" v ON v.id = mv."voteId"
-        WHERE v."termId" = ${termId}
-        GROUP BY mv."memberId"
-        ORDER BY rate DESC
-      `,
-      this.prisma.$queryRaw<{ memberId: string; cnt: bigint }[]>`
-        SELECT bp."memberId", COUNT(*)::bigint as cnt
-        FROM "BillProposer" bp
-        JOIN "Bill" b ON b.id = bp."billId"
-        WHERE bp.role = 'representative' AND b."termId" = ${termId}
-        GROUP BY bp."memberId"
-        ORDER BY cnt DESC
-      `,
-      this.prisma.$queryRaw<
-        { memberId: string; total_rep: bigint; passed: bigint; rate: number }[]
-      >`
-        SELECT bp."memberId",
-               COUNT(*)::bigint as total_rep,
-               COUNT(*) FILTER (WHERE b.status = 'passed')::bigint as passed,
-               CASE WHEN COUNT(*) > 0
-                 THEN (COUNT(*) FILTER (WHERE b.status = 'passed'))::float / COUNT(*) * 100
-                 ELSE 0
-               END as rate
-        FROM "BillProposer" bp
-        JOIN "Bill" b ON b.id = bp."billId"
-        WHERE bp.role = 'representative' AND b."termId" = ${termId}
-        GROUP BY bp."memberId"
-        ORDER BY rate DESC
-      `,
-    ]);
+    // getScorecard와 동일한 4종 집계를 termId 단위 캐시로 공유
+    const { attendanceRows, voteRows, billRows, passRows } =
+      await this.getScorecardAggregates(termId);
 
     // 각 의원별 점수 계산
     const rankings = allMemberTerms.map((mt) => {
