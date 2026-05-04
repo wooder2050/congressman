@@ -1,6 +1,7 @@
 import { Controller, Get, Param, Query, NotFoundException } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiParam, ApiQuery } from '@nestjs/swagger';
 import { BillsService } from './bills.service';
+import { parseOptionalIntFilter, parsePagination, parseTermId } from '../common/query-parsers';
 
 @ApiTags('Bills')
 @Controller('bills')
@@ -36,8 +37,9 @@ export class BillsController {
     @Query('page') page?: string,
     @Query('limit') limit?: string,
   ) {
+    const { page: parsedPage, limit: parsedLimit } = parsePagination(page, limit);
     return this.billsService.findAll({
-      termId: termId ? parseInt(termId, 10) || undefined : undefined,
+      termId: parseOptionalIntFilter(termId),
       memberId,
       role: role || undefined,
       status,
@@ -45,8 +47,8 @@ export class BillsController {
       month: month || undefined,
       committee: committee || undefined,
       topic: topic || undefined,
-      page: Math.max(parseInt(page ?? '', 10) || 1, 1),
-      limit: Math.min(Math.max(parseInt(limit ?? '', 10) || 20, 1), 100),
+      page: parsedPage,
+      limit: parsedLimit,
     });
   }
 
@@ -54,7 +56,7 @@ export class BillsController {
   @ApiOperation({ summary: '법안 통계', description: '법안 상태별 통계를 반환합니다' })
   @ApiQuery({ name: 'termId', required: true, type: Number, description: '국회 대수' })
   getSummary(@Query('termId') termId: string) {
-    return this.billsService.getSummary(parseInt(termId, 10) || 22);
+    return this.billsService.getSummary(parseTermId(termId));
   }
 
   @Get('ids')
@@ -70,7 +72,7 @@ export class BillsController {
   })
   @ApiQuery({ name: 'termId', required: true, type: Number, description: '국회 대수' })
   getCommittees(@Query('termId') termId: string) {
-    return this.billsService.getCommittees(parseInt(termId, 10) || 22);
+    return this.billsService.getCommittees(parseTermId(termId));
   }
 
   @Get('topics')
@@ -80,7 +82,7 @@ export class BillsController {
   })
   @ApiQuery({ name: 'termId', required: true, type: Number, description: '국회 대수' })
   getTopics(@Query('termId') termId: string) {
-    return this.billsService.getTopicCounts(parseInt(termId, 10) || 22);
+    return this.billsService.getTopicCounts(parseTermId(termId));
   }
 
   @Get('batch')

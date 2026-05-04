@@ -9,6 +9,7 @@ import {
 } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiParam, ApiQuery } from '@nestjs/swagger';
 import { MembersService } from './members.service';
+import { parseClampedInt, parseClampedTermId, parsePagination } from '../common/query-parsers';
 
 @ApiTags('Members')
 @Controller('members')
@@ -125,8 +126,8 @@ export class MembersController {
     if (!id || id.length > 64 || !/^[\w-]+$/.test(id)) {
       throw new BadRequestException('유효하지 않은 의원 ID입니다.');
     }
-    const parsedTermId = Math.min(Math.max(parseInt(termId ?? '', 10) || 22, 1), 30);
-    const parsedDays = Math.min(Math.max(parseInt(days ?? '', 10) || 7, 1), 90);
+    const parsedTermId = parseClampedTermId(termId);
+    const parsedDays = parseClampedInt(days, { defaultValue: 7, min: 1, max: 90 });
     return this.membersService.getRecentActivity(id, parsedTermId, parsedDays);
   }
 
@@ -141,7 +142,7 @@ export class MembersController {
     if (!id || id.length > 64 || !/^[\w-]+$/.test(id)) {
       throw new BadRequestException('유효하지 않은 의원 ID입니다.');
     }
-    const parsedTermId = Math.min(Math.max(parseInt(termId ?? '', 10) || 22, 1), 30);
+    const parsedTermId = parseClampedTermId(termId);
     const result = await this.membersService.getDistrictReport(id, parsedTermId);
     if (!result) throw new NotFoundException();
     return result;
@@ -155,7 +156,7 @@ export class MembersController {
   @ApiParam({ name: 'id', description: '의원 ID' })
   @ApiQuery({ name: 'termId', required: false, type: Number, description: '국회 대수 (기본: 22)' })
   async getScorecard(@Param('id') id: string, @Query('termId') termId?: string) {
-    const parsedTermId = Math.min(Math.max(parseInt(termId ?? '', 10) || 22, 1), 30);
+    const parsedTermId = parseClampedTermId(termId);
     const result = await this.membersService.getScorecard(id, parsedTermId);
     if (!result) throw new NotFoundException();
     return result;
@@ -190,10 +191,11 @@ export class MembersController {
     @Query('result') result?: string,
     @Query('month') month?: string,
   ) {
+    const { page: parsedPage, limit: parsedLimit } = parsePagination(page, limit);
     return this.membersService.findMemberVotes(id, {
       termId,
-      page: Math.max(parseInt(page ?? '', 10) || 1, 1),
-      limit: Math.min(Math.max(parseInt(limit ?? '', 10) || 20, 1), 100),
+      page: parsedPage,
+      limit: parsedLimit,
       result: result || undefined,
       month: month || undefined,
     });
