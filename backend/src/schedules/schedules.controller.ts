@@ -1,6 +1,7 @@
 import { Controller, Get, Query } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiQuery } from '@nestjs/swagger';
 import { SchedulesService } from './schedules.service';
+import { parseClampedInt, parsePagination, parseTermId } from '../common/query-parsers';
 
 @ApiTags('Schedules')
 @Controller('schedules')
@@ -19,11 +20,14 @@ export class SchedulesController {
     @Query('page') page?: string,
     @Query('limit') limit?: string,
   ) {
+    const { page: parsedPage, limit: parsedLimit } = parsePagination(page, limit, {
+      defaultLimit: 30,
+    });
     return this.schedulesService.getSchedules(
-      parseInt(termId ?? '', 10) || 22,
+      parseTermId(termId),
       type || undefined,
-      Math.max(parseInt(page ?? '', 10) || 1, 1),
-      Math.min(Math.max(parseInt(limit ?? '', 10) || 30, 1), 100),
+      parsedPage,
+      parsedLimit,
     );
   }
 
@@ -33,8 +37,8 @@ export class SchedulesController {
   @ApiQuery({ name: 'limit', required: false, type: Number })
   getUpcomingSchedules(@Query('termId') termId?: string, @Query('limit') limit?: string) {
     return this.schedulesService.getUpcomingSchedules(
-      parseInt(termId ?? '', 10) || 22,
-      Math.min(Math.max(parseInt(limit ?? '', 10) || 5, 1), 20),
+      parseTermId(termId),
+      parseClampedInt(limit, { defaultValue: 5, min: 1, max: 20 }),
     );
   }
 }
