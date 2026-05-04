@@ -30,6 +30,21 @@ async function invalidateCache(command: string) {
   const redis = new Redis({ url, token });
   const prefixes: string[] = [];
 
+  // 성적표 집계는 4종 데이터(member/bill/vote/attendance)에 모두 의존하므로
+  // 어떤 sync든 해당 데이터가 갱신되면 함께 무효화한다.
+  const scorecardAffected = [
+    'members',
+    'bills',
+    'bills-safe',
+    'extra-bills',
+    'bill-content',
+    'bill-judge',
+    'votes',
+    'member-votes',
+    'attendance',
+    'all',
+  ].includes(command);
+
   if (command === 'members' || command === 'all') {
     prefixes.push('terms:', 'members:', 'member:');
   }
@@ -54,6 +69,9 @@ async function invalidateCache(command: string) {
   }
   if (command === 'attendance') {
     prefixes.push('attendance:');
+  }
+  if (scorecardAffected) {
+    prefixes.push('scorecard:');
   }
   if (command === 'assets') {
     prefixes.push('member:assets:');

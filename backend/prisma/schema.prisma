@@ -141,6 +141,7 @@ model Bill {
 
   @@index([termId, status])
   @@index([termId])
+  @@index([status])
 }
 
 model BillProposer {
