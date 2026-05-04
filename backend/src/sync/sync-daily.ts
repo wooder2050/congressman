@@ -103,6 +103,7 @@ async function main() {
     'attendance:',
     'schedules:',
     'committees:',
+    'scorecard:',
   ]);
 
   const totalMs = Date.now() - start;
