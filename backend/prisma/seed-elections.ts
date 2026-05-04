@@ -311,6 +311,18 @@ async function main() {
       career:
         '전 19대 국회의원 (경기 평택시)\n전 한나라당 경기도당위원장\n보수 출신 민주당 전략공천',
     },
+    {
+      district: '경기 평택시을',
+      name: '김재연',
+      partyId: 'progressive',
+      career: '진보당 상임대표\n전 19대 국회의원 (비례)',
+    },
+    {
+      district: '경기 평택시을',
+      name: '황교안',
+      partyId: 'freedom-innovation',
+      career: '자유와혁신 대표\n전 국무총리\n전 자유한국당 대표',
+    },
     // 전북 군산김제부안갑
     {
       district: '전북 군산시김제시부안군갑',
