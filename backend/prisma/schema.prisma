@@ -155,7 +155,6 @@ model BillProposer {
 
   @@unique([billId, memberId])
   @@index([billId])
-  @@index([memberId])
   @@index([memberId, role])
   @@index([role])
 }
@@ -375,7 +374,7 @@ model LocalElectionRace {
   sgId       String @default("") // NEC 선거ID
   sgTypecode String @default("") // NEC 선거종류코드
 
-  election   LocalElection          @relation(fields: [electionId], references: [id])
+  election   LocalElection            @relation(fields: [electionId], references: [id])
   candidates LocalElectionCandidate[]
 
   createdAt DateTime @default(now())

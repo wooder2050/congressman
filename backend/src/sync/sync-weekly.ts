@@ -74,7 +74,7 @@ async function main() {
     }
   }
 
-  await invalidateCache(['terms:', 'members:', 'member:', 'committees:']);
+  await invalidateCache(['terms:', 'members:', 'member:', 'committees:', 'scorecard:']);
 
   const totalMs = Date.now() - start;
   const failed = results.filter((r) => !r.ok);
