@@ -1,4 +1,4 @@
-export interface ParseIntOptions {
+interface ParseIntOptions {
   defaultValue?: number;
   min?: number;
   max?: number;
@@ -25,14 +25,14 @@ export function parseClampedTermId(value: string | undefined, defaultValue = 22)
   return Math.min(Math.max(parseInt(value ?? '', 10) || defaultValue, 1), 30);
 }
 
-export interface PaginationOptions {
+interface PaginationOptions {
   defaultPage?: number;
   defaultLimit?: number;
   minLimit?: number;
   maxLimit?: number;
 }
 
-export interface Pagination {
+interface Pagination {
   page: number;
   limit: number;
 }
@@ -49,7 +49,7 @@ export function parsePagination(
   };
 }
 
-export interface ClampedIntOptions {
+interface ClampedIntOptions {
   defaultValue: number;
   min: number;
   max: number;
