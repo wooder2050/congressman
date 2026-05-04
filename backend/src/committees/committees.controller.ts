@@ -1,7 +1,7 @@
 import { Controller, Get, Query } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiQuery } from '@nestjs/swagger';
 import { CommitteesService } from './committees.service';
-import { parseTermId } from '../common/query-parsers';
+import { parsePage, parseTermId } from '../common/query-parsers';
 
 @ApiTags('Committees')
 @Controller('committees')
@@ -42,10 +42,6 @@ export class CommitteesController {
     @Query('termId') termId?: string,
     @Query('page') page?: string,
   ) {
-    return this.committeesService.getCommitteeMinutes(
-      name,
-      parseTermId(termId),
-      Math.max(parseInt(page ?? '', 10) || 1, 1),
-    );
+    return this.committeesService.getCommitteeMinutes(name, parseTermId(termId), parsePage(page));
   }
 }

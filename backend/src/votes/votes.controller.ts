@@ -1,7 +1,7 @@
 import { Controller, Get, Param, Query } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiParam, ApiQuery } from '@nestjs/swagger';
 import { VotesService } from './votes.service';
-import { parseOptionalInt, parsePagination, parseTermId } from '../common/query-parsers';
+import { parseOptionalIntFilter, parsePagination, parseTermId } from '../common/query-parsers';
 
 @ApiTags('Votes')
 @Controller('votes')
@@ -34,7 +34,7 @@ export class VotesController {
   ) {
     const { page: parsedPage, limit: parsedLimit } = parsePagination(page, limit);
     return this.votesService.findAll({
-      termId: parseOptionalInt(termId),
+      termId: parseOptionalIntFilter(termId),
       resultCode,
       search: search || undefined,
       month: month || undefined,

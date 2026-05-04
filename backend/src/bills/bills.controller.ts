@@ -1,7 +1,7 @@
 import { Controller, Get, Param, Query, NotFoundException } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiParam, ApiQuery } from '@nestjs/swagger';
 import { BillsService } from './bills.service';
-import { parseOptionalInt, parsePagination, parseTermId } from '../common/query-parsers';
+import { parseOptionalIntFilter, parsePagination, parseTermId } from '../common/query-parsers';
 
 @ApiTags('Bills')
 @Controller('bills')
@@ -39,7 +39,7 @@ export class BillsController {
   ) {
     const { page: parsedPage, limit: parsedLimit } = parsePagination(page, limit);
     return this.billsService.findAll({
-      termId: parseOptionalInt(termId),
+      termId: parseOptionalIntFilter(termId),
       memberId,
       role: role || undefined,
       status,
