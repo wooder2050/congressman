@@ -2,6 +2,7 @@ import { Controller, Get, Query } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiQuery } from '@nestjs/swagger';
 import { StatsService } from './stats.service';
 import { MembersService } from '../members/members.service';
+import { parseClampedInt, parseClampedTermId } from '../common/query-parsers';
 
 @ApiTags('Stats')
 @Controller('stats')
@@ -16,8 +17,8 @@ export class StatsController {
   @ApiQuery({ name: 'termId', required: false, type: Number, description: '국회 대수 (기본: 22)' })
   @ApiQuery({ name: 'limit', required: false, type: Number, description: '조회 인원 수 (기본: 5)' })
   getAttendanceRanking(@Query('termId') termId?: string, @Query('limit') limit?: string) {
-    const parsedTermId = Math.min(Math.max(parseInt(termId ?? '', 10) || 22, 1), 30);
-    const parsedLimit = Math.min(Math.max(parseInt(limit ?? '', 10) || 5, 1), 20);
+    const parsedTermId = parseClampedTermId(termId);
+    const parsedLimit = parseClampedInt(limit, { defaultValue: 5, min: 1, max: 20 });
     return this.statsService.getAttendanceRanking(parsedTermId, parsedLimit);
   }
 
@@ -38,7 +39,7 @@ export class StatsController {
   })
   @ApiQuery({ name: 'termId', required: false, type: Number, description: '국회 대수 (기본: 22)' })
   getScorecardRanking(@Query('termId') termId?: string) {
-    const parsedTermId = Math.min(Math.max(parseInt(termId ?? '', 10) || 22, 1), 30);
+    const parsedTermId = parseClampedTermId(termId);
     return this.membersService.getScorecardRanking(parsedTermId);
   }
 
@@ -46,7 +47,7 @@ export class StatsController {
   @ApiOperation({ summary: '홈 통계', description: '홈페이지용 요약 통계를 반환합니다' })
   @ApiQuery({ name: 'termId', required: false, type: Number, description: '국회 대수 (기본: 22)' })
   getHomeStats(@Query('termId') termId?: string) {
-    const parsedTermId = Math.min(Math.max(parseInt(termId ?? '', 10) || 22, 1), 30);
+    const parsedTermId = parseClampedTermId(termId);
     return this.statsService.getHomeStats(parsedTermId);
   }
 
@@ -58,7 +59,7 @@ export class StatsController {
   @ApiQuery({ name: 'termId', required: false, type: Number, description: '국회 대수 (기본: 22)' })
   @ApiQuery({ name: 'topics', required: true, description: '관심 토픽 (쉼표 구분)' })
   getRadar(@Query('termId') termId?: string, @Query('topics') topics?: string) {
-    const parsedTermId = Math.min(Math.max(parseInt(termId ?? '', 10) || 22, 1), 30);
+    const parsedTermId = parseClampedTermId(termId);
     const topicList = (topics ?? '')
       .split(',')
       .map((t) => t.trim())
@@ -74,7 +75,7 @@ export class StatsController {
   })
   @ApiQuery({ name: 'termId', required: false, type: Number, description: '국회 대수 (기본: 22)' })
   getTodayBriefing(@Query('termId') termId?: string) {
-    const parsedTermId = Math.min(Math.max(parseInt(termId ?? '', 10) || 22, 1), 30);
+    const parsedTermId = parseClampedTermId(termId);
     return this.statsService.getTodayBriefing(parsedTermId);
   }
 }

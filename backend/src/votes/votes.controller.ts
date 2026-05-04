@@ -1,6 +1,7 @@
 import { Controller, Get, Param, Query } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiParam, ApiQuery } from '@nestjs/swagger';
 import { VotesService } from './votes.service';
+import { parseOptionalInt, parsePagination, parseTermId } from '../common/query-parsers';
 
 @ApiTags('Votes')
 @Controller('votes')
@@ -31,13 +32,14 @@ export class VotesController {
     @Query('page') page?: string,
     @Query('limit') limit?: string,
   ) {
+    const { page: parsedPage, limit: parsedLimit } = parsePagination(page, limit);
     return this.votesService.findAll({
-      termId: termId ? parseInt(termId, 10) || undefined : undefined,
+      termId: parseOptionalInt(termId),
       resultCode,
       search: search || undefined,
       month: month || undefined,
-      page: Math.max(parseInt(page ?? '', 10) || 1, 1),
-      limit: Math.min(Math.max(parseInt(limit ?? '', 10) || 20, 1), 100),
+      page: parsedPage,
+      limit: parsedLimit,
     });
   }
 
@@ -45,7 +47,7 @@ export class VotesController {
   @ApiOperation({ summary: '표결 요약 통계', description: '대수별 표결 요약 통계를 반환합니다' })
   @ApiQuery({ name: 'termId', type: Number, description: '국회 대수 (예: 22)' })
   getSummary(@Query('termId') termId: string) {
-    return this.votesService.getSummary(parseInt(termId, 10) || 22);
+    return this.votesService.getSummary(parseTermId(termId));
   }
 
   @Get('ids')
