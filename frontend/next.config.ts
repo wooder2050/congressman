@@ -13,6 +13,15 @@ const nextConfig: NextConfig = {
       },
     ];
   },
+  async redirects() {
+    return [
+      {
+        source: "/elections",
+        destination: "/local-elections/2026",
+        permanent: false,
+      },
+    ];
+  },
   images: {
     formats: ["image/avif", "image/webp"],
     remotePatterns: [

@@ -32,18 +32,18 @@ import { getHomeStats, getAttendanceRanking, getBillTopics, getUpcomingSchedules
 export const metadata: Metadata = {
   title: "lawmake — 국회의원 법안 발의·표결·출석률 한눈에",
   description:
-    "내 지역 국회의원은 누구? 22대 국회의원 295명의 출석률·법안 발의·표결 기록을 검색하고 비교하세요. 의원별 성적표, AI 법안 요약, 선거구 지도까지. 공공데이터 기반 의정활동 플랫폼.",
+    "내 지역 국회의원은 누구? 22대 국회의원 297명의 출석률·법안 발의·표결 기록을 검색하고 비교하세요. 의원별 성적표, AI 법안 요약, 선거구 지도까지. 공공데이터 기반 의정활동 플랫폼.",
   alternates: { canonical: "https://www.lawmake.kr" },
   openGraph: {
     title: "lawmake — 국회의원 법안 발의·표결·출석률 한눈에",
     description:
-      "내 지역 국회의원은 누구? 22대 국회의원 295명의 출석률·법안 발의·표결 기록을 검색하고 비교하세요.",
+      "내 지역 국회의원은 누구? 22대 국회의원 297명의 출석률·법안 발의·표결 기록을 검색하고 비교하세요.",
     url: "https://www.lawmake.kr",
   },
   twitter: {
     title: "lawmake — 국회의원 법안 발의·표결·출석률 한눈에",
     description:
-      "내 지역 국회의원은 누구? 22대 국회의원 295명의 출석률·법안 발의·표결 기록을 검색하고 비교하세요.",
+      "내 지역 국회의원은 누구? 22대 국회의원 297명의 출석률·법안 발의·표결 기록을 검색하고 비교하세요.",
   },
 };
 
