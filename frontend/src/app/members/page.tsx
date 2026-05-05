@@ -36,7 +36,8 @@ export default async function MembersPage({ searchParams }: MembersPageProps) {
           "@context": "https://schema.org",
           "@type": "Dataset",
           name: "22대 국회의원 의정활동 데이터",
-          description: "22대 국회의원 297명의 법안 발의, 본회의 표결, 출석률, 재산 현황 데이터",
+          description:
+            "제22대 대한민국 국회(2024년 5월 30일 ~ 2028년 5월 29일)의 현역 국회의원 297명의 의정활동을 종합한 데이터셋입니다. 의원별 프로필(소속 정당·지역구·당선 횟수·약력)과 의정활동 지표인 법안 발의 건수, 본회의 표결 참여 내역, 위원회 출석률, 신고 재산 현황을 제공합니다. 국회사무처와 공공데이터포털 자료를 기반으로 매일 자동 갱신됩니다.",
           url: "https://www.lawmake.kr/members",
           keywords: ["국회의원", "의정활동", "법안 발의", "표결", "출석률"],
           license: "https://www.data.go.kr/ugs/selectPublicDataUseGuide.do",
