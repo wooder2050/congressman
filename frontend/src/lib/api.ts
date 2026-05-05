@@ -35,6 +35,7 @@ import type {
   DistrictReport,
   RecentActivity,
 } from "@/types";
+import type { BreakingNewsItem } from "@/data/breaking-news/types";
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL;
 
@@ -72,6 +73,14 @@ async function fetchApi<T>(path: string, options?: FetchApiOptions): Promise<T> 
 
 export async function getTerms(): Promise<AssemblyTerm[]> {
   return fetchApi("/api/terms", { revalidate: 3600, tags: ["terms"] });
+}
+
+export async function getBreakingNews(): Promise<BreakingNewsItem[]> {
+  const data = await fetchApi<BreakingNewsItem[] | null>("/api/breaking-news", {
+    revalidate: 300,
+    tags: ["breaking-news"],
+  });
+  return data ?? [];
 }
 
 export async function getMembers(termId: number): Promise<MemberWithTerm[]> {
