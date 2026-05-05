@@ -2,18 +2,18 @@ import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { RedisService } from '../redis/redis.service';
 
-export interface BreakingNewsDetail {
+interface BreakingNewsDetail {
   label: string;
   value: string;
   memberId?: string;
 }
 
-export interface BreakingNewsSource {
+interface BreakingNewsSource {
   title: string;
   url: string;
 }
 
-export interface BreakingNewsResponse {
+interface BreakingNewsResponse {
   id: string;
   title: string;
   description: string;
