@@ -1,6 +1,6 @@
 import type { BreakingNewsItem } from "./types";
 
-const breakingNews: BreakingNewsItem[] = [
+export const breakingNews: BreakingNewsItem[] = [
   {
     id: "2026-05-01-labor-day-holiday",
     title: "노동절 첫 법정공휴일 — 63년 만에 '빨간 날', 청와대 기념식 개최",
