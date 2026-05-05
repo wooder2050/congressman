@@ -36,7 +36,7 @@ export default async function BillsPage({ searchParams }: BillsPageProps) {
           "@type": "Dataset",
           name: "22대 국회 발의 법안 데이터",
           description:
-            "22대 국회 17,200건 이상의 발의 법안 목록. 법안 제목, 발의자, 심사 상태, AI 요약 포함",
+            "제22대 대한민국 국회(2024년 5월 30일 개원)에서 발의된 법안 17,200건 이상을 정리한 데이터셋입니다. 법안 제목, 발의자(대표·공동발의 의원), 발의일, 소관 위원회, 심사 진행 상태(계류·위원회 심사·가결·폐기 등), 분야별 분류 정보를 제공하며, 법안의 제안 이유와 주요 내용 그리고 AI가 생성한 한 줄 요약·구조화 요약·주제 분류를 포함합니다.",
           url: "https://www.lawmake.kr/bills",
           keywords: ["법안", "발의", "국회", "입법", "법률안"],
           license: "https://www.data.go.kr/ugs/selectPublicDataUseGuide.do",
