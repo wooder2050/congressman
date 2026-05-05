@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { getActiveBreakingNews } from "@/data/breaking-news";
+import { getBreakingNews } from "@/lib/api";
 
 const CATEGORY_STYLE: Record<string, { label: string; className: string }> = {
   committee: {
@@ -20,8 +20,8 @@ const CATEGORY_STYLE: Record<string, { label: string; className: string }> = {
   },
 };
 
-export default function BreakingNewsBanner() {
-  const news = getActiveBreakingNews();
+export default async function BreakingNewsBanner() {
+  const news = await getBreakingNews();
 
   if (news.length === 0) return null;
 
