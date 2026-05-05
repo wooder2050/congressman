@@ -33,7 +33,7 @@ export default async function VotesPage({ searchParams }: VotesPageProps) {
           "@type": "Dataset",
           name: "22대 국회 본회의 표결 데이터",
           description:
-            "22대 국회 본회의 1,290건 이상의 표결 결과. 찬성·반대·기권·불참 투표 내역과 의원별 표결 기록",
+            "제22대 대한민국 국회(2024년 5월 30일 개원)의 본회의 표결 1,370건 이상의 결과를 포함하는 데이터셋입니다. 안건명, 표결 일시, 결과(원안가결·수정가결·부결)와 의원별 찬성·반대·기권·불참 내역, 정당별 투표 성향과 표결 참여율 통계를 제공합니다. 국회사무처 공공 데이터를 기반으로 매일 자동 동기화되어 갱신됩니다.",
           url: "https://www.lawmake.kr/votes",
           keywords: ["표결", "본회의", "국회", "찬반투표", "가결", "부결"],
           license: "https://www.data.go.kr/ugs/selectPublicDataUseGuide.do",
