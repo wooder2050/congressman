@@ -6,8 +6,15 @@ on:
     paths:
       - "frontend/src/data/breaking-news/**"
       - "backend/prisma/seed-breaking-news.ts"
-      - "backend/prisma/schema.prisma"
   workflow_dispatch: {}
+
+permissions:
+  contents: read
+  issues: write
+
+concurrency:
+  group: seed-breaking-news
+  cancel-in-progress: true
 
 jobs:
   seed:
@@ -59,5 +66,4 @@ jobs:
               repo: context.repo.repo,
               title,
               body,
-              labels: ['seed-failure'],
             });

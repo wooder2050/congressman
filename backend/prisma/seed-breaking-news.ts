@@ -9,6 +9,8 @@ const REDIS_CACHE_KEY = 'breaking-news:active';
 const ABSOLUTE_DELETE_LIMIT = 5;
 const RELATIVE_DELETE_LIMIT = 0.3; // 30%
 
+const DATE_REGEX = /^\d{4}-\d{2}-\d{2}$/;
+
 function assertValid(items: BreakingNewsItem[]): void {
   if (items.length === 0) {
     throw new Error('Source array is empty — refusing to wipe DB');
@@ -18,8 +20,12 @@ function assertValid(items: BreakingNewsItem[]): void {
     if (!item.id) throw new Error(`Entry missing id: ${JSON.stringify(item).slice(0, 100)}`);
     if (ids.has(item.id)) throw new Error(`Duplicate id: ${item.id}`);
     ids.add(item.id);
-    if (Number.isNaN(new Date(item.date).getTime())) {
-      throw new Error(`Invalid date for id=${item.id}: ${item.date}`);
+    if (!DATE_REGEX.test(item.date)) {
+      throw new Error(`Invalid date format (expected YYYY-MM-DD) for id=${item.id}: ${item.date}`);
+    }
+    const parsed = new Date(item.date);
+    if (Number.isNaN(parsed.getTime()) || parsed.toISOString().slice(0, 10) !== item.date) {
+      throw new Error(`Invalid date (does not roundtrip) for id=${item.id}: ${item.date}`);
     }
     if (!['committee', 'election', 'legislation', 'politics'].includes(item.category)) {
       throw new Error(`Invalid category for id=${item.id}: ${item.category}`);
@@ -34,9 +40,13 @@ async function invalidateCache(): Promise<void> {
     console.log('[Seed:BreakingNews] Redis credentials not set — skipping cache invalidation');
     return;
   }
-  const redis = new Redis({ url, token });
-  await redis.del(REDIS_CACHE_KEY);
-  console.log(`[Seed:BreakingNews] Invalidated cache: ${REDIS_CACHE_KEY}`);
+  try {
+    const redis = new Redis({ url, token });
+    await redis.del(REDIS_CACHE_KEY);
+    console.log(`[Seed:BreakingNews] Invalidated cache: ${REDIS_CACHE_KEY}`);
+  } catch (err) {
+    console.warn(`[Seed:BreakingNews] Cache invalidation failed (TTL ${300}s applies):`, err);
+  }
 }
 
 async function main() {

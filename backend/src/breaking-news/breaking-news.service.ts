@@ -13,7 +13,7 @@ interface BreakingNewsSource {
   url: string;
 }
 
-interface BreakingNewsResponse {
+export interface BreakingNewsResponse {
   id: string;
   title: string;
   description: string;

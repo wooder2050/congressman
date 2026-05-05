@@ -1,6 +1,6 @@
 import { Controller, Get } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
-import { BreakingNewsService } from './breaking-news.service';
+import { BreakingNewsService, BreakingNewsResponse } from './breaking-news.service';
 
 @ApiTags('Breaking News')
 @Controller('breaking-news')
@@ -9,7 +9,7 @@ export class BreakingNewsController {
 
   @Get()
   @ApiOperation({ summary: '활성 속보 목록 (홈 화면 노출용)' })
-  findActive() {
+  findActive(): Promise<BreakingNewsResponse[]> {
     return this.service.findActive();
   }
 }
