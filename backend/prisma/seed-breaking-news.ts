@@ -48,9 +48,13 @@ async function main() {
   const staleIds = existing.filter((e) => !sourceIds.has(e.id)).map((e) => e.id);
 
   if (staleIds.length > ABSOLUTE_DELETE_LIMIT) {
-    console.error(`[Seed:BreakingNews] Refusing to delete ${staleIds.length} entries (limit ${ABSOLUTE_DELETE_LIMIT}):`);
+    console.error(
+      `[Seed:BreakingNews] Refusing to delete ${staleIds.length} entries (limit ${ABSOLUTE_DELETE_LIMIT}):`,
+    );
     console.error(staleIds);
-    throw new Error(`Stale delete count ${staleIds.length} exceeds absolute limit ${ABSOLUTE_DELETE_LIMIT}`);
+    throw new Error(
+      `Stale delete count ${staleIds.length} exceeds absolute limit ${ABSOLUTE_DELETE_LIMIT}`,
+    );
   }
   if (existing.length > 0 && staleIds.length / existing.length > RELATIVE_DELETE_LIMIT) {
     throw new Error(
@@ -58,7 +62,9 @@ async function main() {
     );
   }
   if (staleIds.length > 0) {
-    console.log(`[Seed:BreakingNews] Will remove ${staleIds.length} stale entries: ${staleIds.join(', ')}`);
+    console.log(
+      `[Seed:BreakingNews] Will remove ${staleIds.length} stale entries: ${staleIds.join(', ')}`,
+    );
   }
 
   const upsertOps = breakingNews.map((item, i) => {
