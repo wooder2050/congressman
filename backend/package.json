@@ -31,7 +31,8 @@
     "sync:weekly": "tsx src/sync/sync-weekly.ts",
     "sync:local-elections": "tsx src/sync/sync-runner.ts local-elections",
     "sync:local-election-results": "tsx src/sync/sync-runner.ts local-election-results",
-    "seed:local-elections": "tsx prisma/seed-local-elections.ts"
+    "seed:local-elections": "tsx prisma/seed-local-elections.ts",
+    "seed:breaking-news": "tsx prisma/seed-breaking-news.ts"
   },
   "dependencies": {
     "@nestjs/common": "^11.0.0",
@@ -48,7 +49,8 @@
     "csv-parse": "^6.1.0",
     "dotenv": "^16.4.0",
     "reflect-metadata": "^0.2.2",
-    "rxjs": "^7.8.0"
+    "rxjs": "^7.8.0",
+    "tsx": "^4.0.0"
   },
   "devDependencies": {
     "@nestjs/cli": "^11.0.0",
@@ -61,7 +63,6 @@
     "knip": "^5.0.0",
     "prettier": "^3.8.0",
     "prisma": "^6.0.0",
-    "tsx": "^4.0.0",
     "typescript": "^5.7.0",
     "typescript-eslint": "^8.0.0"
   }

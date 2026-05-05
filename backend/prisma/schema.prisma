@@ -433,3 +433,23 @@ model UserPreference {
 
   @@index([userId])
 }
+
+// ====== 속보 ======
+
+model BreakingNews {
+  id          String   @id // 예: "2026-05-01-labor-day-holiday"
+  title       String
+  description String
+  date        DateTime // 발행일
+  category    String // "committee" | "election" | "legislation" | "politics"
+  items       Json     @default("[]") // BreakingNewsDetail[] {label, value, memberId?}
+  sources     Json     @default("[]") // {title, url}[]
+  linkUrl     String?
+  active      Boolean  @default(true)
+  sortOrder   Int      @default(0) // 같은 날짜 내 정렬용
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([active, date])
+}

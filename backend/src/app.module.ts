@@ -15,6 +15,7 @@ import { HealthModule } from './health/health.module';
 import { RedisModule } from './redis/redis.module';
 import { AuthModule } from './auth/auth.module';
 import { UserPreferencesModule } from './user-preferences/user-preferences.module';
+import { BreakingNewsModule } from './breaking-news/breaking-news.module';
 
 @Module({
   imports: [
@@ -34,6 +35,7 @@ import { UserPreferencesModule } from './user-preferences/user-preferences.modul
     LocalElectionsModule,
     AuthModule,
     UserPreferencesModule,
+    BreakingNewsModule,
   ],
 })
 export class AppModule {}
