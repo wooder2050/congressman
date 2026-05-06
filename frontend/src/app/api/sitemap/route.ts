@@ -1,7 +1,6 @@
 import { getBillIds, getVoteIds } from "@/lib/api";
 
-export const dynamic = "force-dynamic";
-export const revalidate = 3600;
+export const revalidate = 86400;
 
 export const BASE = "https://www.lawmake.kr";
 const API_BASE = process.env.NEXT_PUBLIC_API_URL;
@@ -11,7 +10,7 @@ export function xmlResponse(xml: string) {
   return new Response(xml, {
     headers: {
       "Content-Type": "application/xml",
-      "Cache-Control": "public, max-age=3600, s-maxage=3600",
+      "Cache-Control": "public, max-age=86400, s-maxage=86400, stale-while-revalidate=604800",
     },
   });
 }

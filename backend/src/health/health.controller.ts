@@ -26,8 +26,24 @@ export class HealthController {
   }
 
   @Get()
-  @ApiOperation({ summary: '헬스체크', description: 'DB, Redis 연결 상태 확인' })
+  @ApiOperation({ summary: '헬스체크', description: 'DB 연결 상태 확인' })
   async check() {
+    let dbStatus = 'ok';
+    try {
+      await this.prisma.$queryRaw`SELECT 1`;
+    } catch {
+      dbStatus = 'error';
+    }
+    const status = dbStatus === 'ok' ? 'ok' : 'error';
+    return { status, db: dbStatus };
+  }
+
+  @Get('deep')
+  @ApiOperation({
+    summary: '심층 헬스체크',
+    description: 'DB + Redis 연결 상태 확인 (수동 점검용)',
+  })
+  async deepCheck() {
     let dbStatus = 'ok';
     let redisStatus = 'ok';
 
@@ -39,7 +55,8 @@ export class HealthController {
 
     try {
       const redisPing = await this.redis.ping();
-      redisStatus = redisPing === 'PONG' ? 'ok' : 'error';
+      redisStatus =
+        redisPing === 'PONG' || redisPing === 'DISABLED' ? redisPing.toLowerCase() : 'error';
     } catch {
       redisStatus = 'error';
     }

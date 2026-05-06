@@ -121,6 +121,10 @@ function normalizeTopic(topic: string): string {
 const TTL_HOUR = 60 * 60; // 1h
 const TTL_DAY = 24 * 60 * 60; // 24h
 
+let allIdsMemoryCache: { data: { id: string; proposedDate: string }[]; expiresAt: number } | null =
+  null;
+const ALL_IDS_MEMORY_TTL_MS = 60 * 60 * 1000; // 1h
+
 @Injectable()
 export class BillsService {
   constructor(
@@ -229,9 +233,16 @@ export class BillsService {
   }
 
   async findAllIds() {
+    if (allIdsMemoryCache && allIdsMemoryCache.expiresAt > Date.now()) {
+      return allIdsMemoryCache.data;
+    }
+
     const key = 'bills:all-ids';
-    const cached = await this.redis.get(key);
-    if (cached) return cached;
+    const cached = await this.redis.get<{ id: string; proposedDate: string }[]>(key);
+    if (cached) {
+      allIdsMemoryCache = { data: cached, expiresAt: Date.now() + ALL_IDS_MEMORY_TTL_MS };
+      return cached;
+    }
 
     const bills = await this.prisma.bill.findMany({
       select: { id: true, proposedDate: true },
@@ -240,6 +251,7 @@ export class BillsService {
 
     const result = bills.map((b) => ({ id: b.id, proposedDate: b.proposedDate }));
     await this.redis.set(key, result, TTL_DAY);
+    allIdsMemoryCache = { data: result, expiresAt: Date.now() + ALL_IDS_MEMORY_TTL_MS };
     return result;
   }
 
