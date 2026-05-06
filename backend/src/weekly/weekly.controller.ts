@@ -1,10 +1,6 @@
 import { Controller, Get, Param } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
-import {
-  WeeklyService,
-  WeeklyArticleDetail,
-  WeeklyArticleSummary,
-} from './weekly.service';
+import { WeeklyService, WeeklyArticleDetail, WeeklyArticleSummary } from './weekly.service';
 
 @ApiTags('Weekly')
 @Controller('weekly')
