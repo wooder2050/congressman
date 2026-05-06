@@ -452,6 +452,75 @@ async function main() {
 
   console.log(`[Seed] Created ${metroCouncilCount} metro-council races`);
 
+  // 6. 광역단체장 후보 시드 (5/6 기준 확정 후보)
+  const governorCandidates = [
+    {
+      sido: '서울특별시',
+      name: '오세훈',
+      partyId: 'ppp',
+      career: '현 서울특별시장 (3선)\n전 16·17대 국회의원',
+    },
+    { sido: '부산광역시', name: '박형준', partyId: 'ppp', career: '현 부산광역시장' },
+    {
+      sido: '대구광역시',
+      name: '추경호',
+      partyId: 'ppp',
+      career: '전 22대 국회의원 (대구 달성)\n전 국민의힘 원내대표\n전 경제부총리',
+    },
+    {
+      sido: '인천광역시',
+      name: '유정복',
+      partyId: 'ppp',
+      career: '현 인천광역시장\n전 안전행정부 장관',
+    },
+    { sido: '울산광역시', name: '김두겸', partyId: 'ppp', career: '현 울산광역시장' },
+    { sido: '세종특별자치시', name: '최민호', partyId: 'ppp', career: '현 세종특별자치시장' },
+    {
+      sido: '경기도',
+      name: '양향자',
+      partyId: 'ppp',
+      career: '전 21대 국회의원\n전 더불어민주당 최고위원',
+    },
+    { sido: '강원특별자치도', name: '김진태', partyId: 'ppp', career: '현 강원특별자치도지사' },
+    { sido: '충청북도', name: '김영환', partyId: 'ppp', career: '현 충청북도지사' },
+    { sido: '충청남도', name: '김태흠', partyId: 'ppp', career: '현 충청남도지사' },
+    { sido: '경상북도', name: '이철우', partyId: 'ppp', career: '현 경상북도지사 (3선)' },
+    { sido: '경상남도', name: '박완수', partyId: 'ppp', career: '현 경상남도지사' },
+  ];
+
+  let governorCandidateCount = 0;
+  for (const c of governorCandidates) {
+    const race = await prisma.localElectionRace.findUnique({
+      where: {
+        electionId_electionType_sido_sigungu_district: {
+          electionId: 'local-2026',
+          electionType: 'governor',
+          sido: c.sido,
+          sigungu: '',
+          district: '',
+        },
+      },
+    });
+    if (!race) {
+      console.warn(`⚠️ governor race not found: ${c.sido}`);
+      continue;
+    }
+    await prisma.localElectionCandidate.upsert({
+      where: { raceId_name: { raceId: race.id, name: c.name } },
+      update: { partyId: c.partyId, career: c.career, status: 'nominated' },
+      create: {
+        raceId: race.id,
+        name: c.name,
+        partyId: c.partyId,
+        career: c.career,
+        status: 'nominated',
+      },
+    });
+    governorCandidateCount++;
+  }
+
+  console.log(`[Seed] Created/updated ${governorCandidateCount} governor candidates`);
+
   console.log('[Seed] Local election seed completed!');
 }
 
