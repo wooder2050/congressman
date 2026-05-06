@@ -19,17 +19,30 @@ export class RedisService implements OnModuleInit {
 
   async get<T>(key: string): Promise<T | null> {
     if (!this.client) return null;
-    return this.client.get<T>(key);
+    try {
+      return await this.client.get<T>(key);
+    } catch (err) {
+      this.logger.warn(`Redis GET failed for "${key}" — falling back to source: ${err}`);
+      return null;
+    }
   }
 
   async set(key: string, value: unknown, ttlSeconds: number): Promise<void> {
     if (!this.client) return;
-    await this.client.set(key, value, { ex: ttlSeconds });
+    try {
+      await this.client.set(key, value, { ex: ttlSeconds });
+    } catch (err) {
+      this.logger.warn(`Redis SET failed for "${key}" — cache skipped: ${err}`);
+    }
   }
 
   async del(...keys: string[]): Promise<void> {
     if (!this.client || keys.length === 0) return;
-    await this.client.del(...keys);
+    try {
+      await this.client.del(...keys);
+    } catch (err) {
+      this.logger.warn(`Redis DEL failed (${keys.length} keys) — TTL applies: ${err}`);
+    }
   }
 
   async invalidateByPrefix(prefix: string): Promise<void> {
@@ -48,14 +61,23 @@ export class RedisService implements OnModuleInit {
       return Number(nextCursor);
     };
 
-    let cursor = await scanAndDelete(0);
-    while (cursor !== 0) {
-      cursor = await scanAndDelete(cursor);
+    try {
+      let cursor = await scanAndDelete(0);
+      while (cursor !== 0) {
+        cursor = await scanAndDelete(cursor);
+      }
+    } catch (err) {
+      this.logger.warn(`Redis invalidateByPrefix failed for "${prefix}*" — TTL applies: ${err}`);
     }
   }
 
   async ping(): Promise<string> {
     if (!this.client) return 'DISABLED';
-    return this.client.ping();
+    try {
+      return await this.client.ping();
+    } catch (err) {
+      this.logger.warn(`Redis PING failed: ${err}`);
+      return 'ERROR';
+    }
   }
 }
