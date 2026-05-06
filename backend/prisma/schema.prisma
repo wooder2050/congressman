@@ -453,3 +453,23 @@ model BreakingNews {
 
   @@index([active, date])
 }
+
+// ====== 주간 뉴스 ======
+
+model WeeklyArticle {
+  id            String   @id // 예: "2026-05-w1"
+  title         String // 표시 제목 (예: "5월 1주차")
+  period        String // 기간 (예: "2026.05.04 ~ 05.10")
+  publishedDate DateTime // 발행일
+  summary       String // 한 줄 요약
+  tags          String[] @default([]) // 핵심 키워드 태그
+  featuredBills Json     @default("[]") // FeaturedBill[]
+  highlights    Json     @default("[]") // WeeklyHighlight[]
+  stats         Json? // WeeklyStats {billsPassed?, billsProposed?, votesHeld?, committeeMeetings?}
+  analysis      String? // 이번 주 분석
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([publishedDate])
+}
