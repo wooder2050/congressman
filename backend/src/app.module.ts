@@ -16,6 +16,7 @@ import { RedisModule } from './redis/redis.module';
 import { AuthModule } from './auth/auth.module';
 import { UserPreferencesModule } from './user-preferences/user-preferences.module';
 import { BreakingNewsModule } from './breaking-news/breaking-news.module';
+import { WeeklyModule } from './weekly/weekly.module';
 
 @Module({
   imports: [
@@ -36,6 +37,7 @@ import { BreakingNewsModule } from './breaking-news/breaking-news.module';
     AuthModule,
     UserPreferencesModule,
     BreakingNewsModule,
+    WeeklyModule,
   ],
 })
 export class AppModule {}
