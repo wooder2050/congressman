@@ -121,7 +121,8 @@ function normalizeTopic(topic: string): string {
 const TTL_HOUR = 60 * 60; // 1h
 const TTL_DAY = 24 * 60 * 60; // 24h
 
-let allIdsMemoryCache: { data: { id: string; proposedDate: string }[]; expiresAt: number } | null = null;
+let allIdsMemoryCache: { data: { id: string; proposedDate: string }[]; expiresAt: number } | null =
+  null;
 const ALL_IDS_MEMORY_TTL_MS = 60 * 60 * 1000; // 1h
 
 @Injectable()

@@ -55,7 +55,8 @@ export class HealthController {
 
     try {
       const redisPing = await this.redis.ping();
-      redisStatus = redisPing === 'PONG' || redisPing === 'DISABLED' ? redisPing.toLowerCase() : 'error';
+      redisStatus =
+        redisPing === 'PONG' || redisPing === 'DISABLED' ? redisPing.toLowerCase() : 'error';
     } catch {
       redisStatus = 'error';
     }

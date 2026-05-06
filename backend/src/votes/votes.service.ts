@@ -15,7 +15,8 @@ interface FindAllParams {
 const TTL_HOUR = 60 * 60;
 const TTL_DAY = 24 * 60 * 60;
 
-let allIdsMemoryCache: { data: { id: string; procDate: string }[]; expiresAt: number } | null = null;
+let allIdsMemoryCache: { data: { id: string; procDate: string }[]; expiresAt: number } | null =
+  null;
 const ALL_IDS_MEMORY_TTL_MS = 60 * 60 * 1000; // 1h
 
 @Injectable()
