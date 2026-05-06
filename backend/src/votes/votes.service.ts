@@ -15,6 +15,9 @@ interface FindAllParams {
 const TTL_HOUR = 60 * 60;
 const TTL_DAY = 24 * 60 * 60;
 
+let allIdsMemoryCache: { data: { id: string; procDate: string }[]; expiresAt: number } | null = null;
+const ALL_IDS_MEMORY_TTL_MS = 60 * 60 * 1000; // 1h
+
 @Injectable()
 export class VotesService {
   constructor(
@@ -86,9 +89,16 @@ export class VotesService {
   }
 
   async findAllIds() {
+    if (allIdsMemoryCache && allIdsMemoryCache.expiresAt > Date.now()) {
+      return allIdsMemoryCache.data;
+    }
+
     const key = 'votes:all-ids';
-    const cached = await this.redis.get(key);
-    if (cached) return cached;
+    const cached = await this.redis.get<{ id: string; procDate: string }[]>(key);
+    if (cached) {
+      allIdsMemoryCache = { data: cached, expiresAt: Date.now() + ALL_IDS_MEMORY_TTL_MS };
+      return cached;
+    }
 
     const votes = await this.prisma.vote.findMany({
       select: { id: true, procDate: true },
@@ -97,6 +107,7 @@ export class VotesService {
 
     const result = votes.map((v) => ({ id: v.id, procDate: v.procDate }));
     await this.redis.set(key, result, TTL_DAY);
+    allIdsMemoryCache = { data: result, expiresAt: Date.now() + ALL_IDS_MEMORY_TTL_MS };
     return result;
   }
 
