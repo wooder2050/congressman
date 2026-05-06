@@ -354,7 +354,8 @@ async function main() {
       district: '부산 북구갑',
       name: '박민식',
       partyId: 'ppp',
-      career: '전 국가보훈부 장관\n전 20대 국회의원 (부산 북구갑)',
+      career:
+        '전 국가보훈부 장관\n전 20대 국회의원 (부산 북구갑)\n5월 5일 국민의힘 경선 승리 (이영풍과 2인 경선)',
     },
     // 인천 연수갑
     {
@@ -377,6 +378,56 @@ async function main() {
       name: '신지혜',
       partyId: 'basic-income',
       career: '전 기본소득당 대표\n기본소득당 최고위원',
+    },
+    // === 5/6 추가: 국민의힘 단수공천 ===
+    // 인천 계양을
+    {
+      district: '인천 계양구을',
+      name: '심왕섭',
+      partyId: 'ppp',
+      career: '국민의힘 인천 계양을 단수공천',
+    },
+    // 인천 연수갑
+    {
+      district: '인천 연수구갑',
+      name: '박종진',
+      partyId: 'ppp',
+      career: '국민의힘 인천 연수갑 단수공천',
+    },
+    // 경기 하남갑
+    {
+      district: '경기 하남시갑',
+      name: '이용',
+      partyId: 'ppp',
+      career: '국민의힘 경기 하남갑 단수공천\n전 21대 국회의원 (비례)',
+    },
+    // 울산 남구갑
+    {
+      district: '울산 남구갑',
+      name: '김태규',
+      partyId: 'ppp',
+      career: '국민의힘 울산 남구갑 단수공천',
+    },
+    // 광주 광산을
+    {
+      district: '광주 광산구을',
+      name: '안태욱',
+      partyId: 'ppp',
+      career: '국민의힘 광주 광산을 단수공천',
+    },
+    // 제주 서귀포
+    {
+      district: '제주 서귀포시',
+      name: '고기철',
+      partyId: 'ppp',
+      career: '국민의힘 제주 서귀포 단수공천',
+    },
+    // 대구 달성
+    {
+      district: '대구 달성군',
+      name: '이진숙',
+      partyId: 'ppp',
+      career: '국민의힘 대구 달성군 단수공천\n전 방송통신위원장',
     },
   ];
 
