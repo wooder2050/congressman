@@ -1,9 +1,4 @@
-"use client";
-
 import Link from "next/link";
-import { notFound } from "next/navigation";
-import { useCongressSuspenseQuery } from "@/hooks/useCongressQuery";
-import { getVoteMemberVotes } from "@/lib/api";
 import ColorBadge from "@/components/ui/color-badge";
 import VoteResultBar from "./VoteResultBar";
 import PartyVoteGrid from "./PartyVoteGrid";
@@ -11,16 +6,14 @@ import MyMemberVoteShare from "./MyMemberVoteShare";
 import { formatDate } from "@/lib/utils";
 import ShareButton from "@/components/ui/ShareButton";
 import { VOTE_RESULT_MAP } from "@/lib/constants";
+import type { VoteWithMemberVotes } from "@/types";
 
 interface VoteDetailInnerProps {
   id: string;
+  data: VoteWithMemberVotes;
 }
 
-export default function VoteDetailInner({ id }: VoteDetailInnerProps) {
-  const { data } = useCongressSuspenseQuery(getVoteMemberVotes, id);
-
-  if (!data) return notFound();
-
+export default function VoteDetailInner({ id, data }: VoteDetailInnerProps) {
   const { vote, memberVotes } = data;
   const resultInfo = VOTE_RESULT_MAP[vote.resultCode] ?? VOTE_RESULT_MAP.other;
   const absentCount = vote.memberTotal - vote.voteTotal;
