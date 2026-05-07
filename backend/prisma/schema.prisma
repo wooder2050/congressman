@@ -420,13 +420,14 @@ model LocalElectionCandidate {
 // ====== 유저 환경설정 ======
 
 model UserPreference {
-  id                Int      @id @default(autoincrement())
-  userId            String   @unique // Supabase auth.users UUID
-  displayName       String?
-  district          String? // 관심 지역구 (예: "서울 강남갑")
-  interests         String[] @default([]) // 관심 토픽 (예: ["보건·의료", "부동산·주거"])
-  bookmarkedBills   String[] @default([]) // 저장한 법안 ID
-  bookmarkedMembers String[] @default([]) // 저장한 의원 ID
+  id                     Int      @id @default(autoincrement())
+  userId                 String   @unique // Supabase auth.users UUID
+  displayName            String?
+  district               String? // 관심 지역구 (예: "서울 강남갑")
+  interests              String[] @default([]) // 관심 토픽 (예: ["보건·의료", "부동산·주거"])
+  bookmarkedBills        String[] @default([]) // 저장한 법안 ID
+  bookmarkedMembers      String[] @default([]) // 저장한 의원 ID
+  bookmarkedBreakingNews String[] @default([]) // 저장한 속보 ID
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
