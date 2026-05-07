@@ -1,5 +1,12 @@
 import { NextRequest } from "next/server";
-import { getBillIds, getVoteIds, getElections } from "@/lib/api";
+import {
+  getIndexableBillIds,
+  getVoteIds,
+  getElections,
+  getElection,
+  getLocalElections,
+  getIndexableLocalElectionRaces,
+} from "@/lib/api";
 import { getAllWeeklyArticles } from "@/data/weekly";
 import { getAllTermSlugs } from "@/lib/glossary";
 import { BASE, BILLS_PER_SITEMAP, xmlResponse, urlEntry, urlset } from "../route";
@@ -115,7 +122,52 @@ async function buildSitemap(id: number) {
                 priority: 0.7,
               }),
             );
+            // 재보궐 district 페이지 — 후보 1명 이상인 곳만
+            try {
+              const detail = await getElection(e.id);
+              if (detail?.districts) {
+                for (const d of detail.districts) {
+                  if (d.candidates && d.candidates.length > 0) {
+                    entries.push(
+                      urlEntry(`${BASE}/elections/${e.id}/races/${d.id}`, {
+                        changefreq: "weekly",
+                        priority: 0.6,
+                      }),
+                    );
+                  }
+                }
+              }
+            } catch {
+              // election detail fail — skip
+            }
           }
+        }
+
+        // 지방선거 race 페이지 — 후보 1명 이상인 곳만
+        try {
+          const localElections = await getLocalElections();
+          if (localElections) {
+            for (const le of localElections) {
+              entries.push(
+                urlEntry(`${BASE}/local-elections/${le.id.replace(/^local-/, "")}`, {
+                  changefreq: "weekly",
+                  priority: 0.7,
+                }),
+              );
+              const races = await getIndexableLocalElectionRaces(le.id);
+              const year = le.id.replace(/^local-/, "");
+              for (const r of races) {
+                entries.push(
+                  urlEntry(`${BASE}/local-elections/${year}/races/${r.raceId}`, {
+                    changefreq: "weekly",
+                    priority: 0.6,
+                  }),
+                );
+              }
+            }
+          }
+        } catch {
+          // local elections fail — skip
         }
       } catch {
         // API fail — return static pages only
@@ -128,7 +180,7 @@ async function buildSitemap(id: number) {
   if (!API_BASE) return urlset([]);
 
   try {
-    const [billIds, voteIds] = await Promise.all([getBillIds(), getVoteIds()]);
+    const [billIds, voteIds] = await Promise.all([getIndexableBillIds(), getVoteIds()]);
     const billSitemapCount = Math.ceil(billIds.length / BILLS_PER_SITEMAP);
 
     // Bill sitemaps: id 1 ~ billSitemapCount

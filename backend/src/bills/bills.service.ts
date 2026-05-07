@@ -123,6 +123,10 @@ const TTL_DAY = 24 * 60 * 60; // 24h
 
 let allIdsMemoryCache: { data: { id: string; proposedDate: string }[]; expiresAt: number } | null =
   null;
+let indexableIdsMemoryCache: {
+  data: { id: string; proposedDate: string }[];
+  expiresAt: number;
+} | null = null;
 const ALL_IDS_MEMORY_TTL_MS = 60 * 60 * 1000; // 1h
 
 @Injectable()
@@ -252,6 +256,31 @@ export class BillsService {
     const result = bills.map((b) => ({ id: b.id, proposedDate: b.proposedDate }));
     await this.redis.set(key, result, TTL_DAY);
     allIdsMemoryCache = { data: result, expiresAt: Date.now() + ALL_IDS_MEMORY_TTL_MS };
+    return result;
+  }
+
+  /** AI 요약(simpleSummary)이 있는 법안 ID만 반환. AdSense thin-content 대응 sitemap용 */
+  async findIndexableIds() {
+    if (indexableIdsMemoryCache && indexableIdsMemoryCache.expiresAt > Date.now()) {
+      return indexableIdsMemoryCache.data;
+    }
+
+    const key = 'bills:indexable-ids:v1';
+    const cached = await this.redis.get<{ id: string; proposedDate: string }[]>(key);
+    if (cached) {
+      indexableIdsMemoryCache = { data: cached, expiresAt: Date.now() + ALL_IDS_MEMORY_TTL_MS };
+      return cached;
+    }
+
+    const bills = await this.prisma.bill.findMany({
+      where: { simpleSummary: { not: null } },
+      select: { id: true, proposedDate: true },
+      orderBy: { proposedDate: 'desc' },
+    });
+
+    const result = bills.map((b) => ({ id: b.id, proposedDate: b.proposedDate }));
+    await this.redis.set(key, result, TTL_DAY);
+    indexableIdsMemoryCache = { data: result, expiresAt: Date.now() + ALL_IDS_MEMORY_TTL_MS };
     return result;
   }
 

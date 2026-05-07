@@ -22,6 +22,16 @@ export class LocalElectionsController {
     return election;
   }
 
+  @Get(':id/indexable-races')
+  @ApiOperation({
+    summary: '인덱싱 가능 race 목록',
+    description: '후보 1명 이상인 race의 최소 필드 (sitemap thin-content 제외용)',
+  })
+  @ApiParam({ name: 'id' })
+  getIndexableRaces(@Param('id') id: string) {
+    return this.service.getIndexableRaces(id);
+  }
+
   @Get(':id/races')
   @ApiOperation({ summary: '선거 race 목록 (필터 + 페이지네이션)' })
   @ApiParam({ name: 'id' })

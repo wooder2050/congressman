@@ -23,10 +23,12 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     .map((c) => c.name)
     .join("·");
   const description = `${race.displayName} 후보자 ${race.candidates.length}명 비교: ${candidateNames}. 경력·공약·재산 정보를 확인하세요.`;
+  const isEmpty = race.candidates.length === 0;
 
   return {
     title: `${race.displayName} — ${year} 지방선거 후보자 비교`,
     description,
+    robots: isEmpty ? { index: false, follow: true } : undefined,
     alternates: {
       canonical: `https://www.lawmake.kr/local-elections/${year}/races/${raceId}`,
     },

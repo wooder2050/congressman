@@ -1,4 +1,4 @@
-import { getBillIds, getVoteIds } from "@/lib/api";
+import { getIndexableBillIds, getVoteIds } from "@/lib/api";
 
 export const revalidate = 86400;
 
@@ -37,7 +37,7 @@ ${entries.join("\n")}
 async function getSitemapCount() {
   if (!API_BASE) return { billSitemapCount: 0, hasVotes: false };
   try {
-    const [billIds, voteIds] = await Promise.all([getBillIds(), getVoteIds()]);
+    const [billIds, voteIds] = await Promise.all([getIndexableBillIds(), getVoteIds()]);
     return {
       billSitemapCount: Math.ceil(billIds.length / BILLS_PER_SITEMAP),
       hasVotes: voteIds.length > 0,

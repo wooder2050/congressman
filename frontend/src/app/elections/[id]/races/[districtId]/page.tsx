@@ -19,10 +19,12 @@ export async function generateMetadata({ params }: RacePageProps): Promise<Metad
   const candidateNames = district.candidates.map((c) => c.name).join(" vs ");
   const title = `${district.district} 후보 비교 — ${candidateNames || "후보 미등록"}`;
   const description = `6·3 재보궐선거 ${district.district} 후보를 비교하세요. ${candidateNames ? candidateNames + "의" : ""} 정당, 경력, 공약, 재산을 한눈에 비교합니다.`;
+  const isEmpty = district.candidates.length === 0;
 
   return {
     title,
     description,
+    robots: isEmpty ? { index: false, follow: true } : undefined,
     alternates: {
       canonical: `https://www.lawmake.kr/elections/${id}/races/${districtId}`,
     },
