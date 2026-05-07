@@ -72,10 +72,7 @@ export class UserPreferencesController {
 
   @Post('bookmarks/breaking-news/:newsId')
   @ApiOperation({ summary: '속보 즐겨찾기 추가' })
-  addBreakingNewsBookmark(
-    @Req() req: { user: { id: string } },
-    @Param('newsId') newsId: string,
-  ) {
+  addBreakingNewsBookmark(@Req() req: { user: { id: string } }, @Param('newsId') newsId: string) {
     validateId(newsId, '속보 ID');
     return this.service.addBreakingNewsBookmark(req.user.id, newsId);
   }
