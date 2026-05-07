@@ -222,6 +222,11 @@ export async function getBillIds(): Promise<{ id: string; proposedDate: string }
   return fetchApi("/api/bills/ids");
 }
 
+/** AI 요약(simpleSummary)이 있는 법안 ID만 (sitemap thin-content 제외용) */
+export async function getIndexableBillIds(): Promise<{ id: string; proposedDate: string }[]> {
+  return fetchApi("/api/bills/indexable-ids");
+}
+
 export async function getVoteIds(): Promise<{ id: string; procDate: string }[]> {
   return fetchApi("/api/votes/ids");
 }
@@ -499,6 +504,13 @@ export async function getLocalElectionRegion(params: {
 
 export async function getLocalElectionStats(id: string): Promise<LocalElectionStats> {
   return fetchApi(`/api/local-elections/${id}/stats`);
+}
+
+/** 후보 1명 이상인 race만 (sitemap thin-content 제외용) */
+export async function getIndexableLocalElectionRaces(
+  id: string,
+): Promise<{ raceId: number; electionType: string; sido: string; sigungu: string }[]> {
+  return fetchApi(`/api/local-elections/${id}/indexable-races`);
 }
 
 Object.defineProperty(getLocalElections, "queryKey", { value: "localElections" });

@@ -133,6 +133,32 @@ export class LocalElectionsService {
     return result;
   }
 
+  /** sitemap용: 후보가 1명 이상인 race 최소 필드만 반환 */
+  async getIndexableRaces(id: string) {
+    const key = `local-elections:${id}:indexable-races:v1`;
+    const cached =
+      await this.redis.get<
+        { raceId: number; electionType: string; sido: string; sigungu: string }[]
+      >(key);
+    if (cached) return cached;
+
+    const races = await this.prisma.localElectionRace.findMany({
+      where: { electionId: id, candidates: { some: {} } },
+      select: { id: true, electionType: true, sido: true, sigungu: true },
+      orderBy: [{ sido: 'asc' }, { sigungu: 'asc' }, { id: 'asc' }],
+    });
+
+    const result = races.map((r) => ({
+      raceId: r.id,
+      electionType: r.electionType,
+      sido: r.sido,
+      sigungu: r.sigungu,
+    }));
+
+    await this.redis.set(key, result, 3600);
+    return result;
+  }
+
   /** race 목록 (필터 + 페이지네이션 + 검색) */
   async getRaces(id: string, filter: RaceFilter) {
     const where: Record<string, unknown> = { electionId: id };
