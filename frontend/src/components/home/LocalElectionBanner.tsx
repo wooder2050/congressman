@@ -10,8 +10,19 @@ function getDDay(): string {
   return `D+${Math.abs(diff)}`;
 }
 
+function getRegistrationStatus(): string {
+  const now = new Date();
+  now.setHours(0, 0, 0, 0);
+  const regStart = new Date(2026, 4, 14);
+  const regEnd = new Date(2026, 4, 16);
+  if (now < regStart) return "5/14~15 후보등록 시작";
+  if (now < regEnd) return "후보등록 진행 중";
+  return "후보등록 마감";
+}
+
 export default function LocalElectionBanner() {
   const dday = getDDay();
+  const regStatus = getRegistrationStatus();
 
   return (
     <section>
@@ -29,7 +40,7 @@ export default function LocalElectionBanner() {
                 6·3 전국동시지방선거
               </h2>
               <p className="mt-0.5 truncate text-xs text-(--color-text-secondary) sm:text-sm">
-                광역단체장 · 기초단체장 · 교육감 · 광역의원 · 기초의원 후보자 정보
+                {regStatus} · 광역단체장·기초단체장·교육감·광역의원·기초의원
               </p>
             </div>
           </div>
