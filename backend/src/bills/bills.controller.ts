@@ -65,6 +65,16 @@ export class BillsController {
     return this.billsService.findAllIds();
   }
 
+  @Get('indexable-ids')
+  @ApiOperation({
+    summary: '인덱싱 가능 법안 ID 목록',
+    description:
+      'AI 요약(simpleSummary)이 있는 법안 ID + 발의일 목록 (sitemap thin-content 제외용)',
+  })
+  findIndexableIds() {
+    return this.billsService.findIndexableIds();
+  }
+
   @Get('committees')
   @ApiOperation({
     summary: '위원회 목록',
