@@ -3,6 +3,7 @@ import { getElection } from "@/lib/api";
 import CongressWrapper from "@/common/CongressWrapper";
 import ElectionPageInner from "@/components/elections/ElectionPageInner";
 import ElectionSkeleton from "@/components/elections/ElectionSkeleton";
+import ElectionTrendWidget from "@/components/elections/ElectionTrendWidget";
 import JsonLd from "@/components/seo/JsonLd";
 
 interface ElectionPageProps {
@@ -50,6 +51,8 @@ export default async function ElectionPage({ params }: ElectionPageProps) {
           ],
         }}
       />
+
+      <ElectionTrendWidget />
 
       <CongressWrapper fallback={<ElectionSkeleton />}>
         <ElectionPageInner electionId={id} />
