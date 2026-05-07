@@ -1,16 +1,14 @@
 "use client";
 
 import { useState, Suspense } from "react";
-import { notFound } from "next/navigation";
 import Link from "next/link";
-import { useCongressSuspenseQuery } from "@/hooks/useCongressQuery";
-import { getMember, getMemberTerms } from "@/lib/api";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import dynamic from "next/dynamic";
 import MemberProfile from "./MemberProfile";
 import MemberActivitySummary from "./MemberActivitySummary";
 import MemberRecentActivityCard from "./MemberRecentActivityCard";
 import MemberDetailTabContent from "./MemberDetailTabs";
+import type { Member, MemberTerm } from "@/types";
 
 const ActivityHeatmap = dynamic(() => import("./ActivityHeatmap"), {
   ssr: false,
@@ -25,6 +23,8 @@ interface MemberDetailInnerProps {
   id: string;
   termId: number;
   defaultTab: string;
+  member: Member;
+  memberTerms: MemberTerm[];
 }
 
 const TAB_OPTIONS = [
@@ -37,12 +37,14 @@ const TAB_OPTIONS = [
   { value: "assets", label: "재산" },
 ] as const;
 
-export default function MemberDetailInner({ id, termId, defaultTab }: MemberDetailInnerProps) {
+export default function MemberDetailInner({
+  id,
+  termId,
+  defaultTab,
+  member,
+  memberTerms,
+}: MemberDetailInnerProps) {
   const [activeTab, setActiveTab] = useState(defaultTab);
-  const { data: member } = useCongressSuspenseQuery(getMember, id);
-  const { data: memberTerms } = useCongressSuspenseQuery(getMemberTerms, id);
-
-  if (!member) return notFound();
 
   const currentMemberTerm = memberTerms.find((mt) => mt.termId === termId);
   const allTermIds = memberTerms.map((mt) => mt.termId);
