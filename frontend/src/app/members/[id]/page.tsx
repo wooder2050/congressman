@@ -1,9 +1,8 @@
 import type { Metadata } from "next";
+import { notFound } from "next/navigation";
 import { getMember, getMemberTerms, getMemberScorecard } from "@/lib/api";
 import { getElectedLabel } from "@/lib/utils";
-import CongressWrapper from "@/common/CongressWrapper";
 import MemberDetailInner from "@/components/members/MemberDetailInner";
-import MemberDetailSkeleton from "@/components/skeletons/MemberDetailSkeleton";
 import MemberJsonLd from "@/components/seo/MemberJsonLd";
 import BreadcrumbJsonLd from "@/components/seo/BreadcrumbJsonLd";
 
@@ -55,35 +54,14 @@ export async function generateMetadata({ params }: MemberDetailPageProps): Promi
   };
 }
 
-async function ServerMemberSummary({ id }: { id: string }) {
-  let member, terms;
-  try {
-    [member, terms] = await Promise.all([getMember(id), getMemberTerms(id)]);
-  } catch {
-    return null;
-  }
-  if (!member) return null;
-  const currentTerm = terms.find((t) => t.termId === 22) ?? terms[0];
-  const partyName = currentTerm?.party.name ?? "";
-  const district = currentTerm?.district ?? "";
-  const termList = terms.map((t) => `${t.termId}대`).join(", ");
-  return (
-    <section className="sr-only">
-      <h1>{member.name} 국회의원</h1>
-      <p>정당: {partyName}</p>
-      {district && <p>지역구: {district}</p>}
-      <p>선수: {termList}</p>
-      {currentTerm?.committees && currentTerm.committees.length > 0 && (
-        <p>소속 위원회: {currentTerm.committees.join(", ")}</p>
-      )}
-    </section>
-  );
-}
-
 export default async function MemberDetailPage({ params, searchParams }: MemberDetailPageProps) {
   const { id } = await params;
   const { term, tab } = await searchParams;
   const termId = Number(term) || 22;
+
+  const [member, memberTerms] = await Promise.all([getMember(id), getMemberTerms(id)]);
+
+  if (!member) notFound();
 
   return (
     <>
@@ -95,10 +73,13 @@ export default async function MemberDetailPage({ params, searchParams }: MemberD
           { name: "의원 상세", href: `/members/${id}` },
         ]}
       />
-      <ServerMemberSummary id={id} />
-      <CongressWrapper fallback={<MemberDetailSkeleton />}>
-        <MemberDetailInner id={id} termId={termId} defaultTab={tab || "attendance"} />
-      </CongressWrapper>
+      <MemberDetailInner
+        id={id}
+        termId={termId}
+        defaultTab={tab || "attendance"}
+        member={member}
+        memberTerms={memberTerms}
+      />
     </>
   );
 }

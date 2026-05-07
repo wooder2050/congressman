@@ -1,8 +1,7 @@
 import type { Metadata } from "next";
+import { notFound } from "next/navigation";
 import { getVoteMemberVotes } from "@/lib/api";
-import CongressWrapper from "@/common/CongressWrapper";
 import VoteDetailInner from "@/components/votes/VoteDetailInner";
-import VoteDetailSkeleton from "@/components/skeletons/VoteDetailSkeleton";
 import VoteJsonLd from "@/components/seo/VoteJsonLd";
 import BreadcrumbJsonLd from "@/components/seo/BreadcrumbJsonLd";
 
@@ -34,31 +33,11 @@ export async function generateMetadata({ params }: VoteDetailPageProps): Promise
   };
 }
 
-async function ServerVoteSummary({ id }: { id: string }) {
-  let data;
-  try {
-    data = await getVoteMemberVotes(id);
-  } catch {
-    return null;
-  }
-  if (!data) return null;
-  const { vote } = data;
-  const resultText =
-    vote.resultCode === "passed" || vote.resultCode === "amended" ? "가결" : "부결";
-  return (
-    <section className="sr-only">
-      <h1>{vote.billName} 표결 결과</h1>
-      <p>결과: {resultText}</p>
-      <p>
-        찬성: {vote.yesCount}명, 반대: {vote.noCount}명, 기권: {vote.abstainCount}명
-      </p>
-      <p>표결일: {vote.procDate}</p>
-    </section>
-  );
-}
-
 export default async function VoteDetailPage({ params }: VoteDetailPageProps) {
   const { id } = await params;
+  const data = await getVoteMemberVotes(id);
+
+  if (!data) notFound();
 
   return (
     <>
@@ -70,10 +49,7 @@ export default async function VoteDetailPage({ params }: VoteDetailPageProps) {
           { name: "표결 상세", href: `/votes/${id}` },
         ]}
       />
-      <ServerVoteSummary id={id} />
-      <CongressWrapper fallback={<VoteDetailSkeleton />}>
-        <VoteDetailInner id={id} />
-      </CongressWrapper>
+      <VoteDetailInner id={id} data={data} />
     </>
   );
 }
