@@ -1,9 +1,4 @@
-"use client";
-
 import Link from "next/link";
-import { notFound } from "next/navigation";
-import { useCongressSuspenseQuery } from "@/hooks/useCongressQuery";
-import { getBill } from "@/lib/api";
 import ColorBadge from "@/components/ui/color-badge";
 import TermHint from "@/components/ui/term-hint";
 import MemberAvatar from "@/components/members/MemberAvatar";
@@ -12,17 +7,13 @@ import { BILL_STATUS_MAP } from "@/lib/constants";
 import BillProgressTimeline from "@/components/bills/BillProgressTimeline";
 import BookmarkButton from "@/components/ui/BookmarkButton";
 import ShareButton from "@/components/ui/ShareButton";
-import type { BillStructuredSummary } from "@/types";
+import type { BillDetail, BillStructuredSummary } from "@/types";
 
 interface BillDetailInnerProps {
-  id: string;
+  bill: BillDetail;
 }
 
-export default function BillDetailInner({ id }: BillDetailInnerProps) {
-  const { data: bill } = useCongressSuspenseQuery(getBill, id);
-
-  if (!bill) return notFound();
-
+export default function BillDetailInner({ bill }: BillDetailInnerProps) {
   const statusInfo = BILL_STATUS_MAP[bill.status];
 
   return (
@@ -47,7 +38,7 @@ export default function BillDetailInner({ id }: BillDetailInnerProps) {
               termHint={statusInfo.termKey}
             />
             <ShareButton title={bill.title} />
-            <BookmarkButton billId={id} />
+            <BookmarkButton billId={bill.id} />
           </div>
         </div>
 
