@@ -103,4 +103,34 @@ export class UserPreferencesService {
 
     return this.prisma.userPreference.findUniqueOrThrow({ where: { userId } });
   }
+
+  async addBreakingNewsBookmark(userId: string, newsId: string) {
+    await this.prisma.userPreference.upsert({
+      where: { userId },
+      create: { userId },
+      update: {},
+    });
+
+    await this.prisma.$executeRaw`
+      UPDATE "UserPreference"
+      SET "bookmarkedBreakingNews" = array_append("bookmarkedBreakingNews", ${newsId}),
+          "updatedAt" = now()
+      WHERE "userId" = ${userId}
+        AND NOT (${newsId} = ANY("bookmarkedBreakingNews"))
+        AND COALESCE(array_length("bookmarkedBreakingNews", 1), 0) < ${MAX_BOOKMARKS}
+    `;
+
+    return this.prisma.userPreference.findUnique({ where: { userId } });
+  }
+
+  async removeBreakingNewsBookmark(userId: string, newsId: string) {
+    await this.prisma.$executeRaw`
+      UPDATE "UserPreference"
+      SET "bookmarkedBreakingNews" = array_remove("bookmarkedBreakingNews", ${newsId}),
+          "updatedAt" = now()
+      WHERE "userId" = ${userId}
+    `;
+
+    return this.prisma.userPreference.findUniqueOrThrow({ where: { userId } });
+  }
 }

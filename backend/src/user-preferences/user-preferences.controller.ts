@@ -69,4 +69,21 @@ export class UserPreferencesController {
     validateId(memberId, '의원 ID');
     return this.service.removeMemberBookmark(req.user.id, memberId);
   }
+
+  @Post('bookmarks/breaking-news/:newsId')
+  @ApiOperation({ summary: '속보 즐겨찾기 추가' })
+  addBreakingNewsBookmark(@Req() req: { user: { id: string } }, @Param('newsId') newsId: string) {
+    validateId(newsId, '속보 ID');
+    return this.service.addBreakingNewsBookmark(req.user.id, newsId);
+  }
+
+  @Delete('bookmarks/breaking-news/:newsId')
+  @ApiOperation({ summary: '속보 즐겨찾기 삭제' })
+  removeBreakingNewsBookmark(
+    @Req() req: { user: { id: string } },
+    @Param('newsId') newsId: string,
+  ) {
+    validateId(newsId, '속보 ID');
+    return this.service.removeBreakingNewsBookmark(req.user.id, newsId);
+  }
 }
