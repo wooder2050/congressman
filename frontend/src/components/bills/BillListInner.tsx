@@ -16,6 +16,7 @@ interface BillListInnerProps {
   termId: number;
   initialTopic?: string;
   initialCommittee?: string;
+  initialSearch?: string;
 }
 
 const LIMIT = 20;
@@ -54,6 +55,7 @@ export default function BillListInner({
   termId,
   initialTopic,
   initialCommittee,
+  initialSearch,
 }: BillListInnerProps) {
   const { data: summary } = useCongressSuspenseQuery(getBillSummary, termId);
   const { data: committees = [] } = useCongressSuspenseQuery(getBillCommittees, termId);
@@ -61,7 +63,7 @@ export default function BillListInner({
   const [selectedCommittee, setSelectedCommittee] = useState<string | null>(
     initialCommittee ?? null,
   );
-  const [searchInput, setSearchInput] = useState("");
+  const [searchInput, setSearchInput] = useState(initialSearch ?? "");
   const debouncedSearch = useDeferredValue(searchInput);
   const [selectedMonth, setSelectedMonth] = useState<string | null>(null);
   const [selectedTopic, setSelectedTopic] = useState<string | null>(initialTopic ?? null);

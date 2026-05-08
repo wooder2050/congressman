@@ -17,6 +17,7 @@ import LocalElectionBanner from "@/components/home/LocalElectionBanner";
 import CivicKnowledge from "@/components/home/CivicKnowledge";
 import TopicGuide from "@/components/home/TopicGuide";
 import HomeMoreSections from "@/components/home/HomeMoreSections";
+import HeroSearch from "@/components/home/HeroSearch";
 import PersonalizedFeed from "@/components/home/PersonalizedFeed";
 import {
   HomeStatsSkeleton,
@@ -72,23 +73,7 @@ export default async function HomePage({ searchParams }: HomePageProps) {
 
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>
-      <JsonLd
-        data={{
-          "@context": "https://schema.org",
-          "@type": "WebSite",
-          name: "lawmake",
-          alternateName: "국회의원 의정활동 정보",
-          url: "https://www.lawmake.kr",
-          potentialAction: {
-            "@type": "SearchAction",
-            target: {
-              "@type": "EntryPoint",
-              urlTemplate: "https://www.lawmake.kr/members?search={search_term_string}",
-            },
-            "query-input": "required name=search_term_string",
-          },
-        }}
-      />
+      {/* WebSite/SearchAction JSON-LD는 layout.tsx에 있음 (전체 페이지 공통). 여기서는 홈 전용 FAQ만. */}
       <JsonLd
         data={{
           "@context": "https://schema.org",
@@ -130,30 +115,19 @@ export default async function HomePage({ searchParams }: HomePageProps) {
         }}
       />
       <div className="space-y-8">
-        {/* 헤더 */}
-        <section>
-          <h1 className="text-2xl font-bold sm:text-3xl sm:font-extrabold sm:tracking-tight">
-            국회의원 의정활동 정보
-          </h1>
-          <p className="mt-2 text-sm leading-relaxed text-(--color-text-secondary)">
-            lawmake는 대한민국 국회의원의 법안 발의, 본회의 표결, 출석 현황 등 핵심 의정활동
-            데이터를 시민 누구나 쉽게 확인할 수 있도록 만든 플랫폼입니다. 열린국회정보 공공 API에서
-            제공하는 객관적 데이터를 기반으로, 의원별 성적표 비교부터 AI 법안 요약까지 다양한 분석을
-            제공합니다. 내 지역 국회의원이 어떤 활동을 하고 있는지, 어떤 법안에 찬성하고 반대했는지
-            직접 확인해 보세요.
-          </p>
-        </section>
+        {/* 헤더: 검색·탐색 게이트 */}
+        <HeroSearch />
 
         {/* 6·3 지방선거 배너 */}
         <LocalElectionBanner />
 
-        {/* 속보 배너 */}
-        <BreakingNewsBanner />
-
-        {/* 통계 요약 */}
+        {/* 통계 요약 — 사이트 정체성을 첫 화면에 노출 */}
         <CongressWrapper key={`stats-${termId}`} fallback={<HomeStatsSkeleton />}>
           <HomeStats termId={termId} />
         </CongressWrapper>
+
+        {/* 속보 배너 */}
+        <BreakingNewsBanner />
 
         {/* 내 관심 이슈 레이더 */}
         <PersonalizedFeed termId={termId} />

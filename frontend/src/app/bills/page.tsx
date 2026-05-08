@@ -19,7 +19,7 @@ export const metadata: Metadata = {
 };
 
 interface BillsPageProps {
-  searchParams: Promise<{ term?: string; topic?: string; committee?: string }>;
+  searchParams: Promise<{ term?: string; topic?: string; committee?: string; search?: string }>;
 }
 
 export default async function BillsPage({ searchParams }: BillsPageProps) {
@@ -27,6 +27,7 @@ export default async function BillsPage({ searchParams }: BillsPageProps) {
   const termId = Number(params.term) || 22;
   const topic = params.topic || undefined;
   const committee = params.committee || undefined;
+  const initialSearch = params.search?.trim() || undefined;
 
   return (
     <div>
@@ -88,10 +89,15 @@ export default async function BillsPage({ searchParams }: BillsPageProps) {
       </section>
 
       <CongressWrapper
-        key={`${termId}-${topic ?? ""}-${committee ?? ""}`}
+        key={`${termId}-${topic ?? ""}-${committee ?? ""}-${initialSearch ?? ""}`}
         fallback={<BillListSkeleton />}
       >
-        <BillListInner termId={termId} initialTopic={topic} initialCommittee={committee} />
+        <BillListInner
+          termId={termId}
+          initialTopic={topic}
+          initialCommittee={committee}
+          initialSearch={initialSearch}
+        />
       </CongressWrapper>
     </div>
   );
