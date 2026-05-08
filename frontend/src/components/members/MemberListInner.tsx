@@ -11,11 +11,12 @@ import type { Party } from "@/types";
 
 interface MemberListInnerProps {
   termId: number;
+  initialSearch?: string;
 }
 
-export default function MemberListInner({ termId }: MemberListInnerProps) {
+export default function MemberListInner({ termId, initialSearch }: MemberListInnerProps) {
   const { data: members } = useCongressSuspenseQuery(getMembers, termId);
-  const [searchQuery, setSearchQuery] = useState("");
+  const [searchQuery, setSearchQuery] = useState(initialSearch ?? "");
   const [selectedParty, setSelectedParty] = useState<string | null>(null);
   const [selectedCommittee, setSelectedCommittee] = useState<string | null>(null);
 
