@@ -1,7 +1,7 @@
 import { ImageResponse } from "next/og";
 
 export const runtime = "edge";
-export const alt = "국회의원 의정활동 정보";
+export const alt = "국회의원·법안·표결 한눈에 비교 | lawmake";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
@@ -81,10 +81,10 @@ export default async function OgImage() {
           }}
         >
           <span style={{ fontSize: 56, fontWeight: 700, color: "#ffffff" }}>
-            국회의원 의정활동 정보
+            국회의원·법안·표결 한눈에 비교
           </span>
           <span style={{ fontSize: 28, color: "#9CA3AF" }}>
-            출석 · 법안 발의 · 표결 · 재산 · 선거구
+            22대 296명 의정활동 · AI 법안 요약 · 선거구 지도
           </span>
         </div>
 
