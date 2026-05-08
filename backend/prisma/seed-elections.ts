@@ -385,8 +385,7 @@ async function main() {
       district: '전북 군산시김제시부안군갑',
       name: '김의겸',
       partyId: 'democratic',
-      career:
-        '전 21대 국회의원 (전북 군산시)\n전 청와대 대변인\n5월 6일 민주당 전략공천',
+      career: '전 21대 국회의원 (전북 군산시)\n전 청와대 대변인\n5월 6일 민주당 전략공천',
       memberIdRef: 'FIC9046Z',
     },
     // 전북 군산김제부안을
@@ -403,8 +402,7 @@ async function main() {
       district: '광주 광산구을',
       name: '임문영',
       partyId: 'democratic',
-      career:
-        '국가인공지능전략위원회 상근부위원장\n언론인 출신\n5월 6일 민주당 전략공천',
+      career: '국가인공지능전략위원회 상근부위원장\n언론인 출신\n5월 6일 민주당 전략공천',
     },
     // 대구 달성군
     {
