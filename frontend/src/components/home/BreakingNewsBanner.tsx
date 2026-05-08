@@ -1,5 +1,5 @@
-import Link from "next/link";
 import { getBreakingNews } from "@/lib/api";
+import BreakingNewsLink from "./BreakingNewsLink";
 
 const CATEGORY_STYLE: Record<string, { label: string; className: string }> = {
   committee: {
@@ -33,9 +33,14 @@ export default async function BreakingNewsBanner() {
     <section className="space-y-3">
       <div className="flex items-center justify-between">
         <h2 className="text-xl font-bold">속보</h2>
-        <Link href="/today" className="text-sm font-semibold text-(--color-primary) no-underline">
+        <BreakingNewsLink
+          href="/today"
+          category="all"
+          position="compact"
+          className="text-sm font-semibold text-(--color-primary) no-underline"
+        >
           전체 보기 →
-        </Link>
+        </BreakingNewsLink>
       </div>
 
       {/* Lead 카드: 본문 2~3줄 요약. 상세 항목·출처는 /today에서 */}
@@ -56,11 +61,16 @@ export default async function BreakingNewsBanner() {
             </time>
           </div>
           {lead.linkUrl ? (
-            <Link href={lead.linkUrl} className="block no-underline">
+            <BreakingNewsLink
+              href={lead.linkUrl}
+              category={lead.category}
+              position="lead"
+              className="block no-underline"
+            >
               <h3 className="mt-1.5 text-sm font-bold text-amber-900 sm:text-base dark:text-amber-100">
                 {lead.title}
               </h3>
-            </Link>
+            </BreakingNewsLink>
           ) : (
             <h3 className="mt-1.5 text-sm font-bold text-amber-900 sm:text-base dark:text-amber-100">
               {lead.title}
@@ -85,8 +95,10 @@ export default async function BreakingNewsBanner() {
             return (
               <li key={item.id}>
                 {item.linkUrl ? (
-                  <Link
+                  <BreakingNewsLink
                     href={item.linkUrl}
+                    category={item.category}
+                    position="compact"
                     className="flex items-center gap-2 px-4 py-2.5 no-underline transition-colors hover:bg-(--color-bg-hover) sm:px-5"
                   >
                     <span
@@ -98,7 +110,7 @@ export default async function BreakingNewsBanner() {
                     <time className="shrink-0 text-[11px] text-(--color-text-tertiary)">
                       {item.date.slice(5)}
                     </time>
-                  </Link>
+                  </BreakingNewsLink>
                 ) : (
                   <div className="flex items-center gap-2 px-4 py-2.5 sm:px-5">
                     <span

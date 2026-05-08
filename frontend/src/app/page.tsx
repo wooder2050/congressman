@@ -18,6 +18,7 @@ import CivicKnowledge from "@/components/home/CivicKnowledge";
 import TopicGuide from "@/components/home/TopicGuide";
 import HomeMoreSections from "@/components/home/HomeMoreSections";
 import HeroSearch from "@/components/home/HeroSearch";
+import FirstCoreClickTracker from "@/components/home/FirstCoreClickTracker";
 import PersonalizedFeed from "@/components/home/PersonalizedFeed";
 import {
   HomeStatsSkeleton,
@@ -114,6 +115,7 @@ export default async function HomePage({ searchParams }: HomePageProps) {
           ],
         }}
       />
+      <FirstCoreClickTracker />
       <div className="space-y-8">
         {/* 헤더: 검색·탐색 게이트 */}
         <HeroSearch />
