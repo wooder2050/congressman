@@ -486,6 +486,21 @@ async function main() {
     { sido: '충청남도', name: '김태흠', partyId: 'ppp', career: '현 충청남도지사' },
     { sido: '경상북도', name: '이철우', partyId: 'ppp', career: '현 경상북도지사 (3선)' },
     { sido: '경상남도', name: '박완수', partyId: 'ppp', career: '현 경상남도지사' },
+    // 5/7 추가: 전북지사
+    {
+      sido: '전북특별자치도',
+      name: '이원택',
+      partyId: 'democratic',
+      career:
+        '전 22대 국회의원 (전북 군산시김제시부안군을)\n민주당 전북지사 단수공천\n4월 29일 의원직 사퇴',
+    },
+    {
+      sido: '전북특별자치도',
+      name: '김관영',
+      partyId: 'independent',
+      career:
+        '현 전북특별자치도지사 (재선 도전)\n전 4선 국회의원\n5월 7일 무소속 출마 선언 (민주당 제명 후)',
+    },
   ];
 
   let governorCandidateCount = 0;
