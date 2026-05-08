@@ -4,6 +4,7 @@ import { useState, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { SearchIcon, MapPinIcon, FileTextIcon } from "lucide-react";
+import { trackEvent } from "@/lib/analytics";
 
 type SearchScope = "members" | "bills";
 
@@ -17,6 +18,7 @@ export default function HeroSearch() {
     const q = query.trim();
     if (!q) return;
     const path = scope === "members" ? "/members" : "/bills";
+    trackEvent("home_hero_action", { scope, query_length: q.length });
     router.push(`${path}?search=${encodeURIComponent(q)}`);
   };
 
@@ -91,12 +93,14 @@ export default function HeroSearch() {
       <div className="flex flex-wrap gap-2">
         <Link
           href="/my-district"
+          onClick={() => trackEvent("home_hero_action", { scope: "district" })}
           className="inline-flex items-center gap-1.5 rounded-full border border-(--color-border-primary) bg-(--color-bg-primary) px-3 py-1.5 text-xs font-medium text-(--color-text-primary) no-underline transition-colors hover:bg-(--color-bg-hover)"
         >
           <MapPinIcon aria-hidden className="h-3.5 w-3.5" />내 지역구 찾기
         </Link>
         <Link
           href="/bills"
+          onClick={() => trackEvent("home_hero_action", { scope: "bills_browse" })}
           className="inline-flex items-center gap-1.5 rounded-full border border-(--color-border-primary) bg-(--color-bg-primary) px-3 py-1.5 text-xs font-medium text-(--color-text-primary) no-underline transition-colors hover:bg-(--color-bg-hover)"
         >
           <FileTextIcon aria-hidden className="h-3.5 w-3.5" />
