@@ -22,12 +22,13 @@ export const metadata: Metadata = {
 };
 
 interface MembersPageProps {
-  searchParams: Promise<{ term?: string }>;
+  searchParams: Promise<{ term?: string; search?: string }>;
 }
 
 export default async function MembersPage({ searchParams }: MembersPageProps) {
   const params = await searchParams;
   const termId = Number(params.term) || 22;
+  const initialSearch = params.search?.trim() || undefined;
 
   return (
     <div className="space-y-6">
@@ -128,8 +129,8 @@ export default async function MembersPage({ searchParams }: MembersPageProps) {
       </section>
 
       {/* 전체 의원 목록 */}
-      <CongressWrapper key={`list-${termId}`} fallback={<MemberListSkeleton />}>
-        <MemberListInner termId={termId} />
+      <CongressWrapper key={`list-${termId}-${initialSearch ?? ""}`} fallback={<MemberListSkeleton />}>
+        <MemberListInner termId={termId} initialSearch={initialSearch} />
       </CongressWrapper>
     </div>
   );
