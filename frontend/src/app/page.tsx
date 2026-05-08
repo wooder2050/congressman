@@ -147,13 +147,13 @@ export default async function HomePage({ searchParams }: HomePageProps) {
         {/* 6·3 지방선거 배너 */}
         <LocalElectionBanner />
 
-        {/* 속보 배너 */}
-        <BreakingNewsBanner />
-
-        {/* 통계 요약 */}
+        {/* 통계 요약 — 사이트 정체성을 첫 화면에 노출 */}
         <CongressWrapper key={`stats-${termId}`} fallback={<HomeStatsSkeleton />}>
           <HomeStats termId={termId} />
         </CongressWrapper>
+
+        {/* 속보 배너 */}
+        <BreakingNewsBanner />
 
         {/* 내 관심 이슈 레이더 */}
         <PersonalizedFeed termId={termId} />
