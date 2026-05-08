@@ -10,7 +10,6 @@ import { TOPIC_MAP, BILL_STATUS_MAP } from "@/lib/constants";
 import { formatDate } from "@/lib/utils";
 import ColorBadge from "@/components/ui/color-badge";
 import InterestPicker from "@/components/home/InterestPicker";
-import LoginModal from "@/components/auth/LoginModal";
 
 interface PersonalizedFeedProps {
   termId: number;
@@ -20,7 +19,6 @@ export default function PersonalizedFeed({ termId }: PersonalizedFeedProps) {
   const { user, loading: authLoading } = useAuth();
   const { data: prefs, isLoading: prefsLoading } = useUserPreferences();
   const [editMode, setEditMode] = useState(false);
-  const [loginOpen, setLoginOpen] = useState(false);
 
   const interests = prefs?.interests ?? [];
 
@@ -38,26 +36,7 @@ export default function PersonalizedFeed({ termId }: PersonalizedFeedProps) {
 
   if (authLoading) return null;
 
-  if (!user) {
-    return (
-      <section className="space-y-3">
-        <h2 className="text-xl font-bold">내 관심 이슈</h2>
-        <div className="rounded-xl border border-(--color-border-primary) bg-(--color-bg-primary) p-5">
-          <p className="text-sm text-(--color-text-secondary)">
-            관심 이슈를 설정하고 맞춤 법안을 받아보세요.
-          </p>
-          <button
-            type="button"
-            onClick={() => setLoginOpen(true)}
-            className="mt-3 rounded-lg bg-(--color-primary) px-4 py-2 text-sm font-semibold text-white"
-          >
-            로그인하기
-          </button>
-        </div>
-        <LoginModal open={loginOpen} onClose={() => setLoginOpen(false)} />
-      </section>
-    );
-  }
+  if (!user) return null;
 
   if (prefsLoading) {
     return (
