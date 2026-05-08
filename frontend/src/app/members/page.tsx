@@ -129,7 +129,10 @@ export default async function MembersPage({ searchParams }: MembersPageProps) {
       </section>
 
       {/* 전체 의원 목록 */}
-      <CongressWrapper key={`list-${termId}-${initialSearch ?? ""}`} fallback={<MemberListSkeleton />}>
+      <CongressWrapper
+        key={`list-${termId}-${initialSearch ?? ""}`}
+        fallback={<MemberListSkeleton />}
+      >
         <MemberListInner termId={termId} initialSearch={initialSearch} />
       </CongressWrapper>
     </div>
