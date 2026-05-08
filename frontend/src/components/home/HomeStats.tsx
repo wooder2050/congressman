@@ -15,28 +15,24 @@ const statCards = [
     key: "memberCount" as const,
     label: "의원",
     unit: "명",
-    color: "text-blue-600",
     href: "/members",
   },
   {
     key: "billCount" as const,
     label: "발의 법안",
     unit: "건",
-    color: "text-emerald-600",
     href: "/bills",
   },
   {
     key: "voteCount" as const,
     label: "본회의 표결",
     unit: "건",
-    color: "text-purple-600",
     href: "/votes",
   },
   {
     key: "avgAttendanceRate" as const,
     label: "평균 출석률",
     unit: "%",
-    color: "text-amber-600",
     href: "",
     hint: METRIC_DEFINITIONS.attendanceRate,
   },
@@ -52,9 +48,11 @@ export default function HomeStats({ termId }: HomeStatsProps) {
       {statCards.map((card) => {
         const content = (
           <>
-            <p className={`text-2xl font-bold ${card.color}`}>
+            <p className="text-2xl font-bold text-(--color-text-primary) tabular-nums">
               {data[card.key].toLocaleString()}
-              <span className="ml-0.5 text-sm font-medium">{card.unit}</span>
+              <span className="ml-0.5 text-sm font-medium text-(--color-text-secondary)">
+                {card.unit}
+              </span>
             </p>
             <p className="mt-1 text-sm text-(--color-text-tertiary)">
               {card.label}

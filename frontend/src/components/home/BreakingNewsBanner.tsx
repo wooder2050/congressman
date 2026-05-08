@@ -39,7 +39,7 @@ export default async function BreakingNewsBanner() {
             <div className="px-4 pt-4 pb-3 sm:px-5">
               <div className="flex items-center gap-2">
                 <span className="relative flex h-2.5 w-2.5 shrink-0">
-                  <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-amber-500 opacity-75" />
+                  <span className="absolute inline-flex h-full w-full rounded-full bg-amber-500 opacity-75 motion-safe:animate-ping motion-reduce:hidden" />
                   <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-amber-500" />
                 </span>
                 <span
