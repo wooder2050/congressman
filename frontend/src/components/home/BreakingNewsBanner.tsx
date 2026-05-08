@@ -33,10 +33,7 @@ export default async function BreakingNewsBanner() {
     <section className="space-y-3">
       <div className="flex items-center justify-between">
         <h2 className="text-xl font-bold">속보</h2>
-        <Link
-          href="/today"
-          className="text-sm font-semibold text-(--color-primary) no-underline"
-        >
+        <Link href="/today" className="text-sm font-semibold text-(--color-primary) no-underline">
           전체 보기 →
         </Link>
       </div>
