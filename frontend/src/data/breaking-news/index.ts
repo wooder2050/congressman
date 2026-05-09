@@ -650,8 +650,7 @@ export const breakingNews: BreakingNewsItem[] = [
     ],
     sources: [
       {
-        title:
-          '"조작기소 특검, 지선 후 숙의 거쳐 판단"…결국 한 발 물러선 與 — 시사저널',
+        title: '"조작기소 특검, 지선 후 숙의 거쳐 판단"…결국 한 발 물러선 與 — 시사저널',
         url: "https://www.sisajournal.com/news/articleView.html?idxno=371923",
       },
       {
@@ -723,7 +722,7 @@ export const breakingNews: BreakingNewsItem[] = [
     items: [
       {
         label: "한동훈 출마선언",
-        value: '"운명 같은 선거 · 북구를 진짜 \'갑\'으로" · 5/10 만덕동 선거사무소 공식 개소식',
+        value: "\"운명 같은 선거 · 북구를 진짜 '갑'으로\" · 5/10 만덕동 선거사무소 공식 개소식",
       },
       {
         label: "3파전 후보 메시지",
@@ -750,7 +749,7 @@ export const breakingNews: BreakingNewsItem[] = [
         url: "https://imnews.imbc.com/news/2026/politics/article/6815030_36911.html",
       },
       {
-        title: "한동훈, 부산 북갑 보궐선거 예비후보 등록…\"李 공소취소시 탄핵\" — 파이낸셜뉴스",
+        title: '한동훈, 부산 북갑 보궐선거 예비후보 등록…"李 공소취소시 탄핵" — 파이낸셜뉴스',
         url: "https://www.fnnews.com/news/202605041435283085",
       },
     ],
