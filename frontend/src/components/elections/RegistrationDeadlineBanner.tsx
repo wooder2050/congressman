@@ -27,7 +27,7 @@ export default function RegistrationDeadlineBanner() {
   const daysToElection = daysUntil(ELECTION_DAY);
 
   return (
-    <section className="rounded-xl border border-(--color-primary) bg-blue-50 p-4 dark:bg-blue-950/30 sm:p-5">
+    <section className="rounded-xl border border-(--color-primary) bg-blue-50 p-4 sm:p-5 dark:bg-blue-950/30">
       <div className="flex flex-wrap items-center gap-2">
         <span className="rounded-md bg-(--color-primary) px-2 py-0.5 text-xs font-bold text-white">
           {stage === "open" ? "후보등록 진행 중" : `후보등록 D-${daysToReg}`}
@@ -44,9 +44,9 @@ export default function RegistrationDeadlineBanner() {
       </h3>
 
       <p className="mt-1.5 text-sm leading-relaxed text-(--color-text-secondary)">
-        후보자 등록(5/14~15)이 마감되면 중앙선관위 데이터를 통해 전체 선거구의 후보자 명단·경력·공약·재산
-        정보가 자동으로 업데이트됩니다. 그 전까지는 주요 격전지의 출마선언·예비후보 정보를 우선
-        제공합니다.
+        후보자 등록(5/14~15)이 마감되면 중앙선관위 데이터를 통해 전체 선거구의 후보자
+        명단·경력·공약·재산 정보가 자동으로 업데이트됩니다. 그 전까지는 주요 격전지의
+        출마선언·예비후보 정보를 우선 제공합니다.
       </p>
 
       <div className="mt-3 grid grid-cols-2 gap-2 text-xs sm:grid-cols-4">
