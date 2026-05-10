@@ -29,7 +29,7 @@ export default function LocalRegistrationBanner() {
   const daysToElection = daysUntil(ELECTION_DAY);
 
   return (
-    <section className="space-y-3 rounded-xl border border-(--color-primary) bg-blue-50 p-4 dark:bg-blue-950/30 sm:p-5">
+    <section className="space-y-3 rounded-xl border border-(--color-primary) bg-blue-50 p-4 sm:p-5 dark:bg-blue-950/30">
       <div className="flex flex-wrap items-center gap-2">
         <span className="rounded-md bg-(--color-primary) px-2 py-0.5 text-xs font-bold text-white">
           {stage === "open" ? "후보등록 진행 중" : `후보등록 D-${daysToReg}`}
