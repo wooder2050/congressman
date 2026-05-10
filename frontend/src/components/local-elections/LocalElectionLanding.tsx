@@ -6,6 +6,7 @@ import { getLocalElection } from "@/lib/api";
 import type { LocalElectionType } from "@/types";
 import { ELECTION_TYPES } from "@/constants/local-elections";
 import LocalElectionHeader from "./LocalElectionHeader";
+import LocalRegistrationBanner from "./LocalRegistrationBanner";
 import RegionGrid from "./RegionGrid";
 
 const TYPE_ROUTES: Record<LocalElectionType, string> = {
@@ -30,6 +31,9 @@ export default function LocalElectionLanding({ year }: { year: string }) {
   return (
     <div className="space-y-8">
       <LocalElectionHeader election={election} />
+
+      {/* 후보등록 마감 안내 배너 (5/14~15 전까지만 노출) */}
+      <LocalRegistrationBanner />
 
       {/* 선거 유형별 카드 */}
       <section>
