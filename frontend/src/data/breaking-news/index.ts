@@ -667,7 +667,7 @@ export const breakingNews: BreakingNewsItem[] = [
         url: "https://www.dt.co.kr/article/12060744",
       },
     ],
-    active: true,
+    active: false,
   },
   {
     id: "2026-05-07-by-election-d27-han-donghoon-interview",
@@ -751,6 +751,52 @@ export const breakingNews: BreakingNewsItem[] = [
       {
         title: '한동훈, 부산 북갑 보궐선거 예비후보 등록…"李 공소취소시 탄핵" — 파이낸셜뉴스',
         url: "https://www.fnnews.com/news/202605041435283085",
+      },
+    ],
+    linkUrl: "/elections/2026-06-03",
+    active: false,
+  },
+  {
+    id: "2026-05-10-by-election-d24-busan-buk-a-opening",
+    title: "6·3 재보궐 D-24 — 한동훈·박민식 부산 북갑 동시 개소식, 도보 10분 거리 보수 주도권 격돌",
+    description:
+      '6·3 재보궐선거가 24일 앞으로 다가온 5월 10일, 부산 북갑 격전지에서 한동훈(무소속)·박민식(국민의힘) 두 후보가 같은 날 오후 2시 도보 10분 거리에 위치한 선거사무소를 동시에 개소했습니다. 박민식 후보 개소식에는 장동혁 대표 등 국민의힘 지도부가 총출동해 당의 공식 지지를 표시했고, 한동훈 후보 개소식에는 서병수 전 의원, 진종오·한지아 의원 등 친한계 인사들이 결집했습니다. 한 후보는 8일 라디오 인터뷰에서 친한계 의원들에게 "이번에는 멀리서 마음만 전해달라"며 "오로지 북갑 주민만 바라보겠다"고 자제를 당부했지만, 두 행사는 사실상 장동혁 지도부와 친한계의 세 대결 무대로 전개돼 보수 진영 내 주도권 경쟁의 분수령이 됐습니다.',
+    date: "2026-05-10",
+    category: "election",
+    items: [
+      {
+        label: "동시 개소식",
+        value: "5/10 오후 2시 · 한동훈(무소속) vs 박민식(국힘) · 사무소 간 도보 10분 거리",
+      },
+      {
+        label: "박민식 측 진영",
+        value: "장동혁 대표 등 국민의힘 지도부·중진 총출동 → 당 공식 지지 과시",
+      },
+      {
+        label: "한동훈 측 진영",
+        value: '서병수 전 의원·진종오·한지아 등 친한계 결집 · 한동훈은 "마음만 전해달라" 자제 요청',
+      },
+      {
+        label: "남은 일정",
+        value: "5/14~15 후보등록 · 5/22~6/2 공식선거운동 · 5/29~30 사전투표 · 6/3 본투표",
+      },
+    ],
+    sources: [
+      {
+        title: "10분 거리서 혈투… '부산북갑' 박민식·한동훈 개소식 관심집중 — 아시아투데이",
+        url: "https://www.asiatoday.co.kr/kn/view.php?key=20260508010001668",
+      },
+      {
+        title: '한동훈 "친한계 참석 대신 마음만 전해달라" — 아주경제',
+        url: "https://www.ajunews.com/view/20260508134607890",
+      },
+      {
+        title: "박민식·한동훈 한날한시 맞불 출정식… 세 과시 — 국민일보",
+        url: "https://www.kmib.co.kr/article/view.asp?arcid=1778140215&code=11121100&sid1=pol",
+      },
+      {
+        title: "국힘 탈당 부산 5선 서병수…한동훈 선대위 합류 — 문화일보",
+        url: "https://www.munhwa.com/article/11587528",
       },
     ],
     linkUrl: "/elections/2026-06-03",

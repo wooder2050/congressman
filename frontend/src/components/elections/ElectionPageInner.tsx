@@ -11,6 +11,8 @@ import ElectionHeader from "./ElectionHeader";
 import ElectionTimeline from "./ElectionTimeline";
 import VoteGuidePreview from "./VoteGuidePreview";
 import DistrictSection from "./DistrictSection";
+import RegistrationDeadlineBanner from "./RegistrationDeadlineBanner";
+import ByElectionHotspots from "./ByElectionHotspots";
 
 /** 지역별 정렬 순서 */
 const REGION_ORDER = [
@@ -90,6 +92,12 @@ export default function ElectionPageInner({ electionId }: { electionId: string }
 
       {/* 일정 타임라인 */}
       <ElectionTimeline />
+
+      {/* 후보등록 마감 안내 배너 (5/14~15 전까지만 노출) */}
+      <RegistrationDeadlineBanner />
+
+      {/* 핫스팟 선거구 미리보기 */}
+      <ByElectionHotspots />
 
       {/* 요약 테이블 */}
       <section className="overflow-hidden rounded-xl border border-(--color-border-primary) bg-(--color-bg-primary)">
