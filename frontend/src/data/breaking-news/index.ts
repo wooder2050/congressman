@@ -757,6 +757,98 @@ export const breakingNews: BreakingNewsItem[] = [
     active: false,
   },
   {
+    id: "2026-05-12-by-election-d22-busan-buk-a-sbs-poll",
+    title:
+      "6·3 재보궐 D-22 — 부산 북갑 SBS·넥스트리서치 '하정우 38·박민식 26·한동훈 21', 보수 단일화 압박 격화",
+    description:
+      "SBS·넥스트리서치가 5월 12일 공표한 부산 북갑 보궐선거 여론조사에서 하정우(민주) 38%, 박민식(국민의힘) 26%, 한동훈(무소속) 21%로 집계됐습니다. 박민식 후보가 한동훈 후보를 3자 대결에서 처음으로 앞선 결과로, 5/11 KBS부산·한국리서치 조사(하 37·한 30·박 17)와 보수 후보 순위가 뒤집혔습니다. 양자 대결에서는 하정우 vs 박민식 46% vs 36%, 하정우 vs 한동훈 43% vs 30%. 보수 단일화 응답은 전체 찬성 39% · 반대 34%로 팽팽했으나 국민의힘 지지층은 71%가 단일화에 찬성했습니다. 단일 후보 적합도는 박민식 42% vs 한동훈 41%로 비등하며, 투표용지 인쇄(5/18)·사전투표 전날(5/28)이 단일화 시한으로 거론됩니다.",
+    date: "2026-05-12",
+    category: "election",
+    items: [
+      {
+        label: "3자 대결",
+        value: "하정우(민주) 38% · 박민식(국힘) 26% · 한동훈(무소속) 21%",
+      },
+      {
+        label: "양자 대결",
+        value: "하정우 vs 박민식 46% vs 36% · 하정우 vs 한동훈 43% vs 30%",
+      },
+      {
+        label: "보수 단일화 응답",
+        value: "전체 찬성 39% vs 반대 34% · 국힘 지지층은 71% 찬성",
+      },
+      {
+        label: "단일 후보 적합도",
+        value: "박민식 42% vs 한동훈 41% — 보수 진영 내 주도권 경쟁 격화",
+      },
+      {
+        label: "조사 개요",
+        value:
+          "SBS·넥스트리서치 · 5/1~3 · 만 18세 이상 503명 · 무선 전화면접 · 응답률 14.4% · ±4.4%p(95% 신뢰수준)",
+      },
+    ],
+    sources: [
+      {
+        title: "SBS 여론조사…부산 북갑 하정우 38% 박민식 26% 한동훈 21% — SBS",
+        url: "https://news.sbs.co.kr/news/endPage.do?news_id=N1008547251",
+      },
+      {
+        title: "부산 북갑 초접전으로?…보수 단일화론 커지는데 '박·한 충돌' 격화 — 머니투데이",
+        url: "https://www.mt.co.kr/politics/2026/05/12/2026051209553383734",
+      },
+      {
+        title:
+          "'부산 북갑' 하정우 37%·한동훈 30%·박민식 17% 재편…국힘 과반 韓 지지로 — 디지털타임스",
+        url: "https://www.dt.co.kr/article/12061876",
+      },
+    ],
+    linkUrl: "/elections/2026-06-03",
+    active: true,
+  },
+  {
+    id: "2026-05-12-by-election-d22-busan-buk-a-tv-debate",
+    title:
+      '6·3 재보궐 D-22 — 부산 북갑 TV 토론 공방, 한동훈·박민식 "나오라" vs 하정우 "쌈박질할 시간 없다"',
+    description:
+      'KBS부산이 제안한 5월 22일 부산 북갑 TV 생방송 토론을 두고 후보 간 공방이 격화됐습니다. 한동훈 후보는 12일 SNS에서 "제의받은 즉시 응하겠다"며 하정우·박민식 후보에게도 동참을 요구했고, "공영방송 KBS 토론도 못하면서 어떻게 북구를 살리겠다는 거냐"고 압박했습니다. 박민식 후보 역시 "유권자 앞에서 당당히 검증받는 것이 후보의 기본 책무"라며 환영 입장을 냈습니다. 반면 하정우 후보 측은 "법정 TV 토론에는 참여하지만 외부 기관 추가 토론에는 응하지 않겠다"며 "쌈박질할 시간 하나도 없다. 일만 열심히 하겠다"고 거절해, 양강 보수 후보들의 토론 공세에 맞불을 놓은 모양새가 됐습니다.',
+    date: "2026-05-12",
+    category: "election",
+    items: [
+      {
+        label: "토론 일정",
+        value: "KBS부산 제안 5/22 저녁 생방송 — 한·박 응전, 하 불참",
+      },
+      {
+        label: "한동훈 입장",
+        value: '"제의받은 즉시 응하겠다 · 공영방송 토론도 못 하나" 압박',
+      },
+      {
+        label: "박민식 입장",
+        value: '"유권자 앞 검증은 후보의 기본 책무" — 정책·비전 토론 환영',
+      },
+      {
+        label: "하정우 입장",
+        value: '"법정 TV 토론만 참여 · 외부 추가 토론 불참" · "쌈박질할 시간 없다"',
+      },
+    ],
+    sources: [
+      {
+        title: '박민식·한동훈 "토론 나와라"…하정우 "쌈박질할 시간 없다" — 파이낸셜뉴스',
+        url: "https://www.fnnews.com/news/202605121144266977",
+      },
+      {
+        title: '한동훈 "하정우·박민식, 숨지 말고 TV토론 응하라" 공개 요구 — 인사이트',
+        url: "https://www.insight.co.kr/news/553663",
+      },
+      {
+        title: "부산 북갑 보궐선거 TV토론 참여 놓고 한동훈·하정우·박민식 후보 대립 — 일간투데이",
+        url: "https://www.dtoday.co.kr/news/articleView.html?idxno=769692",
+      },
+    ],
+    linkUrl: "/elections/2026-06-03",
+    active: true,
+  },
+  {
     id: "2026-05-11-by-election-d23-busan-buk-a-poll",
     title:
       "6·3 재보궐 D-23 — 부산 북갑 첫 공식 여론조사 '하정우 37% · 한동훈 30% · 박민식 17%', 보수 단일화 찬반 오차범위 내",
@@ -798,7 +890,7 @@ export const breakingNews: BreakingNewsItem[] = [
       },
     ],
     linkUrl: "/elections/2026-06-03",
-    active: true,
+    active: false,
   },
   {
     id: "2026-05-11-fake-indictment-special-counsel-postponed",
@@ -844,7 +936,7 @@ export const breakingNews: BreakingNewsItem[] = [
         url: "https://www.etoday.co.kr/news/view/2582883",
       },
     ],
-    active: true,
+    active: false,
   },
   {
     id: "2026-05-10-by-election-d24-busan-buk-a-opening",

@@ -15,28 +15,30 @@ const HOTSPOTS: Hotspot[] = [
   {
     region: "부산",
     district: "북구갑",
-    headline: "첫 공식 여론조사 — 하정우 37 · 한동훈 30 · 박민식 17, 보수 단일화 찬반 오차범위 내",
+    headline:
+      "SBS·넥스트리서치 — 하정우 38 · 박민식 26 · 한동훈 21, 보수 단일화 압박·TV 토론 공방 격화",
     candidates: [
       {
         name: "하정우",
         party: "더불어민주당",
         partyColor: "#152484",
-        note: '3자 37%로 선두 · "AI 교육 1번지" 공약',
-      },
-      {
-        name: "한동훈",
-        party: "무소속",
-        partyColor: "#9ca3af",
-        note: "前 국민의힘 대표 · 양자대결 37 vs 40 오차범위 내",
+        note: '3자 38%로 선두 · TV 토론은 "쌈박질할 시간 없다" 불참',
       },
       {
         name: "박민식",
         party: "국민의힘",
         partyColor: "#E61E2B",
-        note: "국힘 지도부 공식 지지 · 3자 17%",
+        note: "3자 26% — 첫 한동훈 추월 · 단일 적합도 42(韓 41) 비등",
+      },
+      {
+        name: "한동훈",
+        party: "무소속",
+        partyColor: "#9ca3af",
+        note: "3자 21% — 박민식에 첫 역전 · KBS 5/22 토론 즉응",
       },
     ],
-    context: "KBS부산·한국리서치 5/8~10 조사(5/11 공표) · 보수 단일화 찬성 44 vs 반대 40",
+    context:
+      "SBS·넥스트리서치 5/1~3 조사(5/12 공표) · 단일화 전체 찬성 39 vs 반대 34 · 국힘 지지층 71% 찬성",
   },
   {
     region: "경기",
@@ -82,7 +84,7 @@ export default function ByElectionHotspots() {
       <div className="flex items-baseline justify-between">
         <h2 className="text-lg font-bold text-(--color-text-primary)">핫스팟 선거구</h2>
         <span className="text-xs text-(--color-text-tertiary)">
-          5/11 기준 · 후보등록 5/14~15 마감
+          5/12 기준 · 후보등록 5/14~15 마감
         </span>
       </div>
       <p className="text-sm text-(--color-text-secondary)">
