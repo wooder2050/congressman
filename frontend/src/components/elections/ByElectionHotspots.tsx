@@ -43,38 +43,41 @@ const HOTSPOTS: Hotspot[] = [
   {
     region: "경기",
     district: "평택을",
-    headline: "조국·유의동·김용남·김재연·황교안 5파전 — 단일화 무산 다자 구도",
+    headline: "5파전 + 황교안 '단일화·합당' 카드 — 김용남 28.8·유의동 22.5·조국 22.2 박빙",
     candidates: [
       {
-        name: "조국",
-        party: "조국혁신당",
-        partyColor: "#06275E",
-        note: "혁신당 대표 직접 출마",
+        name: "김용남",
+        party: "더불어민주당",
+        partyColor: "#152484",
+        note: "3자 선두 28.8% · 민주당 단수 공천",
       },
       {
         name: "유의동",
         party: "국민의힘",
         partyColor: "#E61E2B",
-        note: "前 정책위의장",
+        note: '22.5% · 단일화에 "신중" 입장 유지',
       },
       {
-        name: "김용남",
-        party: "더불어민주당",
-        partyColor: "#152484",
-      },
-      {
-        name: "김재연",
-        party: "진보당",
-        partyColor: "#D6001C",
+        name: "조국",
+        party: "조국혁신당",
+        partyColor: "#06275E",
+        note: "22.2% · 혁신당 대표 직접 출마",
       },
       {
         name: "황교안",
         party: "자유와혁신",
         partyColor: "#FF7E00",
-        note: "前 국무총리",
+        note: '前 총리 · "보수 합당까지 각오" 단일화 압박',
+      },
+      {
+        name: "김재연",
+        party: "진보당",
+        partyColor: "#D6001C",
+        note: "진보당 상임대표",
       },
     ],
-    context: "민주·국힘 단일화 공식 무산 · 19~21대 보수 강세 험지",
+    context:
+      "뉴스토마토 여론조사 · 19~21대 보수 강세 험지 · 황교안 단일화·합당 카드로 보수 재정렬 시도",
   },
 ];
 
