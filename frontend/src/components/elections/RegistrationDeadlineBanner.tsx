@@ -40,7 +40,9 @@ export default function RegistrationDeadlineBanner() {
       <h3 className="mt-2.5 text-base font-bold text-(--color-text-primary) sm:text-lg">
         {stage === "open"
           ? "📋 5/14~15 후보등록 진행 중 — 등록 마감 후 전체 후보 정보 갱신"
-          : "📋 5/14~15 후보등록 마감 임박 — 등록 후 전체 후보 정보 자동 갱신"}
+          : daysToReg <= 1
+            ? "📋 내일(5/14)부터 후보등록 개시 — 마감(5/15) 후 전체 후보 정보 자동 갱신"
+            : "📋 5/14~15 후보등록 마감 임박 — 등록 후 전체 후보 정보 자동 갱신"}
       </h3>
 
       <p className="mt-1.5 text-sm leading-relaxed text-(--color-text-secondary)">

@@ -41,7 +41,11 @@ export default function LocalRegistrationBanner() {
 
       <div>
         <h3 className="text-base font-bold text-(--color-text-primary) sm:text-lg">
-          🗳️ 5/14~15 후보등록 마감 — 등록 후 17개 시·도 전체 후보 정보 자동 갱신
+          {stage === "open"
+            ? "🗳️ 5/14~15 후보등록 진행 중 — 마감 후 17개 시·도 전체 후보 정보 자동 갱신"
+            : daysToReg <= 1
+              ? "🗳️ 내일(5/14)부터 후보등록 개시 — 17개 시·도 전체 후보 정보 자동 갱신"
+              : "🗳️ 5/14~15 후보등록 마감 — 등록 후 17개 시·도 전체 후보 정보 자동 갱신"}
         </h3>
         <p className="mt-1.5 text-sm leading-relaxed text-(--color-text-secondary)">
           후보자 등록(5/14~15)이 마감되면 중앙선관위 공식 데이터를 통해
