@@ -16,40 +16,40 @@ const HOTSPOTS: Hotspot[] = [
     region: "부산",
     district: "북구갑",
     headline:
-      'D-21 · 부산 시민사회 "박민식·한동훈 즉시 만나 단일화 협의" 공개 촉구 — 후보등록 임박(5/14~15)',
+      'D-20 · 후보등록 첫날 3파전 확정 — 갤럽 \'하정우 39·한동훈 29·박민식 21\', 양자대결 하-한 오차범위 내 접전',
     candidates: [
       {
         name: "하정우",
         party: "더불어민주당",
         partyColor: "#152484",
-        note: "SBS 3자 38% · KBS 3자 37%로 양대 조사 선두 유지",
-      },
-      {
-        name: "박민식",
-        party: "국민의힘",
-        partyColor: "#E61E2B",
-        note: '"여당 후보 중심 단일화" 고수 · SBS 26%로 韓 첫 추월',
+        note: "갤럽 39%로 3개 조사 연속 선두 · 양자 vs 韓 46% vs 40% 접전",
       },
       {
         name: "한동훈",
         party: "무소속",
         partyColor: "#9ca3af",
-        note: '"시민 여론이 먼저" · 단일 후보 적합도 41%로 朴(42%)과 비등',
+        note: '갤럽 29%로 朴 재역전 · 양자 vs 하정우 40% 오차범위 내',
+      },
+      {
+        name: "박민식",
+        party: "국민의힘",
+        partyColor: "#E61E2B",
+        note: '갤럽 21% · "단일화 가능성 제로" 고수, 양자 vs 하정우 37%',
       },
     ],
     context:
-      "부산범시민사회단체연합 5/13 기자회견 · 투표용지 인쇄 5/18 · 사전투표 전날 5/28이 단일화 시한",
+      "한국갤럽 단일화 찬반 40 vs 40 팽팽 · 5/14~15 후보등록 · 투표용지 인쇄 5/18 · 사전투표 전날 5/28이 단일화 시한",
   },
   {
     region: "경기",
     district: "평택을",
-    headline: "D-21 · 5파전 + 황교안 '단일화·합당' 카드 — 김용남 28.8·유의동 22.5·조국 22.2 박빙",
+    headline: "D-20 · 5파전 후보등록 — 김용남 28.8·유의동 22.5·조국 22.2 박빙, 단일화 입장 평행선",
     candidates: [
       {
         name: "김용남",
         party: "더불어민주당",
         partyColor: "#152484",
-        note: "3자 선두 28.8% · 민주당 단수 공천",
+        note: '3자 선두 28.8% · "후보 단계 단일화 논의 없다"',
       },
       {
         name: "유의동",
@@ -61,23 +61,23 @@ const HOTSPOTS: Hotspot[] = [
         name: "조국",
         party: "조국혁신당",
         partyColor: "#06275E",
-        note: "22.2% · 혁신당 대표 직접 출마",
+        note: '22.2% · "민심만 믿고 3표 차 승리" 단일화 거부',
       },
       {
         name: "황교안",
         party: "자유와혁신",
         partyColor: "#FF7E00",
-        note: '前 총리 · "보수 합당까지 각오" 단일화 압박',
+        note: '8.9% · 前 총리 · "보수 합당까지 각오" 단일화 압박',
       },
       {
         name: "김재연",
         party: "진보당",
         partyColor: "#D6001C",
-        note: "진보당 상임대표",
+        note: "8.8% · 진보당 상임대표",
       },
     ],
     context:
-      "뉴스토마토 여론조사 · 19~21대 보수 강세 험지 · 황교안 단일화·합당 카드로 보수 재정렬 시도",
+      "미디어토마토 여론조사 · 범진보 단일화 필요 36.9% vs 불필요 42.0% · 19~21대 보수 강세 험지",
   },
 ];
 
@@ -87,7 +87,7 @@ export default function ByElectionHotspots() {
       <div className="flex items-baseline justify-between">
         <h2 className="text-lg font-bold text-(--color-text-primary)">핫스팟 선거구</h2>
         <span className="text-xs text-(--color-text-tertiary)">
-          5/13 기준 · 후보등록 내일(5/14)부터 · D-21
+          5/14 기준 · 후보등록 진행 중(5/14~15) · D-20
         </span>
       </div>
       <p className="text-sm text-(--color-text-secondary)">
@@ -145,7 +145,7 @@ export default function ByElectionHotspots() {
       </div>
 
       <div className="rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-xs text-amber-900 dark:border-amber-900/50 dark:bg-amber-950/30 dark:text-amber-200">
-        <span className="font-semibold">📌 안내</span> · 후보등록(5/14~15)이 완료되면 전체 14개
+        <span className="font-semibold">📌 안내</span> · 후보등록(5/14~15) 마감 후 전체 14개
         선거구의 모든 후보 정보가{" "}
         <Link href="/elections/2026-06-03" className="font-medium underline hover:no-underline">
           전체 선거구 현황
