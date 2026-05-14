@@ -16,7 +16,7 @@ const HOTSPOTS: Hotspot[] = [
     region: "부산",
     district: "북구갑",
     headline:
-      'D-20 · 후보등록 첫날 3파전 확정 — 갤럽 \'하정우 39·한동훈 29·박민식 21\', 양자대결 하-한 오차범위 내 접전',
+      "D-20 · 후보등록 첫날 3파전 확정 — 갤럽 '하정우 39·한동훈 29·박민식 21', 양자대결 하-한 오차범위 내 접전",
     candidates: [
       {
         name: "하정우",
@@ -28,7 +28,7 @@ const HOTSPOTS: Hotspot[] = [
         name: "한동훈",
         party: "무소속",
         partyColor: "#9ca3af",
-        note: '갤럽 29%로 朴 재역전 · 양자 vs 하정우 40% 오차범위 내',
+        note: "갤럽 29%로 朴 재역전 · 양자 vs 하정우 40% 오차범위 내",
       },
       {
         name: "박민식",
