@@ -13,7 +13,9 @@ const TYPE_ROUTES: Record<LocalElectionType, string> = {
   governor: "governor",
   mayor: "mayor",
   "metro-council": "metro-council",
+  "metro-proportional": "metro-proportional",
   "local-council": "local-council",
+  "local-proportional": "local-proportional",
   superintendent: "superintendent",
 };
 

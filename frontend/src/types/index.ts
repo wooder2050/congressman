@@ -561,7 +561,9 @@ export type LocalElectionType =
   | "governor"
   | "mayor"
   | "metro-council"
+  | "metro-proportional"
   | "local-council"
+  | "local-proportional"
   | "superintendent";
 
 export interface LocalElectionSummary {
