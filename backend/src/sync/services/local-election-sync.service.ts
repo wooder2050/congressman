@@ -3,6 +3,7 @@ import { NecApiService } from './nec-api.service';
 import { SyncLogService } from './sync-log.service';
 import { getPartyId, getPartyColor } from '../constants/party-map';
 import { NEC_TYPE_TO_ELECTION_TYPE, PROPORTIONAL_NEC_CODES } from '../constants/nec-election-map';
+import { normalizeSido, normalizeSigungu } from '../constants/region-normalize';
 
 /** NEC 후보자 API 응답 row */
 interface NecCandidateRow {
@@ -91,17 +92,17 @@ export class LocalElectionSyncService {
           // - code 5 (광역 비례): sido 단위 → district = "비례대표"
           // - code 7 (기초 비례): sido + sigungu 단위 → district = "비례대표"
           // - 그 외 지역구: NEC sggName/wiwName 그대로
-          const sido = row.sdName;
+          const sido = normalizeSido(row.sdName);
           let sigungu: string;
           let district: string;
           if (necCode === '5') {
             sigungu = '';
             district = '비례대표';
           } else if (necCode === '7') {
-            sigungu = row.wiwName ?? '';
+            sigungu = normalizeSigungu(row.wiwName);
             district = '비례대표';
           } else {
-            sigungu = ['2', '10'].includes(necCode) ? '' : (row.wiwName ?? '');
+            sigungu = ['2', '10'].includes(necCode) ? '' : normalizeSigungu(row.wiwName);
             district = ['2', '3', '10'].includes(necCode) ? '' : (row.sggName ?? '');
           }
           const displayName = this.buildDisplayName(

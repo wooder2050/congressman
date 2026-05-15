@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { RedisService } from '../redis/redis.service';
+import { ALLOWED_SIDO_LIST } from './region-allowlist';
 
 function getCacheTTL(status: string): number {
   switch (status) {
@@ -161,7 +162,10 @@ export class LocalElectionsService {
 
   /** race 목록 (필터 + 페이지네이션 + 검색) */
   async getRaces(id: string, filter: RaceFilter) {
-    const where: Record<string, unknown> = { electionId: id };
+    const where: Record<string, unknown> = {
+      electionId: id,
+      sido: { in: [...ALLOWED_SIDO_LIST] },
+    };
     if (filter.type) where.electionType = filter.type;
     if (filter.sido) where.sido = filter.sido;
     if (filter.sigungu) where.sigungu = filter.sigungu;
@@ -286,12 +290,12 @@ export class LocalElectionsService {
 
   /** 17개 시도 요약 */
   async getRegions(id: string) {
-    const key = `local-elections:${id}:regions`;
+    const key = `local-elections:${id}:regions:v2`;
     const cached = await this.redis.get(key);
     if (cached) return cached;
 
     const races = await this.prisma.localElectionRace.findMany({
-      where: { electionId: id },
+      where: { electionId: id, sido: { in: [...ALLOWED_SIDO_LIST] } },
       select: {
         electionType: true,
         sido: true,
@@ -331,9 +335,22 @@ export class LocalElectionsService {
     return result;
   }
 
-  /** 시도별 전체 race */
+  /**
+   * 시도별 전체 race + 투표용지(7장) 분류 + 시군구별 그룹핑.
+   *
+   * 한국 유권자의 mental model("내가 받는 투표용지")에 맞춰 race를 분류:
+   *  1. governor (시도지사)
+   *  2. superintendent (교육감)
+   *  3. metro-council (광역의원 지역구)
+   *  4. metro-proportional (광역의원 비례)
+   *  5. mayor (기초단체장)
+   *  6. local-council (기초의원 지역구)
+   *  7. local-proportional (기초의원 비례)
+   *
+   * 시군구별 그룹핑은 클라이언트가 "내 동네"만 선택해서 볼 수 있게 한다.
+   */
   async getRegionDetail(id: string, sido: string) {
-    const key = `local-elections:${id}:region:${sido}`;
+    const key = `local-elections:${id}:region:${sido}:v2`;
     const cached = await this.redis.get(key);
     if (cached) return cached;
 
@@ -350,32 +367,45 @@ export class LocalElectionsService {
       orderBy: [{ electionType: 'asc' }, { sigungu: 'asc' }, { district: 'asc' }],
     });
 
+    const flatRaces = races.map((r) => ({
+      id: r.id,
+      electionType: r.electionType,
+      sido: r.sido,
+      sigungu: r.sigungu,
+      district: r.district,
+      displayName: r.displayName,
+      seatCount: r.seatCount,
+      candidateCount: r._count.candidates,
+      topCandidates: r.candidates.map((c) => ({
+        id: c.id,
+        name: c.name,
+        party: c.party
+          ? {
+              id: c.party.id,
+              name: c.party.name,
+              shortName: c.party.shortName,
+              color: c.party.color,
+            }
+          : null,
+        candidateNumber: c.candidateNumber,
+        photoUrl: c.photoUrl,
+      })),
+    }));
+
+    // 시군구 목록 (race 수와 함께)
+    const sigunguCountMap = new Map<string, number>();
+    for (const r of flatRaces) {
+      if (!r.sigungu) continue;
+      sigunguCountMap.set(r.sigungu, (sigunguCountMap.get(r.sigungu) ?? 0) + 1);
+    }
+    const sigunguList = Array.from(sigunguCountMap.entries())
+      .map(([name, raceCount]) => ({ name, raceCount }))
+      .sort((a, b) => a.name.localeCompare(b.name, 'ko'));
+
     const result = {
       sido,
-      races: races.map((r) => ({
-        id: r.id,
-        electionType: r.electionType,
-        sido: r.sido,
-        sigungu: r.sigungu,
-        district: r.district,
-        displayName: r.displayName,
-        seatCount: r.seatCount,
-        candidateCount: r._count.candidates,
-        topCandidates: r.candidates.map((c) => ({
-          id: c.id,
-          name: c.name,
-          party: c.party
-            ? {
-                id: c.party.id,
-                name: c.party.name,
-                shortName: c.party.shortName,
-                color: c.party.color,
-              }
-            : null,
-          candidateNumber: c.candidateNumber,
-          photoUrl: c.photoUrl,
-        })),
-      })),
+      races: flatRaces,
+      sigunguList,
     };
 
     await this.redis.set(key, result, 3600);
