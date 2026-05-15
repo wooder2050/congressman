@@ -12,6 +12,7 @@ const PARTY_NAME_TO_ID: Record<string, string> = {
   진보당: 'progressive',
   기본소득당: 'basic-income',
   사회민주당: 'social-democratic',
+  자유와혁신: 'freedom-innovation',
   // 21대
   더불어시민당: 'citizens',
   미래통합당: 'united-future',
@@ -40,6 +41,7 @@ const PARTY_COLORS: Record<string, string> = {
   progressive: '#D6001C',
   'basic-income': '#00D2C3',
   'social-democratic': '#F58400',
+  'freedom-innovation': '#A50034',
   'new-future': '#45BABD',
   independent: '#999999',
   // 21대
