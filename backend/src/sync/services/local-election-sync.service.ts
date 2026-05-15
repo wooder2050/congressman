@@ -2,7 +2,7 @@ import { PrismaClient } from '@prisma/client';
 import { NecApiService } from './nec-api.service';
 import { SyncLogService } from './sync-log.service';
 import { getPartyId, getPartyColor } from '../constants/party-map';
-import { NEC_TYPE_TO_ELECTION_TYPE } from '../constants/nec-election-map';
+import { NEC_TYPE_TO_ELECTION_TYPE, PROPORTIONAL_NEC_CODES } from '../constants/nec-election-map';
 
 /** NEC 후보자 API 응답 row */
 interface NecCandidateRow {
@@ -84,11 +84,26 @@ export class LocalElectionSyncService {
           { sgId, sgTypecode: necCode },
         );
 
+        const isProportional = PROPORTIONAL_NEC_CODES.has(necCode);
+
         for (const row of rows) {
-          // race upsert
+          // race upsert — 비례대표는 scope 단위 1개 race로 통합
+          // - code 5 (광역 비례): sido 단위 → district = "비례대표"
+          // - code 7 (기초 비례): sido + sigungu 단위 → district = "비례대표"
+          // - 그 외 지역구: NEC sggName/wiwName 그대로
           const sido = row.sdName;
-          const sigungu = ['2', '10'].includes(necCode) ? '' : (row.wiwName ?? '');
-          const district = ['2', '3', '10'].includes(necCode) ? '' : (row.sggName ?? '');
+          let sigungu: string;
+          let district: string;
+          if (necCode === '5') {
+            sigungu = '';
+            district = '비례대표';
+          } else if (necCode === '7') {
+            sigungu = row.wiwName ?? '';
+            district = '비례대표';
+          } else {
+            sigungu = ['2', '10'].includes(necCode) ? '' : (row.wiwName ?? '');
+            district = ['2', '3', '10'].includes(necCode) ? '' : (row.sggName ?? '');
+          }
           const displayName = this.buildDisplayName(
             electionType,
             sido,
@@ -140,36 +155,59 @@ export class LocalElectionSyncService {
           }
 
           // candidate upsert
+          // 비례대표는 한 race에 같은 정당 후보자가 여러 명(추천순위 1~N) 들어가며
+          // 동명이인 가능성이 있어 huboid를 기준으로 식별. NEC가 huboid를 안 주면
+          // raceId_name fallback.
           const career = [row.career1, row.career2].filter(Boolean).join('\n');
+          const candidateData = {
+            partyId,
+            birthDate: row.birthday ?? null,
+            gender: row.gender ?? null,
+            career: career || null,
+            education: row.edu ?? null,
+            candidateNumber: row.giho ? parseInt(row.giho, 10) : null,
+            huboid: row.huboid ?? '',
+          };
 
-          await this.prisma.localElectionCandidate.upsert({
-            where: {
-              raceId_name: { raceId: race.id, name: row.name },
-            },
-            create: {
-              raceId: race.id,
-              name: row.name,
-              partyId,
-              birthDate: row.birthday ?? null,
-              gender: row.gender ?? null,
-              career: career || null,
-              education: row.edu ?? null,
-              candidateNumber: row.giho ? parseInt(row.giho, 10) : null,
-              status: 'registered',
-              huboid: row.huboid ?? '',
-            },
-            update: {
-              partyId,
-              birthDate: row.birthday ?? null,
-              gender: row.gender ?? null,
-              career: career || null,
-              education: row.edu ?? null,
-              candidateNumber: row.giho ? parseInt(row.giho, 10) : null,
-              huboid: row.huboid ?? '',
-            },
-          });
+          // 1순위: huboid로 식별 (NEC 후보자 ID — 가장 안전)
+          // 2순위: raceId+name unique로 fallback (동명이인은 sync 단계에서는 같은 사람으로 취급, 추후 huboid 받으면 정정됨)
+          let existingId: number | null = null;
+          if (row.huboid) {
+            const byHuboid = await this.prisma.localElectionCandidate.findFirst({
+              where: { huboid: row.huboid },
+              select: { id: true },
+            });
+            existingId = byHuboid?.id ?? null;
+          }
+          if (existingId === null) {
+            const byName = await this.prisma.localElectionCandidate.findUnique({
+              where: { raceId_name: { raceId: race.id, name: row.name } },
+              select: { id: true },
+            });
+            existingId = byName?.id ?? null;
+          }
+          if (existingId !== null) {
+            await this.prisma.localElectionCandidate.update({
+              where: { id: existingId },
+              data: { raceId: race.id, name: row.name, ...candidateData },
+            });
+          } else {
+            await this.prisma.localElectionCandidate.create({
+              data: {
+                raceId: race.id,
+                name: row.name,
+                status: 'registered',
+                ...candidateData,
+              },
+            });
+          }
 
           totalCount++;
+        }
+
+        // 비례대표 통합 race일 경우, 정당명에서 displayName을 좀 더 직관적으로 정리
+        if (isProportional) {
+          // (현재는 buildDisplayName이 충분. 추후 후보자 수 표시 등 필요 시 여기서 후처리)
         }
       }
 
@@ -271,6 +309,10 @@ export class LocalElectionSyncService {
       case 'metro-council':
       case 'local-council':
         return sggName || `${sido} ${sigungu} ${district}`.trim();
+      case 'metro-proportional':
+        return `${sido} 광역의원 비례대표`;
+      case 'local-proportional':
+        return sigungu ? `${sido} ${sigungu} 기초의원 비례대표` : `${sido} 기초의원 비례대표`;
       default:
         return sggName;
     }

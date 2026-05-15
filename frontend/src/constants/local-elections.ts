@@ -28,7 +28,9 @@ export const ELECTION_TYPES: {
   { id: "governor", label: "광역단체장", shortLabel: "시도지사" },
   { id: "mayor", label: "기초단체장", shortLabel: "시장·군수" },
   { id: "metro-council", label: "광역의원", shortLabel: "시도의원" },
+  { id: "metro-proportional", label: "광역의원 비례", shortLabel: "광역 비례" },
   { id: "local-council", label: "기초의원", shortLabel: "구시군의원" },
+  { id: "local-proportional", label: "기초의원 비례", shortLabel: "기초 비례" },
   { id: "superintendent", label: "교육감", shortLabel: "교육감" },
 ];
 
