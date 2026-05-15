@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { getLocalElectionRegions } from "@/lib/api";
+import LocalElectionBreadcrumb from "@/components/local-elections/LocalElectionBreadcrumb";
 import RegionGrid from "@/components/local-elections/RegionGrid";
 import JsonLd from "@/components/seo/JsonLd";
 
@@ -44,6 +45,13 @@ export default async function RegionsPage({ params }: Props) {
             },
           ],
         }}
+      />
+
+      <LocalElectionBreadcrumb
+        items={[
+          { label: "제9회 전국동시지방선거", href: `/local-elections/${year}` },
+          { label: "지역별 현황" },
+        ]}
       />
 
       <h1 className="text-2xl font-bold">지역별 현황</h1>

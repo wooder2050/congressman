@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import CongressWrapper from "@/common/CongressWrapper";
+import LocalElectionBreadcrumb from "@/components/local-elections/LocalElectionBreadcrumb";
 import LocalElectionSkeleton from "@/components/local-elections/LocalElectionSkeleton";
 import RegionDetailInner from "@/components/local-elections/RegionDetailInner";
 import JsonLd from "@/components/seo/JsonLd";
@@ -56,6 +57,14 @@ export default async function RegionSidoPage({ params }: Props) {
             },
           ],
         }}
+      />
+
+      <LocalElectionBreadcrumb
+        items={[
+          { label: "제9회 전국동시지방선거", href: `/local-elections/${year}` },
+          { label: "지역별 현황", href: `/local-elections/${year}/regions` },
+          { label: short },
+        ]}
       />
 
       <h1 className="text-2xl font-bold">{short} 지방선거</h1>
