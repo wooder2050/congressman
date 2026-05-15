@@ -639,9 +639,15 @@ export interface LocalElectionRaceDetail {
   candidates: LocalElectionCandidateDetail[];
 }
 
+export interface LocalElectionSigunguOption {
+  name: string;
+  raceCount: number;
+}
+
 export interface LocalElectionRegionDetail {
   sido: string;
   races: LocalElectionRaceSummary[];
+  sigunguList: LocalElectionSigunguOption[];
 }
 
 export interface LocalElectionStats {
