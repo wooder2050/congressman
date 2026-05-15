@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useCongressSuspenseQuery } from "@/hooks/useCongressQuery";
 import { getLocalElectionRegion } from "@/lib/api";
@@ -28,25 +28,25 @@ export default function RegionDetailInner({ year, electionId, sido }: Props) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const queryParam = searchParams.get("sigungu");
-
-  const [selectedSigungu, setSelectedSigungu] = useState<string | null>(queryParam);
   const recent = useRecentSigungu(sido);
 
-  // URL 파라미터가 없고 LocalStorage에 마지막 선택이 있다면 복원
+  // URL이 source of truth. URL이 비어있고 LocalStorage에 마지막 선택이 있으면
+  // mount 시 한 번만 URL에 반영 (이후엔 URL 변경이 곧 selectedSigungu)
   useEffect(() => {
-    if (queryParam) {
-      setSelectedSigungu(queryParam);
-      return;
-    }
+    if (queryParam) return;
     const last = readLastSigungu(sido);
-    if (last && data?.sigunguList.some((opt) => opt.name === last)) {
-      setSelectedSigungu(last);
-    }
-  }, [queryParam, sido, data]);
+    if (!last) return;
+    if (!data?.sigunguList.some((opt) => opt.name === last)) return;
+    const params = new URLSearchParams(searchParams.toString());
+    params.set("sigungu", last);
+    router.replace(`?${params.toString()}`, { scroll: false });
+    // mount 1회만 실행. 이후 sido/data가 바뀌어도 재실행하지 않음(다른 페이지로의 이동이 됨)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [sido]);
+
+  const selectedSigungu = queryParam;
 
   const handleSelect = (sigungu: string | null) => {
-    setSelectedSigungu(sigungu);
-
     // URL 동기화 + LocalStorage 기록
     const params = new URLSearchParams(searchParams.toString());
     if (sigungu) {

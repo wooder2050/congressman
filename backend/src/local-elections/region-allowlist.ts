@@ -22,9 +22,3 @@ export const ALLOWED_SIDO_LIST = [
   '경상남도',
   '제주특별자치도',
 ] as const;
-
-export const ALLOWED_SIDO_SET = new Set<string>(ALLOWED_SIDO_LIST);
-
-export function isAllowedSido(sido: string | null | undefined): boolean {
-  return !!sido && ALLOWED_SIDO_SET.has(sido);
-}
