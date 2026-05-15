@@ -16,7 +16,7 @@ const HOTSPOTS: Hotspot[] = [
     region: "부산",
     district: "북구갑",
     headline:
-      "D-20 · 후보등록 첫날 3파전 확정 — 갤럽 '하정우 39·한동훈 29·박민식 21', 양자대결 하-한 오차범위 내 접전",
+      'D-19 · 후보등록 마감 · 보수 단일화 압박 정점 — 부산 의원 17명 중 10명 "단일화 필요", 朴 "절대 안 한다" vs 韓 "민심이 종속변수"',
     candidates: [
       {
         name: "하정우",
@@ -28,56 +28,57 @@ const HOTSPOTS: Hotspot[] = [
         name: "한동훈",
         party: "무소속",
         partyColor: "#9ca3af",
-        note: "갤럽 29%로 朴 재역전 · 양자 vs 하정우 40% 오차범위 내",
+        note: '갤럽 29% · 단일 적합도 韓 45 vs 朴 39 · "정치공학적 단일화는 종속변수"',
       },
       {
         name: "박민식",
         party: "국민의힘",
         partyColor: "#E61E2B",
-        note: '갤럽 21% · "단일화 가능성 제로" 고수, 양자 vs 하정우 37%',
+        note: '갤럽 21% · "절대 안 한다 · 가능성 제로" 고수에 당내 단일화 압박 격화',
       },
     ],
     context:
-      "한국갤럽 단일화 찬반 40 vs 40 팽팽 · 5/14~15 후보등록 · 투표용지 인쇄 5/18 · 사전투표 전날 5/28이 단일화 시한",
+      '장동혁 대표 "묻지마 단일화로는 시민 선택 못 받아" · 투표용지 인쇄 5/18(1차 시한) · 사전투표 전날 5/28(마지노선)',
   },
   {
     region: "경기",
     district: "평택을",
-    headline: "D-20 · 5파전 후보등록 — 김용남 28.8·유의동 22.5·조국 22.2 박빙, 단일화 입장 평행선",
+    headline:
+      "D-19 · 5파전 후보등록 마감 — 갤럽 '김용남 29·조국 24·유의동 20', 범진보 단일화 반대 46 vs 찬성 29",
     candidates: [
       {
         name: "김용남",
         party: "더불어민주당",
         partyColor: "#152484",
-        note: '3자 선두 28.8% · "후보 단계 단일화 논의 없다"',
-      },
-      {
-        name: "유의동",
-        party: "국민의힘",
-        partyColor: "#E61E2B",
-        note: '22.5% · 단일화에 "신중" 입장 유지',
+        note: '갤럽 29% 선두 · "후보 단계 단일화 논의 없다"',
       },
       {
         name: "조국",
         party: "조국혁신당",
         partyColor: "#06275E",
-        note: '22.2% · "민심만 믿고 3표 차 승리" 단일화 거부',
+        note: '갤럽 24% · "민심만 믿고 3표 차 승리" 단일화 거부 · 金과 감정의 골',
+      },
+      {
+        name: "유의동",
+        party: "국민의힘",
+        partyColor: "#E61E2B",
+        note: '갤럽 20% · 단일화에 "신중" 입장 유지',
       },
       {
         name: "황교안",
         party: "자유와혁신",
         partyColor: "#FF7E00",
-        note: '8.9% · 前 총리 · "보수 합당까지 각오" 단일화 압박',
+        note: '갤럽 8% · 前 총리 · "보수 합당까지 각오" 단일화 압박',
       },
       {
         name: "김재연",
         party: "진보당",
         partyColor: "#D6001C",
-        note: "8.8% · 진보당 상임대표",
+        note: "갤럽 4% · 진보당 상임대표",
       },
     ],
     context:
-      "미디어토마토 여론조사 · 범진보 단일화 필요 36.9% vs 불필요 42.0% · 19~21대 보수 강세 험지",
+      "한국갤럽·뉴스1 5/14 발표 · 범진보 단일화 반대 46% vs 찬성 29% · 19~21대 보수 강세 험지",
   },
 ];
 
@@ -87,12 +88,12 @@ export default function ByElectionHotspots() {
       <div className="flex items-baseline justify-between">
         <h2 className="text-lg font-bold text-(--color-text-primary)">핫스팟 선거구</h2>
         <span className="text-xs text-(--color-text-tertiary)">
-          5/14 기준 · 후보등록 진행 중(5/14~15) · D-20
+          5/15 기준 · 후보등록 마감 · D-19
         </span>
       </div>
       <p className="text-sm text-(--color-text-secondary)">
-        14개 재보궐 선거구 중 가장 주목받는 두 곳입니다. 후보등록 마감 후 전체 후보 정보가 자동
-        갱신됩니다.
+        14개 재보궐 선거구 중 가장 주목받는 두 곳입니다. 5/15 후보등록 마감 — 중앙선관위 데이터 반영
+        후 전체 후보 정보가 자동 갱신됩니다.
       </p>
 
       <div className="grid gap-3 sm:grid-cols-2">
