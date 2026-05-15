@@ -2,7 +2,11 @@ import { PrismaClient } from '@prisma/client';
 import { NecApiService } from './nec-api.service';
 import { SyncLogService } from './sync-log.service';
 import { getPartyId, getPartyColor } from '../constants/party-map';
-import { NEC_TYPE_TO_ELECTION_TYPE, PROPORTIONAL_NEC_CODES } from '../constants/nec-election-map';
+import {
+  NEC_TYPE_TO_ELECTION_TYPE,
+  PROPORTIONAL_NEC_CODES,
+  SIDO_WIDE_NEC_CODES,
+} from '../constants/nec-election-map';
 import { normalizeSido, normalizeSigungu } from '../constants/region-normalize';
 
 /** NEC 후보자 API 응답 row */
@@ -86,24 +90,35 @@ export class LocalElectionSyncService {
         );
 
         const isProportional = PROPORTIONAL_NEC_CODES.has(necCode);
+        const isSidoWide = SIDO_WIDE_NEC_CODES.has(necCode);
 
         for (const row of rows) {
-          // race upsert — 비례대표는 scope 단위 1개 race로 통합
-          // - code 5 (광역 비례): sido 단위 → district = "비례대표"
-          // - code 7 (기초 비례): sido + sigungu 단위 → district = "비례대표"
-          // - 그 외 지역구: NEC sggName/wiwName 그대로
+          // race upsert — NEC sgTypecode별 scope에 맞춰 sido/sigungu/district 결정
+          // - 시도 단위 (3 광역단체장 · 8 광역 비례 · 11 교육감): sigungu='', district=''
+          //   * 8(비례)는 district='비례대표'로 식별
+          // - 시군구 단위 지역구 (4 기초단체장): sigungu=wiw(=시군구), district=''
+          // - 선거구 단위 (5 광역 지역구 · 6 기초 지역구): sigungu=wiw(=시군구), district=sgg(=선거구명)
+          // - 시군구 비례 (9 기초 비례): sigungu=wiw, district='비례대표'
           const sido = normalizeSido(row.sdName);
           let sigungu: string;
           let district: string;
-          if (necCode === '5') {
+          if (necCode === '8') {
             sigungu = '';
             district = '비례대표';
-          } else if (necCode === '7') {
+          } else if (necCode === '9') {
             sigungu = normalizeSigungu(row.wiwName);
             district = '비례대표';
+          } else if (isSidoWide) {
+            sigungu = '';
+            district = '';
+          } else if (necCode === '4') {
+            // 기초단체장 — sigungu만, district는 비움
+            sigungu = normalizeSigungu(row.wiwName);
+            district = '';
           } else {
-            sigungu = ['2', '10'].includes(necCode) ? '' : normalizeSigungu(row.wiwName);
-            district = ['2', '3', '10'].includes(necCode) ? '' : (row.sggName ?? '');
+            // 5(광역 지역구), 6(기초 지역구) — sigungu + district 둘 다
+            sigungu = normalizeSigungu(row.wiwName);
+            district = row.sggName ?? '';
           }
           const displayName = this.buildDisplayName(
             electionType,
