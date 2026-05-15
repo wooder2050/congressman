@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import CongressWrapper from "@/common/CongressWrapper";
+import LocalElectionBreadcrumb from "@/components/local-elections/LocalElectionBreadcrumb";
 import LocalElectionSkeleton from "@/components/local-elections/LocalElectionSkeleton";
 import RaceListInner from "@/components/local-elections/RaceListInner";
 import JsonLd from "@/components/seo/JsonLd";
@@ -44,6 +45,13 @@ export default async function MetroProportionalListPage({ params }: Props) {
             },
           ],
         }}
+      />
+
+      <LocalElectionBreadcrumb
+        items={[
+          { label: "제9회 전국동시지방선거", href: `/local-elections/${year}` },
+          { label: "광역의원 비례" },
+        ]}
       />
 
       <div>

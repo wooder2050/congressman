@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import CongressWrapper from "@/common/CongressWrapper";
+import LocalElectionBreadcrumb from "@/components/local-elections/LocalElectionBreadcrumb";
 import LocalElectionSkeleton from "@/components/local-elections/LocalElectionSkeleton";
 import LocalProportionalNotice from "@/components/local-elections/LocalProportionalNotice";
 import RaceListInner from "@/components/local-elections/RaceListInner";
@@ -58,6 +59,14 @@ export default async function LocalProportionalSidoPage({ params }: Props) {
             },
           ],
         }}
+      />
+
+      <LocalElectionBreadcrumb
+        items={[
+          { label: "제9회 전국동시지방선거", href: `/local-elections/${year}` },
+          { label: "기초의원 비례", href: `/local-elections/${year}/local-proportional` },
+          { label: short },
+        ]}
       />
 
       <h1 className="text-2xl font-bold">{short} 기초의원 비례대표</h1>
