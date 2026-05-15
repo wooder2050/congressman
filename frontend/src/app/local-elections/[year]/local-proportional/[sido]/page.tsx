@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import CongressWrapper from "@/common/CongressWrapper";
 import LocalElectionSkeleton from "@/components/local-elections/LocalElectionSkeleton";
+import LocalProportionalNotice from "@/components/local-elections/LocalProportionalNotice";
 import RaceListInner from "@/components/local-elections/RaceListInner";
 import JsonLd from "@/components/seo/JsonLd";
 import { sidoToShort } from "@/constants/local-elections";
@@ -15,8 +16,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const short = sidoToShort(sido);
 
   return {
-    title: `${short} 기초의원 비례대표 — ${year} 지방선거`,
-    description: `${year}년 ${sido} 기초의원 비례대표 정당 명부와 후보자를 확인하세요.`,
+    title: `${short} 기초의원 비례대표 — NEC Open API 미제공 안내`,
+    description: `${year}년 ${sido} 기초의원 비례대표 후보자 명부는 중앙선관위 공공데이터 OpenAPI에서 제공되지 않습니다. NEC 선거통계시스템·선거공보 도서관에서 확인하세요.`,
+    robots: { index: false, follow: true },
     alternates: {
       canonical: `https://www.lawmake.kr/local-elections/${year}/local-proportional/${encodeURIComponent(sido)}`,
     },
@@ -59,6 +61,8 @@ export default async function LocalProportionalSidoPage({ params }: Props) {
       />
 
       <h1 className="text-2xl font-bold">{short} 기초의원 비례대표</h1>
+
+      <LocalProportionalNotice sido={sido} />
 
       <CongressWrapper fallback={<LocalElectionSkeleton />}>
         <RaceListInner
