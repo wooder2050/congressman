@@ -1,5 +1,5 @@
 import Link from "next/link";
-import type { LocalElectionRaceSummary, LocalElectionType } from "@/types";
+import type { LocalElectionPartyGroup, LocalElectionRaceSummary, LocalElectionType } from "@/types";
 
 interface Props {
   number: number;
@@ -9,6 +9,26 @@ interface Props {
   races: LocalElectionRaceSummary[];
   year: string;
   sido: string;
+}
+
+function PartyGroupList({ groups }: { groups: LocalElectionPartyGroup[] }) {
+  return (
+    <ul className="space-y-1.5">
+      {groups.map((g) => (
+        <li key={g.partyId ?? "independent"} className="flex items-center gap-2 text-sm">
+          <span
+            className="inline-block h-2.5 w-2.5 shrink-0 rounded-full"
+            style={{ backgroundColor: g.partyColor }}
+            aria-hidden="true"
+          />
+          <span className="font-medium text-(--color-text-primary)">{g.partyShortName}</span>
+          <span className="ml-auto text-xs text-(--color-text-tertiary)">
+            {g.candidateCount}명 명부
+          </span>
+        </li>
+      ))}
+    </ul>
+  );
 }
 
 /**
@@ -60,6 +80,8 @@ export default function BallotCard({ number, ballotLabel, kind, type, races, yea
   // 단일 race — 바로 race 상세 링크
   if (races.length === 1) {
     const race = races[0];
+    const isParty = kind === "party";
+    const partyGroups = race.partyGroups ?? [];
     return (
       <article className="overflow-hidden rounded-xl border border-(--color-border-primary) bg-(--color-bg-primary)">
         <header className="flex items-baseline gap-2 border-b border-(--color-border-primary) bg-(--color-bg-secondary) px-4 py-2.5">
@@ -82,34 +104,42 @@ export default function BallotCard({ number, ballotLabel, kind, type, races, yea
               {race.displayName}
             </h4>
             <span className="shrink-0 text-xs text-(--color-text-tertiary)">
-              {race.candidateCount}명
+              {isParty
+                ? `${partyGroups.length}개 정당 · ${race.candidateCount}명`
+                : `${race.candidateCount}명`}
             </span>
           </div>
-          {race.topCandidates.length > 0 && (
-            <div className="mt-2 flex flex-wrap gap-1.5">
-              {race.topCandidates.map((c) => (
-                <span
-                  key={c.id}
-                  className="inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-medium"
-                  style={{
-                    backgroundColor: c.party?.color
-                      ? `${c.party.color}18`
-                      : "var(--color-bg-tertiary)",
-                    color: c.party?.color ?? "var(--color-text-secondary)",
-                  }}
-                >
-                  {c.candidateNumber != null && (
-                    <span className="font-bold">{c.candidateNumber}</span>
-                  )}
-                  {c.name}
-                </span>
-              ))}
-              {race.candidateCount > race.topCandidates.length && (
-                <span className="text-xs text-(--color-text-tertiary)">
-                  외 {race.candidateCount - race.topCandidates.length}명
-                </span>
-              )}
+          {isParty && partyGroups.length > 0 ? (
+            <div className="mt-3">
+              <PartyGroupList groups={partyGroups} />
             </div>
+          ) : (
+            race.topCandidates.length > 0 && (
+              <div className="mt-2 flex flex-wrap gap-1.5">
+                {race.topCandidates.map((c) => (
+                  <span
+                    key={c.id}
+                    className="inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-medium"
+                    style={{
+                      backgroundColor: c.party?.color
+                        ? `${c.party.color}18`
+                        : "var(--color-bg-tertiary)",
+                      color: c.party?.color ?? "var(--color-text-secondary)",
+                    }}
+                  >
+                    {c.candidateNumber != null && (
+                      <span className="font-bold">{c.candidateNumber}</span>
+                    )}
+                    {c.name}
+                  </span>
+                ))}
+                {race.candidateCount > race.topCandidates.length && (
+                  <span className="text-xs text-(--color-text-tertiary)">
+                    외 {race.candidateCount - race.topCandidates.length}명
+                  </span>
+                )}
+              </div>
+            )
           )}
         </Link>
       </article>

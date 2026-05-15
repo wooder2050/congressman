@@ -350,33 +350,82 @@ export class LocalElectionsService {
    * 시군구별 그룹핑은 클라이언트가 "내 동네"만 선택해서 볼 수 있게 한다.
    */
   async getRegionDetail(id: string, sido: string) {
-    const key = `local-elections:${id}:region:${sido}:v2`;
+    const key = `local-elections:${id}:region:${sido}:v3`;
     const cached = await this.redis.get(key);
     if (cached) return cached;
 
+    // 카드에 표시할 후보 정보를 두 가지 모드로 분리해 가져옴.
+    // - 인물 선거(person/non-partisan): 후보 5~10명이라 candidates 전체를 받음(최대 30명)
+    // - 정당 비례(party): 명부가 100+명이라 후보 자체는 받지 않고, race별 전체 후보에서
+    //   정당 그룹만 집계(별도 Prisma groupBy)
     const races = await this.prisma.localElectionRace.findMany({
       where: { electionId: id, sido },
       include: {
         candidates: {
           include: { party: true },
-          orderBy: { candidateNumber: 'asc' },
-          take: 3,
+          orderBy: [{ candidateNumber: 'asc' }, { name: 'asc' }],
+          take: 30,
         },
         _count: { select: { candidates: true } },
       },
       orderBy: [{ electionType: 'asc' }, { sigungu: 'asc' }, { district: 'asc' }],
     });
 
-    const flatRaces = races.map((r) => ({
-      id: r.id,
-      electionType: r.electionType,
-      sido: r.sido,
-      sigungu: r.sigungu,
-      district: r.district,
-      displayName: r.displayName,
-      seatCount: r.seatCount,
-      candidateCount: r._count.candidates,
-      topCandidates: r.candidates.map((c) => ({
+    const PROPORTIONAL_TYPES = new Set(['metro-proportional', 'local-proportional']);
+
+    // 비례 race들에 대해 정당별 그룹 정보(전체)를 한 번에 조회
+    const proportionalRaceIds = races
+      .filter((r) => PROPORTIONAL_TYPES.has(r.electionType))
+      .map((r) => r.id);
+
+    type PartyGroupRow = {
+      raceId: number;
+      partyId: string | null;
+      partyName: string;
+      partyShortName: string;
+      partyColor: string;
+      candidateCount: number;
+    };
+    const partyGroupsByRace = new Map<number, PartyGroupRow[]>();
+    if (proportionalRaceIds.length > 0) {
+      const rows = await this.prisma.localElectionCandidate.groupBy({
+        by: ['raceId', 'partyId'],
+        where: { raceId: { in: proportionalRaceIds } },
+        _count: { _all: true },
+      });
+      const partyIds = Array.from(
+        new Set(rows.map((r) => r.partyId).filter((p): p is string => !!p)),
+      );
+      const parties =
+        partyIds.length > 0
+          ? await this.prisma.party.findMany({ where: { id: { in: partyIds } } })
+          : [];
+      const partyMap = new Map(parties.map((p) => [p.id, p]));
+
+      for (const row of rows) {
+        const party = row.partyId ? partyMap.get(row.partyId) : null;
+        const group: PartyGroupRow = {
+          raceId: row.raceId,
+          partyId: row.partyId,
+          partyName: party?.name ?? '무소속',
+          partyShortName: party?.shortName ?? party?.name ?? '무소속',
+          partyColor: party?.color ?? '#999999',
+          candidateCount: row._count._all,
+        };
+        const list = partyGroupsByRace.get(row.raceId) ?? [];
+        list.push(group);
+        partyGroupsByRace.set(row.raceId, list);
+      }
+      // 정당당 후보 수 내림차순 정렬
+      for (const list of partyGroupsByRace.values()) {
+        list.sort((a, b) => b.candidateCount - a.candidateCount);
+      }
+    }
+
+    const flatRaces = races.map((r) => {
+      const isProportional = PROPORTIONAL_TYPES.has(r.electionType);
+
+      const topCandidates = r.candidates.map((c) => ({
         id: c.id,
         name: c.name,
         party: c.party
@@ -389,8 +438,21 @@ export class LocalElectionsService {
           : null,
         candidateNumber: c.candidateNumber,
         photoUrl: c.photoUrl,
-      })),
-    }));
+      }));
+
+      return {
+        id: r.id,
+        electionType: r.electionType,
+        sido: r.sido,
+        sigungu: r.sigungu,
+        district: r.district,
+        displayName: r.displayName,
+        seatCount: r.seatCount,
+        candidateCount: r._count.candidates,
+        topCandidates,
+        partyGroups: isProportional ? (partyGroupsByRace.get(r.id) ?? []) : undefined,
+      };
+    });
 
     // 시군구 목록 (race 수와 함께)
     const sigunguCountMap = new Map<string, number>();
