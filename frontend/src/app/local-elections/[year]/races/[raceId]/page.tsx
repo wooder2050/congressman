@@ -37,6 +37,26 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function RaceDetailPage({ params }: Props) {
   const { year, raceId } = await params;
+  const race = await getLocalElectionRace({
+    id: `local-${year}`,
+    raceId: parseInt(raceId, 10),
+  });
+
+  // BreadcrumbList: 홈 → 지방선거 → 시도(있으면) → 선거구
+  const breadcrumbItems: { name: string; item: string }[] = [
+    { name: "홈", item: "https://www.lawmake.kr" },
+    { name: "지방선거", item: `https://www.lawmake.kr/local-elections/${year}` },
+  ];
+  if (race?.sido) {
+    breadcrumbItems.push({
+      name: race.sido,
+      item: `https://www.lawmake.kr/local-elections/${year}/regions/${encodeURIComponent(race.sido)}`,
+    });
+  }
+  breadcrumbItems.push({
+    name: race?.displayName ?? "선거구",
+    item: `https://www.lawmake.kr/local-elections/${year}/races/${raceId}`,
+  });
 
   return (
     <div className="mx-auto max-w-4xl space-y-6">
@@ -44,21 +64,12 @@ export default async function RaceDetailPage({ params }: Props) {
         data={{
           "@context": "https://schema.org",
           "@type": "BreadcrumbList",
-          itemListElement: [
-            { "@type": "ListItem", position: 1, name: "홈", item: "https://www.lawmake.kr" },
-            {
-              "@type": "ListItem",
-              position: 2,
-              name: "지방선거",
-              item: `https://www.lawmake.kr/local-elections/${year}`,
-            },
-            {
-              "@type": "ListItem",
-              position: 3,
-              name: "선거구",
-              item: `https://www.lawmake.kr/local-elections/${year}/races/${raceId}`,
-            },
-          ],
+          itemListElement: breadcrumbItems.map((b, i) => ({
+            "@type": "ListItem",
+            position: i + 1,
+            name: b.name,
+            item: b.item,
+          })),
         }}
       />
 
