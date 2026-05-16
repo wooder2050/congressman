@@ -1,4 +1,11 @@
-import { Controller, Get, Param, Query, NotFoundException, BadRequestException } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Param,
+  Query,
+  NotFoundException,
+  BadRequestException,
+} from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiParam, ApiQuery } from '@nestjs/swagger';
 import { LocalElectionsService } from './local-elections.service';
 import { ALLOWED_SIDO_LIST } from './region-allowlist';
