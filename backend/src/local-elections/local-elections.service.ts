@@ -27,10 +27,31 @@ interface RaceFilter {
 
 @Injectable()
 export class LocalElectionsService {
+  // 시군구 allowlist 메모리 캐시 (election별, TTL 5분).
+  // getRaces 캐시 키 폭발 방지를 위해 매 요청마다 DB를 치지 않도록 캐시.
+  private sigunguCache: Map<string, { set: Set<string>; expiresAt: number }> = new Map();
+  private readonly SIGUNGU_CACHE_TTL_MS = 5 * 60 * 1000;
+
   constructor(
     private readonly prisma: PrismaService,
     private readonly redis: RedisService,
   ) {}
+
+  /** election의 실제 시군구명 집합 (캐시 키 검증용). 5분 메모리 캐시. */
+  async getSigunguAllowlist(electionId: string): Promise<Set<string>> {
+    const cached = this.sigunguCache.get(electionId);
+    if (cached && cached.expiresAt > Date.now()) {
+      return cached.set;
+    }
+    const rows = await this.prisma.localElectionRace.findMany({
+      where: { electionId, sigungu: { not: '' } },
+      select: { sigungu: true },
+      distinct: ['sigungu'],
+    });
+    const set = new Set(rows.map((r) => r.sigungu));
+    this.sigunguCache.set(electionId, { set, expiresAt: Date.now() + this.SIGUNGU_CACHE_TTL_MS });
+    return set;
+  }
 
   /** 지방선거 목록 */
   async findAll() {
