@@ -2,6 +2,13 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import JsonLd from "@/components/seo/JsonLd";
 
+export const revalidate = 600; // 10min — 정적 콘텐츠지만 일관성 위해
+export const dynamicParams = true;
+
+export function generateStaticParams() {
+  return [];
+}
+
 interface Props {
   params: Promise<{ year: string }>;
 }

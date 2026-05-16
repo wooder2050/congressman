@@ -482,7 +482,7 @@ export class MembersService {
       months: monthlyRows.map((r) => ({ month: r.month, count: Number(r.count) })),
     };
 
-    await this.redis.set(key, result, TTL_HOUR);
+    await this.redis.set(key, result, TTL_6H);
     return result;
   }
 

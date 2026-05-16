@@ -5,6 +5,13 @@ import LocalElectionSkeleton from "@/components/local-elections/LocalElectionSke
 import RaceListInner from "@/components/local-elections/RaceListInner";
 import JsonLd from "@/components/seo/JsonLd";
 
+export const revalidate = 600; // 10min
+export const dynamicParams = true;
+
+export function generateStaticParams() {
+  return [];
+}
+
 interface Props {
   params: Promise<{ year: string }>;
 }

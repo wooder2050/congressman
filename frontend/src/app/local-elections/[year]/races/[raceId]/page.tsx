@@ -5,6 +5,13 @@ import LocalElectionSkeleton from "@/components/local-elections/LocalElectionSke
 import RaceDetailInner from "@/components/local-elections/RaceDetailInner";
 import JsonLd from "@/components/seo/JsonLd";
 
+export const revalidate = 60; // 60s — 개표일 race 단위 갱신 (다른 지방선거 페이지는 600s)
+export const dynamicParams = true;
+
+export function generateStaticParams() {
+  return [];
+}
+
 interface Props {
   params: Promise<{ year: string; raceId: string }>;
 }

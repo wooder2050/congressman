@@ -119,6 +119,7 @@ function normalizeTopic(topic: string): string {
 }
 
 const TTL_HOUR = 60 * 60; // 1h
+const TTL_6H = 6 * 60 * 60; // 6h
 const TTL_DAY = 24 * 60 * 60; // 24h
 
 let allIdsMemoryCache: { data: { id: string; proposedDate: string }[]; expiresAt: number } | null =
@@ -137,9 +138,14 @@ export class BillsService {
   ) {}
 
   async findAll(params: FindAllParams) {
-    const key = `bills:${params.termId ?? ''}:${params.memberId ?? ''}:${params.role ?? ''}:${params.status ?? ''}:${params.search ?? ''}:${params.month ?? ''}:${params.committee ?? ''}:${params.topic ?? ''}:${params.page}:${params.limit}`;
-    const cached = await this.redis.get(key);
-    if (cached) return cached;
+    const isSearchQuery = Boolean(params.search);
+    const key = isSearchQuery
+      ? null
+      : `bills:${params.termId ?? ''}:${params.memberId ?? ''}:${params.role ?? ''}:${params.status ?? ''}:${params.month ?? ''}:${params.committee ?? ''}:${params.topic ?? ''}:${params.page}:${params.limit}`;
+    if (key) {
+      const cached = await this.redis.get(key);
+      if (cached) return cached;
+    }
 
     const where: Prisma.BillWhereInput = {};
 
@@ -196,7 +202,9 @@ export class BillsService {
       total,
     };
 
-    await this.redis.set(key, result, TTL_HOUR);
+    if (key) {
+      await this.redis.set(key, result, TTL_6H);
+    }
     return result;
   }
 

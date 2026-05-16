@@ -13,6 +13,7 @@ interface FindAllParams {
 }
 
 const TTL_HOUR = 60 * 60;
+const TTL_6H = 6 * 60 * 60;
 const TTL_DAY = 24 * 60 * 60;
 
 let allIdsMemoryCache: { data: { id: string; procDate: string }[]; expiresAt: number } | null =
@@ -27,9 +28,14 @@ export class VotesService {
   ) {}
 
   async findAll(params: FindAllParams) {
-    const key = `votes:${params.termId ?? ''}:${params.resultCode ?? ''}:${params.search ?? ''}:${params.month ?? ''}:${params.page}:${params.limit}`;
-    const cached = await this.redis.get(key);
-    if (cached) return cached;
+    const isSearchQuery = Boolean(params.search);
+    const key = isSearchQuery
+      ? null
+      : `votes:${params.termId ?? ''}:${params.resultCode ?? ''}:${params.month ?? ''}:${params.page}:${params.limit}`;
+    if (key) {
+      const cached = await this.redis.get(key);
+      if (cached) return cached;
+    }
 
     const where: Prisma.VoteWhereInput = {};
     if (params.termId) where.termId = params.termId;
@@ -67,7 +73,9 @@ export class VotesService {
       total,
     };
 
-    await this.redis.set(key, result, TTL_HOUR);
+    if (key) {
+      await this.redis.set(key, result, TTL_6H);
+    }
     return result;
   }
 
