@@ -4,6 +4,8 @@ import LocalElectionBreadcrumb from "@/components/local-elections/LocalElectionB
 import RegionGrid from "@/components/local-elections/RegionGrid";
 import JsonLd from "@/components/seo/JsonLd";
 
+export const revalidate = 600; // 10min
+
 interface Props {
   params: Promise<{ year: string }>;
 }

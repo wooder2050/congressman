@@ -6,6 +6,8 @@ import MemberDetailInner from "@/components/members/MemberDetailInner";
 import MemberJsonLd from "@/components/seo/MemberJsonLd";
 import BreadcrumbJsonLd from "@/components/seo/BreadcrumbJsonLd";
 
+export const revalidate = 21600; // 6h
+
 interface MemberDetailPageProps {
   params: Promise<{ id: string }>;
   searchParams: Promise<{ term?: string; tab?: string }>;

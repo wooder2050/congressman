@@ -6,6 +6,8 @@ import LocalProportionalNotice from "@/components/local-elections/LocalProportio
 import RaceListInner from "@/components/local-elections/RaceListInner";
 import JsonLd from "@/components/seo/JsonLd";
 
+export const revalidate = 600; // 10min
+
 interface Props {
   params: Promise<{ year: string }>;
 }

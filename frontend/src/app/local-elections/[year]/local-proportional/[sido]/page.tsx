@@ -7,6 +7,8 @@ import RaceListInner from "@/components/local-elections/RaceListInner";
 import JsonLd from "@/components/seo/JsonLd";
 import { sidoToShort } from "@/constants/local-elections";
 
+export const revalidate = 600; // 10min
+
 interface Props {
   params: Promise<{ year: string; sido: string }>;
 }

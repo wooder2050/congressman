@@ -5,6 +5,8 @@ import BillDetailInner from "@/components/bills/BillDetailInner";
 import BillJsonLd from "@/components/seo/BillJsonLd";
 import BreadcrumbJsonLd from "@/components/seo/BreadcrumbJsonLd";
 
+export const revalidate = 21600; // 6h
+
 interface BillDetailPageProps {
   params: Promise<{ id: string }>;
 }

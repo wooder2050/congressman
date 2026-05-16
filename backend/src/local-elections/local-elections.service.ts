@@ -162,6 +162,15 @@ export class LocalElectionsService {
 
   /** race 목록 (필터 + 페이지네이션 + 검색) */
   async getRaces(id: string, filter: RaceFilter) {
+    const isSearchQuery = Boolean(filter.q);
+    const cacheKey = isSearchQuery
+      ? null
+      : `local-elections:${id}:races:${filter.type ?? ''}:${filter.sido ?? ''}:${filter.sigungu ?? ''}:${filter.page}:${filter.limit}:v1`;
+    if (cacheKey) {
+      const cached = await this.redis.get(cacheKey);
+      if (cached) return cached;
+    }
+
     const where: Record<string, unknown> = {
       electionId: id,
       sido: { in: [...ALLOWED_SIDO_LIST] },
@@ -196,7 +205,7 @@ export class LocalElectionsService {
       this.prisma.localElectionRace.count({ where }),
     ]);
 
-    return {
+    const result = {
       races: races.map((r) => ({
         id: r.id,
         electionType: r.electionType,
@@ -223,6 +232,11 @@ export class LocalElectionsService {
       })),
       total,
     };
+
+    if (cacheKey) {
+      await this.redis.set(cacheKey, result, 3600); // 1시간 (개표 결과 분기는 후속 PR에서)
+    }
+    return result;
   }
 
   /** race 상세 + 후보자 전체 */

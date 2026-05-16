@@ -6,6 +6,8 @@ import RegionDetailInner from "@/components/local-elections/RegionDetailInner";
 import JsonLd from "@/components/seo/JsonLd";
 import { sidoToShort } from "@/constants/local-elections";
 
+export const revalidate = 600; // 10min (개표일 빠른 갱신 필요)
+
 interface Props {
   params: Promise<{ year: string; sido: string }>;
 }
