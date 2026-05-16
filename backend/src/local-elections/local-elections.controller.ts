@@ -7,6 +7,10 @@ import { NEC_TYPE_TO_ELECTION_TYPE } from '../sync/constants/nec-election-map';
 const ALLOWED_ELECTION_TYPES = new Set(Object.values(NEC_TYPE_TO_ELECTION_TYPE));
 const ALLOWED_SIDO_SET = new Set<string>(ALLOWED_SIDO_LIST);
 
+// 한글·숫자·공백·중점만 허용해 임의 문자열로 인한 캐시 키 폭발 방지.
+// 실제 시군구명 (예: "수원시", "안양시 동안구", "서울시 종로구")의 형태에 맞춤.
+const SIGUNGU_PATTERN = /^[가-힣0-9\s·]{1,20}$/;
+
 function clampInt(value: string | undefined, def: number, min: number, max: number): number {
   if (!value) return def;
   const n = parseInt(value, 10);
@@ -67,14 +71,15 @@ export class LocalElectionsController {
     // 캐시 키 폭발 방지: 알려진 enum 외 값은 무시
     const safeType = type && ALLOWED_ELECTION_TYPES.has(type) ? type : undefined;
     const safeSido = sido && ALLOWED_SIDO_SET.has(sido) ? sido : undefined;
-    // sigungu는 동적이라 enum 검증 불가 → 길이 제한으로 키 폭발 차단
-    const safeSigungu = sigungu && sigungu.length <= 30 ? sigungu : undefined;
+    // sigungu는 동적이라 enum 검증 불가 → 한글·숫자·공백·중점 패턴 + 길이 20 제한
+    const safeSigungu = sigungu && SIGUNGU_PATTERN.test(sigungu) ? sigungu : undefined;
+    // page 상한 500: race 2,335개 / limit 30 = 78페이지면 충분. 빈 페이지 캐시 폭발 차단
     return this.service.getRaces(id, {
       type: safeType,
       sido: safeSido,
       sigungu: safeSigungu,
       q,
-      page: clampInt(page, 1, 1, 10000),
+      page: clampInt(page, 1, 1, 500),
       limit: clampInt(limit, 30, 1, 100),
     });
   }
