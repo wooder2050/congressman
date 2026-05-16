@@ -6,6 +6,11 @@ import LocalElectionSkeleton from "@/components/local-elections/LocalElectionSke
 import JsonLd from "@/components/seo/JsonLd";
 
 export const revalidate = 600; // 10min (개표일 빠른 갱신 필요)
+export const dynamicParams = true;
+
+export function generateStaticParams() {
+  return [];
+}
 
 interface Props {
   params: Promise<{ year: string }>;

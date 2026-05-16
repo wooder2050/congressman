@@ -6,6 +6,13 @@ import BillJsonLd from "@/components/seo/BillJsonLd";
 import BreadcrumbJsonLd from "@/components/seo/BreadcrumbJsonLd";
 
 export const revalidate = 21600; // 6h
+export const dynamicParams = true;
+
+// 빈 배열을 반환해 첫 방문 시 ISR로 정적 생성되도록 한다.
+// 1.5만 개 법안을 빌드 시점에 모두 생성하지 않고 on-demand로 처리.
+export function generateStaticParams() {
+  return [];
+}
 
 interface BillDetailPageProps {
   params: Promise<{ id: string }>;

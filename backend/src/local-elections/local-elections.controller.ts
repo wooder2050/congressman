@@ -1,6 +1,20 @@
 import { Controller, Get, Param, Query, NotFoundException } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiParam, ApiQuery } from '@nestjs/swagger';
 import { LocalElectionsService } from './local-elections.service';
+import { ALLOWED_SIDO_LIST } from './region-allowlist';
+import { NEC_TYPE_TO_ELECTION_TYPE } from '../sync/constants/nec-election-map';
+
+const ALLOWED_ELECTION_TYPES = new Set(Object.values(NEC_TYPE_TO_ELECTION_TYPE));
+const ALLOWED_SIDO_SET = new Set<string>(ALLOWED_SIDO_LIST);
+
+function clampInt(value: string | undefined, def: number, min: number, max: number): number {
+  if (!value) return def;
+  const n = parseInt(value, 10);
+  if (!Number.isFinite(n)) return def;
+  if (n < min) return min;
+  if (n > max) return max;
+  return n;
+}
 
 @ApiTags('Local Elections')
 @Controller('local-elections')
@@ -50,13 +64,18 @@ export class LocalElectionsController {
     @Query('page') page?: string,
     @Query('limit') limit?: string,
   ) {
+    // 캐시 키 폭발 방지: 알려진 enum 외 값은 무시
+    const safeType = type && ALLOWED_ELECTION_TYPES.has(type) ? type : undefined;
+    const safeSido = sido && ALLOWED_SIDO_SET.has(sido) ? sido : undefined;
+    // sigungu는 동적이라 enum 검증 불가 → 길이 제한으로 키 폭발 차단
+    const safeSigungu = sigungu && sigungu.length <= 30 ? sigungu : undefined;
     return this.service.getRaces(id, {
-      type,
-      sido,
-      sigungu,
+      type: safeType,
+      sido: safeSido,
+      sigungu: safeSigungu,
       q,
-      page: page ? parseInt(page, 10) : 1,
-      limit: limit ? parseInt(limit, 10) : 30,
+      page: clampInt(page, 1, 1, 10000),
+      limit: clampInt(limit, 30, 1, 100),
     });
   }
 

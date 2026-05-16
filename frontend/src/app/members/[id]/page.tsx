@@ -6,7 +6,8 @@ import MemberDetailInner from "@/components/members/MemberDetailInner";
 import MemberJsonLd from "@/components/seo/MemberJsonLd";
 import BreadcrumbJsonLd from "@/components/seo/BreadcrumbJsonLd";
 
-export const revalidate = 21600; // 6h
+// NOTE: 이 페이지는 searchParams를 사용하므로 dynamic rendering이라 revalidate가 적용되지 않음.
+// 캐시 효과는 백엔드 Redis(getMember/Scorecard 등 TTL)에 의존.
 
 interface MemberDetailPageProps {
   params: Promise<{ id: string }>;
