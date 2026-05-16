@@ -27,10 +27,50 @@ interface RaceFilter {
 
 @Injectable()
 export class LocalElectionsService {
+  // 시군구 allowlist 메모리 캐시 (election별, TTL 5분).
+  // getRaces 캐시 키 폭발 방지를 위해 매 요청마다 DB를 치지 않도록 캐시.
+  private sigunguCache: Map<string, { set: Set<string>; expiresAt: number }> = new Map();
+  private readonly SIGUNGU_CACHE_TTL_MS = 5 * 60 * 1000;
+
+  // election id allowlist 메모리 캐시 (TTL 5분).
+  // 형식 유효하지만 DB에 없는 id(예: local-0000)로 빈 캐시 키 생성을 차단.
+  private electionIdCache: { ids: Set<string>; expiresAt: number } | null = null;
+  private readonly ELECTION_ID_CACHE_TTL_MS = 5 * 60 * 1000;
+
   constructor(
     private readonly prisma: PrismaService,
     private readonly redis: RedisService,
   ) {}
+
+  /** election의 실제 시군구명 집합 (캐시 키 검증용). 5분 메모리 캐시. */
+  async getSigunguAllowlist(electionId: string): Promise<Set<string>> {
+    const cached = this.sigunguCache.get(electionId);
+    if (cached && cached.expiresAt > Date.now()) {
+      return cached.set;
+    }
+    const rows = await this.prisma.localElectionRace.findMany({
+      where: { electionId, sigungu: { not: '' } },
+      select: { sigungu: true },
+      distinct: ['sigungu'],
+    });
+    const set = new Set(rows.map((r) => r.sigungu));
+    this.sigunguCache.set(electionId, { set, expiresAt: Date.now() + this.SIGUNGU_CACHE_TTL_MS });
+    return set;
+  }
+
+  /** 실제로 존재하는 election id 집합 (캐시 키 검증용). 5분 메모리 캐시. */
+  async getElectionIdAllowlist(): Promise<Set<string>> {
+    if (this.electionIdCache && this.electionIdCache.expiresAt > Date.now()) {
+      return this.electionIdCache.ids;
+    }
+    const rows = await this.prisma.localElection.findMany({ select: { id: true } });
+    const ids = new Set(rows.map((r) => r.id));
+    this.electionIdCache = {
+      ids,
+      expiresAt: Date.now() + this.ELECTION_ID_CACHE_TTL_MS,
+    };
+    return ids;
+  }
 
   /** 지방선거 목록 */
   async findAll() {
@@ -162,6 +202,15 @@ export class LocalElectionsService {
 
   /** race 목록 (필터 + 페이지네이션 + 검색) */
   async getRaces(id: string, filter: RaceFilter) {
+    const isSearchQuery = Boolean(filter.q);
+    const cacheKey = isSearchQuery
+      ? null
+      : `local-elections:${id}:races:${filter.type ?? ''}:${filter.sido ?? ''}:${filter.sigungu ?? ''}:${filter.page}:${filter.limit}:v1`;
+    if (cacheKey) {
+      const cached = await this.redis.get(cacheKey);
+      if (cached) return cached;
+    }
+
     const where: Record<string, unknown> = {
       electionId: id,
       sido: { in: [...ALLOWED_SIDO_LIST] },
@@ -196,7 +245,7 @@ export class LocalElectionsService {
       this.prisma.localElectionRace.count({ where }),
     ]);
 
-    return {
+    const result = {
       races: races.map((r) => ({
         id: r.id,
         electionType: r.electionType,
@@ -223,6 +272,11 @@ export class LocalElectionsService {
       })),
       total,
     };
+
+    if (cacheKey) {
+      await this.redis.set(cacheKey, result, 3600); // 1시간 (개표 결과 분기는 후속 PR에서)
+    }
+    return result;
   }
 
   /** race 상세 + 후보자 전체 */

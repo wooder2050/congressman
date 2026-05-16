@@ -59,7 +59,8 @@ async function invalidateCache(command: string) {
     prefixes.push('bills:', 'bill:', 'member:history:');
   }
   if (command === 'votes' || command === 'all') {
-    prefixes.push('votes:');
+    // findMemberVotes 결과는 Vote 조인 필드를 포함하므로 같이 무효화
+    prefixes.push('votes:', 'member:votes:');
   }
   if (command === 'photos') {
     prefixes.push('members:', 'member:');

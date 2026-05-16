@@ -5,6 +5,13 @@ import VoteDetailInner from "@/components/votes/VoteDetailInner";
 import VoteJsonLd from "@/components/seo/VoteJsonLd";
 import BreadcrumbJsonLd from "@/components/seo/BreadcrumbJsonLd";
 
+export const revalidate = 21600; // 6h
+export const dynamicParams = true;
+
+export function generateStaticParams() {
+  return [];
+}
+
 interface VoteDetailPageProps {
   params: Promise<{ id: string }>;
 }
