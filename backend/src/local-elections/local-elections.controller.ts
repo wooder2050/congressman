@@ -31,6 +31,18 @@ function clampInt(value: string | undefined, def: number, min: number, max: numb
 export class LocalElectionsController {
   constructor(private readonly service: LocalElectionsService) {}
 
+  /**
+   * id 형식 + 실존 여부 검증.
+   * 형식만 통과한 임의 id(예: local-0000)로 빈 결과 캐시 키가 생성되는 것을 차단.
+   */
+  private async assertExistingElectionId(id: string): Promise<void> {
+    assertElectionId(id);
+    const allowed = await this.service.getElectionIdAllowlist();
+    if (!allowed.has(id)) {
+      throw new NotFoundException(`Election not found: ${id}`);
+    }
+  }
+
   @Get()
   @ApiOperation({ summary: '지방선거 목록' })
   findAll() {
@@ -41,7 +53,7 @@ export class LocalElectionsController {
   @ApiOperation({ summary: '지방선거 개요' })
   @ApiParam({ name: 'id', description: '선거 ID (예: local-2026)' })
   async findById(@Param('id') id: string) {
-    assertElectionId(id);
+    await this.assertExistingElectionId(id);
     const election = await this.service.findById(id);
     if (!election) throw new NotFoundException();
     return election;
@@ -53,8 +65,8 @@ export class LocalElectionsController {
     description: '후보 1명 이상인 race의 최소 필드 (sitemap thin-content 제외용)',
   })
   @ApiParam({ name: 'id' })
-  getIndexableRaces(@Param('id') id: string) {
-    assertElectionId(id);
+  async getIndexableRaces(@Param('id') id: string) {
+    await this.assertExistingElectionId(id);
     return this.service.getIndexableRaces(id);
   }
 
@@ -76,7 +88,7 @@ export class LocalElectionsController {
     @Query('page') page?: string,
     @Query('limit') limit?: string,
   ) {
-    assertElectionId(id);
+    await this.assertExistingElectionId(id);
     // 캐시 키 폭발 방지: 알려진 enum/실존 값 외에는 무효 필터로 처리
     const safeType = type && ALLOWED_ELECTION_TYPES.has(type) ? type : undefined;
     const safeSido = sido && ALLOWED_SIDO_SET.has(sido) ? sido : undefined;
@@ -109,7 +121,7 @@ export class LocalElectionsController {
   @ApiParam({ name: 'id' })
   @ApiParam({ name: 'raceId' })
   async getRaceDetail(@Param('id') id: string, @Param('raceId') raceId: string) {
-    assertElectionId(id);
+    await this.assertExistingElectionId(id);
     const race = await this.service.getRaceDetail(id, parseInt(raceId, 10));
     if (!race) throw new NotFoundException();
     return race;
@@ -118,8 +130,8 @@ export class LocalElectionsController {
   @Get(':id/regions')
   @ApiOperation({ summary: '17개 시도 요약' })
   @ApiParam({ name: 'id' })
-  getRegions(@Param('id') id: string) {
-    assertElectionId(id);
+  async getRegions(@Param('id') id: string) {
+    await this.assertExistingElectionId(id);
     return this.service.getRegions(id);
   }
 
@@ -127,8 +139,8 @@ export class LocalElectionsController {
   @ApiOperation({ summary: '시도별 전체 race' })
   @ApiParam({ name: 'id' })
   @ApiParam({ name: 'sido' })
-  getRegionDetail(@Param('id') id: string, @Param('sido') sido: string) {
-    assertElectionId(id);
+  async getRegionDetail(@Param('id') id: string, @Param('sido') sido: string) {
+    await this.assertExistingElectionId(id);
     if (!ALLOWED_SIDO_SET.has(sido)) throw new NotFoundException();
     return this.service.getRegionDetail(id, sido);
   }
@@ -136,8 +148,8 @@ export class LocalElectionsController {
   @Get(':id/stats')
   @ApiOperation({ summary: '통계 (정당별, 유형별)' })
   @ApiParam({ name: 'id' })
-  getStats(@Param('id') id: string) {
-    assertElectionId(id);
+  async getStats(@Param('id') id: string) {
+    await this.assertExistingElectionId(id);
     return this.service.getStats(id);
   }
 }

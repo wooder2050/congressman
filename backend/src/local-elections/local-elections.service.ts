@@ -32,6 +32,11 @@ export class LocalElectionsService {
   private sigunguCache: Map<string, { set: Set<string>; expiresAt: number }> = new Map();
   private readonly SIGUNGU_CACHE_TTL_MS = 5 * 60 * 1000;
 
+  // election id allowlist 메모리 캐시 (TTL 5분).
+  // 형식 유효하지만 DB에 없는 id(예: local-0000)로 빈 캐시 키 생성을 차단.
+  private electionIdCache: { ids: Set<string>; expiresAt: number } | null = null;
+  private readonly ELECTION_ID_CACHE_TTL_MS = 5 * 60 * 1000;
+
   constructor(
     private readonly prisma: PrismaService,
     private readonly redis: RedisService,
@@ -51,6 +56,20 @@ export class LocalElectionsService {
     const set = new Set(rows.map((r) => r.sigungu));
     this.sigunguCache.set(electionId, { set, expiresAt: Date.now() + this.SIGUNGU_CACHE_TTL_MS });
     return set;
+  }
+
+  /** 실제로 존재하는 election id 집합 (캐시 키 검증용). 5분 메모리 캐시. */
+  async getElectionIdAllowlist(): Promise<Set<string>> {
+    if (this.electionIdCache && this.electionIdCache.expiresAt > Date.now()) {
+      return this.electionIdCache.ids;
+    }
+    const rows = await this.prisma.localElection.findMany({ select: { id: true } });
+    const ids = new Set(rows.map((r) => r.id));
+    this.electionIdCache = {
+      ids,
+      expiresAt: Date.now() + this.ELECTION_ID_CACHE_TTL_MS,
+    };
+    return ids;
   }
 
   /** 지방선거 목록 */
