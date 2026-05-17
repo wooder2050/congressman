@@ -88,10 +88,8 @@ export default function RaceDetailInner({ electionId, raceId }: Props) {
   return (
     <div className="space-y-6">
       {/* Breadcrumb — 사용자가 한 단계 위(시도)·두 단계 위(메인)로 돌아갈 수 있도록 */}
-      <nav
-        aria-label="Breadcrumb"
-        className="flex flex-wrap items-center gap-1.5 text-xs text-(--color-text-tertiary)"
-      >
+      {/* inline 렌더링: flex로 묶으면 [구분자+텍스트] 단위가 wrap되며 구분자가 다음 줄 앞에 떨어져 어색해진다. */}
+      <nav aria-label="Breadcrumb" className="text-xs leading-relaxed text-(--color-text-tertiary)">
         <Link
           href={`/local-elections/${year}`}
           className="hover:text-(--color-primary) hover:underline"
@@ -100,14 +98,18 @@ export default function RaceDetailInner({ electionId, raceId }: Props) {
         </Link>
         {race.sido && (
           <>
-            <span aria-hidden="true">›</span>
+            <span aria-hidden="true" className="mx-1.5">
+              ›
+            </span>
             <Link href={regionHref} className="hover:text-(--color-primary) hover:underline">
               {sidoShort}
               {race.sigungu ? ` · ${race.sigungu}` : ""}
             </Link>
           </>
         )}
-        <span aria-hidden="true">›</span>
+        <span aria-hidden="true" className="mx-1.5">
+          ›
+        </span>
         <span className="text-(--color-text-secondary)">{race.displayName}</span>
       </nav>
 
