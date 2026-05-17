@@ -16,15 +16,20 @@ interface Props {
  */
 export default function LocalElectionBreadcrumb({ items }: Props) {
   return (
-    <nav
-      aria-label="Breadcrumb"
-      className="flex flex-wrap items-center gap-1.5 text-xs text-(--color-text-tertiary)"
-    >
+    <nav aria-label="Breadcrumb" className="text-xs leading-relaxed text-(--color-text-tertiary)">
+      {/*
+        inline 렌더링이라 줄바꿈 시 자연스럽게 wrap된다.
+        flex로 묶으면 [구분자+텍스트] 단위가 wrap되면서 구분자가 다음 줄 앞에 떨어져 어색해진다.
+      */}
       {items.map((item, idx) => {
         const isLast = idx === items.length - 1;
         return (
-          <span key={`${item.label}-${idx}`} className="flex items-center gap-1.5">
-            {idx > 0 && <span aria-hidden="true">›</span>}
+          <span key={`${item.label}-${idx}`}>
+            {idx > 0 && (
+              <span aria-hidden="true" className="mx-1.5">
+                ›
+              </span>
+            )}
             {isLast || !item.href ? (
               <span className="text-(--color-text-secondary)">{item.label}</span>
             ) : (
