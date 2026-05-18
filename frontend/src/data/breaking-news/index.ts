@@ -2,6 +2,91 @@ import type { BreakingNewsItem } from "./types";
 
 export const breakingNews: BreakingNewsItem[] = [
   {
+    id: "2026-05-15-by-election-candidate-registration-closed",
+    title: "6·3 지방선거·재보궐 후보등록 5월 15일 마감 — 본투표 D-19, 5/22 공식 선거운동 개시",
+    description:
+      "제9회 전국동시지방선거와 14곳 재보궐선거 후보등록이 5월 14~15일 이틀간 진행되어 마감되었습니다. 광역단체장 17곳·교육감 17곳·기초단체장 226곳·광역의원·기초의원 등 4,000여 개 선거에 후보자들이 등록을 완료했고, 5월 22일 공식 선거운동이 시작되어 6월 3일 본투표까지 19일간 본격 레이스에 돌입합니다. 5월 29~30일 사전투표, 5월 18일 전후 투표용지 인쇄가 예정되어 있습니다. 재보궐선거는 14개 선거구(국회의원 5곳·지자체 9곳)에서 동시에 치러져 역대 두 번째 규모입니다.",
+    date: "2026-05-15",
+    category: "election",
+    items: [
+      {
+        label: "선거 일정",
+        value: "5/14~15 후보등록 · 5/18 투표용지 인쇄 시한 · 5/22 공식 선거운동 개시 · 5/29~30 사전투표 · 6/3 본투표·개표",
+      },
+      {
+        label: "선거 규모",
+        value: "광역단체장 17곳 · 교육감 17곳 · 기초단체장 226곳 · 광역·기초의원 등 4,000여 개 선거",
+      },
+      {
+        label: "재보궐 규모",
+        value: "14개 선거구(국회의원 5곳·지자체 9곳) 동시 시행 — 역대 두 번째 규모",
+      },
+      {
+        label: "주요 격전지",
+        value: "재보궐: 부산 북갑(3파전)·평택을(5파전)·인천 연수갑 / 광역단체장: 서울·경기·부산",
+      },
+    ],
+    sources: [
+      {
+        title: '[6.3 지방선거] 후보 등록 마감‥ "지역 일꾼 도전" — MBC 뉴스데스크',
+        url: "https://www.youtube.com/watch?v=23DUCTe5f6E",
+      },
+      {
+        title: "[이시각헤드라인] 5월 15일 뉴스투나잇 — 연합뉴스TV",
+        url: "https://www.youtube.com/watch?v=vgeBRyCimB8",
+      },
+    ],
+    linkUrl: "/elections/2026-06-03",
+    active: true,
+  },
+  {
+    id: "2026-05-14-busan-buk-a-gallup-poll",
+    title: '부산 북갑 한국갤럽 "하정우 39·한동훈 29·박민식 21" — 보수 단일화 압박 정점',
+    description:
+      '한국갤럽이 5월 14일 발표한 부산 북갑 재보궐선거 여론조사에서 하정우(더불어민주당) 39%, 한동훈(무소속) 29%, 박민식(국민의힘) 21%로 나타났습니다. 양자대결에서는 하정우 vs 한동훈이 오차범위 내(45 vs 39), 하정우 vs 박민식은 하정우 우세(48 vs 33)였습니다. 5월 15일 부산 지역구 국민의힘 의원 17명 중 10명이 "단일화 필요" 입장을 표명하며 압박이 정점에 달했으나, 박민식 후보는 "단일화 가능성 제로"라며 거부 입장을 고수했습니다. 후보등록 마감(5/15) 이후로는 등록 취소·후보 사퇴가 단일화의 마지막 카드로 남았고, 투표용지 인쇄(5/18) 후엔 사퇴 후보 이름이 인쇄되어 사표 위험이 커집니다.',
+    date: "2026-05-14",
+    category: "election",
+    items: [
+      {
+        label: "3자 대결",
+        value: "하정우(민주) 39% · 한동훈(무소속) 29% · 박민식(국힘) 21%",
+      },
+      {
+        label: "양자 대결",
+        value: "하정우 vs 한동훈 45% vs 39%(오차범위 내) · 하정우 vs 박민식 48% vs 33%",
+      },
+      {
+        label: "단일화 압박",
+        value: '부산 지역구 국힘 의원 17명 중 10명 "단일화 필요" · 장동혁 대표 "묻지마 단일화 안 돼" 신중론',
+      },
+      {
+        label: "박민식 입장",
+        value: '"단일화 가능성 제로" · "공천받은 후보가 단일화 대상이 될 수 없다" 거부',
+      },
+      {
+        label: "남은 변수",
+        value: "투표용지 인쇄(5/18) · 사전투표 전날(5/28) — 사전투표 5/29~30, 후보 사퇴해도 인쇄된 이름은 그대로 표시(사표 위험)",
+      },
+    ],
+    sources: [
+      {
+        title:
+          "하정우 39%·한동훈 29%·박민식 21%…북갑, '단일화'가 핵심 변수? [한국갤럽] — 지금 이 뉴스",
+        url: "https://www.youtube.com/watch?v=Fzk1-17kuNw",
+      },
+      {
+        title: '"양보" vs "웃기시네" 박민식-한동훈 단일화 신경전속…장동혁 "표 계산 단일화 안돼" [토요와이드]',
+        url: "https://www.youtube.com/watch?v=RwrvIoW8hgg",
+      },
+      {
+        title: '박민식, 단일화 거부? "여론조사 허망…꿋꿋하게 밀고 나가겠다" — 채널A',
+        url: "https://www.youtube.com/watch?v=v9aJoMIK1Go",
+      },
+    ],
+    linkUrl: "/elections/2026-06-03",
+    active: true,
+  },
+  {
     id: "2026-05-13-assembly-speaker-cho-jung-sik",
     title: '22대 후반기 국회의장 후보에 6선 조정식 — 부의장 남인순·박덕흠, "6월 내 원구성"',
     description:
@@ -715,7 +800,7 @@ export const breakingNews: BreakingNewsItem[] = [
         url: "https://www.mt.co.kr/politics/2026/05/08/2026050720091462166",
       },
     ],
-    active: true,
+    active: false,
   },
   {
     id: "2026-05-07-fake-indictment-special-counsel-pace-control",
@@ -897,7 +982,7 @@ export const breakingNews: BreakingNewsItem[] = [
       },
     ],
     linkUrl: "/elections/2026-06-03",
-    active: true,
+    active: false,
   },
   {
     id: "2026-05-12-by-election-d22-busan-buk-a-tv-debate",
