@@ -11,11 +11,13 @@ export const breakingNews: BreakingNewsItem[] = [
     items: [
       {
         label: "선거 일정",
-        value: "5/14~15 후보등록 · 5/18 투표용지 인쇄 시한 · 5/22 공식 선거운동 개시 · 5/29~30 사전투표 · 6/3 본투표·개표",
+        value:
+          "5/14~15 후보등록 · 5/18 투표용지 인쇄 시한 · 5/22 공식 선거운동 개시 · 5/29~30 사전투표 · 6/3 본투표·개표",
       },
       {
         label: "선거 규모",
-        value: "광역단체장 17곳 · 교육감 17곳 · 기초단체장 226곳 · 광역·기초의원 등 4,000여 개 선거",
+        value:
+          "광역단체장 17곳 · 교육감 17곳 · 기초단체장 226곳 · 광역·기초의원 등 4,000여 개 선거",
       },
       {
         label: "재보궐 규모",
@@ -57,7 +59,8 @@ export const breakingNews: BreakingNewsItem[] = [
       },
       {
         label: "단일화 압박",
-        value: '부산 지역구 국힘 의원 17명 중 10명 "단일화 필요" · 장동혁 대표 "묻지마 단일화 안 돼" 신중론',
+        value:
+          '부산 지역구 국힘 의원 17명 중 10명 "단일화 필요" · 장동혁 대표 "묻지마 단일화 안 돼" 신중론',
       },
       {
         label: "박민식 입장",
@@ -65,7 +68,8 @@ export const breakingNews: BreakingNewsItem[] = [
       },
       {
         label: "남은 변수",
-        value: "투표용지 인쇄(5/18) · 사전투표 전날(5/28) — 사전투표 5/29~30, 후보 사퇴해도 인쇄된 이름은 그대로 표시(사표 위험)",
+        value:
+          "투표용지 인쇄(5/18) · 사전투표 전날(5/28) — 사전투표 5/29~30, 후보 사퇴해도 인쇄된 이름은 그대로 표시(사표 위험)",
       },
     ],
     sources: [
@@ -75,7 +79,8 @@ export const breakingNews: BreakingNewsItem[] = [
         url: "https://www.youtube.com/watch?v=Fzk1-17kuNw",
       },
       {
-        title: '"양보" vs "웃기시네" 박민식-한동훈 단일화 신경전속…장동혁 "표 계산 단일화 안돼" [토요와이드]',
+        title:
+          '"양보" vs "웃기시네" 박민식-한동훈 단일화 신경전속…장동혁 "표 계산 단일화 안돼" [토요와이드]',
         url: "https://www.youtube.com/watch?v=RwrvIoW8hgg",
       },
       {

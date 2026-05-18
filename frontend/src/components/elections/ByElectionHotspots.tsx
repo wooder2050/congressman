@@ -92,9 +92,9 @@ export default function ByElectionHotspots() {
         </span>
       </div>
       <p className="text-sm text-(--color-text-secondary)">
-        14개 재보궐 선거구 중 가장 주목받는 두 곳입니다. 오늘(5/18)이 투표용지 인쇄 시한 —
-        단일화 1차 데드라인이 임박했습니다. 이후 사퇴해도 인쇄된 후보 이름이 그대로 표시돼
-        사표 위험이 커집니다.
+        14개 재보궐 선거구 중 가장 주목받는 두 곳입니다. 오늘(5/18)이 투표용지 인쇄 시한 — 단일화
+        1차 데드라인이 임박했습니다. 이후 사퇴해도 인쇄된 후보 이름이 그대로 표시돼 사표 위험이
+        커집니다.
       </p>
 
       <div className="grid gap-3 sm:grid-cols-2">
