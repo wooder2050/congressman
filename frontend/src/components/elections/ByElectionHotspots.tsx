@@ -16,7 +16,7 @@ const HOTSPOTS: Hotspot[] = [
     region: "부산",
     district: "북구갑",
     headline:
-      'D-17 · 후보등록 마감 후 단일화 첫 고비 — 부산 의원 17명 중 10명 "단일화 필요", 朴 "절대 안 한다" vs 韓 "민심이 종속변수", 투표용지 인쇄 5/18 D-1',
+      'D-16 · 투표용지 인쇄일(5/18) — 단일화 1차 데드라인 직면, 부산 의원 17명 중 10명 "단일화 필요", 朴 "절대 안 한다" vs 韓 "민심이 종속변수"',
     candidates: [
       {
         name: "하정우",
@@ -38,13 +38,13 @@ const HOTSPOTS: Hotspot[] = [
       },
     ],
     context:
-      "5/18 투표용지 인쇄 시한이 단일화 1차 데드라인 · 사전투표 전날 5/28(2차 마지노선) · 인쇄 후엔 사퇴해도 후보 이름이 그대로 표시되어 사표 위험",
+      "오늘(5/18) 투표용지 인쇄 시한 = 단일화 1차 데드라인 · 사전투표(5/29~30) 전날 5/28이 2차 마지노선 · 인쇄 후엔 사퇴해도 후보 이름이 그대로 표시되어 사표 위험",
   },
   {
     region: "경기",
     district: "평택을",
     headline:
-      "D-17 · 5파전 후보등록 마감 — KBS·한국리서치 5/15 '김용남·유의동·조국 오차범위 접전', 범진보 단일화 반대 46 vs 찬성 29",
+      "D-16 · 5파전 후보등록 마감 — KBS·한국리서치 5/15 '김용남·유의동·조국 오차범위 접전', 범진보 단일화 반대 46 vs 찬성 29",
     candidates: [
       {
         name: "김용남",
@@ -88,12 +88,13 @@ export default function ByElectionHotspots() {
       <div className="flex items-baseline justify-between">
         <h2 className="text-lg font-bold text-(--color-text-primary)">핫스팟 선거구</h2>
         <span className="text-xs text-(--color-text-tertiary)">
-          5/17 기준 · 후보등록 마감 · 본투표 D-17
+          5/18 기준 · 투표용지 인쇄 시한 · 본투표 D-16
         </span>
       </div>
       <p className="text-sm text-(--color-text-secondary)">
-        14개 재보궐 선거구 중 가장 주목받는 두 곳입니다. 5/18 투표용지 인쇄 시한이 단일화 1차
-        데드라인 — 중앙선관위 데이터 반영 후 전체 후보 정보가 자동 갱신됩니다.
+        14개 재보궐 선거구 중 가장 주목받는 두 곳입니다. 오늘(5/18)이 투표용지 인쇄 시한 — 단일화
+        1차 데드라인이 임박했습니다. 이후 사퇴해도 인쇄된 후보 이름이 그대로 표시돼 사표 위험이
+        커집니다.
       </p>
 
       <div className="grid gap-3 sm:grid-cols-2">
