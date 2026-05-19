@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import type { ElectionCandidate } from "@/types";
+import CandidateDisclosureSection from "@/components/elections/CandidateDisclosureSection";
 
 function CandidateAvatar({
   name,
@@ -137,6 +138,9 @@ export default function CandidateCard({ candidate }: { candidate: ElectionCandid
           </div>
         </div>
       )}
+
+      {/* 후보자정보공개자료 (공직선거법 제49조) */}
+      <CandidateDisclosureSection data={candidate} />
 
       {/* 기존 의원 프로필 링크 */}
       {candidate.memberIdRef && (

@@ -33,6 +33,8 @@
     "sync:local-election-results": "tsx src/sync/sync-runner.ts local-election-results",
     "sync:local-election-photos": "tsx src/sync/sync-runner.ts local-election-photos",
     "sync:by-election-photos": "tsx src/sync/sync-runner.ts by-election-photos",
+    "sync:local-election-disclosure": "tsx src/sync/sync-runner.ts local-election-disclosure",
+    "sync:by-election-disclosure": "tsx src/sync/sync-runner.ts by-election-disclosure",
     "seed:local-elections": "tsx prisma/seed-local-elections.ts",
     "seed:breaking-news": "tsx prisma/seed-breaking-news.ts",
     "seed:weekly": "tsx prisma/seed-weekly.ts"

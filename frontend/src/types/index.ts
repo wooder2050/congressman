@@ -539,7 +539,25 @@ export interface CandidatePledge {
   description: string;
 }
 
-export interface ElectionCandidate {
+/** 공직선거법 제49조 후보자정보공개자료 요약 5종 (출처: 중앙선거관리위원회) */
+export interface CandidateDisclosure {
+  /** 재산신고액(원 단위 문자열, BigInt 직렬화) */
+  assetDeclared: string | null;
+  /** 병역신고사항(본인) */
+  militaryService: string | null;
+  /** 최근 5년 납세 납부액(원 단위 문자열) */
+  taxPaid: string | null;
+  /** 최근 5년 체납액(원 단위 문자열) */
+  taxOverdue5y: string | null;
+  /** 현 체납액(원 단위 문자열) */
+  taxOverdueCurrent: string | null;
+  /** 전과기록 (예: "없음", "1건") */
+  criminalRecord: string | null;
+  /** 입후보 횟수 */
+  electionCount: number | null;
+}
+
+export interface ElectionCandidate extends CandidateDisclosure {
   id: number;
   name: string;
   party: Party | null;
@@ -618,7 +636,7 @@ export interface LocalElectionRaceSummary {
   partyGroups?: LocalElectionPartyGroup[];
 }
 
-export interface LocalElectionCandidateDetail {
+export interface LocalElectionCandidateDetail extends CandidateDisclosure {
   id: number;
   name: string;
   party: Party | null;

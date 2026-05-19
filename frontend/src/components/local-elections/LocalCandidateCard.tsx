@@ -1,5 +1,6 @@
 import Image from "next/image";
 import type { LocalElectionCandidateDetail } from "@/types";
+import CandidateDisclosureSection from "@/components/elections/CandidateDisclosureSection";
 
 interface Props {
   candidate: LocalElectionCandidateDetail;
@@ -111,13 +112,16 @@ export default function LocalCandidateCard({ candidate: c }: Props) {
         </div>
       )}
 
-      {/* 재산 */}
-      {c.assets && (
+      {/* 재산 (구 텍스트 — 최신 데이터는 후보자정보공개자료로 대체) */}
+      {c.assets && c.assetDeclared === null && (
         <div className="mt-2">
           <h4 className="mb-1 text-xs font-bold text-(--color-text-tertiary)">재산</h4>
           <p className="text-xs text-(--color-text-secondary)">{c.assets}</p>
         </div>
       )}
+
+      {/* 후보자정보공개자료 (공직선거법 제49조) */}
+      <CandidateDisclosureSection data={c} />
     </div>
   );
 }
