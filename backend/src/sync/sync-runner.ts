@@ -18,6 +18,7 @@ import { BillJudgeSyncService } from './services/bill-judge-sync.service';
 import { MeetingMinutesSyncService } from './services/meeting-minutes-sync.service';
 import { NecApiService } from './services/nec-api.service';
 import { LocalElectionSyncService } from './services/local-election-sync.service';
+import { LocalElectionPhotoSyncService } from './services/local-election-photo-sync.service';
 
 async function invalidateCache(command: string) {
   const url = process.env.UPSTASH_REDIS_REST_URL;
@@ -86,7 +87,11 @@ async function invalidateCache(command: string) {
   if (command === 'meeting-minutes') {
     prefixes.push('committees:');
   }
-  if (command === 'local-elections' || command === 'local-election-results') {
+  if (
+    command === 'local-elections' ||
+    command === 'local-election-results' ||
+    command === 'local-election-photos'
+  ) {
     prefixes.push('local-elections:');
   }
 
@@ -181,6 +186,12 @@ async function main() {
       case 'local-election-results': {
         const necApi = new NecApiService();
         await new LocalElectionSyncService(prisma, necApi, syncLog).syncResults('local-2026');
+        break;
+      }
+      case 'local-election-photos': {
+        const limitArg = process.argv[3];
+        const limit = limitArg ? parseInt(limitArg, 10) : undefined;
+        await new LocalElectionPhotoSyncService(prisma, syncLog).syncPhotos({ limit });
         break;
       }
       case 'all':
