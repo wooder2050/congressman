@@ -35,6 +35,11 @@ const nextConfig: NextConfig = {
         hostname: "www.assembly.go.kr",
         pathname: "/photo/**",
       },
+      {
+        protocol: "https",
+        hostname: "zlchzmtpzlrzpmiuywpp.supabase.co",
+        pathname: "/storage/v1/object/public/local-election-photos/**",
+      },
     ],
   },
   experimental: {
