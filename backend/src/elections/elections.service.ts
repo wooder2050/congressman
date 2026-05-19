@@ -48,7 +48,7 @@ export class ElectionsService {
             previousParty: true,
             candidates: {
               include: { party: true },
-              orderBy: { candidateNumber: 'asc' },
+              orderBy: [{ candidateNumber: { sort: 'asc', nulls: 'last' } }, { name: 'asc' }],
             },
           },
         },

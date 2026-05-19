@@ -233,7 +233,7 @@ export class LocalElectionsService {
         include: {
           candidates: {
             include: { party: true },
-            orderBy: { candidateNumber: 'asc' },
+            orderBy: [{ candidateNumber: { sort: 'asc', nulls: 'last' } }, { name: 'asc' }],
             take: 3,
           },
           _count: { select: { candidates: true } },
@@ -291,7 +291,7 @@ export class LocalElectionsService {
         election: { select: { status: true } },
         candidates: {
           include: { party: true },
-          orderBy: { candidateNumber: 'asc' },
+          orderBy: [{ candidateNumber: { sort: 'asc', nulls: 'last' } }, { name: 'asc' }],
         },
       },
     });
@@ -424,7 +424,7 @@ export class LocalElectionsService {
       include: {
         candidates: {
           include: { party: true },
-          orderBy: [{ candidateNumber: 'asc' }, { name: 'asc' }],
+          orderBy: [{ candidateNumber: { sort: 'asc', nulls: 'last' } }, { name: 'asc' }],
           take: 30,
         },
         _count: { select: { candidates: true } },
