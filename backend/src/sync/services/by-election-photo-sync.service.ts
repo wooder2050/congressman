@@ -22,6 +22,7 @@ interface NecByElectionCandidate {
   sdName: string;
   wiwName: string;
   sggName: string;
+  giho: string; // 기호 번호
 }
 
 function extractThumbnailPath(html: string, huboid: string): string | null {
@@ -94,6 +95,7 @@ export class ByElectionPhotoSyncService {
           name: true,
           huboid: true,
           photoUrl: true,
+          candidateNumber: true,
           district: { select: { district: true } },
         },
       });
@@ -107,6 +109,7 @@ export class ByElectionPhotoSyncService {
       }
 
       let huboidUpdated = 0;
+      let candidateNumberUpdated = 0;
       let photoUpdated = 0;
       let skipped = 0;
       let failed = 0;
@@ -122,13 +125,20 @@ export class ByElectionPhotoSyncService {
           continue;
         }
 
-        // huboid 채우기 (있으면 skip)
-        if (!c.huboid) {
+        // huboid + candidateNumber 채우기 (둘 다 비어있을 때만)
+        const updates: { huboid?: string; candidateNumber?: number } = {};
+        if (!c.huboid && necRow.huboid) updates.huboid = necRow.huboid;
+        const giho = necRow.giho ? parseInt(necRow.giho, 10) : null;
+        if (c.candidateNumber === null && giho !== null && Number.isFinite(giho)) {
+          updates.candidateNumber = giho;
+        }
+        if (Object.keys(updates).length > 0) {
           await this.prisma.candidate.update({
             where: { id: c.id },
-            data: { huboid: necRow.huboid },
+            data: updates,
           });
-          huboidUpdated++;
+          if (updates.huboid) huboidUpdated++;
+          if (updates.candidateNumber !== undefined) candidateNumberUpdated++;
         }
 
         // 사진 이미 있으면 skip
@@ -153,7 +163,7 @@ export class ByElectionPhotoSyncService {
       }
 
       console.log(
-        `[ByElectionPhotoSync] Completed: huboid=+${huboidUpdated} photo=+${photoUpdated} skipped=${skipped} failed=${failed}`,
+        `[ByElectionPhotoSync] Completed: huboid=+${huboidUpdated} candidateNumber=+${candidateNumberUpdated} photo=+${photoUpdated} skipped=${skipped} failed=${failed}`,
       );
       if (unmatchedDb.length > 0) {
         console.log(
@@ -161,7 +171,7 @@ export class ByElectionPhotoSyncService {
         );
       }
 
-      await this.syncLog.complete(logRow.id, huboidUpdated + photoUpdated);
+      await this.syncLog.complete(logRow.id, huboidUpdated + candidateNumberUpdated + photoUpdated);
     } catch (err) {
       await this.syncLog.fail(logRow.id, (err as Error).message);
       throw err;
