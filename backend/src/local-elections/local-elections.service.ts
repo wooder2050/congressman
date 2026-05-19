@@ -329,6 +329,13 @@ export class LocalElectionsService {
           description: string;
         }[],
         assets: c.assets,
+        assetDeclared: c.assetDeclared !== null ? c.assetDeclared.toString() : null,
+        militaryService: c.militaryService,
+        taxPaid: c.taxPaid !== null ? c.taxPaid.toString() : null,
+        taxOverdue5y: c.taxOverdue5y !== null ? c.taxOverdue5y.toString() : null,
+        taxOverdueCurrent: c.taxOverdueCurrent !== null ? c.taxOverdueCurrent.toString() : null,
+        criminalRecord: c.criminalRecord,
+        electionCount: c.electionCount,
         candidateNumber: c.candidateNumber,
         status: c.status,
         voteCount: c.voteCount,
