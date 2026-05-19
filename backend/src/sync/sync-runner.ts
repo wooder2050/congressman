@@ -20,6 +20,7 @@ import { NecApiService } from './services/nec-api.service';
 import { LocalElectionSyncService } from './services/local-election-sync.service';
 import { LocalElectionPhotoSyncService } from './services/local-election-photo-sync.service';
 import { ByElectionPhotoSyncService } from './services/by-election-photo-sync.service';
+import { CandidateDisclosureSyncService } from './services/candidate-disclosure-sync.service';
 
 async function invalidateCache(command: string) {
   const url = process.env.UPSTASH_REDIS_REST_URL;
@@ -91,11 +92,12 @@ async function invalidateCache(command: string) {
   if (
     command === 'local-elections' ||
     command === 'local-election-results' ||
-    command === 'local-election-photos'
+    command === 'local-election-photos' ||
+    command === 'local-election-disclosure'
   ) {
     prefixes.push('local-elections:');
   }
-  if (command === 'by-election-photos') {
+  if (command === 'by-election-photos' || command === 'by-election-disclosure') {
     prefixes.push('elections:', 'candidates:');
   }
 
@@ -201,6 +203,22 @@ async function main() {
       case 'by-election-photos': {
         const necApi = new NecApiService();
         await new ByElectionPhotoSyncService(prisma, necApi, syncLog).syncPhotos();
+        break;
+      }
+      case 'local-election-disclosure': {
+        const limitArg = process.argv[3];
+        const limit = limitArg ? parseInt(limitArg, 10) : undefined;
+        await new CandidateDisclosureSyncService(prisma, syncLog).syncDisclosures('local', {
+          limit,
+        });
+        break;
+      }
+      case 'by-election-disclosure': {
+        const limitArg = process.argv[3];
+        const limit = limitArg ? parseInt(limitArg, 10) : undefined;
+        await new CandidateDisclosureSyncService(prisma, syncLog).syncDisclosures('by', {
+          limit,
+        });
         break;
       }
       case 'all':

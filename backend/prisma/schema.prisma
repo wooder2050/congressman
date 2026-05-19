@@ -337,6 +337,15 @@ model Candidate {
   candidateNumber Int? // 기호 번호
   status          String  @default("registered")
 
+  // 후보자정보공개자료 (공직선거법 제49조, info.nec.go.kr 상세 페이지 요약)
+  assetDeclared     BigInt? // 재산신고액 (원)
+  militaryService   String? // 병역신고사항(본인)
+  taxPaid           BigInt? // 최근 5년 납세 납부액 (원)
+  taxOverdue5y      BigInt? // 최근 5년 체납액 (원)
+  taxOverdueCurrent BigInt? // 현 체납액 (원)
+  criminalRecord    String? // 전과기록
+  electionCount     Int? // 입후보 횟수
+
   district ElectionDistrict @relation(fields: [districtId], references: [id])
   party    Party?           @relation(fields: [partyId], references: [id])
 
@@ -406,6 +415,15 @@ model LocalElectionCandidate {
   isWinner        Boolean @default(false)
   huboid          String  @default("") // NEC 후보자 ID
   memberIdRef     String? // 현직 의원이면 Member.id
+
+  // 후보자정보공개자료 (공직선거법 제49조, info.nec.go.kr 상세 페이지 요약)
+  assetDeclared     BigInt? // 재산신고액 (원)
+  militaryService   String? // 병역신고사항(본인)
+  taxPaid           BigInt? // 최근 5년 납세 납부액 (원)
+  taxOverdue5y      BigInt? // 최근 5년 체납액 (원)
+  taxOverdueCurrent BigInt? // 현 체납액 (원)
+  criminalRecord    String? // 전과기록 (예: "없음", "1건")
+  electionCount     Int? // 입후보 횟수
 
   race  LocalElectionRace @relation(fields: [raceId], references: [id])
   party Party?            @relation(fields: [partyId], references: [id])
