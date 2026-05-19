@@ -11,7 +11,7 @@ const HTTP_HEADERS = {
     'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
 };
 
-export interface DisclosureFields {
+interface DisclosureFields {
   assetDeclared: bigint | null;
   militaryService: string | null;
   taxPaid: bigint | null;
@@ -48,7 +48,7 @@ function cleanText(text: string | undefined): string | null {
 }
 
 /** 후보자 상세 HTML에서 기본정보 테이블 파싱 */
-export function parseDisclosureFromHtml(html: string): DisclosureFields | null {
+function parseDisclosureFromHtml(html: string): DisclosureFields | null {
   const tableMatch = html.match(/<table>([\s\S]*?)<\/table>/);
   if (!tableMatch) return null;
   const tbody = tableMatch[1];
