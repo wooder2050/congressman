@@ -333,6 +333,7 @@ model Candidate {
   pledges         Json    @default("[]") // [{category, title, description}]
   assets          String? // 재산 요약 텍스트
   memberIdRef     String? // 기존 의원이면 Member.id 참조
+  huboid          String? @unique // NEC 후보자 ID (사진/상세 페이지 키)
   candidateNumber Int? // 기호 번호
   status          String  @default("registered")
 
