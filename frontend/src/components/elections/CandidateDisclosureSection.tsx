@@ -7,7 +7,7 @@ interface Props {
 }
 
 /** "717243000" (원 문자열) → "7억 1,724만원" */
-function formatWon(value: string | null): string | null {
+export function formatWon(value: string | null): string | null {
   if (!value) return null;
   const n = Number(value);
   if (!Number.isFinite(n)) return null;

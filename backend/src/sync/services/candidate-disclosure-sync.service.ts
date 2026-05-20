@@ -21,6 +21,13 @@ interface DisclosureFields {
   electionCount: number | null;
 }
 
+/** 재보궐 후보자 기본정보 — NEC 상세 HTML에서만 채워지고 시드에는 없는 필드.
+ *  career는 시드 데이터가 더 정리돼 있어 보강 대상에서 제외한다. */
+interface ProfileFields {
+  birthDate: string | null;
+  education: string | null;
+}
+
 /** "717,243" → 717243000n (천원 → 원), "" / "-" → null */
 function parseThousandsWon(text: string | undefined): bigint | null {
   if (!text) return null;
@@ -47,8 +54,21 @@ function cleanText(text: string | undefined): string | null {
   return t;
 }
 
+/** "1970.02.14 (56세)/남" → "19700214" (LocalElectionCandidate.birthDate와 동일한 YYYYMMDD 포맷) */
+function parseBirthDate(text: string | undefined): string | null {
+  if (!text) return null;
+  const m = text.match(/(\d{4})\.(\d{1,2})\.(\d{1,2})/);
+  if (!m) return null;
+  return `${m[1]}${m[2].padStart(2, '0')}${m[3].padStart(2, '0')}`;
+}
+
+interface ParsedCandidate {
+  disclosure: DisclosureFields;
+  profile: ProfileFields;
+}
+
 /** 후보자 상세 HTML에서 기본정보 테이블 파싱 */
-function parseDisclosureFromHtml(html: string): DisclosureFields | null {
+function parseDisclosureFromHtml(html: string): ParsedCandidate | null {
   const tableMatch = html.match(/<table>([\s\S]*?)<\/table>/);
   if (!tableMatch) return null;
   const tbody = tableMatch[1];
@@ -71,13 +91,19 @@ function parseDisclosureFromHtml(html: string): DisclosureFields | null {
   }
 
   return {
-    assetDeclared: parseThousandsWon(fields.get('재산신고액(천원)')),
-    militaryService: cleanText(fields.get('병역신고사항(본인)')),
-    taxPaid: parseThousandsWon(fields.get('납부액(천원)')),
-    taxOverdue5y: parseThousandsWon(fields.get('최근 5년간 체납액(천원)')),
-    taxOverdueCurrent: parseThousandsWon(fields.get('현체납액(천원)')),
-    criminalRecord: cleanText(fields.get('전과기록유무(건수)')),
-    electionCount: parseElectionCount(fields.get('입후보 횟수')),
+    disclosure: {
+      assetDeclared: parseThousandsWon(fields.get('재산신고액(천원)')),
+      militaryService: cleanText(fields.get('병역신고사항(본인)')),
+      taxPaid: parseThousandsWon(fields.get('납부액(천원)')),
+      taxOverdue5y: parseThousandsWon(fields.get('최근 5년간 체납액(천원)')),
+      taxOverdueCurrent: parseThousandsWon(fields.get('현체납액(천원)')),
+      criminalRecord: cleanText(fields.get('전과기록유무(건수)')),
+      electionCount: parseElectionCount(fields.get('입후보 횟수')),
+    },
+    profile: {
+      birthDate: parseBirthDate(fields.get('생년월일')),
+      education: cleanText(fields.get('학력')),
+    },
   };
 }
 
@@ -119,9 +145,11 @@ export class CandidateDisclosureSyncService {
               take: limit,
             })
           : await this.prisma.candidate.findMany({
+              // 재보궐 후보자는 disclosure 5종이 이미 채워져 있을 수 있으므로
+              // 기본정보(birthDate) 누락분도 대상에 포함한다.
               where: {
                 huboid: { not: null },
-                assetDeclared: null,
+                OR: [{ assetDeclared: null }, { birthDate: null }],
               },
               select: { id: true, huboid: true, name: true },
               take: limit,
@@ -181,27 +209,29 @@ export class CandidateDisclosureSyncService {
     const html = await fetchHtml(CANDIDATE_DETAIL_URL(huboid));
     if (!html) return 'failed';
 
-    const fields = parseDisclosureFromHtml(html);
-    if (!fields) return 'skipped';
+    const parsed = parseDisclosureFromHtml(html);
+    if (!parsed) return 'skipped';
+    const { disclosure, profile } = parsed;
 
-    // 모든 필드가 null이면 skip
-    const hasAny =
-      fields.assetDeclared !== null ||
-      fields.militaryService !== null ||
-      fields.taxPaid !== null ||
-      fields.criminalRecord !== null ||
-      fields.electionCount !== null;
-    if (!hasAny) return 'skipped';
+    // disclosure 5종이 모두 null이면 사실상 빈 페이지로 보고 skip
+    const hasDisclosure =
+      disclosure.assetDeclared !== null ||
+      disclosure.militaryService !== null ||
+      disclosure.taxPaid !== null ||
+      disclosure.criminalRecord !== null ||
+      disclosure.electionCount !== null;
+    if (!hasDisclosure) return 'skipped';
 
     if (target === 'local') {
       await this.prisma.localElectionCandidate.update({
         where: { id: candidateId },
-        data: fields,
+        data: disclosure,
       });
     } else {
+      // 재보궐 후보자는 시드에 birthDate/education/career가 없으므로 함께 보강한다.
       await this.prisma.candidate.update({
         where: { id: candidateId },
-        data: fields,
+        data: { ...disclosure, ...profile },
       });
     }
     return 'updated';

@@ -6,6 +6,14 @@ import { useCongressSuspenseQuery } from "@/hooks/useCongressQuery";
 import { getElection } from "@/lib/api";
 import type { ByElectionDetail, ElectionCandidate } from "@/types";
 import { proxyPhotoUrl } from "@/lib/photo";
+import { formatWon } from "./CandidateDisclosureSection";
+
+/** "19700214" → "1970.02.14", 형식이 다르면 원본/대시 반환 */
+function formatBirthDate(value: string | null): string {
+  if (!value) return "-";
+  const m = value.match(/^(\d{4})(\d{2})(\d{2})$/);
+  return m ? `${m[1]}.${m[2]}.${m[3]}` : value;
+}
 
 export default function CandidateCompareInner({
   electionId,
@@ -123,13 +131,19 @@ function CandidateSummaryCard({ candidate: c }: { candidate: ElectionCandidate }
 function CompareTable({ candidates }: { candidates: ElectionCandidate[] }) {
   const rows: { label: string; getValue: (c: ElectionCandidate) => string }[] = [
     { label: "정당", getValue: (c) => c.party?.name ?? "무소속" },
-    { label: "생년월일", getValue: (c) => c.birthDate ?? "-" },
+    { label: "생년월일", getValue: (c) => formatBirthDate(c.birthDate) },
     {
       label: "주요 경력",
       getValue: (c) => (c.career ? c.career.split("\n").slice(0, 3).join(", ") : "-"),
     },
     { label: "학력", getValue: (c) => c.education ?? "-" },
-    { label: "재산", getValue: (c) => c.assets ?? "-" },
+    { label: "재산신고액", getValue: (c) => formatWon(c.assetDeclared) ?? "-" },
+    { label: "병역", getValue: (c) => c.militaryService ?? "-" },
+    { label: "전과", getValue: (c) => c.criminalRecord ?? "-" },
+    {
+      label: "입후보 횟수",
+      getValue: (c) => (c.electionCount !== null ? `${c.electionCount}회` : "-"),
+    },
     {
       label: "핵심 공약",
       getValue: (c) => (c.pledges.length > 0 ? c.pledges.map((p) => p.title).join(", ") : "-"),
@@ -180,6 +194,9 @@ function CompareAccordion({ candidates }: { candidates: ElectionCandidate[] }) {
             <span className="font-medium">정당:</span> {c.party?.name ?? "무소속"}
           </p>
           <p>
+            <span className="font-medium">생년월일:</span> {formatBirthDate(c.birthDate)}
+          </p>
+          <p>
             <span className="font-medium">경력:</span>{" "}
             {c.career ? c.career.split("\n").slice(0, 3).join(" / ") : "-"}
           </p>
@@ -190,8 +207,27 @@ function CompareAccordion({ candidates }: { candidates: ElectionCandidate[] }) {
       ),
     },
     {
-      label: "재산",
-      render: (c: ElectionCandidate) => <p className="text-sm">{c.assets ?? "정보 없음"}</p>,
+      label: "후보자정보공개자료",
+      render: (c: ElectionCandidate) => {
+        const items: { label: string; value: string }[] = [];
+        const asset = formatWon(c.assetDeclared);
+        if (asset) items.push({ label: "재산신고액", value: asset });
+        if (c.militaryService) items.push({ label: "병역", value: c.militaryService });
+        if (c.criminalRecord) items.push({ label: "전과", value: c.criminalRecord });
+        if (c.electionCount !== null)
+          items.push({ label: "입후보 횟수", value: `${c.electionCount}회` });
+        return items.length > 0 ? (
+          <ul className="space-y-1 text-sm">
+            {items.map((it) => (
+              <li key={it.label}>
+                <span className="font-medium">{it.label}:</span> {it.value}
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <p className="text-sm text-(--color-text-tertiary)">정보 없음</p>
+        );
+      },
     },
     {
       label: "공약",

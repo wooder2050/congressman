@@ -105,13 +105,7 @@ export default function CandidateCard({ candidate }: { candidate: ElectionCandid
         </div>
       )}
 
-      {/* 재산 */}
-      {candidate.assets && (
-        <div className="mt-3">
-          <h5 className="mb-1 text-xs font-semibold text-(--color-text-tertiary)">재산</h5>
-          <p className="text-sm text-(--color-text-secondary)">{candidate.assets}</p>
-        </div>
-      )}
+      {/* 재산·병역·전과 등은 아래 CandidateDisclosureSection(중앙선관위 공개자료)에서 표시 */}
 
       {/* 핵심 공약 */}
       {pledges.length > 0 && (
