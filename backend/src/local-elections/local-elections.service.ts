@@ -46,7 +46,7 @@ function mapLocalCandidate(c: LocalElectionCandidate & { party: Party | null }) 
     taxOverdueCurrent: c.taxOverdueCurrent !== null ? c.taxOverdueCurrent.toString() : null,
     criminalRecord: c.criminalRecord,
     electionCount: c.electionCount,
-    assetPdfUrl: c.assetPdfUrl,
+    assetPdfUrls: c.assetPdfUrls,
     candidateNumber: c.candidateNumber,
     status: c.status,
     voteCount: c.voteCount,

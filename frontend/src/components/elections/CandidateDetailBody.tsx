@@ -213,29 +213,44 @@ export default function CandidateDetailBody({ candidate: c, electionTypeLabel, m
         <h2 className="text-base font-bold text-(--color-text-primary)">후보자정보공개자료</h2>
         <CandidateDisclosureSection data={c} />
 
-        {/* 재산신고서 원문 PDF — NEC 제출 서류 전문 */}
-        {c.assetPdfUrl && (
-          <a
-            href={c.assetPdfUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="mt-3 inline-flex items-center gap-1.5 rounded-lg border border-(--color-border-primary) bg-(--color-bg-secondary) px-3 py-2 text-sm font-medium text-(--color-text-secondary) transition-colors hover:bg-(--color-bg-hover)"
-          >
-            <svg
-              width="15"
-              height="15"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              aria-hidden="true"
-            >
-              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
-              <polyline points="14 2 14 8 20 8" />
-            </svg>
-            재산신고서 원문(PDF) 보기
-            <span className="text-xs text-(--color-text-tertiary)">— 중앙선관위</span>
-          </a>
+        {/* 재산신고서 원문 PDF — NEC 제출 서류 전문 (페이지별) */}
+        {c.assetPdfUrls && c.assetPdfUrls.length > 0 && (
+          <div className="mt-3 rounded-lg border border-(--color-border-secondary) bg-(--color-bg-secondary) p-3">
+            <div className="flex items-center gap-1.5">
+              <svg
+                width="14"
+                height="14"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                aria-hidden="true"
+                className="text-(--color-text-tertiary)"
+              >
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                <polyline points="14 2 14 8 20 8" />
+              </svg>
+              <h3 className="text-xs font-bold text-(--color-text-tertiary)">
+                재산신고서 원문 (중앙선관위 제출 서류)
+              </h3>
+            </div>
+            <div className="mt-2 flex flex-wrap gap-1.5">
+              {c.assetPdfUrls.map((url, i) => (
+                <a
+                  key={url}
+                  href={url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="rounded-md border border-(--color-border-primary) bg-(--color-bg-primary) px-2.5 py-1 text-xs font-medium text-(--color-primary) transition-colors hover:bg-(--color-bg-hover)"
+                >
+                  {i + 1}쪽
+                </a>
+              ))}
+            </div>
+            <p className="mt-2 text-[10px] leading-relaxed text-(--color-text-tertiary)">
+              1쪽은 신고 항목 표지이며, 2쪽부터 항목별 금액 내역이 있습니다.
+            </p>
+          </div>
         )}
       </section>
     </div>
