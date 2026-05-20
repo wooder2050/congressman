@@ -37,7 +37,14 @@ function CandidateAvatar({
   );
 }
 
-export default function CandidateCard({ candidate }: { candidate: ElectionCandidate }) {
+export default function CandidateCard({
+  candidate,
+  electionId,
+}: {
+  candidate: ElectionCandidate;
+  /** 후보자 상세 페이지 링크용 선거 ID. 없으면 링크 미표시 */
+  electionId?: string;
+}) {
   const partyColor = candidate.party?.color ?? "#9ca3af";
   const careers = candidate.career?.split("\n").filter(Boolean) ?? [];
   const pledges = candidate.pledges ?? [];
@@ -136,15 +143,25 @@ export default function CandidateCard({ candidate }: { candidate: ElectionCandid
       {/* 후보자정보공개자료 (공직선거법 제49조) */}
       <CandidateDisclosureSection data={candidate} />
 
-      {/* 기존 의원 프로필 링크 */}
-      {candidate.memberIdRef && (
-        <div className="mt-3 border-t border-(--color-border-primary) pt-3">
-          <Link
-            href={`/members/${candidate.memberIdRef}`}
-            className="text-xs font-medium text-(--color-primary) no-underline hover:underline"
-          >
-            의정활동 기록 보기 →
-          </Link>
+      {/* 후보자 상세 / 기존 의원 프로필 링크 */}
+      {(electionId || candidate.memberIdRef) && (
+        <div className="mt-3 flex flex-wrap gap-x-4 gap-y-1 border-t border-(--color-border-primary) pt-3">
+          {electionId && (
+            <Link
+              href={`/elections/${electionId}/candidates/${candidate.id}`}
+              className="text-xs font-medium text-(--color-primary) no-underline hover:underline"
+            >
+              후보자 상세 보기 →
+            </Link>
+          )}
+          {candidate.memberIdRef && (
+            <Link
+              href={`/members/${candidate.memberIdRef}`}
+              className="text-xs font-medium text-(--color-primary) no-underline hover:underline"
+            >
+              의정활동 기록 보기 →
+            </Link>
+          )}
         </div>
       )}
     </div>

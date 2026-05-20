@@ -29,6 +29,7 @@ import type {
   ScorecardRankingResponse,
   ByElectionSummary,
   ByElectionDetail,
+  ByElectionCandidatePageDetail,
   RadarResult,
   TodayBriefing,
   BillSummaryItem,
@@ -439,9 +440,17 @@ export async function getLawmakerCandidates(electionId: string): Promise<Lawmake
   return fetchApi(`/api/elections/${electionId}/lawmaker-candidates`);
 }
 
+export async function getElectionCandidate(params: {
+  id: string;
+  candidateId: number;
+}): Promise<ByElectionCandidatePageDetail | null> {
+  return fetchApi(`/api/elections/${params.id}/candidates/${params.candidateId}`);
+}
+
 Object.defineProperty(getElections, "queryKey", { value: "elections" });
 Object.defineProperty(getElection, "queryKey", { value: "election" });
 Object.defineProperty(getLawmakerCandidates, "queryKey", { value: "lawmakerCandidates" });
+Object.defineProperty(getElectionCandidate, "queryKey", { value: "electionCandidate" });
 
 // ====== 지방선거 ======
 
@@ -450,6 +459,7 @@ import type {
   LocalElectionOverview,
   LocalElectionRaceSummary,
   LocalElectionRaceDetail,
+  LocalElectionCandidatePageDetail,
   LocalElectionRegionSummary,
   LocalElectionRegionDetail,
   LocalElectionStats,
@@ -491,6 +501,13 @@ export async function getLocalElectionRace(params: {
   return fetchApi(`/api/local-elections/${params.id}/races/${params.raceId}`);
 }
 
+export async function getLocalElectionCandidate(params: {
+  id: string;
+  candidateId: number;
+}): Promise<LocalElectionCandidatePageDetail | null> {
+  return fetchApi(`/api/local-elections/${params.id}/candidates/${params.candidateId}`);
+}
+
 export async function getLocalElectionRegions(id: string): Promise<LocalElectionRegionSummary[]> {
   return fetchApi(`/api/local-elections/${id}/regions`);
 }
@@ -517,6 +534,9 @@ Object.defineProperty(getLocalElections, "queryKey", { value: "localElections" }
 Object.defineProperty(getLocalElection, "queryKey", { value: "localElection" });
 Object.defineProperty(getLocalElectionRaces, "queryKey", { value: "localElectionRaces" });
 Object.defineProperty(getLocalElectionRace, "queryKey", { value: "localElectionRace" });
+Object.defineProperty(getLocalElectionCandidate, "queryKey", {
+  value: "localElectionCandidate",
+});
 Object.defineProperty(getLocalElectionRegions, "queryKey", { value: "localElectionRegions" });
 Object.defineProperty(getLocalElectionRegion, "queryKey", { value: "localElectionRegion" });
 Object.defineProperty(getLocalElectionStats, "queryKey", { value: "localElectionStats" });

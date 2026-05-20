@@ -1,12 +1,15 @@
 import Image from "next/image";
+import Link from "next/link";
 import type { LocalElectionCandidateDetail } from "@/types";
 import CandidateDisclosureSection from "@/components/elections/CandidateDisclosureSection";
 
 interface Props {
   candidate: LocalElectionCandidateDetail;
+  /** 후보자 상세 페이지 링크용 연도 (예: "2026"). 없으면 링크 미표시 */
+  year?: string;
 }
 
-export default function LocalCandidateCard({ candidate: c }: Props) {
+export default function LocalCandidateCard({ candidate: c, year }: Props) {
   const partyColor = c.party?.color ?? "#999";
 
   return (
@@ -122,6 +125,16 @@ export default function LocalCandidateCard({ candidate: c }: Props) {
 
       {/* 후보자정보공개자료 (공직선거법 제49조) */}
       <CandidateDisclosureSection data={c} />
+
+      {/* 후보자 상세 페이지 */}
+      {year && (
+        <Link
+          href={`/local-elections/${year}/candidates/${c.id}`}
+          className="mt-3 inline-flex items-center gap-1 text-sm font-medium text-(--color-primary) hover:underline"
+        >
+          후보자 상세 보기 →
+        </Link>
+      )}
     </div>
   );
 }

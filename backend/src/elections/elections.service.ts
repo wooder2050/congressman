@@ -1,8 +1,43 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
+import type { Candidate, Party } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { RedisService } from '../redis/redis.service';
+import { getLawmakerSummary } from './lawmaker-stats.helper';
 
 const TTL_HOUR = 60 * 60;
+
+/** 재보궐 후보자(Candidate) → API 응답 공통 매핑 */
+function mapCandidate(c: Candidate & { party: Party | null }) {
+  return {
+    id: c.id,
+    name: c.name,
+    party: c.party
+      ? {
+          id: c.party.id,
+          name: c.party.name,
+          shortName: c.party.shortName,
+          color: c.party.color,
+        }
+      : null,
+    photoUrl: c.photoUrl,
+    birthDate: c.birthDate,
+    career: c.career,
+    education: c.education,
+    slogan: c.slogan,
+    pledges: c.pledges as { category: string; title: string; description: string }[],
+    assets: c.assets,
+    assetDeclared: c.assetDeclared !== null ? c.assetDeclared.toString() : null,
+    militaryService: c.militaryService,
+    taxPaid: c.taxPaid !== null ? c.taxPaid.toString() : null,
+    taxOverdue5y: c.taxOverdue5y !== null ? c.taxOverdue5y.toString() : null,
+    taxOverdueCurrent: c.taxOverdueCurrent !== null ? c.taxOverdueCurrent.toString() : null,
+    criminalRecord: c.criminalRecord,
+    electionCount: c.electionCount,
+    candidateNumber: c.candidateNumber,
+    status: c.status,
+    memberIdRef: c.memberIdRef,
+  };
+}
 
 @Injectable()
 export class ElectionsService {
@@ -99,35 +134,7 @@ export class ElectionsService {
                   : null,
               }
             : null,
-        candidates: d.candidates.map((c) => ({
-          id: c.id,
-          name: c.name,
-          party: c.party
-            ? {
-                id: c.party.id,
-                name: c.party.name,
-                shortName: c.party.shortName,
-                color: c.party.color,
-              }
-            : null,
-          photoUrl: c.photoUrl,
-          birthDate: c.birthDate,
-          career: c.career,
-          education: c.education,
-          slogan: c.slogan,
-          pledges: c.pledges as { category: string; title: string; description: string }[],
-          assets: c.assets,
-          assetDeclared: c.assetDeclared !== null ? c.assetDeclared.toString() : null,
-          militaryService: c.militaryService,
-          taxPaid: c.taxPaid !== null ? c.taxPaid.toString() : null,
-          taxOverdue5y: c.taxOverdue5y !== null ? c.taxOverdue5y.toString() : null,
-          taxOverdueCurrent: c.taxOverdueCurrent !== null ? c.taxOverdueCurrent.toString() : null,
-          criminalRecord: c.criminalRecord,
-          electionCount: c.electionCount,
-          candidateNumber: c.candidateNumber,
-          status: c.status,
-          memberIdRef: c.memberIdRef,
-        })),
+        candidates: d.candidates.map(mapCandidate),
       })),
     };
 
@@ -307,6 +314,40 @@ export class ElectionsService {
     }
 
     result.sort((a, b) => b.attendanceRate - a.attendanceRate);
+
+    await this.redis.set(key, result, TTL_HOUR);
+    return result;
+  }
+
+  /** 재보궐 후보자 단건 상세 — 후보자 상세 페이지용 */
+  async getCandidateDetail(electionId: string, candidateId: number) {
+    const key = `elections:${electionId}:candidate:${candidateId}`;
+    const cached = await this.redis.get(key);
+    if (cached) return cached;
+
+    const candidate = await this.prisma.candidate.findFirst({
+      where: { id: candidateId, district: { electionId } },
+      include: { party: true, district: true },
+    });
+
+    if (!candidate) {
+      throw new NotFoundException('Candidate not found');
+    }
+
+    const member = candidate.memberIdRef
+      ? await getLawmakerSummary(this.prisma, candidate.memberIdRef)
+      : null;
+
+    const result = {
+      ...mapCandidate(candidate),
+      district: {
+        id: candidate.district.id,
+        district: candidate.district.district,
+        region: candidate.district.region,
+        vacancyReason: candidate.district.vacancyReason,
+      },
+      member,
+    };
 
     await this.redis.set(key, result, TTL_HOUR);
     return result;
