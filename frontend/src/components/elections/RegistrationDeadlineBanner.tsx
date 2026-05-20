@@ -35,7 +35,7 @@ export default function RegistrationDeadlineBanner() {
           {stage === "open"
             ? "후보등록 진행 중"
             : stage === "closed"
-              ? "후보등록 마감 · 데이터 반영 대기"
+              ? "후보자 정보 반영 완료"
               : `후보등록 D-${daysToReg}`}
         </span>
         <span className="text-xs font-semibold text-(--color-text-secondary)">
@@ -47,7 +47,7 @@ export default function RegistrationDeadlineBanner() {
         {stage === "open"
           ? "📋 5/14~15 후보등록 진행 중 — 등록 마감 후 전체 후보 정보 갱신"
           : stage === "closed"
-            ? "📋 5/15 후보등록 마감 — 중앙선관위 데이터 반영 후 14개 재보궐 선거구 후보 정보 표시"
+            ? "📋 14개 재보궐 선거구 · 후보자 정보 반영 완료"
             : daysToReg <= 1
               ? "📋 내일(5/14)부터 후보등록 개시 — 마감(5/15) 후 전체 후보 정보 자동 갱신"
               : "📋 5/14~15 후보등록 마감 임박 — 등록 후 전체 후보 정보 자동 갱신"}
@@ -55,7 +55,7 @@ export default function RegistrationDeadlineBanner() {
 
       <p className="mt-1.5 text-sm leading-relaxed text-(--color-text-secondary)">
         {stage === "closed"
-          ? "후보자 등록이 5월 15일 마감됐습니다. 5/18 투표용지 인쇄 시한은 부산 북갑 보수 단일화 1차 데드라인으로 거론됐고, 사전투표 전날(5/28)이 2차 마지노선입니다. 중앙선관위 공식 데이터 수신·검증이 완료되는 대로 14개 재보궐 선거구의 후보자 명단·경력·공약·재산 정보가 표시됩니다."
+          ? "중앙선관위 공식 데이터 기준 14개 재보궐 선거구 후보자 명단·경력·공약·재산이 표시됩니다. 5/18 투표용지 인쇄 시한이 지나, 이후 사퇴해도 인쇄된 후보 이름은 그대로 표시됩니다(사표 위험). 부산 북갑 보수 단일화 등 사퇴 변수는 사전투표 전날(5/28)이 마지노선입니다."
           : "후보자 등록(5/14~15)이 마감되면 중앙선관위 데이터를 통해 전체 선거구의 후보자 명단·경력·공약·재산 정보가 자동으로 업데이트됩니다. 그 전까지는 주요 격전지의 출마선언·예비후보 정보를 우선 제공합니다."}
       </p>
 
@@ -66,7 +66,7 @@ export default function RegistrationDeadlineBanner() {
         </div>
         <div className="rounded-lg bg-(--color-bg-primary) px-3 py-2">
           <p className="font-semibold text-(--color-text-tertiary)">선거운동</p>
-          <p className="mt-0.5 font-bold text-(--color-text-primary)">5/22~6/2</p>
+          <p className="mt-0.5 font-bold text-(--color-text-primary)">5/21~6/2</p>
         </div>
         <div className="rounded-lg bg-(--color-bg-primary) px-3 py-2">
           <p className="font-semibold text-(--color-text-tertiary)">사전투표</p>
