@@ -1,7 +1,7 @@
 import { PrismaService } from '../prisma/prisma.service';
 
 /** 후보자 상세 페이지의 의정활동 요약 — 22대 국회 기준 */
-export interface LawmakerSummary {
+interface LawmakerSummary {
   memberId: string;
   name: string;
   photoUrl: string | null;
@@ -78,8 +78,7 @@ export async function getLawmakerSummary(
 
   const totalVotes = Number(voteStats[0]?.totalVotes ?? 0n);
   const attendedVotes = Number(voteStats[0]?.attendedVotes ?? 0n);
-  const voteParticipationRate =
-    totalVotes > 0 ? Math.round((attendedVotes / totalVotes) * 100) : 0;
+  const voteParticipationRate = totalVotes > 0 ? Math.round((attendedVotes / totalVotes) * 100) : 0;
 
   const asset = assetStats[0];
 
@@ -95,6 +94,6 @@ export async function getLawmakerSummary(
     passRate,
     totalAsset: asset ? Number(asset.total) : null,
     assetYear: asset?.year ?? null,
-    hasActivity: (attended + absent > 0) || billCount > 0 || totalVotes > 0,
+    hasActivity: attended + absent > 0 || billCount > 0 || totalVotes > 0,
   };
 }

@@ -42,10 +42,7 @@ export class ElectionsController {
   })
   @ApiParam({ name: 'id', description: '선거 ID' })
   @ApiParam({ name: 'candidateId', description: '후보자 ID' })
-  async getCandidateDetail(
-    @Param('id') id: string,
-    @Param('candidateId') candidateId: string,
-  ) {
+  async getCandidateDetail(@Param('id') id: string, @Param('candidateId') candidateId: string) {
     const numericId = Number(candidateId);
     if (!Number.isInteger(numericId) || numericId <= 0) {
       throw new NotFoundException('Invalid candidate id');

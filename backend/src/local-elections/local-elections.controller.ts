@@ -138,10 +138,7 @@ export class LocalElectionsController {
   @ApiOperation({ summary: '후보자 상세' })
   @ApiParam({ name: 'id' })
   @ApiParam({ name: 'candidateId' })
-  async getCandidateDetail(
-    @Param('id') id: string,
-    @Param('candidateId') candidateId: string,
-  ) {
+  async getCandidateDetail(@Param('id') id: string, @Param('candidateId') candidateId: string) {
     await this.assertExistingElectionId(id);
     const numericId = Number(candidateId);
     if (!Number.isInteger(numericId) || numericId <= 0) {
