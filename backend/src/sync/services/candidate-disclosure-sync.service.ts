@@ -122,11 +122,11 @@ async function fetchHtml(url: string): Promise<string | null> {
 }
 
 /**
- * 재산신고서 원문 PDF URL을 조회한다.
- * NEC 재산 탭의 scanSearch JSON API → 첫 페이지 파일경로(.tif) → PDF URL로 변환.
- * 재산신고서는 여러 장이지만 대표로 1페이지 URL을 저장한다.
+ * 재산신고서 원문 PDF URL 목록을 페이지순으로 조회한다.
+ * NEC 재산 탭의 scanSearch JSON API → 각 페이지 파일경로(.tif) → PDF URL로 변환.
+ * 재산신고서는 여러 장(1페이지 표지 + 금액 내역)이므로 전체 페이지를 보관한다.
  */
-async function fetchAssetPdfUrl(huboid: string): Promise<string | null> {
+async function fetchAssetPdfUrls(huboid: string): Promise<string[]> {
   try {
     const res = await fetch(SCAN_SEARCH_URL, {
       method: 'POST',
@@ -137,20 +137,20 @@ async function fetchAssetPdfUrl(huboid: string): Promise<string | null> {
       },
       body: `gubun=2&electionId=${NEC_ELECTION_ID}&huboId=${huboid}&statementId=CPRI03_candidate_scanSearch`,
     });
-    if (!res.ok) return null;
+    if (!res.ok) return [];
     const json = (await res.json()) as {
       jsonResult?: { body?: { FILEPATH?: string; DISP_SEQ?: number }[] };
     };
     const files = json.jsonResult?.body ?? [];
-    if (files.length === 0) return null;
-    // DISP_SEQ 오름차순 정렬 후 첫 페이지 선택
-    const first = [...files].sort((a, b) => (a.DISP_SEQ ?? 0) - (b.DISP_SEQ ?? 0))[0];
-    const filePath = first?.FILEPATH;
-    if (!filePath) return null;
-    // "20260603/open/.../jaesan/...._1.tif" → ".../...._1.PDF"
-    return `${PDF_BASE}${filePath.replace(/\.tif$/i, '.PDF')}`;
+    return (
+      files
+        .filter((f): f is { FILEPATH: string; DISP_SEQ?: number } => Boolean(f.FILEPATH))
+        .sort((a, b) => (a.DISP_SEQ ?? 0) - (b.DISP_SEQ ?? 0))
+        // "20260603/open/.../jaesan/...._1.tif" → ".../...._1.PDF"
+        .map((f) => `${PDF_BASE}${f.FILEPATH.replace(/\.tif$/i, '.PDF')}`)
+    );
   } catch {
-    return null;
+    return [];
   }
 }
 
@@ -174,20 +174,24 @@ export class CandidateDisclosureSyncService {
       const candidates =
         target === 'local'
           ? await this.prisma.localElectionCandidate.findMany({
-              // disclosure 미수집분 + 재산 PDF URL 미수집분 모두 대상에 포함
+              // disclosure 미수집분 + 재산 PDF 미수집분 모두 대상에 포함
               where: {
                 huboid: { not: '' },
-                OR: [{ assetDeclared: null }, { assetPdfUrl: null }],
+                OR: [{ assetDeclared: null }, { assetPdfUrls: { isEmpty: true } }],
               },
               select: { id: true, huboid: true, name: true },
               take: limit,
             })
           : await this.prisma.candidate.findMany({
               // 재보궐 후보자는 disclosure 5종이 이미 채워져 있을 수 있으므로
-              // 기본정보(birthDate)·재산 PDF URL 누락분도 대상에 포함한다.
+              // 기본정보(birthDate)·재산 PDF 누락분도 대상에 포함한다.
               where: {
                 huboid: { not: null },
-                OR: [{ assetDeclared: null }, { birthDate: null }, { assetPdfUrl: null }],
+                OR: [
+                  { assetDeclared: null },
+                  { birthDate: null },
+                  { assetPdfUrls: { isEmpty: true } },
+                ],
               },
               select: { id: true, huboid: true, name: true },
               take: limit,
@@ -260,19 +264,19 @@ export class CandidateDisclosureSyncService {
       disclosure.electionCount !== null;
     if (!hasDisclosure) return 'skipped';
 
-    // 재산신고서 원문 PDF URL (실패해도 disclosure 저장은 계속 진행)
-    const assetPdfUrl = await fetchAssetPdfUrl(huboid);
+    // 재산신고서 원문 PDF URL 목록 (실패해도 disclosure 저장은 계속 진행)
+    const assetPdfUrls = await fetchAssetPdfUrls(huboid);
 
     if (target === 'local') {
       await this.prisma.localElectionCandidate.update({
         where: { id: candidateId },
-        data: { ...disclosure, assetPdfUrl },
+        data: { ...disclosure, assetPdfUrls },
       });
     } else {
       // 재보궐 후보자는 시드에 birthDate/education/career가 없으므로 함께 보강한다.
       await this.prisma.candidate.update({
         where: { id: candidateId },
-        data: { ...disclosure, ...profile, assetPdfUrl },
+        data: { ...disclosure, ...profile, assetPdfUrls },
       });
     }
     return 'updated';
