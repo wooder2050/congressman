@@ -212,6 +212,31 @@ export default function CandidateDetailBody({ candidate: c, electionTypeLabel, m
       <section className="rounded-xl border border-(--color-border-primary) bg-(--color-bg-primary) p-4 sm:p-5">
         <h2 className="text-base font-bold text-(--color-text-primary)">후보자정보공개자료</h2>
         <CandidateDisclosureSection data={c} />
+
+        {/* 재산신고서 원문 PDF — NEC 제출 서류 전문 */}
+        {c.assetPdfUrl && (
+          <a
+            href={c.assetPdfUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="mt-3 inline-flex items-center gap-1.5 rounded-lg border border-(--color-border-primary) bg-(--color-bg-secondary) px-3 py-2 text-sm font-medium text-(--color-text-secondary) transition-colors hover:bg-(--color-bg-hover)"
+          >
+            <svg
+              width="15"
+              height="15"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              aria-hidden="true"
+            >
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+              <polyline points="14 2 14 8 20 8" />
+            </svg>
+            재산신고서 원문(PDF) 보기
+            <span className="text-xs text-(--color-text-tertiary)">— 중앙선관위</span>
+          </a>
+        )}
       </section>
     </div>
   );

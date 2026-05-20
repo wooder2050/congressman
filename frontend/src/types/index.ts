@@ -553,6 +553,8 @@ export interface CandidateDisclosure {
   taxOverdueCurrent: string | null;
   /** 전과기록 (예: "없음", "1건") */
   criminalRecord: string | null;
+  /** 재산신고서 원문 PDF URL (NEC info.nec.go.kr) */
+  assetPdfUrl?: string | null;
   /** 입후보 횟수 */
   electionCount: number | null;
 }
