@@ -69,7 +69,7 @@ export default function DistrictSection({
           </h4>
           <div className="grid gap-3 lg:grid-cols-2">
             {district.candidates.map((c) => (
-              <CandidateCard key={c.id} candidate={c} />
+              <CandidateCard key={c.id} candidate={c} electionId={electionId} />
             ))}
           </div>
           {district.candidates.length >= 2 && (
