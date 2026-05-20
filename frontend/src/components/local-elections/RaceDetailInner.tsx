@@ -153,7 +153,7 @@ export default function RaceDetailInner({ electionId, raceId }: Props) {
               </header>
               <div className="grid gap-3 p-4 sm:grid-cols-2">
                 {bucket.candidates.map((c) => (
-                  <LocalCandidateCard key={c.id} candidate={c} />
+                  <LocalCandidateCard key={c.id} candidate={c} year={year} />
                 ))}
               </div>
             </section>
@@ -163,7 +163,7 @@ export default function RaceDetailInner({ electionId, raceId }: Props) {
         <section>
           <div className="grid gap-4 sm:grid-cols-2">
             {race.candidates.map((c) => (
-              <LocalCandidateCard key={c.id} candidate={c} />
+              <LocalCandidateCard key={c.id} candidate={c} year={year} />
             ))}
           </div>
         </section>

@@ -667,6 +667,46 @@ export interface LocalElectionRaceDetail {
   candidates: LocalElectionCandidateDetail[];
 }
 
+/** 후보자 상세 페이지 — 전·현직 국회의원 출신 후보의 22대 의정활동 요약 */
+export interface CandidateLawmakerSummary {
+  memberId: string;
+  name: string;
+  photoUrl: string | null;
+  district: string;
+  attendanceRate: number;
+  voteParticipationRate: number;
+  billCount: number;
+  passedCount: number;
+  passRate: number;
+  totalAsset: number | null;
+  assetYear: number | null;
+  hasActivity: boolean;
+}
+
+/** 지방선거 후보자 상세 페이지 응답 */
+export interface LocalElectionCandidatePageDetail extends LocalElectionCandidateDetail {
+  race: {
+    id: number;
+    electionType: LocalElectionType;
+    sido: string;
+    sigungu: string;
+    district: string;
+    displayName: string;
+  };
+  member: CandidateLawmakerSummary | null;
+}
+
+/** 재보궐 후보자 상세 페이지 응답 */
+export interface ByElectionCandidatePageDetail extends ElectionCandidate {
+  district: {
+    id: number;
+    district: string;
+    region: string;
+    vacancyReason: string;
+  };
+  member: CandidateLawmakerSummary | null;
+}
+
 export interface LocalElectionSigunguOption {
   name: string;
   raceCount: number;

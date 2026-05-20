@@ -1,6 +1,8 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
+import type { LocalElectionCandidate, Party } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { RedisService } from '../redis/redis.service';
+import { getLawmakerSummary } from '../elections/lawmaker-stats.helper';
 import { ALLOWED_SIDO_LIST } from './region-allowlist';
 
 function getCacheTTL(status: string): number {
@@ -14,6 +16,43 @@ function getCacheTTL(status: string): number {
     default:
       return 3600;
   }
+}
+
+/** 지방선거 후보자(LocalElectionCandidate) → API 응답 공통 매핑 */
+function mapLocalCandidate(c: LocalElectionCandidate & { party: Party | null }) {
+  return {
+    id: c.id,
+    name: c.name,
+    party: c.party
+      ? {
+          id: c.party.id,
+          name: c.party.name,
+          shortName: c.party.shortName,
+          color: c.party.color,
+        }
+      : null,
+    photoUrl: c.photoUrl,
+    birthDate: c.birthDate,
+    gender: c.gender,
+    career: c.career,
+    education: c.education,
+    slogan: c.slogan,
+    pledges: c.pledges as { category: string; title: string; description: string }[],
+    assets: c.assets,
+    assetDeclared: c.assetDeclared !== null ? c.assetDeclared.toString() : null,
+    militaryService: c.militaryService,
+    taxPaid: c.taxPaid !== null ? c.taxPaid.toString() : null,
+    taxOverdue5y: c.taxOverdue5y !== null ? c.taxOverdue5y.toString() : null,
+    taxOverdueCurrent: c.taxOverdueCurrent !== null ? c.taxOverdueCurrent.toString() : null,
+    criminalRecord: c.criminalRecord,
+    electionCount: c.electionCount,
+    candidateNumber: c.candidateNumber,
+    status: c.status,
+    voteCount: c.voteCount,
+    voteRate: c.voteRate,
+    isWinner: c.isWinner,
+    memberIdRef: c.memberIdRef,
+  };
 }
 
 interface RaceFilter {
@@ -306,46 +345,49 @@ export class LocalElectionsService {
       district: race.district,
       displayName: race.displayName,
       seatCount: race.seatCount,
-      candidates: race.candidates.map((c) => ({
-        id: c.id,
-        name: c.name,
-        party: c.party
-          ? {
-              id: c.party.id,
-              name: c.party.name,
-              shortName: c.party.shortName,
-              color: c.party.color,
-            }
-          : null,
-        photoUrl: c.photoUrl,
-        birthDate: c.birthDate,
-        gender: c.gender,
-        career: c.career,
-        education: c.education,
-        slogan: c.slogan,
-        pledges: c.pledges as {
-          category: string;
-          title: string;
-          description: string;
-        }[],
-        assets: c.assets,
-        assetDeclared: c.assetDeclared !== null ? c.assetDeclared.toString() : null,
-        militaryService: c.militaryService,
-        taxPaid: c.taxPaid !== null ? c.taxPaid.toString() : null,
-        taxOverdue5y: c.taxOverdue5y !== null ? c.taxOverdue5y.toString() : null,
-        taxOverdueCurrent: c.taxOverdueCurrent !== null ? c.taxOverdueCurrent.toString() : null,
-        criminalRecord: c.criminalRecord,
-        electionCount: c.electionCount,
-        candidateNumber: c.candidateNumber,
-        status: c.status,
-        voteCount: c.voteCount,
-        voteRate: c.voteRate,
-        isWinner: c.isWinner,
-        memberIdRef: c.memberIdRef,
-      })),
+      candidates: race.candidates.map(mapLocalCandidate),
     };
 
     await this.redis.set(key, result, getCacheTTL(race.election.status));
+    return result;
+  }
+
+  /** 지방선거 후보자 단건 상세 — 후보자 상세 페이지용 */
+  async getCandidateDetail(electionId: string, candidateId: number) {
+    const key = `local-elections:${electionId}:candidate:${candidateId}`;
+    const cached = await this.redis.get(key);
+    if (cached) return cached;
+
+    const candidate = await this.prisma.localElectionCandidate.findFirst({
+      where: { id: candidateId, race: { electionId } },
+      include: {
+        party: true,
+        race: { include: { election: { select: { status: true } } } },
+      },
+    });
+
+    if (!candidate) {
+      throw new NotFoundException('Candidate not found');
+    }
+
+    const member = candidate.memberIdRef
+      ? await getLawmakerSummary(this.prisma, candidate.memberIdRef)
+      : null;
+
+    const result = {
+      ...mapLocalCandidate(candidate),
+      race: {
+        id: candidate.race.id,
+        electionType: candidate.race.electionType,
+        sido: candidate.race.sido,
+        sigungu: candidate.race.sigungu,
+        district: candidate.race.district,
+        displayName: candidate.race.displayName,
+      },
+      member,
+    };
+
+    await this.redis.set(key, result, getCacheTTL(candidate.race.election.status));
     return result;
   }
 

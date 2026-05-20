@@ -34,4 +34,22 @@ export class ElectionsController {
   async getLawmakerCandidates(@Param('id') id: string) {
     return this.electionsService.getLawmakerCandidates(id);
   }
+
+  @Get(':id/candidates/:candidateId')
+  @ApiOperation({
+    summary: '후보자 상세',
+    description: '재보궐 후보자 1명의 상세 정보를 반환합니다',
+  })
+  @ApiParam({ name: 'id', description: '선거 ID' })
+  @ApiParam({ name: 'candidateId', description: '후보자 ID' })
+  async getCandidateDetail(
+    @Param('id') id: string,
+    @Param('candidateId') candidateId: string,
+  ) {
+    const numericId = Number(candidateId);
+    if (!Number.isInteger(numericId) || numericId <= 0) {
+      throw new NotFoundException('Invalid candidate id');
+    }
+    return this.electionsService.getCandidateDetail(id, numericId);
+  }
 }
