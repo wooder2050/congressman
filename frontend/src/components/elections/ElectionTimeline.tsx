@@ -3,7 +3,7 @@
 const MILESTONES = [
   { label: "예비후보 등록", date: "~5/13", key: "pre-registration" },
   { label: "후보등록", date: "5/14~15", key: "registration" },
-  { label: "선거운동", date: "5/22~", key: "campaign" },
+  { label: "선거운동", date: "5/21~6/2", key: "campaign" },
   { label: "사전투표", date: "5/29~30", key: "early" },
   { label: "본투표", date: "6/3", key: "election" },
 ];
@@ -14,7 +14,7 @@ function getActiveStep(): number {
   const dates = [
     new Date(2026, 2, 24), // 예비후보 등록 시작 (3/24)
     new Date(2026, 4, 14), // 후보등록 (5/14)
-    new Date(2026, 4, 22), // 선거운동 (5/22)
+    new Date(2026, 4, 21), // 선거운동 (5/21)
     new Date(2026, 4, 29), // 사전투표 (5/29)
     new Date(2026, 5, 3), // 본투표 (6/3)
   ];
