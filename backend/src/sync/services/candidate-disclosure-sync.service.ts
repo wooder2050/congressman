@@ -6,6 +6,10 @@ const NEC_ELECTION_ID = '0020260603';
 const CANDIDATE_DETAIL_URL = (huboid: string) =>
   `http://info.nec.go.kr/electioninfo/candidate_detail_info.xhtml?electionId=${NEC_ELECTION_ID}&huboId=${huboid}`;
 
+// 재산신고서 스캔파일 목록 JSON API (재산 탭 클릭 시 호출되는 엔드포인트)
+const SCAN_SEARCH_URL = 'http://info.nec.go.kr/electioninfo/candidate_detail_scanSearchJson.json';
+const PDF_BASE = 'https://info.nec.go.kr/unielec_pdf_file/';
+
 const HTTP_HEADERS = {
   'User-Agent':
     'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
@@ -117,6 +121,39 @@ async function fetchHtml(url: string): Promise<string | null> {
   }
 }
 
+/**
+ * 재산신고서 원문 PDF URL을 조회한다.
+ * NEC 재산 탭의 scanSearch JSON API → 첫 페이지 파일경로(.tif) → PDF URL로 변환.
+ * 재산신고서는 여러 장이지만 대표로 1페이지 URL을 저장한다.
+ */
+async function fetchAssetPdfUrl(huboid: string): Promise<string | null> {
+  try {
+    const res = await fetch(SCAN_SEARCH_URL, {
+      method: 'POST',
+      headers: {
+        ...HTTP_HEADERS,
+        'X-Requested-With': 'XMLHttpRequest',
+        'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
+      },
+      body: `gubun=2&electionId=${NEC_ELECTION_ID}&huboId=${huboid}&statementId=CPRI03_candidate_scanSearch`,
+    });
+    if (!res.ok) return null;
+    const json = (await res.json()) as {
+      jsonResult?: { body?: { FILEPATH?: string; DISP_SEQ?: number }[] };
+    };
+    const files = json.jsonResult?.body ?? [];
+    if (files.length === 0) return null;
+    // DISP_SEQ 오름차순 정렬 후 첫 페이지 선택
+    const first = [...files].sort((a, b) => (a.DISP_SEQ ?? 0) - (b.DISP_SEQ ?? 0))[0];
+    const filePath = first?.FILEPATH;
+    if (!filePath) return null;
+    // "20260603/open/.../jaesan/...._1.tif" → ".../...._1.PDF"
+    return `${PDF_BASE}${filePath.replace(/\.tif$/i, '.PDF')}`;
+  } catch {
+    return null;
+  }
+}
+
 type Target = 'local' | 'by';
 
 export class CandidateDisclosureSyncService {
@@ -137,19 +174,20 @@ export class CandidateDisclosureSyncService {
       const candidates =
         target === 'local'
           ? await this.prisma.localElectionCandidate.findMany({
+              // disclosure 미수집분 + 재산 PDF URL 미수집분 모두 대상에 포함
               where: {
                 huboid: { not: '' },
-                assetDeclared: null,
+                OR: [{ assetDeclared: null }, { assetPdfUrl: null }],
               },
               select: { id: true, huboid: true, name: true },
               take: limit,
             })
           : await this.prisma.candidate.findMany({
               // 재보궐 후보자는 disclosure 5종이 이미 채워져 있을 수 있으므로
-              // 기본정보(birthDate) 누락분도 대상에 포함한다.
+              // 기본정보(birthDate)·재산 PDF URL 누락분도 대상에 포함한다.
               where: {
                 huboid: { not: null },
-                OR: [{ assetDeclared: null }, { birthDate: null }],
+                OR: [{ assetDeclared: null }, { birthDate: null }, { assetPdfUrl: null }],
               },
               select: { id: true, huboid: true, name: true },
               take: limit,
@@ -222,16 +260,19 @@ export class CandidateDisclosureSyncService {
       disclosure.electionCount !== null;
     if (!hasDisclosure) return 'skipped';
 
+    // 재산신고서 원문 PDF URL (실패해도 disclosure 저장은 계속 진행)
+    const assetPdfUrl = await fetchAssetPdfUrl(huboid);
+
     if (target === 'local') {
       await this.prisma.localElectionCandidate.update({
         where: { id: candidateId },
-        data: disclosure,
+        data: { ...disclosure, assetPdfUrl },
       });
     } else {
       // 재보궐 후보자는 시드에 birthDate/education/career가 없으므로 함께 보강한다.
       await this.prisma.candidate.update({
         where: { id: candidateId },
-        data: { ...disclosure, ...profile },
+        data: { ...disclosure, ...profile, assetPdfUrl },
       });
     }
     return 'updated';
