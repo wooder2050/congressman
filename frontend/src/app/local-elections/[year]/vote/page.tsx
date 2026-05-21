@@ -26,7 +26,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 const SCHEDULE = [
   { label: "후보자 등록", date: "5/14(목) ~ 5/15(금)" },
-  { label: "선거운동 기간", date: "5/22(금) ~ 6/2(화)" },
+  { label: "선거운동 기간", date: "5/21(목) ~ 6/2(화)" },
   { label: "사전투표", date: "5/29(금) ~ 5/30(토)" },
   { label: "선거일 투표", date: "6/3(수)" },
 ];

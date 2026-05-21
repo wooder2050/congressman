@@ -11,12 +11,35 @@ interface Hotspot {
   newsHref?: string;
 }
 
+const CAMPAIGN_START = new Date(2026, 4, 21); // 5/21 공식 선거운동 개시
+const ELECTION_DAY = new Date(2026, 5, 3); // 6/3 본투표
+
+function daysUntil(target: Date): number {
+  const now = new Date();
+  now.setHours(0, 0, 0, 0);
+  return Math.ceil((target.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
+}
+
+/** 본투표까지 남은 일수 기준 진행 상태 문구 (매일 자동 갱신) */
+function getStatusLabel(): string {
+  const dDay = daysUntil(ELECTION_DAY);
+  const dCampaign = daysUntil(CAMPAIGN_START);
+  if (dDay <= 0) return "본투표일";
+  const phase =
+    dCampaign > 0
+      ? `공식 선거운동 D-${dCampaign}`
+      : dCampaign === 0
+        ? "공식 선거운동 개시"
+        : "공식 선거운동 진행 중";
+  return `${phase} · 본투표 D-${dDay}`;
+}
+
 const HOTSPOTS: Hotspot[] = [
   {
     region: "부산",
     district: "북구갑",
     headline:
-      'D-14 · 투표용지 인쇄 완료(5/18) — 단일화 1차 데드라인 지나, 韓 "민심이 길 낸다" vs 朴 "1% 가능성도 없다" 평행선 지속',
+      '투표용지 인쇄 완료(5/18) — 단일화 1차 데드라인 지나, 韓 "민심이 길 낸다" vs 朴 "1% 가능성도 없다" 평행선 지속',
     candidates: [
       {
         name: "하정우",
@@ -44,7 +67,7 @@ const HOTSPOTS: Hotspot[] = [
     region: "경기",
     district: "평택을",
     headline:
-      "D-14 · 5파전 · 갤럽 5/16~17 김용남 30·조국 23 오차범위 내 접전, 범진보 단일화 반대 46% 우세로 협상 미타결",
+      "5파전 · 갤럽 5/16~17 김용남 30·조국 23 오차범위 내 접전, 범진보 단일화 반대 46% 우세로 협상 미타결",
     candidates: [
       {
         name: "김용남",
@@ -87,13 +110,11 @@ export default function ByElectionHotspots() {
     <section className="space-y-3">
       <div className="flex items-baseline justify-between">
         <h2 className="text-lg font-bold text-(--color-text-primary)">핫스팟 선거구</h2>
-        <span className="text-xs text-(--color-text-tertiary)">
-          5/20 기준 · 공식 선거운동 D-1 · 본투표 D-14
-        </span>
+        <span className="text-xs text-(--color-text-tertiary)">{getStatusLabel()}</span>
       </div>
       <p className="text-sm text-(--color-text-secondary)">
-        14개 재보궐 선거구 중 가장 주목받는 두 곳입니다. 내일(5/21)부터 공식 선거운동 13일이
-        시작됩니다. 5/18 투표용지 인쇄가 완료돼 이후 사퇴해도 인쇄된 후보 이름이 그대로 표시되며
+        14개 재보궐 선거구 중 가장 주목받는 두 곳입니다. 5/21부터 6/2까지 13일간 공식 선거운동이
+        진행됩니다. 5/18 투표용지 인쇄가 완료돼 이후 사퇴해도 인쇄된 후보 이름이 그대로 표시되며
         사표 위험이 점차 커지는 상황입니다.
       </p>
 
