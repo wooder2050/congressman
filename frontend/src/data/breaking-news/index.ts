@@ -15,8 +15,7 @@ export const breakingNews: BreakingNewsItem[] = [
       },
       {
         label: "선출 규모",
-        value:
-          "광역단체장 16 · 기초단체장 227 · 광역·기초의원 3,968 · 교육감 16 · 국회의원 14명",
+        value: "광역단체장 16 · 기초단체장 227 · 광역·기초의원 3,968 · 교육감 16 · 국회의원 14명",
       },
       {
         label: "후보 등록",
@@ -24,8 +23,7 @@ export const breakingNews: BreakingNewsItem[] = [
       },
       {
         label: "여야 메시지",
-        value:
-          "민주당 '내란 심판·국가 정상화' vs 국민의힘 '이재명 정부 독주 제동·인물 경쟁론'",
+        value: "민주당 '내란 심판·국가 정상화' vs 국민의힘 '이재명 정부 독주 제동·인물 경쟁론'",
       },
       {
         label: "격전지",
@@ -42,7 +40,7 @@ export const breakingNews: BreakingNewsItem[] = [
         url: "https://www.etnews.com/20260521000276",
       },
       {
-        title: "\"내란 심판\" \"독주 제동\"…6·3 공식 선거운동 돌입 — 서울신문",
+        title: '"내란 심판" "독주 제동"…6·3 공식 선거운동 돌입 — 서울신문',
         url: "https://www.seoul.co.kr/news/politics/local-election2026/2026/05/21/20260521001005",
       },
       {
