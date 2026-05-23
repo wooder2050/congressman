@@ -6,6 +6,7 @@ import { getLocalElection } from "@/lib/api";
 import type { LocalElectionType } from "@/types";
 import { ELECTION_TYPES } from "@/constants/local-elections";
 import LocalElectionHeader from "./LocalElectionHeader";
+import LocalGovernorHotspots from "./LocalGovernorHotspots";
 import LocalRegistrationBanner from "./LocalRegistrationBanner";
 import RegionGrid from "./RegionGrid";
 
@@ -36,6 +37,9 @@ export default function LocalElectionLanding({ year }: { year: string }) {
 
       {/* 후보등록 마감 안내 배너 (5/14~15 전까지만 노출) */}
       <LocalRegistrationBanner />
+
+      {/* 광역단체장 격전지 */}
+      <LocalGovernorHotspots />
 
       {/* 선거 유형별 카드 */}
       <section>
