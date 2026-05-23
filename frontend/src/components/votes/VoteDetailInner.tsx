@@ -3,6 +3,7 @@ import ColorBadge from "@/components/ui/color-badge";
 import VoteResultBar from "./VoteResultBar";
 import PartyVoteGrid from "./PartyVoteGrid";
 import MyMemberVoteShare from "./MyMemberVoteShare";
+import VoteAnalysis from "./VoteAnalysis";
 import { formatDate } from "@/lib/utils";
 import ShareButton from "@/components/ui/ShareButton";
 import { VOTE_RESULT_MAP } from "@/lib/constants";
@@ -84,6 +85,8 @@ export default function VoteDetailInner({ id, data }: VoteDetailInnerProps) {
           </Link>
         )}
       </div>
+
+      <VoteAnalysis vote={vote} memberVotes={memberVotes} />
 
       <PartyVoteGrid memberVotes={memberVotes} termId={vote.termId} />
 

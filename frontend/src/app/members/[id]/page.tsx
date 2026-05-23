@@ -43,6 +43,14 @@ export async function generateMetadata({ params }: MemberDetailPageProps): Promi
   const title = `${member.name} 의원 — ${partyName} ${location} · ${electedLabel} | 22대 국회`;
   const description = `${partyName} ${member.name} 의원 (${location}, ${electedLabel}).${statsText} 본회의 표결 기록, 재산 신고 내역까지 확인하세요.`;
 
+  // 본회의 표결 참여·대표발의 모두 0건이면 thin-content로 판정해 noindex.
+  // AdSense "가치가 별로 없는 콘텐츠" 거절 대응 — 활동 데이터가 없는 의원
+  // 페이지가 사이트 평균 품질을 끌어내리는 것을 방지.
+  const isInactive =
+    !!scorecard &&
+    scorecard.voteParticipation.rate === 0 &&
+    scorecard.billProposal.representativeCount === 0;
+
   return {
     title,
     description,
@@ -54,6 +62,7 @@ export async function generateMetadata({ params }: MemberDetailPageProps): Promi
       url: `https://www.lawmake.kr/members/${id}`,
     },
     twitter: { card: "summary_large_image", title: `${member.name} 의원 의정활동`, description },
+    robots: isInactive ? { index: false, follow: true } : undefined,
   };
 }
 

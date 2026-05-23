@@ -7,6 +7,7 @@ import dynamic from "next/dynamic";
 import MemberProfile from "./MemberProfile";
 import MemberActivitySummary from "./MemberActivitySummary";
 import MemberRecentActivityCard from "./MemberRecentActivityCard";
+import MemberRecentBills from "./MemberRecentBills";
 import MemberDetailTabContent from "./MemberDetailTabs";
 import type { Member, MemberTerm } from "@/types";
 
@@ -102,6 +103,10 @@ export default function MemberDetailInner({
           memberName={member.name}
           memberTerm={currentMemberTerm}
         />
+      </Suspense>
+
+      <Suspense fallback={null}>
+        <MemberRecentBills memberId={id} memberName={member.name} termId={termId} />
       </Suspense>
 
       <ActivityHeatmap
