@@ -540,3 +540,61 @@ Object.defineProperty(getLocalElectionCandidate, "queryKey", {
 Object.defineProperty(getLocalElectionRegions, "queryKey", { value: "localElectionRegions" });
 Object.defineProperty(getLocalElectionRegion, "queryKey", { value: "localElectionRegion" });
 Object.defineProperty(getLocalElectionStats, "queryKey", { value: "localElectionStats" });
+
+// ====== 여론조사 (Polls) ======
+
+import type { PollListItem, PollListResponse, PollDetail, PollFilters } from "@/types";
+
+export async function getPolls(params: {
+  category?: string;
+  sido?: string;
+  agency?: string;
+  from?: string;
+  to?: string;
+  page?: number;
+  limit?: number;
+}): Promise<PollListResponse> {
+  const sp = new URLSearchParams();
+  if (params.category) sp.set("category", params.category);
+  if (params.sido) sp.set("sido", params.sido);
+  if (params.agency) sp.set("agency", params.agency);
+  if (params.from) sp.set("from", params.from);
+  if (params.to) sp.set("to", params.to);
+  if (params.page) sp.set("page", String(params.page));
+  if (params.limit) sp.set("limit", String(params.limit));
+  const qs = sp.toString();
+  return fetchApi(`/api/polls${qs ? `?${qs}` : ""}`);
+}
+
+export async function getRecentPolls(params?: {
+  category?: string;
+  limit?: number;
+}): Promise<PollListItem[]> {
+  const sp = new URLSearchParams();
+  if (params?.category) sp.set("category", params.category);
+  if (params?.limit) sp.set("limit", String(params.limit));
+  const qs = sp.toString();
+  return fetchApi(`/api/polls/recent${qs ? `?${qs}` : ""}`);
+}
+
+export async function getPollFilters(): Promise<PollFilters> {
+  return fetchApi(`/api/polls/filters`);
+}
+
+export async function getPoll(id: number): Promise<PollDetail | null> {
+  return fetchApi(`/api/polls/${id}`);
+}
+
+export async function getPollsByRace(params: {
+  raceId: number;
+  limit?: number;
+}): Promise<PollListItem[]> {
+  const limit = params.limit ?? 20;
+  return fetchApi(`/api/polls/by-race/${params.raceId}?limit=${limit}`);
+}
+
+Object.defineProperty(getPolls, "queryKey", { value: "polls" });
+Object.defineProperty(getRecentPolls, "queryKey", { value: "recentPolls" });
+Object.defineProperty(getPollFilters, "queryKey", { value: "pollFilters" });
+Object.defineProperty(getPoll, "queryKey", { value: "poll" });
+Object.defineProperty(getPollsByRace, "queryKey", { value: "pollsByRace" });

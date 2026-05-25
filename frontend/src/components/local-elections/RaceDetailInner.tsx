@@ -7,6 +7,7 @@ import { getLocalElectionRace } from "@/lib/api";
 import { electionTypeLabel, sidoToShort } from "@/constants/local-elections";
 import type { LocalElectionCandidateDetail, LocalElectionType } from "@/types";
 import LocalCandidateCard from "./LocalCandidateCard";
+import RaceRelatedPolls from "@/components/polls/RaceRelatedPolls";
 
 interface Props {
   electionId: string;
@@ -168,6 +169,11 @@ export default function RaceDetailInner({ electionId, raceId }: Props) {
           </div>
         </section>
       )}
+
+      {/* 관련 여론조사 */}
+      <div className="border-t border-(--color-border-primary) pt-4">
+        <RaceRelatedPolls raceId={race.id} year={year} limit={10} />
+      </div>
 
       {/* 시도 페이지로 돌아가기 — 모바일에서 페이지 하단 액션으로도 노출 */}
       <section className="border-t border-(--color-border-primary) pt-4">

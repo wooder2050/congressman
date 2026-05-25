@@ -4,6 +4,7 @@ import CongressWrapper from "@/common/CongressWrapper";
 import LocalElectionLanding from "@/components/local-elections/LocalElectionLanding";
 import LocalElectionSkeleton from "@/components/local-elections/LocalElectionSkeleton";
 import ElectionTrendWidget from "@/components/elections/ElectionTrendWidget";
+import RecentPollsWidget from "@/components/polls/RecentPollsWidget";
 import JsonLd from "@/components/seo/JsonLd";
 
 export const revalidate = 600; // 10min (개표일 빠른 갱신 필요)
@@ -65,6 +66,8 @@ export default async function LocalElectionPage({ params }: Props) {
       />
 
       <ElectionTrendWidget />
+
+      <RecentPollsWidget year={year} limit={5} />
 
       <CongressWrapper fallback={<LocalElectionSkeleton />}>
         <LocalElectionLanding year={year} />

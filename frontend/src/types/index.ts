@@ -876,3 +876,89 @@ export interface TodayBriefing {
   recentVotes: Vote[];
   recentBills: BillSummaryItem[];
 }
+
+// ====== 여론조사 (NESDC) ======
+
+export type PollCategory = "제9회 전국동시지방선거" | "2026년 재·보궐선거";
+
+export interface PollListItem {
+  id: number;
+  nttId: string;
+  registrationNo: string | null;
+  electionCategory: PollCategory | string;
+  pollName: string;
+  agency: string;
+  client: string;
+  sido: string;
+  sigungu: string;
+  sampleSize: number | null;
+  responseRate: number | null;
+  marginOfError: number | null;
+  surveyStartedAt: string | null;
+  surveyEndedAt: string | null;
+  registeredAt: string;
+  publishedAt: string | null;
+  surveyMethod: string | null;
+  nesdcUrl: string;
+}
+
+export interface PollAttachment {
+  id: number;
+  kind: "questionnaire" | "result" | "other";
+  fileName: string;
+  downloadUrl: string;
+  status: string;
+}
+
+export interface PollRaceLink {
+  id: number;
+  electionType: LocalElectionType | string;
+  sido: string;
+  sigungu: string;
+  displayName: string;
+}
+
+export interface PollResponseRow {
+  id: number;
+  raceId: number | null;
+  questionType: string;
+  questionText: string | null;
+  candidateId: number | null;
+  candidateName: string | null;
+  partyId: string | null;
+  partyName: string | null;
+  subgroup: string;
+  subgroupKey: string;
+  rate: number;
+  sampleSize: number | null;
+}
+
+export interface PollDetail extends PollListItem {
+  surveyDays: number | null;
+  surveyMinutes: number | null;
+  weightedSampleSize: number | null;
+  samplingFrame: string | null;
+  contactRate: number | null;
+  aaporResponseRate: number | null;
+  confidenceLevel: number | null;
+  weightingMethod: string | null;
+  weightingTarget: string | null;
+  publishMedia: string | null;
+  publishMediaName: string | null;
+  attachments: PollAttachment[];
+  races: PollRaceLink[];
+  responses: PollResponseRow[];
+}
+
+export interface PollListResponse {
+  total: number;
+  page: number;
+  limit: number;
+  polls: PollListItem[];
+}
+
+export interface PollFilters {
+  sidos: { value: string; count: number }[];
+  agencies: { value: string; count: number }[];
+  categories: { value: string; label: string }[];
+}
