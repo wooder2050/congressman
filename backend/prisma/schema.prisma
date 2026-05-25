@@ -310,10 +310,11 @@ model ElectionDistrict {
   confirmed          Boolean @default(true)
   status             String  @default("upcoming")
 
-  election       ByElection  @relation(fields: [electionId], references: [id])
-  previousMember Member?     @relation(fields: [previousMemberId], references: [id])
-  previousParty  Party?      @relation(fields: [previousPartyId], references: [id])
+  election       ByElection     @relation(fields: [electionId], references: [id])
+  previousMember Member?        @relation(fields: [previousMemberId], references: [id])
+  previousParty  Party?         @relation(fields: [previousPartyId], references: [id])
   candidates     Candidate[]
+  pollDistricts  PollDistrict[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -352,9 +353,10 @@ model Candidate {
   assetPdfSyncStatus String? // "pending" | "completed" | "failed" | "stale" (URL 변경 감지)
   assetPdfSyncError  String? // 실패 사유
 
-  district   ElectionDistrict     @relation(fields: [districtId], references: [id])
-  party      Party?               @relation(fields: [partyId], references: [id])
-  assetItems CandidateAssetItem[]
+  district      ElectionDistrict     @relation(fields: [districtId], references: [id])
+  party         Party?               @relation(fields: [partyId], references: [id])
+  assetItems    CandidateAssetItem[]
+  pollResponses PollResponse[]       @relation("ByCandidatePollResponses")
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -551,6 +553,7 @@ model Poll {
 
   attachments PollAttachment[]
   races       PollRace[]
+  districts   PollDistrict[]
   responses   PollResponse[]
 
   createdAt DateTime @default(now())
@@ -614,22 +617,40 @@ model PollRace {
   @@index([raceId])
 }
 
+// Poll ↔ ElectionDistrict M:N (재보궐 선거구)
+model PollDistrict {
+  id Int @id @default(autoincrement())
+
+  pollId     Int
+  districtId Int
+
+  poll     Poll             @relation(fields: [pollId], references: [id], onDelete: Cascade)
+  district ElectionDistrict @relation(fields: [districtId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+
+  @@unique([pollId, districtId])
+  @@index([districtId])
+}
+
 // PDF 파싱 결과: 후보별 / 정당별 지지율 행
 model PollResponse {
   id Int @id @default(autoincrement())
 
   pollId Int
 
-  // 어떤 선거에 대한 답인가
-  raceId      Int? // LocalElectionRace.id (매칭 실패 시 null)
+  // 어떤 선거에 대한 답인가 — 지방선거 또는 재보궐 둘 중 하나
+  raceId       Int? // LocalElectionRace.id (지방선거, 매칭 실패 시 null)
+  districtId   Int? // ElectionDistrict.id (재보궐, 매칭 실패 시 null)
   questionType String // "candidate_support" | "party_support" | "approval" | "turnout_intent" | "other"
-  questionText String? // 원문 질문 ("Q2. 귀하께서는 경남도지사 선거에 출마하는...")
+  questionText String? // 원문 질문
 
-  // 응답 대상
-  candidateId Int? // LocalElectionCandidate.id (자동 매칭)
-  candidateName String? // 매칭 실패 시 원문 보존 (예: "더불어민주당 김경수")
-  partyId     String? // Party.id
-  partyName   String? // 매칭 실패 시 원문 보존
+  // 응답 대상 — LocalElectionCandidate 또는 Candidate(재보궐)
+  candidateId   Int? // LocalElectionCandidate.id (지방선거 후보 매칭)
+  byCandidateId Int? // Candidate.id (재보궐 후보 매칭)
+  candidateName String? // 매칭 실패 시 원문 보존
+  partyId       String? // Party.id
+  partyName     String? // 매칭 실패 시 원문 보존
 
   // 응답률
   subgroup    String  @default("전체") // "전체" | "남성" | "20대" | "1권역" 등
@@ -642,15 +663,18 @@ model PollResponse {
   pageNumber   Int? // PDF 페이지 번호
   rawText      String? // 추출 원문 라인 (디버그)
 
-  poll       Poll                    @relation(fields: [pollId], references: [id], onDelete: Cascade)
-  candidate  LocalElectionCandidate? @relation(fields: [candidateId], references: [id], onDelete: SetNull)
-  party      Party?                  @relation(fields: [partyId], references: [id], onDelete: SetNull)
+  poll        Poll                    @relation(fields: [pollId], references: [id], onDelete: Cascade)
+  candidate   LocalElectionCandidate? @relation(fields: [candidateId], references: [id], onDelete: SetNull)
+  byCandidate Candidate?              @relation("ByCandidatePollResponses", fields: [byCandidateId], references: [id], onDelete: SetNull)
+  party       Party?                  @relation(fields: [partyId], references: [id], onDelete: SetNull)
 
   createdAt DateTime @default(now())
 
   @@index([pollId, questionType])
   @@index([raceId])
+  @@index([districtId])
   @@index([candidateId])
+  @@index([byCandidateId])
   @@index([partyId])
 }
 

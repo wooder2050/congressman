@@ -110,6 +110,20 @@ export class PollsController {
     return data;
   }
 
+  @Get('timeseries-by-district/:districtId')
+  @ApiOperation({ summary: '재보궐 시계열 차트: 후보별 지지율 추이' })
+  @ApiQuery({ name: 'agency', required: false, description: '조사기관 필터' })
+  async timeseriesByDistrict(
+    @Param('districtId', ParseIntPipe) districtId: number,
+    @Query('agency') agency?: string,
+  ) {
+    const data = await this.service.timeseriesByDistrict(districtId, {
+      agency: agency || undefined,
+    });
+    if (!data) throw new NotFoundException(`District not found: ${districtId}`);
+    return data;
+  }
+
   @Get('admin/pending-mappings')
   @ApiOperation({ summary: '관리자: race 매칭 안 된 PollResponse 보유 Poll 목록' })
   @ApiQuery({ name: 'limit', required: false, type: Number })

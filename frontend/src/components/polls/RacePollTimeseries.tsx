@@ -12,11 +12,14 @@ import {
   YAxis,
 } from "recharts";
 import { useCongressSuspenseQuery } from "@/hooks/useCongressQuery";
-import { getPollTimeseries } from "@/lib/api";
-import type { PollTimeseriesCandidate, PollTimeseriesPoint } from "@/types";
+import { getPollTimeseries, getPollTimeseriesByDistrict } from "@/lib/api";
+import type { PollTimeseriesCandidate, PollTimeseriesPoint, PollTimeseriesResponse } from "@/types";
 
 interface Props {
+  /** 지방선거 race ID 또는 재보궐 district ID */
   raceId: number;
+  /** 'race' = 지방선거 (기본값), 'district' = 재보궐 */
+  mode?: "race" | "district";
 }
 
 function formatDate(iso: string | null): string {
@@ -49,7 +52,7 @@ function buildChartData(points: PollTimeseriesPoint[], candidateNames: string[])
   });
 }
 
-function PartyColorMap(candidates: PollTimeseriesCandidate[]): Record<string, string> {
+function partyColorMap(candidates: PollTimeseriesCandidate[]): Record<string, string> {
   const map: Record<string, string> = {};
   for (const c of candidates) {
     map[c.name] = c.party?.color ?? "#9ca3af";
@@ -57,12 +60,7 @@ function PartyColorMap(candidates: PollTimeseriesCandidate[]): Record<string, st
   return map;
 }
 
-function ChartInner({ raceId, agency }: { raceId: number; agency: string }) {
-  const { data } = useCongressSuspenseQuery(getPollTimeseries, {
-    raceId,
-    agency: agency || undefined,
-  });
-
+function ChartBody({ data }: { data: PollTimeseriesResponse | null }) {
   const candidateNames = useMemo(() => {
     if (!data) return [];
     const all = new Set<string>();
@@ -77,7 +75,7 @@ function ChartInner({ raceId, agency }: { raceId: number; agency: string }) {
     [data, candidateNames],
   );
 
-  const colors = useMemo(() => (data ? PartyColorMap(data.candidates) : {}), [data]);
+  const colors = useMemo(() => (data ? partyColorMap(data.candidates) : {}), [data]);
 
   if (!data || data.points.length === 0) {
     return (
@@ -92,8 +90,8 @@ function ChartInner({ raceId, agency }: { raceId: number; agency: string }) {
   return (
     <div className="space-y-3">
       <div className="text-xs text-(--color-text-tertiary)">
-        총 <span className="font-medium text-(--color-text-secondary)">{data.points.length}</span>건
-        의 조사 (조사기관 {data.agencies.length}곳)
+        총 <span className="font-medium text-(--color-text-secondary)">{data.points.length}</span>
+        건의 조사 (조사기관 {data.agencies.length}곳)
       </div>
       <div className="h-72 w-full">
         <ResponsiveContainer width="100%" height="100%">
@@ -140,6 +138,22 @@ function ChartInner({ raceId, agency }: { raceId: number; agency: string }) {
   );
 }
 
+function ChartForRace({ raceId, agency }: { raceId: number; agency: string }) {
+  const { data } = useCongressSuspenseQuery(getPollTimeseries, {
+    raceId,
+    agency: agency || undefined,
+  });
+  return <ChartBody data={data} />;
+}
+
+function ChartForDistrict({ districtId, agency }: { districtId: number; agency: string }) {
+  const { data } = useCongressSuspenseQuery(getPollTimeseriesByDistrict, {
+    districtId,
+    agency: agency || undefined,
+  });
+  return <ChartBody data={data} />;
+}
+
 function AgencyFilter({
   agencies,
   value,
@@ -165,14 +179,53 @@ function AgencyFilter({
   );
 }
 
-function FilterAndChart({ raceId }: Props) {
-  // 1차 fetch (필터 없이) → 가용 조사기관 목록 확보
+function FilterAndChartForRace({ raceId }: { raceId: number }) {
   const { data: baseline } = useCongressSuspenseQuery(getPollTimeseries, {
     raceId,
     agency: undefined,
   });
   const [agency, setAgency] = useState<string>("");
+  return (
+    <FilterAndChartBody
+      baseline={baseline}
+      agency={agency}
+      setAgency={setAgency}
+      mode="race"
+      id={raceId}
+    />
+  );
+}
 
+function FilterAndChartForDistrict({ districtId }: { districtId: number }) {
+  const { data: baseline } = useCongressSuspenseQuery(getPollTimeseriesByDistrict, {
+    districtId,
+    agency: undefined,
+  });
+  const [agency, setAgency] = useState<string>("");
+  return (
+    <FilterAndChartBody
+      baseline={baseline}
+      agency={agency}
+      setAgency={setAgency}
+      mode="district"
+      id={districtId}
+    />
+  );
+}
+
+function FilterAndChartBody({
+  baseline,
+  agency,
+  setAgency,
+  mode,
+  id,
+}: {
+  baseline: PollTimeseriesResponse | null;
+  agency: string;
+  setAgency: (v: string) => void;
+  mode: "race" | "district";
+  id: number;
+}) {
   if (!baseline) {
     return (
       <p className="py-8 text-center text-sm text-(--color-text-tertiary)">
@@ -195,20 +248,28 @@ function FilterAndChart({ raceId }: Props) {
         <AgencyFilter agencies={baseline.agencies} value={agency} onChange={setAgency} />
       </div>
       <Suspense fallback={<p className="text-sm text-(--color-text-tertiary)">불러오는 중...</p>}>
-        <ChartInner raceId={raceId} agency={agency} />
+        {mode === "district" ? (
+          <ChartForDistrict districtId={id} agency={agency} />
+        ) : (
+          <ChartForRace raceId={id} agency={agency} />
+        )}
       </Suspense>
     </div>
   );
 }
 
-export default function RacePollTimeseries({ raceId }: Props) {
+export default function RacePollTimeseries({ raceId, mode = "race" }: Props) {
   return (
     <section className="space-y-3">
       <div className="flex items-baseline justify-between">
         <h2 className="text-base font-semibold text-(--color-text-primary)">여론조사 추이</h2>
       </div>
       <Suspense fallback={<p className="text-sm text-(--color-text-tertiary)">불러오는 중...</p>}>
-        <FilterAndChart raceId={raceId} />
+        {mode === "district" ? (
+          <FilterAndChartForDistrict districtId={raceId} />
+        ) : (
+          <FilterAndChartForRace raceId={raceId} />
+        )}
       </Suspense>
     </section>
   );
