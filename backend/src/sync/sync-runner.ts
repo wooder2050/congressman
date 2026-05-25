@@ -21,6 +21,7 @@ import { LocalElectionSyncService } from './services/local-election-sync.service
 import { LocalElectionPhotoSyncService } from './services/local-election-photo-sync.service';
 import { ByElectionPhotoSyncService } from './services/by-election-photo-sync.service';
 import { CandidateDisclosureSyncService } from './services/candidate-disclosure-sync.service';
+import { NesdcPollSyncService } from './services/nesdc-poll-sync.service';
 
 async function invalidateCache(command: string) {
   const url = process.env.UPSTASH_REDIS_REST_URL;
@@ -99,6 +100,9 @@ async function invalidateCache(command: string) {
   }
   if (command === 'by-election-photos' || command === 'by-election-disclosure') {
     prefixes.push('elections:', 'candidates:');
+  }
+  if (command === 'nesdc-polls') {
+    prefixes.push('polls:', 'local-elections:');
   }
 
   for (const prefix of prefixes) {
@@ -218,6 +222,16 @@ async function main() {
         const limit = limitArg ? parseInt(limitArg, 10) : undefined;
         await new CandidateDisclosureSyncService(prisma, syncLog).syncDisclosures('by', {
           limit,
+        });
+        break;
+      }
+      case 'nesdc-polls': {
+        // 사용: pnpm sync:nesdc-polls [maxPages] [downloadAttachments=true|false]
+        const maxPages = parseInt(process.argv[3] ?? '50', 10);
+        const downloadAttachments = (process.argv[4] ?? 'false') === 'true';
+        await new NesdcPollSyncService(prisma, syncLog).syncPolls({
+          maxPages,
+          downloadAttachments,
         });
         break;
       }
