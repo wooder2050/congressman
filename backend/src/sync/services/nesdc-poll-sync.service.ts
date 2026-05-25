@@ -238,8 +238,8 @@ export class NesdcPollSyncService {
             }
 
             if (downloadAttachments && this.supabase) {
-              const count = await this.downloadAttachmentsForPoll(poll.id, item.nttId);
-              attachmentsDownloaded += count;
+              const r = await this.downloadAttachmentsForPoll(poll.id, item.nttId);
+              attachmentsDownloaded += r.downloaded;
             }
           } catch (e) {
             failed++;
@@ -264,15 +264,104 @@ export class NesdcPollSyncService {
     }
   }
 
+  /**
+   * 특정 조사기관 + result/questionnaire 첨부만 골라 일괄 다운로드.
+   * Step 2 PDF 파싱을 위한 사전 작업 (Storage 미러링).
+   */
+  async downloadPdfsByAgency(options: {
+    agencies: string[];
+    kinds?: ('result' | 'questionnaire' | 'other')[];
+    electionCategory?: string;
+    limit?: number;
+  }): Promise<{ downloaded: number; failed: number; notYet: number; skipped: number }> {
+    if (!this.supabase) {
+      throw new Error('SUPABASE creds missing — cannot download PDFs');
+    }
+
+    const log = await this.syncLog.start('nesdc-poll-pdfs');
+    const kinds = options.kinds ?? ['result'];
+    let downloaded = 0;
+    let failed = 0;
+    let notYet = 0;
+    let skipped = 0;
+
+    try {
+      const candidates = await this.prisma.pollAttachment.findMany({
+        where: {
+          status: { in: ['pending', 'not_yet_public', 'failed'] },
+          kind: { in: kinds },
+          poll: {
+            agency: { in: options.agencies },
+            ...(options.electionCategory ? { electionCategory: options.electionCategory } : {}),
+          },
+        },
+        select: { id: true, pollId: true, poll: { select: { nttId: true, agency: true } } },
+        take: options.limit,
+        orderBy: { id: 'desc' },
+      });
+
+      console.log(
+        `[NesdcPdfDownload] ${candidates.length} attachments pending across ${options.agencies.length} agencies`,
+      );
+
+      let processed = 0;
+      const byPoll = new Map<number, string>();
+      for (const c of candidates) {
+        byPoll.set(c.pollId, c.poll.nttId);
+      }
+
+      for (const [pollId, nttId] of byPoll.entries()) {
+        const r = await this.downloadAttachmentsForPoll(pollId, nttId, kinds);
+        downloaded += r.downloaded;
+        failed += r.failed;
+        notYet += r.notYet;
+        skipped += r.skipped;
+        processed++;
+        if (processed % 10 === 0) {
+          console.log(
+            `[NesdcPdfDownload] progress ${processed}/${byPoll.size} polls (dl=${downloaded} failed=${failed} notYet=${notYet})`,
+          );
+        }
+      }
+
+      await this.syncLog.complete(log.id, downloaded);
+      console.log(
+        `[NesdcPdfDownload] done: downloaded=${downloaded} failed=${failed} notYet=${notYet} skipped=${skipped}`,
+      );
+      return { downloaded, failed, notYet, skipped };
+    } catch (err) {
+      await this.syncLog.fail(log.id, (err as Error).message);
+      throw err;
+    }
+  }
+
   /** 특정 Poll의 pending 첨부 모두 다운로드해서 Supabase Storage에 미러링 */
-  private async downloadAttachmentsForPoll(pollId: number, nttId: string): Promise<number> {
-    if (!this.supabase) return 0;
+  private async downloadAttachmentsForPoll(
+    pollId: number,
+    nttId: string,
+    kindFilter?: ('result' | 'questionnaire' | 'other')[],
+  ): Promise<{ downloaded: number; failed: number; notYet: number; skipped: number }> {
+    const result = { downloaded: 0, failed: 0, notYet: 0, skipped: 0 };
+    if (!this.supabase) return result;
 
-    const pending = await this.prisma.pollAttachment.findMany({
-      where: { pollId, status: { in: ['pending', 'not_yet_public'] } },
-    });
+    const where: {
+      pollId: number;
+      status: { in: string[] };
+      kind?: { in: string[] };
+    } = {
+      pollId,
+      status: { in: ['pending', 'not_yet_public', 'failed'] },
+    };
+    if (kindFilter && kindFilter.length > 0) {
+      where.kind = { in: kindFilter };
+    }
 
-    let count = 0;
+    const pending = await this.prisma.pollAttachment.findMany({ where });
+    if (pending.length === 0) {
+      result.skipped++;
+      return result;
+    }
+
     for (const att of pending) {
       try {
         const resp = await fetch(att.downloadUrl, {
@@ -280,7 +369,6 @@ export class NesdcPollSyncService {
           redirect: 'follow',
         });
         if (!resp.ok) {
-          // NESDC는 미공개 첨부를 텍스트로 반환 → status로 마킹
           const text = await resp.text();
           const isNotYet = /공개|24시간|48시간/.test(text);
           await this.prisma.pollAttachment.update({
@@ -290,11 +378,12 @@ export class NesdcPollSyncService {
               errorMessage: `HTTP ${resp.status}`,
             },
           });
+          if (isNotYet) result.notYet++;
+          else result.failed++;
           continue;
         }
 
         const buf = Buffer.from(await resp.arrayBuffer());
-        // PDF 매직 넘버 검증 ("%PDF")
         if (buf.length < 4 || buf.subarray(0, 4).toString() !== '%PDF') {
           const head = buf.subarray(0, 200).toString('utf-8', 0, Math.min(200, buf.length));
           const isNotYet = /공개|24시간|48시간|아직/.test(head);
@@ -305,12 +394,17 @@ export class NesdcPollSyncService {
               errorMessage: 'not a PDF',
             },
           });
+          if (isNotYet) result.notYet++;
+          else result.failed++;
           continue;
         }
 
         const sha = createHash('sha256').update(buf).digest('hex');
-        const safeName = att.fileName.replace(/[^\w가-힣.\-]+/g, '_');
-        const storagePath = `${nttId}/${att.fileSn}_${safeName}`;
+        // Supabase Storage 키는 ASCII 영숫자/-/_/.만 안전하게 동작.
+        // fileSn은 base64(=등 포함), fileName은 한글 포함 → 안전한 키는 PollAttachment.id + sha 단축본
+        const safeFileSn = att.fileSn.replace(/[^A-Za-z0-9]+/g, '');
+        const ext = (att.fileName.match(/\.[A-Za-z0-9]+$/)?.[0] ?? '.pdf').toLowerCase();
+        const storagePath = `${nttId}/${att.id}_${safeFileSn}${ext}`;
 
         const { error: upErr } = await this.supabase.storage
           .from(STORAGE_BUCKET)
@@ -334,17 +428,18 @@ export class NesdcPollSyncService {
             errorMessage: null,
           },
         });
-        count++;
+        result.downloaded++;
       } catch (e) {
         await this.prisma.pollAttachment.update({
           where: { id: att.id },
           data: { status: 'failed', errorMessage: (e as Error).message },
         });
+        result.failed++;
       }
       await this.sleep(REQUEST_DELAY_MS);
     }
 
-    return count;
+    return result;
   }
 
   // -------- HTML 파싱 --------

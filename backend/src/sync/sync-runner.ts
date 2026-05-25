@@ -22,6 +22,7 @@ import { LocalElectionPhotoSyncService } from './services/local-election-photo-s
 import { ByElectionPhotoSyncService } from './services/by-election-photo-sync.service';
 import { CandidateDisclosureSyncService } from './services/candidate-disclosure-sync.service';
 import { NesdcPollSyncService } from './services/nesdc-poll-sync.service';
+import { PollResponseSyncService } from './services/poll-response-sync.service';
 
 async function invalidateCache(command: string) {
   const url = process.env.UPSTASH_REDIS_REST_URL;
@@ -232,6 +233,34 @@ async function main() {
         await new NesdcPollSyncService(prisma, syncLog).syncPolls({
           maxPages,
           downloadAttachments,
+        });
+        break;
+      }
+      case 'poll-responses': {
+        // 사용: pnpm sync:poll-responses [limit] [reprocess=true|false]
+        const limitArg = process.argv[3];
+        const limit = limitArg ? parseInt(limitArg, 10) : undefined;
+        const reprocess = (process.argv[4] ?? 'false') === 'true';
+        await new PollResponseSyncService(prisma, syncLog).syncResponses({ limit, reprocess });
+        break;
+      }
+      case 'nesdc-poll-pdfs': {
+        // 사용: pnpm sync:nesdc-poll-pdfs [limit]
+        // 주요 4사 결과표 PDF만 Storage에 미러링 (PDF 파싱 사전 작업)
+        const limitArg = process.argv[3];
+        const limit = limitArg ? parseInt(limitArg, 10) : undefined;
+        const agencies = [
+          '(주)리얼미터',
+          '한국갤럽조사연구소',
+          '(주)엠브레인퍼블릭',
+          '(주)코리아정보리서치',
+          '케이에스오아이 주식회사(한국사회여론연구소)',
+        ];
+        await new NesdcPollSyncService(prisma, syncLog).downloadPdfsByAgency({
+          agencies,
+          kinds: ['result'],
+          electionCategory: '제9회 전국동시지방선거',
+          limit,
         });
         break;
       }
