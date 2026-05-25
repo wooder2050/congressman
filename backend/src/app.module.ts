@@ -11,6 +11,7 @@ import { SchedulesModule } from './schedules/schedules.module';
 import { CommitteesModule } from './committees/committees.module';
 import { ElectionsModule } from './elections/elections.module';
 import { LocalElectionsModule } from './local-elections/local-elections.module';
+import { PollsModule } from './polls/polls.module';
 import { HealthModule } from './health/health.module';
 import { RedisModule } from './redis/redis.module';
 import { AuthModule } from './auth/auth.module';
@@ -34,6 +35,7 @@ import { WeeklyModule } from './weekly/weekly.module';
     CommitteesModule,
     ElectionsModule,
     LocalElectionsModule,
+    PollsModule,
     AuthModule,
     UserPreferencesModule,
     BreakingNewsModule,
