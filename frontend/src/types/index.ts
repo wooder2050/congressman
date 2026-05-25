@@ -580,6 +580,8 @@ export interface CandidateDisclosure {
   criminalRecord: string | null;
   /** 재산신고서 원문 PDF URL 목록 (NEC, 페이지순) */
   assetPdfUrls?: string[];
+  /** 재산신고서 PDF를 PNG로 변환해 미러링한 URL (Supabase Storage, 페이지순) */
+  assetPagePngUrls?: string[];
   /** 입후보 횟수 */
   electionCount: number | null;
 }

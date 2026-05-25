@@ -346,6 +346,7 @@ model Candidate {
   criminalRecord    String? // 전과기록
   electionCount     Int? // 입후보 횟수
   assetPdfUrls      String[] @default([]) // 재산신고서 원문 PDF URL 목록 (NEC, 페이지순)
+  assetPagePngUrls  String[] @default([]) // PDF를 PNG로 변환해 Supabase Storage에 미러링한 URL (페이지순)
 
   district   ElectionDistrict     @relation(fields: [districtId], references: [id])
   party      Party?               @relation(fields: [partyId], references: [id])
@@ -427,6 +428,7 @@ model LocalElectionCandidate {
   criminalRecord    String? // 전과기록 (예: "없음", "1건")
   electionCount     Int? // 입후보 횟수
   assetPdfUrls      String[] @default([]) // 재산신고서 원문 PDF URL 목록 (NEC, 페이지순)
+  assetPagePngUrls  String[] @default([]) // PDF를 PNG로 변환해 Supabase Storage에 미러링한 URL (페이지순)
 
   race       LocalElectionRace    @relation(fields: [raceId], references: [id])
   party      Party?               @relation(fields: [partyId], references: [id])
