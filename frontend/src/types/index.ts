@@ -868,6 +868,40 @@ export interface RecentActivity {
   recentBills: { id: string; title: string; proposedDate: string }[];
 }
 
+// ====== 여론조사 시계열 (NESDC) ======
+
+export interface PollTimeseriesCandidate {
+  id: number;
+  name: string;
+  party: Party | null;
+}
+
+export interface PollTimeseriesPoint {
+  pollId: number;
+  agency: string;
+  surveyEndedAt: string | null;
+  surveyStartedAt: string | null;
+  sampleSize: number | null;
+  marginOfError: number | null;
+  responseRate: number | null;
+  registeredAt: string;
+  /** candidateName → rate(%) */
+  rates: Record<string, number>;
+}
+
+export interface PollTimeseriesResponse {
+  race: {
+    id: number;
+    displayName: string;
+    electionType: string;
+    sido: string;
+    sigungu: string;
+  };
+  candidates: PollTimeseriesCandidate[];
+  agencies: string[];
+  points: PollTimeseriesPoint[];
+}
+
 // ====== 오늘 브리핑 ======
 
 export interface TodayBriefing {

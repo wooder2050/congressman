@@ -540,3 +540,17 @@ Object.defineProperty(getLocalElectionCandidate, "queryKey", {
 Object.defineProperty(getLocalElectionRegions, "queryKey", { value: "localElectionRegions" });
 Object.defineProperty(getLocalElectionRegion, "queryKey", { value: "localElectionRegion" });
 Object.defineProperty(getLocalElectionStats, "queryKey", { value: "localElectionStats" });
+
+// ====== 여론조사 시계열 ======
+
+import type { PollTimeseriesResponse } from "@/types";
+
+export async function getPollTimeseries(params: {
+  raceId: number;
+  agency?: string;
+}): Promise<PollTimeseriesResponse | null> {
+  const qs = params.agency ? `?agency=${encodeURIComponent(params.agency)}` : "";
+  return fetchApi(`/api/polls/timeseries/${params.raceId}${qs}`);
+}
+
+Object.defineProperty(getPollTimeseries, "queryKey", { value: "pollTimeseries" });

@@ -38,6 +38,8 @@
     "sync:local-election-disclosure": "tsx src/sync/sync-runner.ts local-election-disclosure",
     "sync:by-election-disclosure": "tsx src/sync/sync-runner.ts by-election-disclosure",
     "sync:nesdc-polls": "tsx src/sync/sync-runner.ts nesdc-polls",
+    "sync:nesdc-poll-pdfs": "tsx src/sync/sync-runner.ts nesdc-poll-pdfs",
+    "sync:poll-responses": "tsx src/sync/sync-runner.ts poll-responses",
     "seed:local-elections": "tsx prisma/seed-local-elections.ts",
     "seed:breaking-news": "tsx prisma/seed-breaking-news.ts",
     "seed:weekly": "tsx prisma/seed-weekly.ts"
