@@ -114,10 +114,7 @@ export class PollsController {
   @ApiOperation({ summary: '관리자: race 매칭 안 된 PollResponse 보유 Poll 목록' })
   @ApiQuery({ name: 'limit', required: false, type: Number })
   @ApiQuery({ name: 'offset', required: false, type: Number })
-  async pendingMappings(
-    @Query('limit') limitRaw?: string,
-    @Query('offset') offsetRaw?: string,
-  ) {
+  async pendingMappings(@Query('limit') limitRaw?: string, @Query('offset') offsetRaw?: string) {
     const limit = clampInt(limitRaw, 50, 1, 200);
     const offset = clampInt(offsetRaw, 0, 0, 100000);
     return this.service.pendingMappings(limit, offset);

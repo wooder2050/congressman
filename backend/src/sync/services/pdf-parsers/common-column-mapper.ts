@@ -115,11 +115,7 @@ type TableDetector = {
   detectAnyTable: (line: string) => boolean;
 };
 
-function findNextTableStart(
-  allLines: string[],
-  fromIdx: number,
-  detector: TableDetector,
-): number {
+function findNextTableStart(allLines: string[], fromIdx: number, detector: TableDetector): number {
   for (let i = fromIdx + 1; i < allLines.length; i++) {
     if (detector.detectAnyTable(allLines[i])) {
       return i;
@@ -178,10 +174,7 @@ function parseTable(params: {
 /**
  * 자기-동치 행 + 전체 행 기반 후보·정당 지지율 추출.
  */
-export function extractByColumnMap(
-  lines: string[],
-  detector: TableDetector,
-): ParsedQuestion[] {
+export function extractByColumnMap(lines: string[], detector: TableDetector): ParsedQuestion[] {
   const questions: ParsedQuestion[] = [];
 
   for (let i = 0; i < lines.length; i++) {

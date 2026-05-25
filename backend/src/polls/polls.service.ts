@@ -360,9 +360,7 @@ export class PollsService {
     });
 
     // 조사기관 옵션 — 이 race에 매칭된 조사들의 unique agency
-    const allAgencies = Array.from(
-      new Set(responses.map((r) => r.poll.agency)),
-    ).sort();
+    const allAgencies = Array.from(new Set(responses.map((r) => r.poll.agency))).sort();
 
     const result = {
       race: {
@@ -465,7 +463,9 @@ export class PollsService {
 
     for (const r of unmapped) {
       const candidateId =
-        r.candidateName && candByName.has(r.candidateName) ? candByName.get(r.candidateName)! : null;
+        r.candidateName && candByName.has(r.candidateName)
+          ? candByName.get(r.candidateName)!
+          : null;
       await this.prisma.pollResponse.update({
         where: { id: r.id },
         data: { raceId, candidateId },

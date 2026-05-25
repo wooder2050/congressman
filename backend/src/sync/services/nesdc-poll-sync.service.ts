@@ -292,9 +292,7 @@ export class NesdcPollSyncService {
           kind: { in: kinds },
           poll: {
             agency: { in: options.agencies },
-            ...(options.electionCategory
-              ? { electionCategory: options.electionCategory }
-              : {}),
+            ...(options.electionCategory ? { electionCategory: options.electionCategory } : {}),
           },
         },
         select: { id: true, pollId: true, poll: { select: { nttId: true, agency: true } } },

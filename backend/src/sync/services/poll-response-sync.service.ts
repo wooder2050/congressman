@@ -49,9 +49,7 @@ export class PollResponseSyncService {
           attachments: {
             some: { status: 'downloaded', kind: 'result' },
           },
-          ...(options.reprocess
-            ? {}
-            : { responses: { none: {} } }),
+          ...(options.reprocess ? {} : { responses: { none: {} } }),
         },
         select: {
           id: true,
@@ -210,7 +208,9 @@ export class PollResponseSyncService {
       await fs.writeFile(pdfPath, buf);
       const res = spawnSync('pdftotext', ['-layout', pdfPath, txtPath]);
       if (res.status !== 0) {
-        console.warn(`[PollResponseSync] pdftotext failed for ${storagePath}: ${res.stderr.toString()}`);
+        console.warn(
+          `[PollResponseSync] pdftotext failed for ${storagePath}: ${res.stderr.toString()}`,
+        );
         return null;
       }
       const text = await fs.readFile(txtPath, 'utf-8');

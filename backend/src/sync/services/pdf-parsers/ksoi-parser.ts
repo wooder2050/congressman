@@ -27,8 +27,9 @@ export const ksoiParser: PollPdfParser = {
       extractRaceLabel: (allLines, idx) => {
         // race 라벨 추출: "후보 지지도"·"후보 적합도"·"가상대결" 앞쪽
         const line = allLines[idx];
-        const m =
-          /【\s*표\s+\d+\s*】\s*([^\n]+?)\s+(?:후보\s*지지도|후보\s*적합도|가상대결)/.exec(line);
+        const m = /【\s*표\s+\d+\s*】\s*([^\n]+?)\s+(?:후보\s*지지도|후보\s*적합도|가상대결)/.exec(
+          line,
+        );
         if (m) return m[1].trim();
         // "가상대결" 같이 race가 표 내부 다른 행에 있는 경우는 추후 확장
         return null;
