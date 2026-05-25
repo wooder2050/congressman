@@ -2,8 +2,19 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import type { CandidateAssetItem, LocalElectionCandidate, Party } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { RedisService } from '../redis/redis.service';
+import { pickAssetSource } from '../elections/asset-source.helper';
 import { getLawmakerSummary } from '../elections/lawmaker-stats.helper';
 import { ALLOWED_SIDO_LIST } from './region-allowlist';
+
+/** assetItems + availableSources 묶음 빌드 (codex #2) */
+function buildAssetSection(items: CandidateAssetItem[]) {
+  const picked = pickAssetSource(items);
+  return {
+    assetItems: picked.selected.map(mapAssetItem),
+    assetSelectedSource: picked.selectedSource,
+    assetAvailableSources: picked.availableSources,
+  };
+}
 
 /** 후보자 자산 항목 → API 응답 매핑 (BigInt → string) */
 function mapAssetItem(item: CandidateAssetItem) {
@@ -410,7 +421,7 @@ export class LocalElectionsService {
         displayName: candidate.race.displayName,
       },
       member,
-      assetItems: candidate.assetItems.map(mapAssetItem),
+      ...buildAssetSection(candidate.assetItems),
     };
 
     await this.redis.set(key, result, getCacheTTL(candidate.race.election.status));
