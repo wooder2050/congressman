@@ -151,6 +151,36 @@ export class PollResponseSyncService {
               });
             }
 
+            // 파서가 candidateName/partyName을 채우지 못한 경우 (HRI 등):
+            // race(지방선거) 또는 district(재보궐)의 후보 명단을 candidateNumber 순으로 가져와
+            // q.responses 순서에 매칭.
+            const allNameless = q.responses.every((r) => !r.candidateName);
+            if (allNameless && q.responses.length > 0) {
+              let dbCandidates: { name: string; partyId: string | null }[] = [];
+              if (isByElection && districtIdForPoll !== null) {
+                const cs = await this.prisma.candidate.findMany({
+                  where: { districtId: districtIdForPoll },
+                  select: { name: true, partyId: true, candidateNumber: true },
+                  orderBy: [{ candidateNumber: 'asc' }, { id: 'asc' }],
+                });
+                dbCandidates = cs.map((c) => ({ name: c.name, partyId: c.partyId }));
+              } else if (!isByElection && raceId !== null) {
+                const cs = await this.prisma.localElectionCandidate.findMany({
+                  where: { raceId },
+                  select: { name: true, partyId: true, candidateNumber: true },
+                  orderBy: [{ candidateNumber: 'asc' }, { id: 'asc' }],
+                });
+                dbCandidates = cs.map((c) => ({ name: c.name, partyId: c.partyId }));
+              }
+              // 응답 순서에 후보 매핑 (응답 개수 = DB 후보 개수일 때만 신뢰)
+              if (dbCandidates.length === q.responses.length) {
+                for (let i = 0; i < q.responses.length; i++) {
+                  q.responses[i].candidateName = dbCandidates[i].name;
+                  // partyName은 partyId만 있으니 빈 채로 두고 lookup 단계에서 처리
+                }
+              }
+            }
+
             for (const r of q.responses) {
               const partyId = r.partyName ? await this.lookupPartyId(r.partyName) : null;
               const candidateId =
