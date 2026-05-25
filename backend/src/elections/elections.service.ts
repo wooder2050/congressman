@@ -34,6 +34,7 @@ function mapCandidate(c: Candidate & { party: Party | null }) {
     criminalRecord: c.criminalRecord,
     electionCount: c.electionCount,
     assetPdfUrls: c.assetPdfUrls,
+    assetPagePngUrls: c.assetPagePngUrls,
     candidateNumber: c.candidateNumber,
     status: c.status,
     memberIdRef: c.memberIdRef,
