@@ -1,9 +1,52 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import type { LocalElectionCandidate, Party } from '@prisma/client';
+import type { CandidateAssetItem, LocalElectionCandidate, Party } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { RedisService } from '../redis/redis.service';
+import {
+  mapAssetItemForApi,
+  pickAssetSource,
+  sumItemValues,
+  summarizeReview,
+} from '../elections/asset-source.helper';
 import { getLawmakerSummary } from '../elections/lawmaker-stats.helper';
 import { ALLOWED_SIDO_LIST } from './region-allowlist';
+
+/**
+ * assetItems + availableSources + itemsBySource + 검수 메타 + 합계 대조 (codex #2, #6)
+ * declaredTotal과 항목 합계를 비교해 일치 여부도 함께 내려줌
+ */
+function buildAssetSection(items: CandidateAssetItem[], declaredTotal: bigint | null) {
+  const picked = pickAssetSource(items);
+  const itemsBySource: Record<string, ReturnType<typeof mapAssetItemForApi>[]> = {};
+  const reviewBySource: Record<string, ReturnType<typeof summarizeReview>> = {};
+  const totalsBySource: Record<string, string> = {};
+  for (const [src, list] of Object.entries(picked.itemsBySource)) {
+    itemsBySource[src] = list.map(mapAssetItemForApi);
+    reviewBySource[src] = summarizeReview(list);
+    totalsBySource[src] = sumItemValues(list);
+  }
+
+  // 합계 대조: 선택된 source의 합계와 declaredTotal 비교 (BigInt 단위 원)
+  const selectedItemsTotal = picked.selectedSource ? totalsBySource[picked.selectedSource] : '0';
+  let totalsMatch: boolean | null = null;
+  if (declaredTotal !== null && picked.selectedSource) {
+    try {
+      totalsMatch = BigInt(selectedItemsTotal) === declaredTotal;
+    } catch {
+      totalsMatch = null;
+    }
+  }
+
+  return {
+    assetItems: picked.selected.map(mapAssetItemForApi),
+    assetSelectedSource: picked.selectedSource,
+    assetAvailableSources: picked.availableSources,
+    assetItemsBySource: itemsBySource,
+    assetReviewBySource: reviewBySource,
+    assetTotalsBySource: totalsBySource,
+    assetTotalsMatch: totalsMatch, // 선택된 source의 항목 합계와 신고 총액 일치 여부 (null = 비교 불가)
+  };
+}
 
 function getCacheTTL(status: string): number {
   switch (status) {
@@ -47,6 +90,7 @@ function mapLocalCandidate(c: LocalElectionCandidate & { party: Party | null }) 
     criminalRecord: c.criminalRecord,
     electionCount: c.electionCount,
     assetPdfUrls: c.assetPdfUrls,
+    assetPagePngUrls: c.assetPagePngUrls,
     candidateNumber: c.candidateNumber,
     status: c.status,
     voteCount: c.voteCount,
@@ -364,6 +408,9 @@ export class LocalElectionsService {
       include: {
         party: true,
         race: { include: { election: { select: { status: true } } } },
+        assetItems: {
+          orderBy: [{ category: 'asc' }, { relation: 'asc' }, { id: 'asc' }],
+        },
       },
     });
 
@@ -386,6 +433,7 @@ export class LocalElectionsService {
         displayName: candidate.race.displayName,
       },
       member,
+      ...buildAssetSection(candidate.assetItems, candidate.assetDeclared),
     };
 
     await this.redis.set(key, result, getCacheTTL(candidate.race.election.status));

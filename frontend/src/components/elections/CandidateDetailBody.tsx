@@ -1,7 +1,14 @@
 import Image from "next/image";
 import Link from "next/link";
-import type { CandidateDisclosure, CandidateLawmakerSummary, CandidatePledge } from "@/types";
+import type {
+  CandidateAssetItem,
+  CandidateDisclosure,
+  CandidateLawmakerSummary,
+  CandidatePledge,
+} from "@/types";
 import { proxyPhotoUrl } from "@/lib/photo";
+import CandidateAssetBreakdown from "./CandidateAssetBreakdown";
+import CandidateAssetPdfViewer from "./CandidateAssetPdfViewer";
 import CandidateDisclosureSection from "./CandidateDisclosureSection";
 
 /** 두 후보자 타입(재보궐·지방선거)이 공유하는 표시용 필드 */
@@ -22,6 +29,25 @@ export interface CandidateView extends CandidateDisclosure {
   voteCount?: number | null;
   voteRate?: number | null;
   isWinner?: boolean;
+  /** 항목별 재산 명세 — 22대 의원 출신은 opengirok 데이터로 채워짐 */
+  assetItems?: CandidateAssetItem[];
+  /** source별 전체 항목 — 클라이언트 토글용 */
+  assetItemsBySource?: Record<string, CandidateAssetItem[]>;
+  /** source별 검수 메타 요약 */
+  assetReviewBySource?: Record<
+    string,
+    {
+      totalItems: number;
+      reviewedItems: number;
+      latestReviewedAt: string | null;
+      reviewers: string[];
+      pdfSourceHashes: string[];
+    }
+  >;
+  /** 선택된 source의 항목 합계와 신고총액 일치 여부 */
+  assetTotalsMatch?: boolean | null;
+  /** PDF→PNG 변환 미러 (Supabase Storage) — 인라인 미리보기용 */
+  assetPagePngUrls?: string[];
 }
 
 /** "19700214" → "1970.02.14", 형식이 다르면 원본 반환 */
@@ -213,44 +239,64 @@ export default function CandidateDetailBody({ candidate: c, electionTypeLabel, m
         <h2 className="text-base font-bold text-(--color-text-primary)">후보자정보공개자료</h2>
         <CandidateDisclosureSection data={c} />
 
-        {/* 재산신고서 원문 PDF — NEC 제출 서류 전문 (페이지별) */}
-        {c.assetPdfUrls && c.assetPdfUrls.length > 0 && (
-          <div className="mt-3 rounded-lg border border-(--color-border-secondary) bg-(--color-bg-secondary) p-3">
-            <div className="flex items-center gap-1.5">
-              <svg
-                width="14"
-                height="14"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                aria-hidden="true"
-                className="text-(--color-text-tertiary)"
-              >
-                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
-                <polyline points="14 2 14 8 20 8" />
-              </svg>
-              <h3 className="text-xs font-bold text-(--color-text-tertiary)">
-                재산신고서 원문 (중앙선관위 제출 서류)
-              </h3>
-            </div>
-            <div className="mt-2 flex flex-wrap gap-1.5">
-              {c.assetPdfUrls.map((url, i) => (
-                <a
-                  key={url}
-                  href={url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="rounded-md border border-(--color-border-primary) bg-(--color-bg-primary) px-2.5 py-1 text-xs font-medium text-(--color-primary) transition-colors hover:bg-(--color-bg-hover)"
+        {/* 항목별 재산 명세 — opengirok 등 외부 데이터 매칭 시 */}
+        {c.assetItems && c.assetItems.length > 0 && (
+          <CandidateAssetBreakdown
+            items={c.assetItems}
+            itemsBySource={c.assetItemsBySource}
+            reviewBySource={c.assetReviewBySource}
+            totalsMatch={c.assetTotalsMatch}
+            declaredTotal={c.assetDeclared}
+          />
+        )}
+
+        {/* 재산신고서 원문 — PNG 미러가 있으면 인라인 미리보기, 없으면 PDF 링크 폴백 */}
+        {c.assetPagePngUrls && c.assetPagePngUrls.length > 0 ? (
+          <CandidateAssetPdfViewer
+            pageImageUrls={c.assetPagePngUrls}
+            pdfUrls={c.assetPdfUrls}
+            candidateName={c.name}
+          />
+        ) : (
+          c.assetPdfUrls &&
+          c.assetPdfUrls.length > 0 && (
+            <div className="mt-3 rounded-lg border border-(--color-border-secondary) bg-(--color-bg-secondary) p-3">
+              <div className="flex items-center gap-1.5">
+                <svg
+                  width="14"
+                  height="14"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  aria-hidden="true"
+                  className="text-(--color-text-tertiary)"
                 >
-                  {i + 1}쪽
-                </a>
-              ))}
+                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                  <polyline points="14 2 14 8 20 8" />
+                </svg>
+                <h3 className="text-xs font-bold text-(--color-text-tertiary)">
+                  재산신고서 원문 (중앙선관위 제출 서류)
+                </h3>
+              </div>
+              <div className="mt-2 flex flex-wrap gap-1.5">
+                {c.assetPdfUrls.map((url, i) => (
+                  <a
+                    key={url}
+                    href={url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="rounded-md border border-(--color-border-primary) bg-(--color-bg-primary) px-2.5 py-1 text-xs font-medium text-(--color-primary) transition-colors hover:bg-(--color-bg-hover)"
+                  >
+                    {i + 1}쪽
+                  </a>
+                ))}
+              </div>
+              <p className="mt-2 text-[10px] leading-relaxed text-(--color-text-tertiary)">
+                1쪽은 신고 항목 표지이며, 2쪽부터 항목별 금액 내역이 있습니다.
+              </p>
             </div>
-            <p className="mt-2 text-[10px] leading-relaxed text-(--color-text-tertiary)">
-              1쪽은 신고 항목 표지이며, 2쪽부터 항목별 금액 내역이 있습니다.
-            </p>
-          </div>
+          )
         )}
       </section>
     </div>

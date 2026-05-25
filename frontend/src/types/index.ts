@@ -539,6 +539,60 @@ export interface CandidatePledge {
   description: string;
 }
 
+/**
+ * 자산 항목의 출처 identifier.
+ * - `nec_ocr_vision`: NEC 후보자 재산신고서 PDF를 Claude Vision으로 OCR 추출 (선거 직전, 가장 최신)
+ * - `opengirok`: 정보공개센터 국회의원 재산공개 데이터 (정기, 22대 의원만)
+ * - `peti`: 인사혁신처 공직윤리시스템 (현직 공직자, 2022~2023)
+ * - `manual`: 수동 입력
+ */
+export type AssetSource = "nec_ocr_vision" | "opengirok" | "peti" | "manual";
+
+/** 한 후보의 어떤 source에서 자산 데이터를 받았는지 요약 (다중 source 토글용) */
+export interface CandidateAssetSourceSummary {
+  source: AssetSource | string;
+  sourceDate: string | null;
+  itemCount: number;
+}
+
+/** source별 검수 메타 요약 — OCR 등 자동 추출 데이터의 검수 추적 */
+export interface CandidateAssetReviewSummary {
+  totalItems: number;
+  reviewedItems: number;
+  latestReviewedAt: string | null;
+  reviewers: string[];
+  pdfSourceHashes: string[];
+}
+
+/** 후보자 재산 항목별 상세 — 한 행 = 한 자산 (opengirok/PETI/OCR/manual) */
+export interface CandidateAssetItem {
+  id: number;
+  /** 토지·건물·예금·증권·채무·자동차·정치자금예금 등 */
+  category: string;
+  /** 재산의 종류 — 예: 아파트·임야·상장주식 */
+  subCategory: string | null;
+  /** 본인·배우자·부·모·장남·장녀 등 */
+  relation: string;
+  /** 소재지·면적·종목·계좌 등 상세 명세 */
+  description: string;
+  /** 현재가액(원, BigInt 직렬화 문자열) */
+  currentValue: string | null;
+  /** 종전가액 — opengirok 정기변동신고에만 */
+  previousValue: string | null;
+  increaseValue: string | null;
+  decreaseValue: string | null;
+  marketPrice: string | null;
+  changeReason: string | null;
+  /** 데이터 출처 — AssetSource 참조 (`| string`은 새 source 추가 시 호환성을 위해) */
+  source: AssetSource | string;
+  sourceUrl: string | null;
+  sourceDate: string | null;
+  /** 검수 메타 — null이면 미검수 */
+  reviewedAt?: string | null;
+  reviewer?: string | null;
+  pdfSourceHash?: string | null;
+}
+
 /** 공직선거법 제49조 후보자정보공개자료 요약 5종 (출처: 중앙선거관리위원회) */
 export interface CandidateDisclosure {
   /** 재산신고액(원 단위 문자열, BigInt 직렬화) */
@@ -555,6 +609,8 @@ export interface CandidateDisclosure {
   criminalRecord: string | null;
   /** 재산신고서 원문 PDF URL 목록 (NEC, 페이지순) */
   assetPdfUrls?: string[];
+  /** 재산신고서 PDF를 PNG로 변환해 미러링한 URL (Supabase Storage, 페이지순) */
+  assetPagePngUrls?: string[];
   /** 입후보 횟수 */
   electionCount: number | null;
 }
@@ -573,6 +629,20 @@ export interface ElectionCandidate extends CandidateDisclosure {
   candidateNumber: number | null;
   status: string;
   memberIdRef: string | null;
+  /** 항목별 재산 명세 — 다중 source 중 우선순위가 가장 높은 1개만 노출됨 */
+  assetItems?: CandidateAssetItem[];
+  /** 현재 노출되는 source identifier (선택된 데이터의 source) */
+  assetSelectedSource?: string | null;
+  /** 사용 가능한 모든 source 목록 (UI 토글용) */
+  assetAvailableSources?: CandidateAssetSourceSummary[];
+  /** source별 전체 항목 — 클라이언트 토글용 (모든 source 포함) */
+  assetItemsBySource?: Record<string, CandidateAssetItem[]>;
+  /** source별 검수 메타 요약 */
+  assetReviewBySource?: Record<string, CandidateAssetReviewSummary>;
+  /** source별 항목 합계 (원 단위 BigInt 문자열) */
+  assetTotalsBySource?: Record<string, string>;
+  /** 선택된 source의 항목 합계와 신고 총액 일치 여부 (null = 비교 불가) */
+  assetTotalsMatch?: boolean | null;
 }
 
 // ====== 지방선거 ======
@@ -656,6 +726,20 @@ export interface LocalElectionCandidateDetail extends CandidateDisclosure {
   voteRate: number | null;
   isWinner: boolean;
   memberIdRef: string | null;
+  /** 항목별 재산 명세 — 다중 source 중 우선순위가 가장 높은 1개만 노출됨 */
+  assetItems?: CandidateAssetItem[];
+  /** 현재 노출되는 source identifier (선택된 데이터의 source) */
+  assetSelectedSource?: string | null;
+  /** 사용 가능한 모든 source 목록 (UI 토글용) */
+  assetAvailableSources?: CandidateAssetSourceSummary[];
+  /** source별 전체 항목 — 클라이언트 토글용 (모든 source 포함) */
+  assetItemsBySource?: Record<string, CandidateAssetItem[]>;
+  /** source별 검수 메타 요약 */
+  assetReviewBySource?: Record<string, CandidateAssetReviewSummary>;
+  /** source별 항목 합계 (원 단위 BigInt 문자열) */
+  assetTotalsBySource?: Record<string, string>;
+  /** 선택된 source의 항목 합계와 신고 총액 일치 여부 (null = 비교 불가) */
+  assetTotalsMatch?: boolean | null;
 }
 
 export interface LocalElectionRaceDetail {
