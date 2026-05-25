@@ -9,6 +9,22 @@ function categoryToSlug(cat: string): string {
   return cat.replace(/[^a-zA-Z0-9가-힣]/g, "-").slice(0, 32);
 }
 
+/** source identifier → 표시용 라벨 */
+function sourceLabel(source: string): string {
+  switch (source) {
+    case "nec_ocr_vision":
+      return "선관위 신고서 (Vision OCR)";
+    case "opengirok":
+      return "정보공개센터";
+    case "peti":
+      return "공직윤리시스템";
+    case "manual":
+      return "수동 입력";
+    default:
+      return source;
+  }
+}
+
 interface Props {
   items: CandidateAssetItem[];
   /** 본인 기준 신고된 총액(있다면) — 항목 합계와 함께 표시 */
@@ -155,7 +171,7 @@ export default function CandidateAssetBreakdown({ items, declaredTotal }: Props)
           항목별 재산 상세 ({items.length}건)
         </h4>
         <span className="text-[10px] text-(--color-text-tertiary)">
-          {source === "opengirok" && "정보공개센터"}
+          {sourceLabel(source)}
           {sourceDate && ` · ${sourceDate}`}
         </span>
       </div>
@@ -263,9 +279,19 @@ export default function CandidateAssetBreakdown({ items, declaredTotal }: Props)
             rel="noopener noreferrer"
             className="text-(--color-primary) hover:underline"
           >
-            정보공개센터 국회의원 재산공개 데이터
+            {source === "nec_ocr_vision"
+              ? "중앙선관위 후보자 재산신고서"
+              : source === "opengirok"
+                ? "정보공개센터 국회의원 재산공개 데이터"
+                : sourceLabel(source)}
           </a>{" "}
           · 본인 외 가족 정보 포함
+          {source === "nec_ocr_vision" && (
+            <span className="block text-(--color-text-tertiary)">
+              ⚠ 자동 OCR 변환 결과로 일부 글자·숫자 오차가 있을 수 있습니다. 정확한 수치는 상단의
+              재산신고서 원문 PDF를 참고하세요.
+            </span>
+          )}
         </p>
       )}
     </div>

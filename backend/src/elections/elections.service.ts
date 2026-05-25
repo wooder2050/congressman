@@ -1,10 +1,42 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import type { Candidate, Party } from '@prisma/client';
+import type { Candidate, CandidateAssetItem, Party } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { RedisService } from '../redis/redis.service';
 import { getLawmakerSummary } from './lawmaker-stats.helper';
 
 const TTL_HOUR = 60 * 60;
+
+/**
+ * 한 후보의 자산 항목이 여러 source에 걸쳐 있으면 우선순위가 높은 source 하나만 사용.
+ * 우선순위: nec_ocr_vision > peti > opengirok > manual
+ */
+const ASSET_SOURCE_PRIORITY: Record<string, number> = {
+  nec_ocr_vision: 4,
+  peti: 3,
+  opengirok: 2,
+  manual: 1,
+};
+
+function pickBestSource(items: CandidateAssetItem[]): CandidateAssetItem[] {
+  if (items.length === 0) return [];
+  const bySource = new Map<string, CandidateAssetItem[]>();
+  for (const it of items) {
+    const arr = bySource.get(it.source) ?? [];
+    arr.push(it);
+    bySource.set(it.source, arr);
+  }
+  if (bySource.size === 1) return items;
+  let bestSource = '';
+  let bestScore = -1;
+  for (const src of bySource.keys()) {
+    const score = ASSET_SOURCE_PRIORITY[src] ?? 0;
+    if (score > bestScore) {
+      bestScore = score;
+      bestSource = src;
+    }
+  }
+  return bySource.get(bestSource) ?? items;
+}
 
 /** 재보궐 후보자(Candidate) → API 응답 공통 매핑 */
 function mapCandidate(c: Candidate & { party: Party | null }) {
@@ -355,7 +387,7 @@ export class ElectionsService {
         vacancyReason: candidate.district.vacancyReason,
       },
       member,
-      assetItems: candidate.assetItems.map((item) => ({
+      assetItems: pickBestSource(candidate.assetItems).map((item) => ({
         id: item.id,
         category: item.category,
         subCategory: item.subCategory,
