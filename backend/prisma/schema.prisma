@@ -473,10 +473,15 @@ model CandidateAssetItem {
   changeReason  String? // 변동사유 (예: "가액변동", "신규취득")
 
   // 메타데이터
-  source     String // "opengirok" | "peti" | "nec_ocr" | "manual"
+  source     String // "opengirok" | "peti" | "nec_ocr_vision" | "manual"
   sourceUrl  String? // 원본 URL (구글시트 URL, PETI 페이지 URL 등)
   sourceDate String? // 신고/공보 발행일 (YYYY-MM-DD)
   rawJson    Json? // 원본 행 전체(스키마 변경 대비)
+
+  // 검수 메타데이터 (codex PR #377 #6) — OCR 등 자동 추출 데이터의 검증 추적
+  reviewedAt    DateTime? // 검수 완료 시점. null이면 미검수
+  reviewer      String? // 검수자 식별자 (예: "manual:wooder2050", "automated:vision-v1")
+  pdfSourceHash String? // OCR 입력으로 쓴 원본 PDF의 hash → URL/내용 변경 감지
 
   localCandidate LocalElectionCandidate? @relation(fields: [localCandidateId], references: [id], onDelete: Cascade)
   byCandidate    Candidate?              @relation(fields: [byCandidateId], references: [id], onDelete: Cascade)

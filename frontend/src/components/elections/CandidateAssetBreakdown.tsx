@@ -25,12 +25,24 @@ function sourceLabel(source: string): string {
   }
 }
 
+interface ReviewSummary {
+  totalItems: number;
+  reviewedItems: number;
+  latestReviewedAt: string | null;
+  reviewers: string[];
+  pdfSourceHashes: string[];
+}
+
 interface Props {
   items: CandidateAssetItem[];
   /** 본인 기준 신고된 총액(있다면) — 항목 합계와 함께 표시 */
   declaredTotal?: string | null;
   /** source별 전체 데이터 (다중 source 토글용) */
   itemsBySource?: Record<string, CandidateAssetItem[]>;
+  /** source별 검수 메타 요약 (codex #6) */
+  reviewBySource?: Record<string, ReviewSummary>;
+  /** 선택된 source의 항목 합계와 신고총액 일치 여부 (null = 비교 불가) */
+  totalsMatch?: boolean | null;
 }
 
 /** 항목별 합계 계산 (BigInt 누적 후 string 환원) */
@@ -122,7 +134,13 @@ interface CategorySummary {
   items: CandidateAssetItem[];
 }
 
-export default function CandidateAssetBreakdown({ items, declaredTotal, itemsBySource }: Props) {
+export default function CandidateAssetBreakdown({
+  items,
+  declaredTotal,
+  itemsBySource,
+  reviewBySource,
+  totalsMatch,
+}: Props) {
   const reactId = useId();
   const [expandedCats, setExpandedCats] = useState<Set<string>>(new Set());
 
@@ -180,6 +198,17 @@ export default function CandidateAssetBreakdown({ items, declaredTotal, itemsByS
   const sourceUrl = effectiveItems[0]?.sourceUrl ?? null;
   const sourceDate = effectiveItems[0]?.sourceDate ?? null;
 
+  // 현재 active source의 검수 요약
+  const activeReview = reviewBySource?.[source];
+  const isReviewed =
+    activeReview &&
+    activeReview.reviewedItems > 0 &&
+    activeReview.reviewedItems === activeReview.totalItems;
+  const partiallyReviewed =
+    activeReview &&
+    activeReview.reviewedItems > 0 &&
+    activeReview.reviewedItems < activeReview.totalItems;
+
   if (effectiveItems.length === 0) return null;
 
   function toggleCat(cat: string) {
@@ -194,8 +223,22 @@ export default function CandidateAssetBreakdown({ items, declaredTotal, itemsByS
   return (
     <div className="mt-3 rounded-lg border border-(--color-border-secondary) bg-(--color-bg-secondary) p-3">
       <div className="mb-2 flex items-baseline justify-between gap-2">
-        <h4 className="text-xs font-bold text-(--color-text-tertiary)">
+        <h4 className="flex items-center gap-1.5 text-xs font-bold text-(--color-text-tertiary)">
           항목별 재산 상세 ({effectiveItems.length}건)
+          {/* 검수 배지 (codex #6) */}
+          {isReviewed && (
+            <span
+              className="rounded-full bg-emerald-100 px-1.5 py-0.5 text-[9px] font-bold text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300"
+              title={`검수자: ${activeReview!.reviewers.join(", ")} · ${activeReview!.latestReviewedAt ?? ""}`}
+            >
+              ✓ 검수 완료
+            </span>
+          )}
+          {partiallyReviewed && (
+            <span className="rounded-full bg-amber-100 px-1.5 py-0.5 text-[9px] font-bold text-amber-700 dark:bg-amber-900/40 dark:text-amber-300">
+              ⚠ 일부 검수 ({activeReview!.reviewedItems}/{activeReview!.totalItems})
+            </span>
+          )}
         </h4>
         <span className="text-[10px] text-(--color-text-tertiary)">
           {sourceLabel(source)}
@@ -236,7 +279,7 @@ export default function CandidateAssetBreakdown({ items, declaredTotal, itemsByS
         </div>
       )}
 
-      {/* 합계 비교 (선관위 신고 vs 항목 합계) */}
+      {/* 합계 비교 (선관위 신고 vs 항목 합계) — 일치 여부 표시 (codex #6) */}
       {declaredTotal && (
         <div className="mb-2 grid grid-cols-2 gap-2 text-xs">
           <div className="rounded-md bg-(--color-bg-primary) px-2.5 py-2">
@@ -244,7 +287,22 @@ export default function CandidateAssetBreakdown({ items, declaredTotal, itemsByS
             <p className="font-bold text-(--color-text-primary)">{formatWon(declaredTotal)}</p>
           </div>
           <div className="rounded-md bg-(--color-bg-primary) px-2.5 py-2">
-            <p className="text-[10px] text-(--color-text-tertiary)">항목 합계</p>
+            <div className="flex items-center justify-between gap-1">
+              <p className="text-[10px] text-(--color-text-tertiary)">항목 합계</p>
+              {totalsMatch === true && (
+                <span className="text-[9px] font-bold text-emerald-600 dark:text-emerald-400">
+                  ✓ 일치
+                </span>
+              )}
+              {totalsMatch === false && (
+                <span
+                  className="text-[9px] font-bold text-amber-600 dark:text-amber-400"
+                  title="OCR 추출 오차 또는 신고서 작성 시점 차이로 신고총액과 항목 합계가 다를 수 있습니다"
+                >
+                  ⚠ 불일치
+                </span>
+              )}
+            </div>
             <p className="font-bold text-(--color-text-primary)">{formatWon(itemsTotal)}</p>
           </div>
         </div>

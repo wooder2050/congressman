@@ -1,7 +1,7 @@
 import type { CandidateAssetItem } from '@prisma/client';
 import { describe, expect, it } from 'vitest';
 
-import { pickAssetSource } from './asset-source.helper';
+import { pickAssetSource, sumItemValues, summarizeReview } from './asset-source.helper';
 
 /**
  * pickAssetSource 단위 테스트 (codex PR #378 리뷰 #2 권고)
@@ -34,6 +34,9 @@ function makeItem(overrides: Partial<CandidateAssetItem> = {}): CandidateAssetIt
     sourceUrl: null,
     sourceDate: '2025-03-27',
     rawJson: null,
+    reviewedAt: null,
+    reviewer: null,
+    pdfSourceHash: null,
     createdAt: now,
     updatedAt: now,
     ...overrides,
@@ -142,5 +145,78 @@ describe('pickAssetSource', () => {
     const result = pickAssetSource(items);
     expect(result.availableSources[0].sourceDate).toBeNull();
     expect(result.availableSources[0].itemCount).toBe(2);
+  });
+});
+
+describe('sumItemValues', () => {
+  it('빈 배열 → "0"', () => {
+    expect(sumItemValues([])).toBe('0');
+  });
+
+  it('양수 합산', () => {
+    const items = [
+      makeItem({ currentValue: BigInt(1000) }),
+      makeItem({ currentValue: BigInt(500) }),
+    ];
+    expect(sumItemValues(items)).toBe('1500');
+  });
+
+  it('음수(채무) 포함 합산', () => {
+    const items = [
+      makeItem({ currentValue: BigInt(1_000_000_000) }),
+      makeItem({ currentValue: BigInt(-200_000_000) }), // 채무
+    ];
+    expect(sumItemValues(items)).toBe('800000000');
+  });
+
+  it('null currentValue는 0 취급', () => {
+    const items = [makeItem({ currentValue: BigInt(100) }), makeItem({ currentValue: null })];
+    expect(sumItemValues(items)).toBe('100');
+  });
+
+  it('큰 금액 BigInt 정확성', () => {
+    const big = BigInt('999999999999999999');
+    const items = [makeItem({ currentValue: big }), makeItem({ currentValue: big })];
+    expect(sumItemValues(items)).toBe('1999999999999999998');
+  });
+});
+
+describe('summarizeReview', () => {
+  it('빈 배열 → 0/0', () => {
+    const summary = summarizeReview([]);
+    expect(summary.totalItems).toBe(0);
+    expect(summary.reviewedItems).toBe(0);
+    expect(summary.latestReviewedAt).toBeNull();
+  });
+
+  it('모두 미검수 — reviewedItems 0', () => {
+    const items = [makeItem({ id: 1 }), makeItem({ id: 2 })];
+    const summary = summarizeReview(items);
+    expect(summary.totalItems).toBe(2);
+    expect(summary.reviewedItems).toBe(0);
+    expect(summary.reviewers).toEqual([]);
+  });
+
+  it('일부 검수 — 가장 최근 reviewedAt 반환', () => {
+    const items = [
+      makeItem({ id: 1, reviewedAt: new Date('2026-05-20T10:00:00Z'), reviewer: 'alice' }),
+      makeItem({ id: 2 }),
+      makeItem({ id: 3, reviewedAt: new Date('2026-05-25T15:00:00Z'), reviewer: 'bob' }),
+    ];
+    const summary = summarizeReview(items);
+    expect(summary.totalItems).toBe(3);
+    expect(summary.reviewedItems).toBe(2);
+    expect(summary.latestReviewedAt).toBe('2026-05-25T15:00:00.000Z');
+    expect(summary.reviewers.sort()).toEqual(['alice', 'bob']);
+  });
+
+  it('pdfSourceHash 고유 목록', () => {
+    const items = [
+      makeItem({ pdfSourceHash: 'abc123' }),
+      makeItem({ pdfSourceHash: 'abc123' }),
+      makeItem({ pdfSourceHash: 'def456' }),
+    ];
+    const summary = summarizeReview(items);
+    expect(summary.pdfSourceHashes.sort()).toEqual(['abc123', 'def456']);
   });
 });

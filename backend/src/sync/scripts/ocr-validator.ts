@@ -58,6 +58,8 @@ export const ALLOWED_RELATIONS = new Set([
 const MONEY_PATTERN = /^-?\d+$/;
 const DATE_PATTERN = /^\d{4}-\d{2}-\d{2}$/;
 const URL_PATTERN = /^https?:\/\//;
+const ISO_DATETIME_PATTERN = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d+)?(Z|[+-]\d{2}:?\d{2})$/;
+const SHA_HEX_PATTERN = /^[a-f0-9]{8,128}$/i;
 
 interface RawItem {
   category?: unknown;
@@ -79,6 +81,10 @@ interface RawCandidate {
   sourceDate?: unknown;
   sourceUrl?: unknown;
   items?: unknown;
+  // 검수 메타 (모든 항목에 동일 값 적용, 후보 단위) — codex PR #377 #6
+  reviewer?: unknown;
+  reviewedAt?: unknown; // ISO 8601 datetime
+  pdfSourceHash?: unknown;
 }
 
 export interface RawInput {
@@ -105,6 +111,10 @@ export interface ValidatedCandidate {
   sourceDate: string | null;
   sourceUrl: string | null;
   items: ValidatedItem[];
+  // 검수 메타
+  reviewer: string | null;
+  reviewedAt: Date | null;
+  pdfSourceHash: string | null;
 }
 
 export class ValidationError extends Error {
@@ -187,6 +197,33 @@ export function validateInput(raw: RawInput): ValidatedCandidate[] {
       }
     }
 
+    // 검수 메타 (codex PR #377 #6) — 모두 optional
+    let reviewer: string | null = null;
+    if (c.reviewer !== undefined && c.reviewer !== null && c.reviewer !== '') {
+      reviewer = vString(c.reviewer, `${ctx}.reviewer`, { max: 100 });
+    }
+    let reviewedAt: Date | null = null;
+    if (c.reviewedAt !== undefined && c.reviewedAt !== null && c.reviewedAt !== '') {
+      const raw = vString(c.reviewedAt, `${ctx}.reviewedAt`);
+      if (!ISO_DATETIME_PATTERN.test(raw)) {
+        throw new ValidationError(`${ctx}.reviewedAt: ISO 8601 datetime 형식이 아닙니다`);
+      }
+      const parsed = new Date(raw);
+      if (Number.isNaN(parsed.getTime())) {
+        throw new ValidationError(`${ctx}.reviewedAt: 유효하지 않은 datetime`);
+      }
+      reviewedAt = parsed;
+    }
+    let pdfSourceHash: string | null = null;
+    if (c.pdfSourceHash !== undefined && c.pdfSourceHash !== null && c.pdfSourceHash !== '') {
+      pdfSourceHash = vString(c.pdfSourceHash, `${ctx}.pdfSourceHash`, { max: 128 });
+      if (!SHA_HEX_PATTERN.test(pdfSourceHash)) {
+        throw new ValidationError(
+          `${ctx}.pdfSourceHash: 8~128자 hex 문자열이어야 합니다 (SHA-256 등)`,
+        );
+      }
+    }
+
     if (!Array.isArray(c.items)) {
       throw new ValidationError(`${ctx}.items: 배열이어야 합니다`);
     }
@@ -241,6 +278,9 @@ export function validateInput(raw: RawInput): ValidatedCandidate[] {
       sourceDate,
       sourceUrl,
       items: validatedItems,
+      reviewer,
+      reviewedAt,
+      pdfSourceHash,
     });
   }
 
