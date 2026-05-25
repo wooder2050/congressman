@@ -113,7 +113,15 @@ export class LocalElectionSyncService {
             district = '';
           } else if (necCode === '4') {
             // 기초단체장 — sigungu만, district는 비움
-            sigungu = normalizeSigungu(row.wiwName);
+            // NEC가 특례시·복합시(수원시, 고양시, 창원시 등 시장 race에서
+            // wiwName에 임의의 한 구 이름을 채워 보내는 경우가 있다 (예: 수원시장
+            // race에 wiwName="수원시팔달구", sggName="수원시"). 이 경우 진짜
+            // race 이름은 sggName에 있으므로 wiwName ≠ sggName이면 sggName을
+            // 우선 사용한다. 광역시 구청장(서울 종로구 등)은 wiwName=sggName이라
+            // 영향받지 않는다.
+            const wiw = normalizeSigungu(row.wiwName);
+            const sgg = normalizeSigungu(row.sggName);
+            sigungu = sgg && sgg !== wiw ? sgg : wiw;
             district = '';
           } else {
             // 5(광역 지역구), 6(기초 지역구) — sigungu + district 둘 다
