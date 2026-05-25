@@ -2,42 +2,49 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import type { CandidateAssetItem, LocalElectionCandidate, Party } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { RedisService } from '../redis/redis.service';
-import { pickAssetSource } from '../elections/asset-source.helper';
+import {
+  mapAssetItemForApi,
+  pickAssetSource,
+  sumItemValues,
+  summarizeReview,
+} from '../elections/asset-source.helper';
 import { getLawmakerSummary } from '../elections/lawmaker-stats.helper';
 import { ALLOWED_SIDO_LIST } from './region-allowlist';
 
-/** assetItems + availableSources + itemsBySource 묶음 빌드 (codex #2, UI 토글용) */
-function buildAssetSection(items: CandidateAssetItem[]) {
+/**
+ * assetItems + availableSources + itemsBySource + 검수 메타 + 합계 대조 (codex #2, #6)
+ * declaredTotal과 항목 합계를 비교해 일치 여부도 함께 내려줌
+ */
+function buildAssetSection(items: CandidateAssetItem[], declaredTotal: bigint | null) {
   const picked = pickAssetSource(items);
-  const itemsBySource: Record<string, ReturnType<typeof mapAssetItem>[]> = {};
+  const itemsBySource: Record<string, ReturnType<typeof mapAssetItemForApi>[]> = {};
+  const reviewBySource: Record<string, ReturnType<typeof summarizeReview>> = {};
+  const totalsBySource: Record<string, string> = {};
   for (const [src, list] of Object.entries(picked.itemsBySource)) {
-    itemsBySource[src] = list.map(mapAssetItem);
+    itemsBySource[src] = list.map(mapAssetItemForApi);
+    reviewBySource[src] = summarizeReview(list);
+    totalsBySource[src] = sumItemValues(list);
   }
+
+  // 합계 대조: 선택된 source의 합계와 declaredTotal 비교 (BigInt 단위 원)
+  const selectedItemsTotal = picked.selectedSource ? totalsBySource[picked.selectedSource] : '0';
+  let totalsMatch: boolean | null = null;
+  if (declaredTotal !== null && picked.selectedSource) {
+    try {
+      totalsMatch = BigInt(selectedItemsTotal) === declaredTotal;
+    } catch {
+      totalsMatch = null;
+    }
+  }
+
   return {
-    assetItems: picked.selected.map(mapAssetItem),
+    assetItems: picked.selected.map(mapAssetItemForApi),
     assetSelectedSource: picked.selectedSource,
     assetAvailableSources: picked.availableSources,
     assetItemsBySource: itemsBySource,
-  };
-}
-
-/** 후보자 자산 항목 → API 응답 매핑 (BigInt → string) */
-function mapAssetItem(item: CandidateAssetItem) {
-  return {
-    id: item.id,
-    category: item.category,
-    subCategory: item.subCategory,
-    relation: item.relation,
-    description: item.description,
-    currentValue: item.currentValue !== null ? item.currentValue.toString() : null,
-    previousValue: item.previousValue !== null ? item.previousValue.toString() : null,
-    increaseValue: item.increaseValue !== null ? item.increaseValue.toString() : null,
-    decreaseValue: item.decreaseValue !== null ? item.decreaseValue.toString() : null,
-    marketPrice: item.marketPrice !== null ? item.marketPrice.toString() : null,
-    changeReason: item.changeReason,
-    source: item.source,
-    sourceUrl: item.sourceUrl,
-    sourceDate: item.sourceDate,
+    assetReviewBySource: reviewBySource,
+    assetTotalsBySource: totalsBySource,
+    assetTotalsMatch: totalsMatch, // 선택된 source의 항목 합계와 신고 총액 일치 여부 (null = 비교 불가)
   };
 }
 
@@ -426,7 +433,7 @@ export class LocalElectionsService {
         displayName: candidate.race.displayName,
       },
       member,
-      ...buildAssetSection(candidate.assetItems),
+      ...buildAssetSection(candidate.assetItems, candidate.assetDeclared),
     };
 
     await this.redis.set(key, result, getCacheTTL(candidate.race.election.status));

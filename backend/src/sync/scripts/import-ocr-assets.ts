@@ -90,6 +90,9 @@ async function main() {
             sourceUrl: cand.sourceUrl,
             sourceDate: cand.sourceDate,
             rawJson: item as object,
+            reviewer: cand.reviewer,
+            reviewedAt: cand.reviewedAt,
+            pdfSourceHash: cand.pdfSourceHash,
           },
         });
         totalInserted++;

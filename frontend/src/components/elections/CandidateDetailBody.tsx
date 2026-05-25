@@ -33,6 +33,19 @@ export interface CandidateView extends CandidateDisclosure {
   assetItems?: CandidateAssetItem[];
   /** source별 전체 항목 — 클라이언트 토글용 */
   assetItemsBySource?: Record<string, CandidateAssetItem[]>;
+  /** source별 검수 메타 요약 */
+  assetReviewBySource?: Record<
+    string,
+    {
+      totalItems: number;
+      reviewedItems: number;
+      latestReviewedAt: string | null;
+      reviewers: string[];
+      pdfSourceHashes: string[];
+    }
+  >;
+  /** 선택된 source의 항목 합계와 신고총액 일치 여부 */
+  assetTotalsMatch?: boolean | null;
   /** PDF→PNG 변환 미러 (Supabase Storage) — 인라인 미리보기용 */
   assetPagePngUrls?: string[];
 }
@@ -231,6 +244,8 @@ export default function CandidateDetailBody({ candidate: c, electionTypeLabel, m
           <CandidateAssetBreakdown
             items={c.assetItems}
             itemsBySource={c.assetItemsBySource}
+            reviewBySource={c.assetReviewBySource}
+            totalsMatch={c.assetTotalsMatch}
             declaredTotal={c.assetDeclared}
           />
         )}

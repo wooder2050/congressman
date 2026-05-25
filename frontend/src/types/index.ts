@@ -555,6 +555,15 @@ export interface CandidateAssetSourceSummary {
   itemCount: number;
 }
 
+/** source별 검수 메타 요약 — OCR 등 자동 추출 데이터의 검수 추적 */
+export interface CandidateAssetReviewSummary {
+  totalItems: number;
+  reviewedItems: number;
+  latestReviewedAt: string | null;
+  reviewers: string[];
+  pdfSourceHashes: string[];
+}
+
 /** 후보자 재산 항목별 상세 — 한 행 = 한 자산 (opengirok/PETI/OCR/manual) */
 export interface CandidateAssetItem {
   id: number;
@@ -578,6 +587,10 @@ export interface CandidateAssetItem {
   source: AssetSource | string;
   sourceUrl: string | null;
   sourceDate: string | null;
+  /** 검수 메타 — null이면 미검수 */
+  reviewedAt?: string | null;
+  reviewer?: string | null;
+  pdfSourceHash?: string | null;
 }
 
 /** 공직선거법 제49조 후보자정보공개자료 요약 5종 (출처: 중앙선거관리위원회) */
@@ -624,6 +637,12 @@ export interface ElectionCandidate extends CandidateDisclosure {
   assetAvailableSources?: CandidateAssetSourceSummary[];
   /** source별 전체 항목 — 클라이언트 토글용 (모든 source 포함) */
   assetItemsBySource?: Record<string, CandidateAssetItem[]>;
+  /** source별 검수 메타 요약 */
+  assetReviewBySource?: Record<string, CandidateAssetReviewSummary>;
+  /** source별 항목 합계 (원 단위 BigInt 문자열) */
+  assetTotalsBySource?: Record<string, string>;
+  /** 선택된 source의 항목 합계와 신고 총액 일치 여부 (null = 비교 불가) */
+  assetTotalsMatch?: boolean | null;
 }
 
 // ====== 지방선거 ======
@@ -715,6 +734,12 @@ export interface LocalElectionCandidateDetail extends CandidateDisclosure {
   assetAvailableSources?: CandidateAssetSourceSummary[];
   /** source별 전체 항목 — 클라이언트 토글용 (모든 source 포함) */
   assetItemsBySource?: Record<string, CandidateAssetItem[]>;
+  /** source별 검수 메타 요약 */
+  assetReviewBySource?: Record<string, CandidateAssetReviewSummary>;
+  /** source별 항목 합계 (원 단위 BigInt 문자열) */
+  assetTotalsBySource?: Record<string, string>;
+  /** 선택된 source의 항목 합계와 신고 총액 일치 여부 (null = 비교 불가) */
+  assetTotalsMatch?: boolean | null;
 }
 
 export interface LocalElectionRaceDetail {

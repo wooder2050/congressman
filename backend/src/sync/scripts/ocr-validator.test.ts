@@ -167,6 +167,38 @@ describe('validateInput', () => {
   it('candidates 빈 배열 → 빈 결과 (오류 아님)', () => {
     expect(validateInput({ candidates: [] })).toEqual([]);
   });
+
+  // 3-C 검수 메타데이터 (codex PR #377 #6)
+  it('reviewer/reviewedAt/pdfSourceHash 정상 입력 → 통과', () => {
+    const withReview = {
+      ...validCandidate,
+      reviewer: 'manual:wooder2050',
+      reviewedAt: '2026-05-25T10:00:00Z',
+      pdfSourceHash: 'a3b1c2d4e5f60718abcdef0123456789',
+    };
+    const result = validateInput({ candidates: [withReview] });
+    expect(result[0].reviewer).toBe('manual:wooder2050');
+    expect(result[0].reviewedAt).toBeInstanceOf(Date);
+    expect(result[0].reviewedAt?.toISOString()).toBe('2026-05-25T10:00:00.000Z');
+    expect(result[0].pdfSourceHash).toBe('a3b1c2d4e5f60718abcdef0123456789');
+  });
+
+  it('reviewer/reviewedAt/pdfSourceHash 누락 → null로 통과', () => {
+    const result = validateInput({ candidates: [validCandidate] });
+    expect(result[0].reviewer).toBeNull();
+    expect(result[0].reviewedAt).toBeNull();
+    expect(result[0].pdfSourceHash).toBeNull();
+  });
+
+  it('잘못된 reviewedAt 형식 → ValidationError', () => {
+    const bad = { ...validCandidate, reviewedAt: '2026-05-25 10:00:00' };
+    expect(() => validateInput({ candidates: [bad] })).toThrow(/ISO 8601/);
+  });
+
+  it('pdfSourceHash가 hex가 아니면 → ValidationError', () => {
+    const bad = { ...validCandidate, pdfSourceHash: 'NOT-HEX!!' };
+    expect(() => validateInput({ candidates: [bad] })).toThrow(/hex 문자열/);
+  });
 });
 
 describe('enum 일관성', () => {

@@ -1,5 +1,73 @@
 import type { CandidateAssetItem } from '@prisma/client';
 
+/** 자산 항목 → API 응답 매핑 (BigInt → string, 검수 메타 포함) */
+export function mapAssetItemForApi(item: CandidateAssetItem) {
+  return {
+    id: item.id,
+    category: item.category,
+    subCategory: item.subCategory,
+    relation: item.relation,
+    description: item.description,
+    currentValue: item.currentValue !== null ? item.currentValue.toString() : null,
+    previousValue: item.previousValue !== null ? item.previousValue.toString() : null,
+    increaseValue: item.increaseValue !== null ? item.increaseValue.toString() : null,
+    decreaseValue: item.decreaseValue !== null ? item.decreaseValue.toString() : null,
+    marketPrice: item.marketPrice !== null ? item.marketPrice.toString() : null,
+    changeReason: item.changeReason,
+    source: item.source,
+    sourceUrl: item.sourceUrl,
+    sourceDate: item.sourceDate,
+    reviewedAt: item.reviewedAt ? item.reviewedAt.toISOString() : null,
+    reviewer: item.reviewer,
+    pdfSourceHash: item.pdfSourceHash,
+  };
+}
+
+/**
+ * 항목 배열의 currentValue 합계 (BigInt → string)
+ * null은 0 취급. 음수(채무)는 차감.
+ */
+export function sumItemValues(items: CandidateAssetItem[]): string {
+  let total = BigInt(0);
+  for (const it of items) {
+    if (it.currentValue !== null) total += it.currentValue;
+  }
+  return total.toString();
+}
+
+/**
+ * 검수 메타 요약: 한 source 안에서 검수된 항목 비율·가장 최근 검수일·pdfSourceHash 등
+ */
+interface SourceReviewSummary {
+  totalItems: number;
+  reviewedItems: number;
+  latestReviewedAt: string | null;
+  reviewers: string[]; // 고유 검수자 목록
+  pdfSourceHashes: string[]; // 고유 PDF hash 목록 (보통 1개)
+}
+
+export function summarizeReview(items: CandidateAssetItem[]): SourceReviewSummary {
+  const reviewers = new Set<string>();
+  const hashes = new Set<string>();
+  let reviewedItems = 0;
+  let latestReviewedAt: Date | null = null;
+  for (const it of items) {
+    if (it.reviewedAt) {
+      reviewedItems++;
+      if (!latestReviewedAt || it.reviewedAt > latestReviewedAt) latestReviewedAt = it.reviewedAt;
+    }
+    if (it.reviewer) reviewers.add(it.reviewer);
+    if (it.pdfSourceHash) hashes.add(it.pdfSourceHash);
+  }
+  return {
+    totalItems: items.length,
+    reviewedItems,
+    latestReviewedAt: latestReviewedAt ? latestReviewedAt.toISOString() : null,
+    reviewers: [...reviewers],
+    pdfSourceHashes: [...hashes],
+  };
+}
+
 /**
  * 후보자 자산 항목 source 우선순위·선택 헬퍼
  *
