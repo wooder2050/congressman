@@ -1,7 +1,13 @@
 import Image from "next/image";
 import Link from "next/link";
-import type { CandidateDisclosure, CandidateLawmakerSummary, CandidatePledge } from "@/types";
+import type {
+  CandidateAssetItem,
+  CandidateDisclosure,
+  CandidateLawmakerSummary,
+  CandidatePledge,
+} from "@/types";
 import { proxyPhotoUrl } from "@/lib/photo";
+import CandidateAssetBreakdown from "./CandidateAssetBreakdown";
 import CandidateDisclosureSection from "./CandidateDisclosureSection";
 
 /** 두 후보자 타입(재보궐·지방선거)이 공유하는 표시용 필드 */
@@ -22,6 +28,8 @@ export interface CandidateView extends CandidateDisclosure {
   voteCount?: number | null;
   voteRate?: number | null;
   isWinner?: boolean;
+  /** 항목별 재산 명세 — 22대 의원 출신은 opengirok 데이터로 채워짐 */
+  assetItems?: CandidateAssetItem[];
 }
 
 /** "19700214" → "1970.02.14", 형식이 다르면 원본 반환 */
@@ -212,6 +220,11 @@ export default function CandidateDetailBody({ candidate: c, electionTypeLabel, m
       <section className="rounded-xl border border-(--color-border-primary) bg-(--color-bg-primary) p-4 sm:p-5">
         <h2 className="text-base font-bold text-(--color-text-primary)">후보자정보공개자료</h2>
         <CandidateDisclosureSection data={c} />
+
+        {/* 항목별 재산 명세 — opengirok 등 외부 데이터 매칭 시 */}
+        {c.assetItems && c.assetItems.length > 0 && (
+          <CandidateAssetBreakdown items={c.assetItems} declaredTotal={c.assetDeclared} />
+        )}
 
         {/* 재산신고서 원문 PDF — NEC 제출 서류 전문 (페이지별) */}
         {c.assetPdfUrls && c.assetPdfUrls.length > 0 && (

@@ -347,8 +347,9 @@ model Candidate {
   electionCount     Int? // 입후보 횟수
   assetPdfUrls      String[] @default([]) // 재산신고서 원문 PDF URL 목록 (NEC, 페이지순)
 
-  district ElectionDistrict @relation(fields: [districtId], references: [id])
-  party    Party?           @relation(fields: [partyId], references: [id])
+  district   ElectionDistrict     @relation(fields: [districtId], references: [id])
+  party      Party?               @relation(fields: [partyId], references: [id])
+  assetItems CandidateAssetItem[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -427,8 +428,9 @@ model LocalElectionCandidate {
   electionCount     Int? // 입후보 횟수
   assetPdfUrls      String[] @default([]) // 재산신고서 원문 PDF URL 목록 (NEC, 페이지순)
 
-  race  LocalElectionRace @relation(fields: [raceId], references: [id])
-  party Party?            @relation(fields: [partyId], references: [id])
+  race       LocalElectionRace    @relation(fields: [raceId], references: [id])
+  party      Party?               @relation(fields: [partyId], references: [id])
+  assetItems CandidateAssetItem[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -436,6 +438,48 @@ model LocalElectionCandidate {
   @@unique([raceId, name])
   @@index([raceId])
   @@index([partyId])
+}
+
+// ====== 후보자 재산 항목별 상세 ======
+// 한 행 = 하나의 자산 항목 (예: "조국 + 본인 + 건물 + 방배삼익아파트 + 16.74억")
+// 여러 소스(opengirok 국회공보, PETI 인사혁신처, NEC PDF OCR, manual)를 동일 스키마로 적재
+model CandidateAssetItem {
+  id Int @id @default(autoincrement())
+
+  // Polymorphic relation: 둘 중 하나만 채워짐
+  localCandidateId Int? // 지방선거 후보
+  byCandidateId    Int? // 재보궐 후보
+
+  // 자산 분류
+  category    String // 토지·건물·예금·증권·채무·자동차·정치자금예금·고지거부·채권·가상자산·회원권·현금·골동품·출자지분·지식재산권·보석·기부·금
+  subCategory String? // 재산의 종류 (예: 아파트·임야·상장주식·자동차)
+  relation    String // 본인·배우자·부·모·장남·차남·장녀·차녀·삼남·삼녀·손자1·손녀1·조모 등
+  description String // 소재지·면적·종목·계좌 등 상세 명세 (원본 텍스트 보존)
+
+  // 금액 (원 단위, 천원→원 변환 후 저장)
+  currentValue  BigInt? // 현재가액 / 신고가액
+  previousValue BigInt? // 종전가액 (opengirok 정기변동신고에만)
+  increaseValue BigInt? // 증가액
+  decreaseValue BigInt? // 감소액
+  marketPrice   BigInt? // 실거래가격
+  changeReason  String? // 변동사유 (예: "가액변동", "신규취득")
+
+  // 메타데이터
+  source     String // "opengirok" | "peti" | "nec_ocr" | "manual"
+  sourceUrl  String? // 원본 URL (구글시트 URL, PETI 페이지 URL 등)
+  sourceDate String? // 신고/공보 발행일 (YYYY-MM-DD)
+  rawJson    Json? // 원본 행 전체(스키마 변경 대비)
+
+  localCandidate LocalElectionCandidate? @relation(fields: [localCandidateId], references: [id], onDelete: Cascade)
+  byCandidate    Candidate?              @relation(fields: [byCandidateId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([localCandidateId])
+  @@index([byCandidateId])
+  @@index([source])
+  @@index([category])
 }
 
 // ====== 유저 환경설정 ======

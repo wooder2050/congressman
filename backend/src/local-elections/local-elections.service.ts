@@ -1,9 +1,29 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import type { LocalElectionCandidate, Party } from '@prisma/client';
+import type { CandidateAssetItem, LocalElectionCandidate, Party } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { RedisService } from '../redis/redis.service';
 import { getLawmakerSummary } from '../elections/lawmaker-stats.helper';
 import { ALLOWED_SIDO_LIST } from './region-allowlist';
+
+/** 후보자 자산 항목 → API 응답 매핑 (BigInt → string) */
+function mapAssetItem(item: CandidateAssetItem) {
+  return {
+    id: item.id,
+    category: item.category,
+    subCategory: item.subCategory,
+    relation: item.relation,
+    description: item.description,
+    currentValue: item.currentValue !== null ? item.currentValue.toString() : null,
+    previousValue: item.previousValue !== null ? item.previousValue.toString() : null,
+    increaseValue: item.increaseValue !== null ? item.increaseValue.toString() : null,
+    decreaseValue: item.decreaseValue !== null ? item.decreaseValue.toString() : null,
+    marketPrice: item.marketPrice !== null ? item.marketPrice.toString() : null,
+    changeReason: item.changeReason,
+    source: item.source,
+    sourceUrl: item.sourceUrl,
+    sourceDate: item.sourceDate,
+  };
+}
 
 function getCacheTTL(status: string): number {
   switch (status) {
@@ -364,6 +384,9 @@ export class LocalElectionsService {
       include: {
         party: true,
         race: { include: { election: { select: { status: true } } } },
+        assetItems: {
+          orderBy: [{ category: 'asc' }, { relation: 'asc' }, { id: 'asc' }],
+        },
       },
     });
 
@@ -386,6 +409,7 @@ export class LocalElectionsService {
         displayName: candidate.race.displayName,
       },
       member,
+      assetItems: candidate.assetItems.map(mapAssetItem),
     };
 
     await this.redis.set(key, result, getCacheTTL(candidate.race.election.status));
