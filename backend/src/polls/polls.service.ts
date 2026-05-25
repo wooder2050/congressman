@@ -6,7 +6,7 @@ import { RedisService } from '../redis/redis.service';
 const DEFAULT_TTL_SECONDS = 3600;
 const NESDC_VIEW_BASE = 'https://www.nesdc.go.kr/portal/bbs/B0000005/view.do';
 
-export type PollsListFilter = {
+type PollsListFilter = {
   electionCategory?: string; // '제9회 전국동시지방선거' | '2026년 재·보궐선거'
   sido?: string;
   agency?: string;
