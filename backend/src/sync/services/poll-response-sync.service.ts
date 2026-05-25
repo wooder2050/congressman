@@ -134,7 +134,7 @@ export class PollResponseSyncService {
           for (const q of questions) {
             // 지방선거: race 매칭
             const firstCandidate = q.responses.find((r) => r.candidateName)?.candidateName ?? null;
-            const raceId = isByElection
+            let raceId = isByElection
               ? null
               : await matchRaceFromLabel(this.prisma, {
                   raceLabel: q.raceLabel ?? '',
@@ -142,6 +142,12 @@ export class PollResponseSyncService {
                   sigungu: poll.sigungu,
                   candidateName: firstCandidate,
                 });
+
+            // HRI/YRK 같이 raceLabel·candidateName 둘 다 비어있는 파서용 fallback:
+            // pollName에서 표 종류 추론 후 sido + 표 종류로 race 매칭.
+            if (!isByElection && raceId === null) {
+              raceId = await this.fallbackRaceMatchFromPoll(poll);
+            }
 
             if (raceId !== null) {
               await this.prisma.pollRace.upsert({
@@ -309,5 +315,49 @@ export class PollResponseSyncService {
       select: { id: true },
     });
     return cand?.id ?? null;
+  }
+
+  /**
+   * raceLabel·candidateName이 비어있는 파서(HRI·YRK)용 fallback:
+   * Poll.pollName에 "광역단체장"/"교육감"/"기초단체장" 키워드가 있으면
+   * Poll.sido로 해당 타입 race를 찾는다. 광역단체장·교육감은 sigungu='' 단일,
+   * 기초단체장은 Poll.sigungu와 매칭.
+   */
+  private async fallbackRaceMatchFromPoll(poll: {
+    sido: string;
+    sigungu: string;
+    pollName: string;
+  }): Promise<number | null> {
+    let electionType: string | null = null;
+    if (/광역단체장/.test(poll.pollName)) electionType = 'governor';
+    else if (/교육감/.test(poll.pollName)) electionType = 'superintendent';
+    else if (/기초단체장/.test(poll.pollName)) electionType = 'mayor';
+    if (!electionType) return null;
+
+    if (electionType === 'governor' || electionType === 'superintendent') {
+      const race = await this.prisma.localElectionRace.findFirst({
+        where: {
+          electionId: 'local-2026',
+          electionType,
+          sido: poll.sido,
+          sigungu: '',
+        },
+        select: { id: true },
+      });
+      return race?.id ?? null;
+    }
+
+    // mayor: sigungu 매칭 (Poll.sigungu가 race 시·군·구명과 일치해야 함)
+    if (!poll.sigungu || poll.sigungu === '전체') return null;
+    const race = await this.prisma.localElectionRace.findFirst({
+      where: {
+        electionId: 'local-2026',
+        electionType: 'mayor',
+        sido: poll.sido,
+        sigungu: poll.sigungu,
+      },
+      select: { id: true },
+    });
+    return race?.id ?? null;
   }
 }
