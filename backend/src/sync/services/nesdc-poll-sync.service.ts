@@ -291,7 +291,7 @@ export class NesdcPollSyncService {
           status: { in: ['pending', 'not_yet_public', 'failed'] },
           kind: { in: kinds },
           poll: {
-            agency: { in: options.agencies },
+            ...(options.agencies.length > 0 ? { agency: { in: options.agencies } } : {}),
             ...(options.electionCategory ? { electionCategory: options.electionCategory } : {}),
           },
         },
@@ -301,7 +301,8 @@ export class NesdcPollSyncService {
       });
 
       console.log(
-        `[NesdcPdfDownload] ${candidates.length} attachments pending across ${options.agencies.length} agencies`,
+        `[NesdcPdfDownload] ${candidates.length} attachments pending` +
+          (options.agencies.length > 0 ? ` across ${options.agencies.length} agencies` : ''),
       );
 
       let processed = 0;

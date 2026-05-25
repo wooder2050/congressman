@@ -172,6 +172,41 @@ function parseTable(params: {
 }
 
 /**
+ * 같은 raceLabel을 가진 여러 표(예: KSOI는 본문 + 부록)를 어떻게 dedup할지.
+ *
+ * 단순 "마지막 표"는 KSOI 평택시 케이스에서 잘못된 결과를 낸다:
+ *   - 한 PDF에 같은 정당의 후보 2명(예: 김용남·김용)이 있고
+ *   - 둘 다 각자 다른 부속 표(같은 raceLabel)의 col=0 자기-동치 행을 가짐
+ *   - 단순 dedup이면 두 번째 표의 col=0("김용")으로 덮어써짐
+ *
+ * 해결: 같은 raceLabel의 question들을 union — responses를 합치되 candidateName이 다르면
+ * 다른 행으로 모두 보존. 같은 candidateName이 있으면 첫 번째만 유지.
+ */
+function mergeQuestionsByRaceLabel(qs: ParsedQuestion[]): ParsedQuestion[] {
+  const groups = new Map<string, ParsedQuestion>();
+  for (const q of qs) {
+    const key = `${q.questionType}:${q.raceLabel}`;
+    const existing = groups.get(key);
+    if (!existing) {
+      groups.set(key, { ...q, responses: [...q.responses] });
+      continue;
+    }
+    // union responses by candidateName (or partyName if no candidate)
+    const seen = new Set(
+      existing.responses.map((r) => r.candidateName ?? r.partyName ?? '').filter(Boolean),
+    );
+    for (const r of q.responses) {
+      const k = r.candidateName ?? r.partyName ?? '';
+      if (k && !seen.has(k)) {
+        existing.responses.push(r);
+        seen.add(k);
+      }
+    }
+  }
+  return Array.from(groups.values());
+}
+
+/**
  * 자기-동치 행 + 전체 행 기반 후보·정당 지지율 추출.
  */
 export function extractByColumnMap(lines: string[], detector: TableDetector): ParsedQuestion[] {
@@ -206,11 +241,7 @@ export function extractByColumnMap(lines: string[], detector: TableDetector): Pa
     }
   }
 
-  // 중복 제거: 같은 (questionType, raceLabel)이면 마지막 표만 유지
-  const dedup = new Map<string, ParsedQuestion>();
-  for (const q of questions) {
-    const key = `${q.questionType}:${q.raceLabel}`;
-    dedup.set(key, q);
-  }
-  return Array.from(dedup.values());
+  // 같은 (questionType, raceLabel)을 가진 표들의 응답을 union
+  // (같은 후보가 여러 표에서 자기-동치 행을 가질 수 있음 — 본문 + 부록 등)
+  return mergeQuestionsByRaceLabel(questions);
 }
