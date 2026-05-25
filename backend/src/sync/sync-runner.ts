@@ -260,6 +260,8 @@ async function main() {
               '(주)엠브레인퍼블릭',
               '(주)코리아정보리서치',
               '케이에스오아이 주식회사(한국사회여론연구소)',
+              '(주)한국리서치',
+              '(주)여론조사꽃',
             ];
         await new NesdcPollSyncService(prisma, syncLog).downloadPdfsByAgency({
           agencies,

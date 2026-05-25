@@ -24,7 +24,7 @@
 import type { ParsedQuestion, ParsedResponse, PollPdfParser } from './types';
 
 const TABLE_HEADER_RE =
-  /\[\s*표\s*\d+\s*\][^\n]*?(?:국회의원\s*선거\s*지지후보|국회의원\s*선거\s*후보\s*지지|보궐선거\s*후보\s*지지)/;
+  /\[\s*표\s*\d+\s*\][^\n]*?(?:국회의원\s*선거\s*지지후보|국회의원\s*선거\s*후보\s*지지|보궐선거\s*후보\s*지지|광역단체장\s*지지후보|광역단체장\s*후보\s*지지|기초단체장\s*지지후보|기초단체장\s*후보\s*지지|교육감\s*지지후보|교육감\s*후보\s*지지|도지사\s*지지후보|시장\s*지지후보|군수\s*지지후보)/;
 const QUESTION_RE = /\[\s*문\s*\d+\s*\]\s*([^\n]+?(?:보궐선거|선거)[^\n]+?)$/;
 const TOTAL_ROW_RE = /^\s*▣?\s*전\s*체\s*▣?\s+\((\d+)\)\s+\((\d+)\)\s+([\d.\s]+)\s*$/;
 
@@ -88,12 +88,17 @@ export const hriParser: PollPdfParser = {
       }
       if (!totalRow) continue;
 
+      // 후보 컬럼 수 추정 — 보궐선거(기타 후보 포함)·광역단체장(기타 후보 없음) 둘 다 처리.
+      // 마지막 컬럼이 100(계)이면 -1, 그 다음 -2(없다·모름) → 후보 컬럼 수.
+      // sync가 DB 후보 수와 맞추어 trim하므로 다소 넉넉히 추정해도 OK.
       const candidateCount = estimateCandidateColumnCount(totalRow.numbers);
       if (candidateCount === 0) continue;
 
       // 후보별 응답 생성 — candidateName/partyName은 null (sync가 DB로 채움)
+      // 첫 N개 + 1개 더(기타 후보 가능성)까지 보내 sync가 trim.
       const responses: ParsedResponse[] = [];
-      for (let k = 0; k < candidateCount; k++) {
+      const upper = Math.min(totalRow.numbers.length - 1, candidateCount + 1);
+      for (let k = 0; k < upper; k++) {
         const rate = totalRow.numbers[k];
         if (!Number.isFinite(rate)) continue;
         responses.push({
