@@ -213,4 +213,10 @@ describe('enum 일관성', () => {
       expect(ALLOWED_RELATIONS.has(rel)).toBe(true);
     }
   });
+
+  it('4번째 자녀 및 외조부모 관계 포함 (다자녀 후보 OCR 대응)', () => {
+    for (const rel of ['사남', '사녀', '외조부', '외조모']) {
+      expect(ALLOWED_RELATIONS.has(rel)).toBe(true);
+    }
+  });
 });
