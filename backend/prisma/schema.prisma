@@ -37,6 +37,7 @@ model Party {
   candidates        Candidate[]
 
   localElectionCandidates LocalElectionCandidate[]
+  pollResponses           PollResponse[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -392,6 +393,7 @@ model LocalElectionRace {
 
   election   LocalElection            @relation(fields: [electionId], references: [id])
   candidates LocalElectionCandidate[]
+  pollRaces  PollRace[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -436,9 +438,10 @@ model LocalElectionCandidate {
   assetPdfSyncStatus String? // "pending" | "completed" | "failed" | "stale" (URL 변경 감지)
   assetPdfSyncError  String? // 실패 사유
 
-  race       LocalElectionRace    @relation(fields: [raceId], references: [id])
-  party      Party?               @relation(fields: [partyId], references: [id])
-  assetItems CandidateAssetItem[]
+  race          LocalElectionRace    @relation(fields: [raceId], references: [id])
+  party         Party?               @relation(fields: [partyId], references: [id])
+  assetItems    CandidateAssetItem[]
+  pollResponses PollResponse[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -493,6 +496,162 @@ model CandidateAssetItem {
   @@index([byCandidateId])
   @@index([source])
   @@index([category])
+}
+
+// ====== 여론조사 (NESDC) ======
+// 중앙선거여론조사심의위원회 등록 여론조사. 한 등록(Poll) = 메타 + 첨부(N) + 대상 선거구(N) + 응답률(N) 구조
+
+model Poll {
+  id Int @id @default(autoincrement())
+
+  // NESDC 식별자
+  nttId          String  @unique // 상세 URL의 nttId (예: "19039")
+  registrationNo String? // 등록번호 (예: "16825") — nttId와 별개로 표기됨
+
+  // 선거 분류
+  electionCategory String // NESDC 선거구분 원문 (예: "제9회 전국동시지방선거", "2026년 재·보궐선거", "전국")
+  electionId       String? // LocalElection.id (예: "local-2026") — 매칭 가능할 때만 채움
+
+  // 조사 메타
+  pollName  String // NESDC "여론조사 명칭(지역)" 원문
+  agency    String // 조사기관명
+  client    String // 조사의뢰자
+  sido      String // 조사지역 시·도 (예: "강원특별자치도", "전국")
+  sigungu   String @default("") // 시·군·구 (있을 때만)
+  surveyStartedAt DateTime? // 조사 시작 일시
+  surveyEndedAt   DateTime? // 조사 종료 일시
+  surveyDays      Int? // 조사일수
+  surveyMinutes   Int? // 조사시간(분)
+
+  // 표본 / 방법
+  sampleSize          Int? // 조사완료 사례수(명)
+  weightedSampleSize  Int? // 가중값 적용 기준 사례수(명)
+  surveyMethod        String? // "무선전화면접", "무선 ARS" 등
+  samplingFrame       String? // "무선전화번호 휴대전화 가상번호" 등
+  contactRate         Float? // 접촉률 (%)
+  responseRate        Float? // 응답률 (%)
+  aaporResponseRate   Float? // 국제기준 응답률 (계산: contactRate × responseRate / 100)
+  marginOfError       Float? // 표본오차 (±%P)
+  confidenceLevel     Float? // 신뢰수준 (%, 통상 95)
+  weightingMethod     String? // 가중값 산출 및 적용방법
+  weightingTarget     String? // 기준 인구통계 (예: "2026년 4월말 행정안전부 주민등록 인구 기준")
+
+  // 공표
+  publishMedia        String? // 공표·보도 매체 (예: "방송")
+  publishMediaName    String? // 공표·보도 매체명
+  publishedAt         DateTime? // 최초 공표·보도 지정일시
+  registeredAt        DateTime // 등록일
+
+  // 본문 원문 (디버깅용)
+  rawHtml String? // 상세 페이지 HTML 원본 일부 (스키마 변화 추적용)
+
+  // 처리 상태
+  parseStatus String  @default("pending") // "pending" | "meta_only" | "parsed" | "failed"
+  parseError  String?
+
+  attachments PollAttachment[]
+  races       PollRace[]
+  responses   PollResponse[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([electionCategory])
+  @@index([electionId])
+  @@index([sido, sigungu])
+  @@index([registeredAt])
+  @@index([agency])
+}
+
+model PollAttachment {
+  id Int @id @default(autoincrement())
+
+  pollId Int
+
+  kind        String // "questionnaire" (전체질문지) | "result" (결과분석) | "other"
+  fileName    String
+  // NESDC FileDown.do 파라미터 (디코딩 전 원문 유지)
+  atchFileId  String
+  fileSn      String
+  bbsId       String  @default("B0000005")
+  bbsKey      String
+  downloadUrl String // 조립된 풀 URL
+
+  // Supabase Storage 미러
+  storagePath String? // "nesdc-polls/{nttId}/{fileName}"
+  storageUrl  String? // public URL
+  sha256      String? // 파일 해시 (재다운로드 감지)
+  byteSize    Int?
+
+  // 다운로드 상태
+  status        String  @default("pending") // "pending" | "downloaded" | "failed" | "not_yet_public"
+  errorMessage  String?
+  downloadedAt  DateTime?
+
+  poll Poll @relation(fields: [pollId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([pollId, atchFileId, fileSn])
+  @@index([pollId])
+  @@index([status])
+}
+
+// Poll ↔ LocalElectionRace M:N (한 여론조사가 광역+기초 등 복수 선거구를 다루는 경우 있음)
+model PollRace {
+  id Int @id @default(autoincrement())
+
+  pollId Int
+  raceId Int
+
+  poll Poll              @relation(fields: [pollId], references: [id], onDelete: Cascade)
+  race LocalElectionRace @relation(fields: [raceId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+
+  @@unique([pollId, raceId])
+  @@index([raceId])
+}
+
+// PDF 파싱 결과: 후보별 / 정당별 지지율 행
+model PollResponse {
+  id Int @id @default(autoincrement())
+
+  pollId Int
+
+  // 어떤 선거에 대한 답인가
+  raceId      Int? // LocalElectionRace.id (매칭 실패 시 null)
+  questionType String // "candidate_support" | "party_support" | "approval" | "turnout_intent" | "other"
+  questionText String? // 원문 질문 ("Q2. 귀하께서는 경남도지사 선거에 출마하는...")
+
+  // 응답 대상
+  candidateId Int? // LocalElectionCandidate.id (자동 매칭)
+  candidateName String? // 매칭 실패 시 원문 보존 (예: "더불어민주당 김경수")
+  partyId     String? // Party.id
+  partyName   String? // 매칭 실패 시 원문 보존
+
+  // 응답률
+  subgroup    String  @default("전체") // "전체" | "남성" | "20대" | "1권역" 등
+  subgroupKey String  @default("total") // 정규화 키 ("total" | "gender:male" 등)
+  rate        Float // 지지율 (%)
+  sampleSize  Int? // 해당 subgroup 가중값 적용 사례수
+
+  // 원본 위치 추적 (재파싱용)
+  attachmentId Int? // 어느 PollAttachment에서 추출됐는지
+  pageNumber   Int? // PDF 페이지 번호
+  rawText      String? // 추출 원문 라인 (디버그)
+
+  poll       Poll                    @relation(fields: [pollId], references: [id], onDelete: Cascade)
+  candidate  LocalElectionCandidate? @relation(fields: [candidateId], references: [id], onDelete: SetNull)
+  party      Party?                  @relation(fields: [partyId], references: [id], onDelete: SetNull)
+
+  createdAt DateTime @default(now())
+
+  @@index([pollId, questionType])
+  @@index([raceId])
+  @@index([candidateId])
+  @@index([partyId])
 }
 
 // ====== 유저 환경설정 ======
