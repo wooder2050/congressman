@@ -1,10 +1,12 @@
 import {
   BadRequestException,
+  Body,
   Controller,
   Get,
   NotFoundException,
   Param,
   ParseIntPipe,
+  Post,
   Query,
 } from '@nestjs/common';
 import { ApiOperation, ApiQuery, ApiTags } from '@nestjs/swagger';
@@ -94,6 +96,40 @@ export class PollsController {
     const polls = await this.service.byRace(raceId, limit);
     if (polls === null) throw new NotFoundException(`Race not found: ${raceId}`);
     return polls;
+  }
+
+  @Get('timeseries/:raceId')
+  @ApiOperation({ summary: 'Race 시계열 차트: 후보별 지지율 추이' })
+  @ApiQuery({ name: 'agency', required: false, description: '조사기관 필터' })
+  async timeseries(
+    @Param('raceId', ParseIntPipe) raceId: number,
+    @Query('agency') agency?: string,
+  ) {
+    const data = await this.service.timeseries(raceId, { agency: agency || undefined });
+    if (!data) throw new NotFoundException(`Race not found: ${raceId}`);
+    return data;
+  }
+
+  @Get('admin/pending-mappings')
+  @ApiOperation({ summary: '관리자: race 매칭 안 된 PollResponse 보유 Poll 목록' })
+  @ApiQuery({ name: 'limit', required: false, type: Number })
+  @ApiQuery({ name: 'offset', required: false, type: Number })
+  async pendingMappings(@Query('limit') limitRaw?: string, @Query('offset') offsetRaw?: string) {
+    const limit = clampInt(limitRaw, 50, 1, 200);
+    const offset = clampInt(offsetRaw, 0, 0, 100000);
+    return this.service.pendingMappings(limit, offset);
+  }
+
+  @Post('admin/assign-race/:pollId')
+  @ApiOperation({ summary: '관리자: Poll의 unmapped 응답을 race에 일괄 지정' })
+  async assignRace(
+    @Param('pollId', ParseIntPipe) pollId: number,
+    @Body() body: { raceId: number },
+  ) {
+    if (!body?.raceId || !Number.isFinite(body.raceId)) {
+      throw new BadRequestException('raceId is required');
+    }
+    return this.service.assignRaceToPoll(pollId, body.raceId);
   }
 
   @Get(':id')
