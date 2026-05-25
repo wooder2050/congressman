@@ -106,7 +106,7 @@ function buildColumnMap(allLines: string[], startIdx: number, endIdx: number): C
   return map;
 }
 
-export type TableDetector = {
+type TableDetector = {
   detectCandidateTable: (line: string) => boolean;
   detectPartyTable: (line: string) => boolean;
   /** 표 식별자 라인 인덱스 → race 라벨 추출 (실패 시 null) */

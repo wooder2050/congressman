@@ -17,7 +17,6 @@ import * as path from 'path';
 import { PrismaClient } from '@prisma/client';
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
 import { findParser } from './pdf-parsers';
-import type { ParsedQuestion } from './pdf-parsers';
 import { matchRaceFromLabel } from './poll-race-matcher';
 import { SyncLogService } from './sync-log.service';
 

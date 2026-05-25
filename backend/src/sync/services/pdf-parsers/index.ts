@@ -4,9 +4,9 @@ import { realmeterParser } from './realmeter-parser';
 
 /**
  * 사용 가능한 PDF 파서 목록.
- * canParse() 순회 → 첫 매칭 파서로 처리.
+ * findParser()로 agency 매칭되는 파서를 선택한다.
  */
-export const ALL_PARSERS: PollPdfParser[] = [ksoiParser, realmeterParser];
+const ALL_PARSERS: PollPdfParser[] = [ksoiParser, realmeterParser];
 
 export function findParser(agency: string): PollPdfParser | null {
   for (const p of ALL_PARSERS) {
@@ -14,5 +14,3 @@ export function findParser(agency: string): PollPdfParser | null {
   }
   return null;
 }
-
-export type { ParsedQuestion, ParsedResponse, ParserContext, PollPdfParser } from './types';
