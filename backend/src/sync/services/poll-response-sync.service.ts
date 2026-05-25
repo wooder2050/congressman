@@ -172,6 +172,10 @@ export class PollResponseSyncService {
                 });
                 dbCandidates = cs.map((c) => ({ name: c.name, partyId: c.partyId }));
               }
+              // 응답이 DB 후보 수보다 많으면 trim (파서가 기타 후보 등 보조 컬럼까지 포함했을 때)
+              if (dbCandidates.length > 0 && q.responses.length > dbCandidates.length) {
+                q.responses.splice(dbCandidates.length);
+              }
               // 응답 순서에 후보 매핑 (응답 개수 = DB 후보 개수일 때만 신뢰)
               if (dbCandidates.length === q.responses.length) {
                 for (let i = 0; i < q.responses.length; i++) {
