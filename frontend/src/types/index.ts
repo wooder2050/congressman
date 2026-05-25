@@ -539,6 +539,13 @@ export interface CandidatePledge {
   description: string;
 }
 
+/** 한 후보의 어떤 source에서 자산 데이터를 받았는지 요약 (다중 source 토글용) */
+export interface CandidateAssetSourceSummary {
+  source: string;
+  sourceDate: string | null;
+  itemCount: number;
+}
+
 /** 후보자 재산 항목별 상세 — 한 행 = 한 자산 (opengirok/PETI/OCR/manual) */
 export interface CandidateAssetItem {
   id: number;
@@ -600,8 +607,14 @@ export interface ElectionCandidate extends CandidateDisclosure {
   candidateNumber: number | null;
   status: string;
   memberIdRef: string | null;
-  /** 항목별 재산 명세 — 22대 의원 출신은 opengirok 데이터로 채워짐 */
+  /** 항목별 재산 명세 — 다중 source 중 우선순위가 가장 높은 1개만 노출됨 */
   assetItems?: CandidateAssetItem[];
+  /** 현재 노출되는 source identifier (선택된 데이터의 source) */
+  assetSelectedSource?: string | null;
+  /** 사용 가능한 모든 source 목록 (UI 토글용) */
+  assetAvailableSources?: CandidateAssetSourceSummary[];
+  /** source별 전체 항목 — 클라이언트 토글용 (모든 source 포함) */
+  assetItemsBySource?: Record<string, CandidateAssetItem[]>;
 }
 
 // ====== 지방선거 ======
@@ -685,8 +698,14 @@ export interface LocalElectionCandidateDetail extends CandidateDisclosure {
   voteRate: number | null;
   isWinner: boolean;
   memberIdRef: string | null;
-  /** 항목별 재산 명세 — 22대 의원 출신은 opengirok 데이터로 채워짐 */
+  /** 항목별 재산 명세 — 다중 source 중 우선순위가 가장 높은 1개만 노출됨 */
   assetItems?: CandidateAssetItem[];
+  /** 현재 노출되는 source identifier (선택된 데이터의 source) */
+  assetSelectedSource?: string | null;
+  /** 사용 가능한 모든 source 목록 (UI 토글용) */
+  assetAvailableSources?: CandidateAssetSourceSummary[];
+  /** source별 전체 항목 — 클라이언트 토글용 (모든 source 포함) */
+  assetItemsBySource?: Record<string, CandidateAssetItem[]>;
 }
 
 export interface LocalElectionRaceDetail {

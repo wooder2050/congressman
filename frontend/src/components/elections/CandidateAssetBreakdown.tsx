@@ -29,6 +29,8 @@ interface Props {
   items: CandidateAssetItem[];
   /** 본인 기준 신고된 총액(있다면) — 항목 합계와 함께 표시 */
   declaredTotal?: string | null;
+  /** source별 전체 데이터 (다중 source 토글용) */
+  itemsBySource?: Record<string, CandidateAssetItem[]>;
 }
 
 /** 항목별 합계 계산 (BigInt 누적 후 string 환원) */
@@ -120,13 +122,31 @@ interface CategorySummary {
   items: CandidateAssetItem[];
 }
 
-export default function CandidateAssetBreakdown({ items, declaredTotal }: Props) {
+export default function CandidateAssetBreakdown({ items, declaredTotal, itemsBySource }: Props) {
   const reactId = useId();
   const [expandedCats, setExpandedCats] = useState<Set<string>>(new Set());
 
+  // 다중 source 토글: 기본은 props로 받은 items의 source
+  const defaultSource = items[0]?.source ?? "";
+  const [activeSource, setActiveSource] = useState<string>(defaultSource);
+
+  // 실제 표시할 items — 토글된 source가 있으면 그쪽 데이터, 아니면 기본 props
+  const effectiveItems =
+    itemsBySource && activeSource && itemsBySource[activeSource]
+      ? itemsBySource[activeSource]
+      : items;
+
+  // 사용 가능한 source 목록 (itemsBySource가 있고 2개 이상일 때만 토글 노출)
+  const sourceOptions =
+    itemsBySource && Object.keys(itemsBySource).length > 1
+      ? Object.entries(itemsBySource)
+          .map(([src, list]) => ({ source: src, itemCount: list.length }))
+          .sort((a, b) => b.itemCount - a.itemCount)
+      : null;
+
   const summary = useMemo(() => {
     const byCat = new Map<string, CategorySummary>();
-    for (const item of items) {
+    for (const item of effectiveItems) {
       const existing = byCat.get(item.category) ?? {
         category: item.category,
         total: BigInt(0),
@@ -146,14 +166,14 @@ export default function CandidateAssetBreakdown({ items, declaredTotal }: Props)
     }
     const sorted = sortCategories(Array.from(byCat.keys())).map((c) => byCat.get(c)!);
     return sorted;
-  }, [items]);
+  }, [effectiveItems]);
 
-  const itemsTotal = useMemo(() => sumValues(items), [items]);
-  const source = items[0]?.source ?? "";
-  const sourceUrl = items[0]?.sourceUrl ?? null;
-  const sourceDate = items[0]?.sourceDate ?? null;
+  const itemsTotal = useMemo(() => sumValues(effectiveItems), [effectiveItems]);
+  const source = effectiveItems[0]?.source ?? "";
+  const sourceUrl = effectiveItems[0]?.sourceUrl ?? null;
+  const sourceDate = effectiveItems[0]?.sourceDate ?? null;
 
-  if (items.length === 0) return null;
+  if (effectiveItems.length === 0) return null;
 
   function toggleCat(cat: string) {
     setExpandedCats((prev) => {
@@ -168,13 +188,37 @@ export default function CandidateAssetBreakdown({ items, declaredTotal }: Props)
     <div className="mt-3 rounded-lg border border-(--color-border-secondary) bg-(--color-bg-secondary) p-3">
       <div className="mb-2 flex items-baseline justify-between gap-2">
         <h4 className="text-xs font-bold text-(--color-text-tertiary)">
-          항목별 재산 상세 ({items.length}건)
+          항목별 재산 상세 ({effectiveItems.length}건)
         </h4>
         <span className="text-[10px] text-(--color-text-tertiary)">
           {sourceLabel(source)}
           {sourceDate && ` · ${sourceDate}`}
         </span>
       </div>
+
+      {/* Source 토글 — 2개 이상 source가 있을 때만 노출 */}
+      {sourceOptions && (
+        <div className="mb-2 flex flex-wrap gap-1.5">
+          <span className="text-[10px] text-(--color-text-tertiary)">출처 전환:</span>
+          {sourceOptions.map((opt) => {
+            const isActive = opt.source === activeSource;
+            return (
+              <button
+                key={opt.source}
+                type="button"
+                onClick={() => setActiveSource(opt.source)}
+                className={`rounded-full px-2 py-0.5 text-[10px] font-medium transition-colors ${
+                  isActive
+                    ? "bg-(--color-primary) text-white"
+                    : "bg-(--color-bg-primary) text-(--color-text-secondary) hover:bg-(--color-bg-hover)"
+                }`}
+              >
+                {sourceLabel(opt.source)} ({opt.itemCount})
+              </button>
+            );
+          })}
+        </div>
+      )}
 
       {/* 합계 비교 (선관위 신고 vs 항목 합계) */}
       {declaredTotal && (
