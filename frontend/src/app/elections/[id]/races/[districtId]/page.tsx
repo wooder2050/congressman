@@ -3,6 +3,7 @@ import Link from "next/link";
 import BreadcrumbJsonLd from "@/components/seo/BreadcrumbJsonLd";
 import CongressWrapper from "@/common/CongressWrapper";
 import CandidateCompareInner from "@/components/elections/CandidateCompareInner";
+import RacePollTimeseries from "@/components/polls/RacePollTimeseries";
 import { getElection } from "@/lib/api";
 
 interface RacePageProps {
@@ -67,6 +68,10 @@ export default async function RacePage({ params }: RacePageProps) {
       >
         <CandidateCompareInner electionId={id} districtId={Number(districtId)} />
       </CongressWrapper>
+
+      <div className="border-t border-(--color-border-primary) pt-6">
+        <RacePollTimeseries raceId={Number(districtId)} mode="district" />
+      </div>
     </div>
   );
 }

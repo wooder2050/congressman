@@ -384,6 +384,121 @@ export class PollsService {
   }
 
   /**
+   * 재보궐 ElectionDistrict 시계열 차트용.
+   * Race timeseries와 동일한 응답 형태 — 단, race 대신 district 정보.
+   */
+  async timeseriesByDistrict(districtId: number, options: { agency?: string } = {}) {
+    const key = `polls:timeseries-district:${districtId}:${options.agency ?? 'all'}:v1`;
+    const cached = await this.redis.get<unknown>(key);
+    if (cached) return cached;
+
+    const district = await this.prisma.electionDistrict.findUnique({
+      where: { id: districtId },
+      select: {
+        id: true,
+        district: true,
+        region: true,
+        candidates: {
+          select: {
+            id: true,
+            name: true,
+            party: { select: { id: true, name: true, shortName: true, color: true } },
+          },
+          orderBy: { candidateNumber: 'asc' },
+        },
+      },
+    });
+    if (!district) return null;
+
+    const responses = await this.prisma.pollResponse.findMany({
+      where: {
+        districtId,
+        subgroupKey: 'total',
+        questionType: 'candidate_support',
+        ...(options.agency ? { poll: { agency: options.agency } } : {}),
+      },
+      select: {
+        rate: true,
+        byCandidateId: true,
+        candidateName: true,
+        partyName: true,
+        sampleSize: true,
+        poll: {
+          select: {
+            id: true,
+            agency: true,
+            surveyEndedAt: true,
+            surveyStartedAt: true,
+            sampleSize: true,
+            marginOfError: true,
+            responseRate: true,
+            registeredAt: true,
+          },
+        },
+      },
+    });
+
+    type PointRow = {
+      pollId: number;
+      agency: string;
+      surveyEndedAt: string | null;
+      surveyStartedAt: string | null;
+      sampleSize: number | null;
+      marginOfError: number | null;
+      responseRate: number | null;
+      registeredAt: string;
+      rates: Record<string, number>;
+    };
+    const byPoll = new Map<number, PointRow>();
+    for (const r of responses) {
+      const pid = r.poll.id;
+      if (!byPoll.has(pid)) {
+        byPoll.set(pid, {
+          pollId: pid,
+          agency: r.poll.agency,
+          surveyEndedAt: r.poll.surveyEndedAt?.toISOString() ?? null,
+          surveyStartedAt: r.poll.surveyStartedAt?.toISOString() ?? null,
+          sampleSize: r.poll.sampleSize,
+          marginOfError: r.poll.marginOfError,
+          responseRate: r.poll.responseRate,
+          registeredAt: r.poll.registeredAt.toISOString(),
+          rates: {},
+        });
+      }
+      const candKey = r.candidateName ?? r.partyName ?? '미식별';
+      byPoll.get(pid)!.rates[candKey] = r.rate;
+    }
+
+    const points = Array.from(byPoll.values()).sort((a, b) => {
+      const aTime = a.surveyEndedAt ?? a.registeredAt;
+      const bTime = b.surveyEndedAt ?? b.registeredAt;
+      return aTime.localeCompare(bTime);
+    });
+
+    const allAgencies = Array.from(new Set(responses.map((r) => r.poll.agency))).sort();
+
+    const result = {
+      race: {
+        id: district.id,
+        displayName: district.district,
+        electionType: 'by-election',
+        sido: district.region,
+        sigungu: district.district,
+      },
+      candidates: district.candidates.map((c) => ({
+        id: c.id,
+        name: c.name,
+        party: c.party,
+      })),
+      agencies: allAgencies,
+      points,
+    };
+
+    await this.redis.set(key, result, 1800);
+    return result;
+  }
+
+  /**
    * 관리자용: race 매칭이 안 된 PollResponse를 가진 Poll 목록.
    * (raceId IS NULL이고 candidateName/raceLabel은 있는 행을 가진 poll)
    */

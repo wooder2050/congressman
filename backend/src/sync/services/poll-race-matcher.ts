@@ -58,6 +58,56 @@ const ELECTION_TYPE_BY_SUFFIX: Record<string, string> = {
 };
 
 /**
+ * 재보궐(ByElection) ElectionDistrict 매칭.
+ *
+ * Poll 메타의 sigungu 형식이 "부산광역시 북구 갑 선거구" / "경기도 평택시 을 선거구"이고,
+ * ElectionDistrict.district는 "부산 북구갑" / "경기 평택시을" 형식.
+ * 둘 다 표준화한 뒤 매칭한다.
+ *
+ * 매칭 키:
+ *   - Poll.sido + Poll.sigungu (예: "부산광역시" + "북구 갑 선거구") → "부산 북구갑"
+ *   - ElectionDistrict.district 패턴과 정규화 비교
+ */
+function normalizeDistrictKey(sido: string, sigungu: string): string {
+  // sido 짧은 형태로 변환 (예: "부산광역시" → "부산")
+  const sidoShort =
+    Object.entries(SIDO_ALIASES).find(([_, v]) => v[0] === sido)?.[0] ??
+    sido.replace(/특별자치도|특별자치시|특별시|광역시|도$/, '');
+  // sigungu에서 "선거구" 제거 + 공백 압축 ("북구 갑 선거구" → "북구갑")
+  const sigunguNorm = sigungu
+    .replace(/선거구$/, '')
+    .replace(/\s+/g, '')
+    .trim();
+  return `${sidoShort} ${sigunguNorm}`.trim();
+}
+
+export async function matchDistrictFromPoll(
+  prisma: PrismaClient,
+  params: { sido: string; sigungu: string },
+): Promise<number | null> {
+  if (!params.sigungu || params.sigungu === '전체') return null;
+
+  const key = normalizeDistrictKey(params.sido, params.sigungu);
+  // 1) district 컬럼이 정확히 일치
+  const exact = await prisma.electionDistrict.findFirst({
+    where: { district: key },
+    select: { id: true },
+  });
+  if (exact) return exact.id;
+
+  // 2) 공백 등 변형 대응 — district 컬럼을 동일 정규화로 비교
+  const all = await prisma.electionDistrict.findMany({
+    select: { id: true, district: true },
+  });
+  for (const d of all) {
+    const dNorm = d.district.replace(/\s+/g, '').trim();
+    const keyNorm = key.replace(/\s+/g, '').trim();
+    if (dNorm === keyNorm) return d.id;
+  }
+  return null;
+}
+
+/**
  * raceLabel + Poll 메타로 LocalElectionRace를 찾는다.
  *
  * fallback: raceLabel이 매칭 실패하거나 "미식별"이면 candidateName + Poll 메타로 race 추정.

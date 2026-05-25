@@ -17,7 +17,7 @@ import * as path from 'path';
 import { PrismaClient } from '@prisma/client';
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
 import { findParser } from './pdf-parsers';
-import { matchRaceFromLabel } from './poll-race-matcher';
+import { matchDistrictFromPoll, matchRaceFromLabel } from './poll-race-matcher';
 import { SyncLogService } from './sync-log.service';
 
 const STORAGE_BUCKET = 'nesdc-polls';
@@ -58,6 +58,7 @@ export class PollResponseSyncService {
           sido: true,
           sigungu: true,
           pollName: true,
+          electionCategory: true,
           attachments: {
             where: { status: 'downloaded', kind: 'result' },
             select: { id: true, storagePath: true, fileName: true },
@@ -109,19 +110,39 @@ export class PollResponseSyncService {
             continue;
           }
 
-          // race 매칭 + PollResponse 적재
+          // race(지방선거) 또는 district(재보궐) 매칭 + PollResponse 적재
+          const isByElection = poll.electionCategory === '2026년 재·보궐선거';
           let extractedForPoll = 0;
-          for (const q of questions) {
-            // 첫 응답의 후보명으로 race 추론 (raceLabel이 미식별일 때 fallback)
-            const firstCandidate = q.responses.find((r) => r.candidateName)?.candidateName ?? null;
-            const raceId = await matchRaceFromLabel(this.prisma, {
-              raceLabel: q.raceLabel ?? '',
-              sido: poll.sido,
-              sigungu: poll.sigungu,
-              candidateName: firstCandidate,
-            });
 
-            // PollRace M:N 관계 upsert (raceId 있을 때만)
+          // 재보궐은 Poll 메타로 district 단일 매칭 (PDF raceLabel과 관계없이)
+          const districtIdForPoll = isByElection
+            ? await matchDistrictFromPoll(this.prisma, {
+                sido: poll.sido,
+                sigungu: poll.sigungu,
+              })
+            : null;
+          if (districtIdForPoll !== null) {
+            await this.prisma.pollDistrict.upsert({
+              where: {
+                pollId_districtId: { pollId: poll.id, districtId: districtIdForPoll },
+              },
+              create: { pollId: poll.id, districtId: districtIdForPoll },
+              update: {},
+            });
+          }
+
+          for (const q of questions) {
+            // 지방선거: race 매칭
+            const firstCandidate = q.responses.find((r) => r.candidateName)?.candidateName ?? null;
+            const raceId = isByElection
+              ? null
+              : await matchRaceFromLabel(this.prisma, {
+                  raceLabel: q.raceLabel ?? '',
+                  sido: poll.sido,
+                  sigungu: poll.sigungu,
+                  candidateName: firstCandidate,
+                });
+
             if (raceId !== null) {
               await this.prisma.pollRace.upsert({
                 where: { pollId_raceId: { pollId: poll.id, raceId } },
@@ -132,19 +153,24 @@ export class PollResponseSyncService {
 
             for (const r of q.responses) {
               const partyId = r.partyName ? await this.lookupPartyId(r.partyName) : null;
-              // 후보 ID 매칭 (race 매칭 성공 + 후보명 있을 때만 시도)
               const candidateId =
                 raceId !== null && r.candidateName
                   ? await this.lookupCandidateId(raceId, r.candidateName)
+                  : null;
+              const byCandidateId =
+                districtIdForPoll !== null && r.candidateName
+                  ? await this.lookupByCandidateId(districtIdForPoll, r.candidateName)
                   : null;
 
               await this.prisma.pollResponse.create({
                 data: {
                   pollId: poll.id,
                   raceId,
+                  districtId: districtIdForPoll,
                   questionType: q.questionType,
                   questionText: q.questionText,
                   candidateId,
+                  byCandidateId,
                   candidateName: r.candidateName,
                   partyId,
                   partyName: r.partyName,
@@ -235,6 +261,17 @@ export class PollResponseSyncService {
   private async lookupCandidateId(raceId: number, candidateName: string): Promise<number | null> {
     const cand = await this.prisma.localElectionCandidate.findUnique({
       where: { raceId_name: { raceId, name: candidateName } },
+      select: { id: true },
+    });
+    return cand?.id ?? null;
+  }
+
+  private async lookupByCandidateId(
+    districtId: number,
+    candidateName: string,
+  ): Promise<number | null> {
+    const cand = await this.prisma.candidate.findUnique({
+      where: { districtId_name: { districtId, name: candidateName } },
       select: { id: true },
     });
     return cand?.id ?? null;
