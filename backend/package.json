@@ -37,6 +37,7 @@
     "sync:by-election-photos": "tsx src/sync/sync-runner.ts by-election-photos",
     "sync:local-election-disclosure": "tsx src/sync/sync-runner.ts local-election-disclosure",
     "sync:by-election-disclosure": "tsx src/sync/sync-runner.ts by-election-disclosure",
+    "sync:nesdc-polls": "tsx src/sync/sync-runner.ts nesdc-polls",
     "seed:local-elections": "tsx prisma/seed-local-elections.ts",
     "seed:breaking-news": "tsx prisma/seed-breaking-news.ts",
     "seed:weekly": "tsx prisma/seed-weekly.ts"
