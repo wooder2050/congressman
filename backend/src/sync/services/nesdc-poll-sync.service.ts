@@ -537,7 +537,7 @@ export class NesdcPollSyncService {
       const fileName = $(el).text().trim();
       const kind: ParsedAttachment['kind'] = /설문지|질문지/.test(fileName)
         ? 'questionnaire'
-        : /결과|분석|집계표|결과표/.test(fileName)
+        : /결과|분석|집계표|결과표|통계표|결과보고서/.test(fileName)
           ? 'result'
           : 'other';
       attachments.push({
