@@ -1,8 +1,13 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useId, useMemo, useState } from "react";
 import type { CandidateAssetItem } from "@/types";
 import { formatWon } from "./CandidateDisclosureSection";
+
+/** 카테고리 라벨 → DOM id 안전한 슬러그 */
+function categoryToSlug(cat: string): string {
+  return cat.replace(/[^a-zA-Z0-9가-힣]/g, "-").slice(0, 32);
+}
 
 interface Props {
   items: CandidateAssetItem[];
@@ -100,6 +105,7 @@ interface CategorySummary {
 }
 
 export default function CandidateAssetBreakdown({ items, declaredTotal }: Props) {
+  const reactId = useId();
   const [expandedCats, setExpandedCats] = useState<Set<string>>(new Set());
 
   const summary = useMemo(() => {
@@ -173,6 +179,7 @@ export default function CandidateAssetBreakdown({ items, declaredTotal }: Props)
         {summary.map((cat) => {
           const expanded = expandedCats.has(cat.category);
           const totalStr = cat.total.toString();
+          const panelId = `${reactId}-${categoryToSlug(cat.category)}`;
           return (
             <li
               key={cat.category}
@@ -183,6 +190,7 @@ export default function CandidateAssetBreakdown({ items, declaredTotal }: Props)
                 onClick={() => toggleCat(cat.category)}
                 className="flex w-full items-center gap-2 px-2.5 py-2 text-left transition-colors hover:bg-(--color-bg-hover)"
                 aria-expanded={expanded}
+                aria-controls={panelId}
               >
                 <span className="text-base leading-none" aria-hidden="true">
                   {getCategoryIcon(cat.category)}
@@ -203,7 +211,10 @@ export default function CandidateAssetBreakdown({ items, declaredTotal }: Props)
               </button>
 
               {expanded && (
-                <ul className="divide-y divide-(--color-border-secondary) border-t border-(--color-border-secondary) bg-(--color-bg-secondary)">
+                <ul
+                  id={panelId}
+                  className="divide-y divide-(--color-border-secondary) border-t border-(--color-border-secondary) bg-(--color-bg-secondary)"
+                >
                   {cat.items.map((item) => (
                     <li key={item.id} className="px-2.5 py-2 text-[11px]">
                       <div className="flex items-start gap-2">
