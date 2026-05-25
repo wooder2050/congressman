@@ -539,6 +539,22 @@ export interface CandidatePledge {
   description: string;
 }
 
+/**
+ * 자산 항목의 출처 identifier.
+ * - `nec_ocr_vision`: NEC 후보자 재산신고서 PDF를 Claude Vision으로 OCR 추출 (선거 직전, 가장 최신)
+ * - `opengirok`: 정보공개센터 국회의원 재산공개 데이터 (정기, 22대 의원만)
+ * - `peti`: 인사혁신처 공직윤리시스템 (현직 공직자, 2022~2023)
+ * - `manual`: 수동 입력
+ */
+export type AssetSource = "nec_ocr_vision" | "opengirok" | "peti" | "manual";
+
+/** 한 후보의 어떤 source에서 자산 데이터를 받았는지 요약 (다중 source 토글용) */
+export interface CandidateAssetSourceSummary {
+  source: AssetSource | string;
+  sourceDate: string | null;
+  itemCount: number;
+}
+
 /** 후보자 재산 항목별 상세 — 한 행 = 한 자산 (opengirok/PETI/OCR/manual) */
 export interface CandidateAssetItem {
   id: number;
@@ -558,8 +574,8 @@ export interface CandidateAssetItem {
   decreaseValue: string | null;
   marketPrice: string | null;
   changeReason: string | null;
-  /** 데이터 출처 — "opengirok" | "peti" | "nec_ocr" | "manual" */
-  source: string;
+  /** 데이터 출처 — AssetSource 참조 (`| string`은 새 source 추가 시 호환성을 위해) */
+  source: AssetSource | string;
   sourceUrl: string | null;
   sourceDate: string | null;
 }
@@ -600,8 +616,14 @@ export interface ElectionCandidate extends CandidateDisclosure {
   candidateNumber: number | null;
   status: string;
   memberIdRef: string | null;
-  /** 항목별 재산 명세 — 22대 의원 출신은 opengirok 데이터로 채워짐 */
+  /** 항목별 재산 명세 — 다중 source 중 우선순위가 가장 높은 1개만 노출됨 */
   assetItems?: CandidateAssetItem[];
+  /** 현재 노출되는 source identifier (선택된 데이터의 source) */
+  assetSelectedSource?: string | null;
+  /** 사용 가능한 모든 source 목록 (UI 토글용) */
+  assetAvailableSources?: CandidateAssetSourceSummary[];
+  /** source별 전체 항목 — 클라이언트 토글용 (모든 source 포함) */
+  assetItemsBySource?: Record<string, CandidateAssetItem[]>;
 }
 
 // ====== 지방선거 ======
@@ -685,8 +707,14 @@ export interface LocalElectionCandidateDetail extends CandidateDisclosure {
   voteRate: number | null;
   isWinner: boolean;
   memberIdRef: string | null;
-  /** 항목별 재산 명세 — 22대 의원 출신은 opengirok 데이터로 채워짐 */
+  /** 항목별 재산 명세 — 다중 source 중 우선순위가 가장 높은 1개만 노출됨 */
   assetItems?: CandidateAssetItem[];
+  /** 현재 노출되는 source identifier (선택된 데이터의 source) */
+  assetSelectedSource?: string | null;
+  /** 사용 가능한 모든 source 목록 (UI 토글용) */
+  assetAvailableSources?: CandidateAssetSourceSummary[];
+  /** source별 전체 항목 — 클라이언트 토글용 (모든 source 포함) */
+  assetItemsBySource?: Record<string, CandidateAssetItem[]>;
 }
 
 export interface LocalElectionRaceDetail {

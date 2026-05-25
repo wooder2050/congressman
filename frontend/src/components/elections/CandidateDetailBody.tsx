@@ -31,6 +31,8 @@ export interface CandidateView extends CandidateDisclosure {
   isWinner?: boolean;
   /** 항목별 재산 명세 — 22대 의원 출신은 opengirok 데이터로 채워짐 */
   assetItems?: CandidateAssetItem[];
+  /** source별 전체 항목 — 클라이언트 토글용 */
+  assetItemsBySource?: Record<string, CandidateAssetItem[]>;
   /** PDF→PNG 변환 미러 (Supabase Storage) — 인라인 미리보기용 */
   assetPagePngUrls?: string[];
 }
@@ -226,7 +228,11 @@ export default function CandidateDetailBody({ candidate: c, electionTypeLabel, m
 
         {/* 항목별 재산 명세 — opengirok 등 외부 데이터 매칭 시 */}
         {c.assetItems && c.assetItems.length > 0 && (
-          <CandidateAssetBreakdown items={c.assetItems} declaredTotal={c.assetDeclared} />
+          <CandidateAssetBreakdown
+            items={c.assetItems}
+            itemsBySource={c.assetItemsBySource}
+            declaredTotal={c.assetDeclared}
+          />
         )}
 
         {/* 재산신고서 원문 — PNG 미러가 있으면 인라인 미리보기, 없으면 PDF 링크 폴백 */}

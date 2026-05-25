@@ -27,13 +27,18 @@ function mapAssetItem(item: CandidateAssetItem) {
   };
 }
 
-/** assetItems + availableSources 묶음 빌드 (codex #2) */
+/** assetItems + availableSources + itemsBySource 묶음 빌드 (UI 토글용) */
 function buildAssetSection(items: CandidateAssetItem[]) {
   const picked = pickAssetSource(items);
+  const itemsBySource: Record<string, ReturnType<typeof mapAssetItem>[]> = {};
+  for (const [src, list] of Object.entries(picked.itemsBySource)) {
+    itemsBySource[src] = list.map(mapAssetItem);
+  }
   return {
     assetItems: picked.selected.map(mapAssetItem),
     assetSelectedSource: picked.selectedSource,
     assetAvailableSources: picked.availableSources,
+    assetItemsBySource: itemsBySource,
   };
 }
 

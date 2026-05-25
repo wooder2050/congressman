@@ -29,6 +29,8 @@ interface PickResult {
   selected: CandidateAssetItem[];
   selectedSource: string | null;
   availableSources: SourceSummary[];
+  /** source별 전체 item — 다른 source로 토글할 수 있도록 함께 반환 */
+  itemsBySource: Record<string, CandidateAssetItem[]>;
 }
 
 function compareSources(
@@ -49,7 +51,7 @@ function compareSources(
 
 export function pickAssetSource(items: CandidateAssetItem[]): PickResult {
   if (items.length === 0) {
-    return { selected: [], selectedSource: null, availableSources: [] };
+    return { selected: [], selectedSource: null, availableSources: [], itemsBySource: {} };
   }
 
   // source별 그룹화
@@ -73,5 +75,10 @@ export function pickAssetSource(items: CandidateAssetItem[]): PickResult {
   const selectedSource = summaries[0]?.source ?? null;
   const selected = selectedSource ? (groups.get(selectedSource)?.items ?? []) : [];
 
-  return { selected, selectedSource, availableSources: summaries };
+  const itemsBySource: Record<string, CandidateAssetItem[]> = {};
+  for (const [src, g] of groups.entries()) {
+    itemsBySource[src] = g.items;
+  }
+
+  return { selected, selectedSource, availableSources: summaries, itemsBySource };
 }
