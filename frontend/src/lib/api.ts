@@ -553,4 +553,15 @@ export async function getPollTimeseries(params: {
   return fetchApi(`/api/polls/timeseries/${params.raceId}${qs}`);
 }
 
+export async function getPollTimeseriesByDistrict(params: {
+  districtId: number;
+  agency?: string;
+}): Promise<PollTimeseriesResponse | null> {
+  const qs = params.agency ? `?agency=${encodeURIComponent(params.agency)}` : "";
+  return fetchApi(`/api/polls/timeseries-by-district/${params.districtId}${qs}`);
+}
+
 Object.defineProperty(getPollTimeseries, "queryKey", { value: "pollTimeseries" });
+Object.defineProperty(getPollTimeseriesByDistrict, "queryKey", {
+  value: "pollTimeseriesByDistrict",
+});
