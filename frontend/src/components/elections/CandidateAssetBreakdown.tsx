@@ -1,6 +1,6 @@
 "use client";
 
-import { useId, useMemo, useState } from "react";
+import { useEffect, useId, useMemo, useState } from "react";
 import type { CandidateAssetItem } from "@/types";
 import { formatWon } from "./CandidateDisclosureSection";
 
@@ -130,6 +130,13 @@ export default function CandidateAssetBreakdown({ items, declaredTotal, itemsByS
   const defaultSource = items[0]?.source ?? "";
   const [activeSource, setActiveSource] = useState<string>(defaultSource);
 
+  // codex #1: props로 받은 source(후보 변경 등)와 activeSource 동기화 — stale state 방지
+  useEffect(() => {
+    setActiveSource(defaultSource);
+    // codex #4: 후보가 바뀌면 펼친 카테고리도 reset
+    setExpandedCats(new Set());
+  }, [defaultSource]);
+
   // 실제 표시할 items — 토글된 source가 있으면 그쪽 데이터, 아니면 기본 props
   const effectiveItems =
     itemsBySource && activeSource && itemsBySource[activeSource]
@@ -196,9 +203,13 @@ export default function CandidateAssetBreakdown({ items, declaredTotal, itemsByS
         </span>
       </div>
 
-      {/* Source 토글 — 2개 이상 source가 있을 때만 노출 */}
+      {/* Source 토글 — 2개 이상 source가 있을 때만 노출 (codex #6 a11y) */}
       {sourceOptions && (
-        <div className="mb-2 flex flex-wrap gap-1.5">
+        <div
+          role="group"
+          aria-label="자산 데이터 출처 선택"
+          className="mb-2 flex flex-wrap gap-1.5"
+        >
           <span className="text-[10px] text-(--color-text-tertiary)">출처 전환:</span>
           {sourceOptions.map((opt) => {
             const isActive = opt.source === activeSource;
@@ -206,7 +217,12 @@ export default function CandidateAssetBreakdown({ items, declaredTotal, itemsByS
               <button
                 key={opt.source}
                 type="button"
-                onClick={() => setActiveSource(opt.source)}
+                aria-pressed={isActive}
+                onClick={() => {
+                  setActiveSource(opt.source);
+                  // codex #4: source 전환 시 펼친 카테고리 reset (다른 source는 카테고리 구성이 다를 수 있음)
+                  setExpandedCats(new Set());
+                }}
                 className={`rounded-full px-2 py-0.5 text-[10px] font-medium transition-colors ${
                   isActive
                     ? "bg-(--color-primary) text-white"

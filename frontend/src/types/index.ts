@@ -539,9 +539,18 @@ export interface CandidatePledge {
   description: string;
 }
 
+/**
+ * 자산 항목의 출처 identifier.
+ * - `nec_ocr_vision`: NEC 후보자 재산신고서 PDF를 Claude Vision으로 OCR 추출 (선거 직전, 가장 최신)
+ * - `opengirok`: 정보공개센터 국회의원 재산공개 데이터 (정기, 22대 의원만)
+ * - `peti`: 인사혁신처 공직윤리시스템 (현직 공직자, 2022~2023)
+ * - `manual`: 수동 입력
+ */
+export type AssetSource = "nec_ocr_vision" | "opengirok" | "peti" | "manual";
+
 /** 한 후보의 어떤 source에서 자산 데이터를 받았는지 요약 (다중 source 토글용) */
 export interface CandidateAssetSourceSummary {
-  source: string;
+  source: AssetSource | string;
   sourceDate: string | null;
   itemCount: number;
 }
@@ -565,8 +574,8 @@ export interface CandidateAssetItem {
   decreaseValue: string | null;
   marketPrice: string | null;
   changeReason: string | null;
-  /** 데이터 출처 — "opengirok" | "peti" | "nec_ocr" | "manual" */
-  source: string;
+  /** 데이터 출처 — AssetSource 참조 (`| string`은 새 source 추가 시 호환성을 위해) */
+  source: AssetSource | string;
   sourceUrl: string | null;
   sourceDate: string | null;
 }
