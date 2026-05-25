@@ -2,42 +2,18 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import type { CandidateAssetItem, LocalElectionCandidate, Party } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { RedisService } from '../redis/redis.service';
+import { pickAssetSource } from '../elections/asset-source.helper';
 import { getLawmakerSummary } from '../elections/lawmaker-stats.helper';
 import { ALLOWED_SIDO_LIST } from './region-allowlist';
 
-/**
- * 한 후보의 자산 항목이 여러 source에 걸쳐 있으면 최신·정확한 출처 하나만 사용.
- * 우선순위: nec_ocr_vision > peti > opengirok > manual > 기타
- *  - NEC 재산신고서가 가장 최신(선거 직전 신고)이고 가족 분해도 가장 완전
- *  - opengirok은 의원 정기재산공개라 시점이 옛것일 가능성
- */
-const ASSET_SOURCE_PRIORITY: Record<string, number> = {
-  nec_ocr_vision: 4,
-  peti: 3,
-  opengirok: 2,
-  manual: 1,
-};
-
-function pickBestSource(items: CandidateAssetItem[]): CandidateAssetItem[] {
-  if (items.length === 0) return [];
-  const bySource = new Map<string, CandidateAssetItem[]>();
-  for (const it of items) {
-    const arr = bySource.get(it.source) ?? [];
-    arr.push(it);
-    bySource.set(it.source, arr);
-  }
-  if (bySource.size === 1) return items;
-  // 우선순위가 가장 높은 source 선택
-  let bestSource = '';
-  let bestScore = -1;
-  for (const src of bySource.keys()) {
-    const score = ASSET_SOURCE_PRIORITY[src] ?? 0;
-    if (score > bestScore) {
-      bestScore = score;
-      bestSource = src;
-    }
-  }
-  return bySource.get(bestSource) ?? items;
+/** assetItems + availableSources 묶음 빌드 (codex #2) */
+function buildAssetSection(items: CandidateAssetItem[]) {
+  const picked = pickAssetSource(items);
+  return {
+    assetItems: picked.selected.map(mapAssetItem),
+    assetSelectedSource: picked.selectedSource,
+    assetAvailableSources: picked.availableSources,
+  };
 }
 
 /** 후보자 자산 항목 → API 응답 매핑 (BigInt → string) */
@@ -445,7 +421,7 @@ export class LocalElectionsService {
         displayName: candidate.race.displayName,
       },
       member,
-      assetItems: pickBestSource(candidate.assetItems).map(mapAssetItem),
+      ...buildAssetSection(candidate.assetItems),
     };
 
     await this.redis.set(key, result, getCacheTTL(candidate.race.election.status));

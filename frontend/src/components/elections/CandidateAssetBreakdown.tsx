@@ -270,30 +270,33 @@ export default function CandidateAssetBreakdown({ items, declaredTotal }: Props)
         })}
       </ul>
 
-      {sourceUrl && (
-        <p className="mt-2 text-[10px] text-(--color-text-tertiary)">
-          출처:{" "}
-          <a
-            href={sourceUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-(--color-primary) hover:underline"
-          >
-            {source === "nec_ocr_vision"
-              ? "중앙선관위 후보자 재산신고서"
-              : source === "opengirok"
-                ? "정보공개센터 국회의원 재산공개 데이터"
-                : sourceLabel(source)}
-          </a>{" "}
-          · 본인 외 가족 정보 포함
-          {source === "nec_ocr_vision" && (
-            <span className="block text-(--color-text-tertiary)">
-              ⚠ 자동 OCR 변환 결과로 일부 글자·숫자 오차가 있을 수 있습니다. 정확한 수치는 상단의
-              재산신고서 원문 PDF를 참고하세요.
-            </span>
-          )}
-        </p>
-      )}
+      <div className="mt-2 space-y-1">
+        {/* OCR 경고는 sourceUrl 유무와 무관하게 항상 표시 (codex #1) */}
+        {source === "nec_ocr_vision" && (
+          <p className="rounded-md border border-amber-300 bg-amber-50 px-2 py-1.5 text-[10px] leading-relaxed text-amber-900 dark:border-amber-700/50 dark:bg-amber-950/40 dark:text-amber-200">
+            <span className="font-bold">⚠ 자동 OCR 변환 결과</span>입니다. 일부 글자·숫자에 오차가
+            있을 수 있으니 정확한 수치는 상단의 <strong>재산신고서 원문 PDF</strong>를 참고하세요.
+          </p>
+        )}
+        {sourceUrl && (
+          <p className="text-[10px] text-(--color-text-tertiary)">
+            출처:{" "}
+            <a
+              href={sourceUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-(--color-primary) hover:underline"
+            >
+              {source === "nec_ocr_vision"
+                ? "중앙선관위 후보자 재산신고서"
+                : source === "opengirok"
+                  ? "정보공개센터 국회의원 재산공개 데이터"
+                  : sourceLabel(source)}
+            </a>{" "}
+            · 본인 외 가족 정보 포함
+          </p>
+        )}
+      </div>
     </div>
   );
 }
