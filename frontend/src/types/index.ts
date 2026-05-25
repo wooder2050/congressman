@@ -539,6 +539,31 @@ export interface CandidatePledge {
   description: string;
 }
 
+/** 후보자 재산 항목별 상세 — 한 행 = 한 자산 (opengirok/PETI/OCR/manual) */
+export interface CandidateAssetItem {
+  id: number;
+  /** 토지·건물·예금·증권·채무·자동차·정치자금예금 등 */
+  category: string;
+  /** 재산의 종류 — 예: 아파트·임야·상장주식 */
+  subCategory: string | null;
+  /** 본인·배우자·부·모·장남·장녀 등 */
+  relation: string;
+  /** 소재지·면적·종목·계좌 등 상세 명세 */
+  description: string;
+  /** 현재가액(원, BigInt 직렬화 문자열) */
+  currentValue: string | null;
+  /** 종전가액 — opengirok 정기변동신고에만 */
+  previousValue: string | null;
+  increaseValue: string | null;
+  decreaseValue: string | null;
+  marketPrice: string | null;
+  changeReason: string | null;
+  /** 데이터 출처 — "opengirok" | "peti" | "nec_ocr" | "manual" */
+  source: string;
+  sourceUrl: string | null;
+  sourceDate: string | null;
+}
+
 /** 공직선거법 제49조 후보자정보공개자료 요약 5종 (출처: 중앙선거관리위원회) */
 export interface CandidateDisclosure {
   /** 재산신고액(원 단위 문자열, BigInt 직렬화) */
@@ -573,6 +598,8 @@ export interface ElectionCandidate extends CandidateDisclosure {
   candidateNumber: number | null;
   status: string;
   memberIdRef: string | null;
+  /** 항목별 재산 명세 — 22대 의원 출신은 opengirok 데이터로 채워짐 */
+  assetItems?: CandidateAssetItem[];
 }
 
 // ====== 지방선거 ======
@@ -656,6 +683,8 @@ export interface LocalElectionCandidateDetail extends CandidateDisclosure {
   voteRate: number | null;
   isWinner: boolean;
   memberIdRef: string | null;
+  /** 항목별 재산 명세 — 22대 의원 출신은 opengirok 데이터로 채워짐 */
+  assetItems?: CandidateAssetItem[];
 }
 
 export interface LocalElectionRaceDetail {

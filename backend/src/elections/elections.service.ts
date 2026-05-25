@@ -328,7 +328,13 @@ export class ElectionsService {
 
     const candidate = await this.prisma.candidate.findFirst({
       where: { id: candidateId, district: { electionId } },
-      include: { party: true, district: true },
+      include: {
+        party: true,
+        district: true,
+        assetItems: {
+          orderBy: [{ category: 'asc' }, { relation: 'asc' }, { id: 'asc' }],
+        },
+      },
     });
 
     if (!candidate) {
@@ -348,6 +354,22 @@ export class ElectionsService {
         vacancyReason: candidate.district.vacancyReason,
       },
       member,
+      assetItems: candidate.assetItems.map((item) => ({
+        id: item.id,
+        category: item.category,
+        subCategory: item.subCategory,
+        relation: item.relation,
+        description: item.description,
+        currentValue: item.currentValue !== null ? item.currentValue.toString() : null,
+        previousValue: item.previousValue !== null ? item.previousValue.toString() : null,
+        increaseValue: item.increaseValue !== null ? item.increaseValue.toString() : null,
+        decreaseValue: item.decreaseValue !== null ? item.decreaseValue.toString() : null,
+        marketPrice: item.marketPrice !== null ? item.marketPrice.toString() : null,
+        changeReason: item.changeReason,
+        source: item.source,
+        sourceUrl: item.sourceUrl,
+        sourceDate: item.sourceDate,
+      })),
     };
 
     await this.redis.set(key, result, TTL_HOUR);
