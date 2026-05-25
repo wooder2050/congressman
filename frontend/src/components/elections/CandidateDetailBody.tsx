@@ -231,7 +231,11 @@ export default function CandidateDetailBody({ candidate: c, electionTypeLabel, m
 
         {/* 재산신고서 원문 — PNG 미러가 있으면 인라인 미리보기, 없으면 PDF 링크 폴백 */}
         {c.assetPagePngUrls && c.assetPagePngUrls.length > 0 ? (
-          <CandidateAssetPdfViewer pageImageUrls={c.assetPagePngUrls} pdfUrls={c.assetPdfUrls} />
+          <CandidateAssetPdfViewer
+            pageImageUrls={c.assetPagePngUrls}
+            pdfUrls={c.assetPdfUrls}
+            candidateName={c.name}
+          />
         ) : (
           c.assetPdfUrls &&
           c.assetPdfUrls.length > 0 && (

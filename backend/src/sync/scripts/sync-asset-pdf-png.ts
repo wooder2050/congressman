@@ -34,12 +34,27 @@ async function main() {
   const limit = parseIntArg(args, '--limit');
   const concurrency = parseIntArg(args, '--concurrency') ?? 3;
   const idsArg = parseStringArg(args, '--ids');
-  const candidateIds = idsArg
-    ? idsArg
-        .split(',')
-        .map((s) => parseInt(s.trim(), 10))
-        .filter((n) => Number.isFinite(n))
-    : undefined;
+  let candidateIds: number[] | undefined;
+  if (idsArg) {
+    const parts = idsArg
+      .split(',')
+      .map((s) => s.trim())
+      .filter(Boolean);
+    const parsed = parts.map((s) => {
+      const n = parseInt(s, 10);
+      return Number.isFinite(n) && String(n) === s ? n : NaN;
+    });
+    const invalid = parts.filter((_, i) => Number.isNaN(parsed[i]));
+    if (invalid.length > 0) {
+      console.error(`Invalid --ids values: ${invalid.join(', ')} (expected integers)`);
+      process.exit(1);
+    }
+    candidateIds = parsed as number[];
+    if (candidateIds.length === 0) {
+      console.error('--ids provided but resulted in empty list');
+      process.exit(1);
+    }
+  }
 
   const tableName: CandidateTable = table === 'local' ? 'localElectionCandidate' : 'candidate';
 

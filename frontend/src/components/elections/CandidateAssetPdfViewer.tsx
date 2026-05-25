@@ -8,6 +8,8 @@ interface Props {
   pageImageUrls: string[];
   /** NEC 원본 PDF URL (외부 링크용, 페이지순) */
   pdfUrls?: string[];
+  /** 스크린리더용 후보 이름 — alt에 포함 */
+  candidateName?: string;
 }
 
 /**
@@ -15,7 +17,7 @@ interface Props {
  * 기본은 닫힌 상태, 사용자가 "재산신고서 펼쳐보기"를 누르면 모든 페이지를 세로로 표시.
  * 이미지가 크기 때문에 next/image의 lazy loading + unoptimized로 Storage URL 그대로 로드.
  */
-export default function CandidateAssetPdfViewer({ pageImageUrls, pdfUrls }: Props) {
+export default function CandidateAssetPdfViewer({ pageImageUrls, pdfUrls, candidateName }: Props) {
   const panelId = useId();
   const [open, setOpen] = useState(false);
 
@@ -79,7 +81,11 @@ export default function CandidateAssetPdfViewer({ pageImageUrls, pdfUrls }: Prop
                   <div className="overflow-hidden rounded-md border border-(--color-border-secondary) bg-white">
                     <Image
                       src={url}
-                      alt={`재산신고서 ${i + 1}쪽`}
+                      alt={
+                        candidateName
+                          ? `${candidateName} 후보 재산신고서 ${i + 1}/${pageImageUrls.length}쪽 (스캔 이미지 — 원문 PDF 링크 참조)`
+                          : `재산신고서 ${i + 1}/${pageImageUrls.length}쪽 (스캔 이미지)`
+                      }
                       width={1240}
                       height={1754}
                       unoptimized

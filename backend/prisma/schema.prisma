@@ -338,15 +338,18 @@ model Candidate {
   status          String  @default("registered")
 
   // 후보자정보공개자료 (공직선거법 제49조, info.nec.go.kr 상세 페이지 요약)
-  assetDeclared     BigInt? // 재산신고액 (원)
-  militaryService   String? // 병역신고사항(본인)
-  taxPaid           BigInt? // 최근 5년 납세 납부액 (원)
-  taxOverdue5y      BigInt? // 최근 5년 체납액 (원)
-  taxOverdueCurrent BigInt? // 현 체납액 (원)
-  criminalRecord    String? // 전과기록
-  electionCount     Int? // 입후보 횟수
-  assetPdfUrls      String[] @default([]) // 재산신고서 원문 PDF URL 목록 (NEC, 페이지순)
-  assetPagePngUrls  String[] @default([]) // PDF를 PNG로 변환해 Supabase Storage에 미러링한 URL (페이지순)
+  assetDeclared      BigInt? // 재산신고액 (원)
+  militaryService    String? // 병역신고사항(본인)
+  taxPaid            BigInt? // 최근 5년 납세 납부액 (원)
+  taxOverdue5y       BigInt? // 최근 5년 체납액 (원)
+  taxOverdueCurrent  BigInt? // 현 체납액 (원)
+  criminalRecord     String? // 전과기록
+  electionCount      Int? // 입후보 횟수
+  assetPdfUrls       String[] @default([]) // 재산신고서 원문 PDF URL 목록 (NEC, 페이지순)
+  assetPagePngUrls   String[] @default([]) // PDF를 PNG로 변환해 Supabase Storage에 미러링한 URL (페이지순). 비어있으면 pending
+  assetPdfSourceHash String? // assetPdfUrls의 hash — 원본 변경 감지 후 재처리 트리거
+  assetPdfSyncStatus String? // "pending" | "completed" | "failed" | "stale" (URL 변경 감지)
+  assetPdfSyncError  String? // 실패 사유
 
   district   ElectionDistrict     @relation(fields: [districtId], references: [id])
   party      Party?               @relation(fields: [partyId], references: [id])
@@ -420,15 +423,18 @@ model LocalElectionCandidate {
   memberIdRef     String? // 현직 의원이면 Member.id
 
   // 후보자정보공개자료 (공직선거법 제49조, info.nec.go.kr 상세 페이지 요약)
-  assetDeclared     BigInt? // 재산신고액 (원)
-  militaryService   String? // 병역신고사항(본인)
-  taxPaid           BigInt? // 최근 5년 납세 납부액 (원)
-  taxOverdue5y      BigInt? // 최근 5년 체납액 (원)
-  taxOverdueCurrent BigInt? // 현 체납액 (원)
-  criminalRecord    String? // 전과기록 (예: "없음", "1건")
-  electionCount     Int? // 입후보 횟수
-  assetPdfUrls      String[] @default([]) // 재산신고서 원문 PDF URL 목록 (NEC, 페이지순)
-  assetPagePngUrls  String[] @default([]) // PDF를 PNG로 변환해 Supabase Storage에 미러링한 URL (페이지순)
+  assetDeclared      BigInt? // 재산신고액 (원)
+  militaryService    String? // 병역신고사항(본인)
+  taxPaid            BigInt? // 최근 5년 납세 납부액 (원)
+  taxOverdue5y       BigInt? // 최근 5년 체납액 (원)
+  taxOverdueCurrent  BigInt? // 현 체납액 (원)
+  criminalRecord     String? // 전과기록 (예: "없음", "1건")
+  electionCount      Int? // 입후보 횟수
+  assetPdfUrls       String[] @default([]) // 재산신고서 원문 PDF URL 목록 (NEC, 페이지순)
+  assetPagePngUrls   String[] @default([]) // PDF를 PNG로 변환해 Supabase Storage에 미러링한 URL (페이지순). 비어있으면 pending
+  assetPdfSourceHash String? // assetPdfUrls의 hash — 원본 변경 감지 후 재처리 트리거
+  assetPdfSyncStatus String? // "pending" | "completed" | "failed" | "stale" (URL 변경 감지)
+  assetPdfSyncError  String? // 실패 사유
 
   race       LocalElectionRace    @relation(fields: [raceId], references: [id])
   party      Party?               @relation(fields: [partyId], references: [id])
