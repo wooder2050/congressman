@@ -148,7 +148,12 @@ describe('validateInput', () => {
   });
 
   it('sourceDate/sourceUrl optional — 없어도 통과', () => {
-    const { sourceDate: _sd, sourceUrl: _su, ...minimal } = validCandidate;
+    const minimal = {
+      table: validCandidate.table,
+      id: validCandidate.id,
+      name: validCandidate.name,
+      items: validCandidate.items,
+    };
     const result = validateInput({ candidates: [minimal] });
     expect(result[0].sourceDate).toBeNull();
     expect(result[0].sourceUrl).toBeNull();
