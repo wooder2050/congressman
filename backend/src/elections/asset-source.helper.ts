@@ -12,20 +12,20 @@ import type { CandidateAssetItem } from '@prisma/client';
  *   3) 그래도 동률이면 더 많은 항목을 가진 source (완성도)
  */
 
-export const ASSET_SOURCE_PRIORITY: Record<string, number> = {
+const ASSET_SOURCE_PRIORITY: Record<string, number> = {
   nec_ocr_vision: 4,
   peti: 3,
   opengirok: 2,
   manual: 1,
 };
 
-export interface SourceSummary {
+interface SourceSummary {
   source: string;
   sourceDate: string | null;
   itemCount: number;
 }
 
-export interface PickResult {
+interface PickResult {
   selected: CandidateAssetItem[];
   selectedSource: string | null;
   availableSources: SourceSummary[];
