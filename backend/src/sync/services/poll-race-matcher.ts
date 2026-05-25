@@ -68,17 +68,44 @@ const ELECTION_TYPE_BY_SUFFIX: Record<string, string> = {
  *   - Poll.sido + Poll.sigungu (예: "부산광역시" + "북구 갑 선거구") → "부산 북구갑"
  *   - ElectionDistrict.district 패턴과 정규화 비교
  */
+/** 짧은 시도명 (예: "부산광역시" → "부산", "충청남도" → "충남") */
+function sidoToShort(sido: string): string {
+  // SIDO_ALIASES는 짧은→긴 매핑이라 반대 검색
+  const found = Object.entries(SIDO_ALIASES).find(([, v]) => v[0] === sido)?.[0];
+  if (found) return found;
+  return sido.replace(/특별자치도|특별자치시|특별시|광역시/, '').replace(/도$/, '');
+}
+
+/**
+ * NESDC sigungu/ElectionDistrict 키를 표준 형태로 정규화:
+ *   "안산시 (갑)선거구" → "안산시갑"
+ *   "북구 갑 선거구"   → "북구갑"
+ *   "안산시 안산갑 선거구" → "안산갑"  (시 이름 중복 제거)
+ *   "안산시갑"        → "안산시갑"
+ *
+ * 핵심: 괄호·"선거구" 등 제거 후 모든 공백 제거.
+ */
+function normalizeSigunguToken(s: string): string {
+  return (
+    s
+      // "(갑)" 같은 괄호 안 단어를 그대로 노출
+      .replace(/\(([^)]+)\)/g, '$1')
+      // "선거구", "선거구 지역" 등 제거
+      .replace(/\s*선거구\s*(지역)?/g, ' ')
+      // 시도명이 중간에 다시 등장하는 경우 제거 (예: "평택시 경기도 평택시 을선거구")
+      .replace(
+        /(?:서울특별시|부산광역시|대구광역시|인천광역시|광주광역시|대전광역시|울산광역시|세종특별자치시|경기도|강원특별자치도|충청북도|충청남도|전북특별자치도|전라남도|경상북도|경상남도|제주특별자치도)/g,
+        ' ',
+      )
+      .trim()
+      .replace(/\s+/g, '')
+  );
+}
+
 function normalizeDistrictKey(sido: string, sigungu: string): string {
-  // sido 짧은 형태로 변환 (예: "부산광역시" → "부산")
-  const sidoShort =
-    Object.entries(SIDO_ALIASES).find(([_, v]) => v[0] === sido)?.[0] ??
-    sido.replace(/특별자치도|특별자치시|특별시|광역시|도$/, '');
-  // sigungu에서 "선거구" 제거 + 공백 압축 ("북구 갑 선거구" → "북구갑")
-  const sigunguNorm = sigungu
-    .replace(/선거구$/, '')
-    .replace(/\s+/g, '')
-    .trim();
-  return `${sidoShort} ${sigunguNorm}`.trim();
+  const sidoShort = sidoToShort(sido);
+  const sigunguNorm = normalizeSigunguToken(sigungu);
+  return `${sidoShort}${sigunguNorm}`.replace(/\s+/g, '');
 }
 
 export async function matchDistrictFromPoll(
@@ -88,21 +115,30 @@ export async function matchDistrictFromPoll(
   if (!params.sigungu || params.sigungu === '전체') return null;
 
   const key = normalizeDistrictKey(params.sido, params.sigungu);
-  // 1) district 컬럼이 정확히 일치
-  const exact = await prisma.electionDistrict.findFirst({
-    where: { district: key },
-    select: { id: true },
-  });
-  if (exact) return exact.id;
 
-  // 2) 공백 등 변형 대응 — district 컬럼을 동일 정규화로 비교
+  // ElectionDistrict.district도 같은 normalize 적용해 비교
   const all = await prisma.electionDistrict.findMany({
     select: { id: true, district: true },
   });
   for (const d of all) {
     const dNorm = d.district.replace(/\s+/g, '').trim();
-    const keyNorm = key.replace(/\s+/g, '').trim();
-    if (dNorm === keyNorm) return d.id;
+    if (dNorm === key) return d.id;
+  }
+
+  // 후보 매칭 fallback: sigungu에서 "갑/을" 같은 보충 정보 추출 후 contains
+  // (예: "안산시 (갑)선거구" → 동일 정규화로 "안산시갑" → "경기 안산시갑"과 매칭)
+  // 위 루프에서 못 잡으면, 보다 느슨하게 — district가 key를 포함 또는 key가 district 일부 포함
+  for (const d of all) {
+    const dNorm = d.district.replace(/\s+/g, '').trim();
+    // 시도 prefix 제거 후 시군구 부분만 비교
+    const dSigungu = dNorm.startsWith(sidoToShort(params.sido))
+      ? dNorm.slice(sidoToShort(params.sido).length)
+      : dNorm;
+    const ourSigungu = normalizeSigunguToken(params.sigungu);
+    if (dSigungu === ourSigungu) return d.id;
+    // 끝부분 매칭 (예: "공주시부여군청양군" ↔ "공주부여청양")
+    if (dSigungu.length >= 4 && ourSigungu.endsWith(dSigungu)) return d.id;
+    if (ourSigungu.length >= 4 && dSigungu.endsWith(ourSigungu)) return d.id;
   }
   return null;
 }

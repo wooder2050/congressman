@@ -245,19 +245,22 @@ async function main() {
         break;
       }
       case 'nesdc-poll-pdfs': {
-        // 사용: pnpm sync:nesdc-poll-pdfs [limit]
-        // 주요 4사 결과표 PDF만 Storage에 미러링 (PDF 파싱 사전 작업)
+        // 사용: pnpm sync:nesdc-poll-pdfs [limit] [category] [allAgencies=true|false]
+        // 기본: 주요 5사 결과표 PDF만 Storage에 미러링
+        // allAgencies=true: 모든 조사기관 대상 (재보궐 등 파서 외 기관 포함)
         const limitArg = process.argv[3];
         const limit = limitArg ? parseInt(limitArg, 10) : undefined;
-        const agencies = [
-          '(주)리얼미터',
-          '한국갤럽조사연구소',
-          '(주)엠브레인퍼블릭',
-          '(주)코리아정보리서치',
-          '케이에스오아이 주식회사(한국사회여론연구소)',
-        ];
-        // 카테고리 인자(argv[4]) — 미지정 시 지방선거+재보궐 모두 대상
         const categoryArg = process.argv[4];
+        const allAgencies = (process.argv[5] ?? 'false') === 'true';
+        const agencies = allAgencies
+          ? []
+          : [
+              '(주)리얼미터',
+              '한국갤럽조사연구소',
+              '(주)엠브레인퍼블릭',
+              '(주)코리아정보리서치',
+              '케이에스오아이 주식회사(한국사회여론연구소)',
+            ];
         await new NesdcPollSyncService(prisma, syncLog).downloadPdfsByAgency({
           agencies,
           kinds: ['result'],
