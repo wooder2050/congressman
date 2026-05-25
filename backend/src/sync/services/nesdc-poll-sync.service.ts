@@ -10,7 +10,6 @@ const LIST_URL = `${BASE}/portal/bbs/B0000005/list.do`;
 const VIEW_URL = `${BASE}/portal/bbs/B0000005/view.do`;
 const DOWNLOAD_URL = `${BASE}/portal/cmm/fms/FileDown.do`;
 const MENU_NO = '200467';
-const PAGE_SIZE = 10;
 const STORAGE_BUCKET = 'nesdc-polls';
 
 // NESDC robots.txt가 전체 disallow이므로 저속 + UA 명시 + 동시성 1
@@ -435,7 +434,9 @@ export class NesdcPollSyncService {
     $('a[onclick*="view("]').each((_, el) => {
       const onclick = $(el).attr('onclick') ?? '';
       // view('atchFileId', 'fileSn', 'B0000005', 'bbsKey')
-      const m = onclick.match(/view\(['"]([^'"]+)['"],\s*['"]([^'"]+)['"],\s*['"][^'"]+['"],\s*['"]([^'"]+)['"]\)/);
+      const m = onclick.match(
+        /view\(['"]([^'"]+)['"],\s*['"]([^'"]+)['"],\s*['"][^'"]+['"],\s*['"]([^'"]+)['"]\)/,
+      );
       if (!m) return;
       const fileName = $(el).text().trim();
       const kind: ParsedAttachment['kind'] = /설문지|질문지/.test(fileName)
@@ -456,7 +457,7 @@ export class NesdcPollSyncService {
     const responseRate = parsePercent(responseStr);
     const aaporResponseRate =
       contactRate != null && responseRate != null
-        ? Math.round((contactRate * responseRate) / 100 * 100) / 100
+        ? Math.round(((contactRate * responseRate) / 100) * 100) / 100
         : null;
 
     return {
@@ -552,7 +553,8 @@ function parseKoreanDateTime(s: string | null | undefined): Date | null {
 /** "2026-05-18 13 시 06 분 ~ 20 시 59 분 2026-05-19 10 시 00 분 ~ 20 시 50 분" → 시작/종료 */
 function parseSurveyTime(s: string): { start: Date | null; end: Date | null } {
   if (!s) return { start: null, end: null };
-  const re = /(\d{4})-(\d{2})-(\d{2})\s+(\d{1,2})\s*시\s*(\d{1,2})\s*분\s*~\s*(\d{1,2})\s*시\s*(\d{1,2})\s*분/g;
+  const re =
+    /(\d{4})-(\d{2})-(\d{2})\s+(\d{1,2})\s*시\s*(\d{1,2})\s*분\s*~\s*(\d{1,2})\s*시\s*(\d{1,2})\s*분/g;
   const sessions: { start: Date; end: Date }[] = [];
   let m: RegExpExecArray | null;
   while ((m = re.exec(s)) !== null) {
