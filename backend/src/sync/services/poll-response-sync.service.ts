@@ -196,6 +196,13 @@ export class PollResponseSyncService {
               }
             }
 
+            // Sanity check: 합이 110%를 한참 넘으면(같은 race를 다루는 여러 표가 union되어
+            // 합이 망가진 경우) 적재 skip — 잘못된 데이터가 차트에 노출되는 것 방지.
+            const totalRate = q.responses.reduce((s, r) => s + r.rate, 0);
+            if (totalRate > 110 || totalRate < 20) {
+              continue;
+            }
+
             for (const r of q.responses) {
               const partyId = r.partyName ? await this.lookupPartyId(r.partyName) : null;
               const candidateId =
