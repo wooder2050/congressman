@@ -191,17 +191,33 @@ function mergeQuestionsByRaceLabel(qs: ParsedQuestion[]): ParsedQuestion[] {
       groups.set(key, { ...q, responses: [...q.responses] });
       continue;
     }
-    // union responses by candidateName (or partyName if no candidate)
-    const seen = new Set(
-      existing.responses.map((r) => r.candidateName ?? r.partyName ?? '').filter(Boolean),
+    // 같은 raceLabel + questionType이라도 union이 위험할 수 있다:
+    //   - KSOI 가상대결처럼 매치업별 표가 여러 개일 때 union하면 합이 100%↑
+    //   - 다른 후보 명단을 가진 표가 같은 raceLabel을 가질 수도 있음
+    //
+    // 안전 가드: 합치기 전 후보 명단 비교.
+    //   1. 두 표의 응답이 모두 candidateName을 가지고 있을 때만 union 시도
+    //   2. 다른 후보를 추가한 결과 합이 110%를 넘으면 union 취소 → 첫 표만 유지
+    const existingCandSet = new Set(
+      existing.responses.map((r) => r.candidateName).filter((n): n is string => !!n),
     );
-    for (const r of q.responses) {
-      const k = r.candidateName ?? r.partyName ?? '';
-      if (k && !seen.has(k)) {
-        existing.responses.push(r);
-        seen.add(k);
-      }
-    }
+    const qCandSet = new Set(
+      q.responses.map((r) => r.candidateName).filter((n): n is string => !!n),
+    );
+    // 후보명 추출 못 한 경우는 union 안 함 (HRI/YRK 같은 nameless)
+    if (existingCandSet.size === 0 || qCandSet.size === 0) continue;
+
+    const newCandidates = q.responses.filter(
+      (r) => r.candidateName && !existingCandSet.has(r.candidateName),
+    );
+    if (newCandidates.length === 0) continue;
+
+    // 가상 union으로 합 검사
+    const merged = [...existing.responses, ...newCandidates];
+    const total = merged.reduce((sum, r) => sum + r.rate, 0);
+    if (total > 110) continue; // 합이 너무 커지면 union 취소
+
+    existing.responses = merged;
   }
   return Array.from(groups.values());
 }
