@@ -12,7 +12,8 @@
 
 import type { ParsedQuestion, ParsedResponse, PollPdfParser } from './types';
 
-const TABLE_HEADER_RE = /\[\s*표\s*\d+\s*\][^\n]*?([가-힣A-Za-z0-9·]+(?:시장|도지사|군수|구청장|교육감))\s*후보\s*(?:선호도|지지도)/;
+const TABLE_HEADER_RE =
+  /\[\s*표\s*\d+\s*\][^\n]*?([가-힣A-Za-z0-9·]+(?:시장|도지사|군수|구청장|교육감))\s*후보\s*(?:선호도|지지도)/;
 const TOTAL_ROW_RE = /^\s*■?\s*전\s*체\s*■?\s+\((\d+)\)\s+\((\d+)\)\s+([\d.\s]+)\s*$/;
 
 function parseEmbrainTotalRow(line: string): { sampleSize: number; numbers: number[] } | null {
