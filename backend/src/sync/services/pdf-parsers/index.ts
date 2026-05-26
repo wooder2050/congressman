@@ -3,6 +3,8 @@ import { ksoiParser } from './ksoi-parser';
 import { realmeterParser } from './realmeter-parser';
 import { hriParser } from './hri-parser';
 import { yeoronSurveyKkokParser } from './yeoron-survey-kkok-parser';
+import { kirParser } from './kir-parser';
+import { embrainParser } from './embrain-parser';
 
 /**
  * 사용 가능한 PDF 파서 목록.
@@ -13,6 +15,8 @@ const ALL_PARSERS: PollPdfParser[] = [
   realmeterParser,
   hriParser,
   yeoronSurveyKkokParser,
+  kirParser,
+  embrainParser,
 ];
 
 export function findParser(agency: string): PollPdfParser | null {
