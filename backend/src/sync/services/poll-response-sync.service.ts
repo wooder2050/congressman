@@ -182,12 +182,17 @@ export class PollResponseSyncService {
               if (dbCandidates.length > 0 && q.responses.length > dbCandidates.length) {
                 q.responses.splice(dbCandidates.length);
               }
-              // 응답 순서에 후보 매핑 (응답 개수 = DB 후보 개수일 때만 신뢰)
-              if (dbCandidates.length === q.responses.length) {
+              // 응답 개수 = DB 후보 개수일 때만 후보명 매핑.
+              // 일치하지 않으면 candidateName을 빈 채로 두어 잘못된 매핑 방지.
+              // (PDF 컬럼 순서와 DB candidateNumber 순서가 다른 경우 — 예: 인천시장
+              //  PDF에 김교흥이 첫 컬럼이지만 DB에는 미등록 → 데이터 매핑 불가)
+              if (dbCandidates.length === q.responses.length && dbCandidates.length > 0) {
                 for (let i = 0; i < q.responses.length; i++) {
                   q.responses[i].candidateName = dbCandidates[i].name;
-                  // partyName은 partyId만 있으니 빈 채로 두고 lookup 단계에서 처리
                 }
+              } else if (dbCandidates.length > 0) {
+                // 매핑 불가 — 이 question 자체를 건너뛴다 (사용자 화면에서 candidateName=null 응답이 보이지 않도록)
+                q.responses.length = 0;
               }
             }
 
