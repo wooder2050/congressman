@@ -15,7 +15,7 @@ export async function generateMetadata({ params }: ElectionPageProps): Promise<M
   const election = await getElection(id);
   if (!election) return { title: "선거 정보 없음" };
 
-  const description = `2026년 6월 3일 지방선거와 재보궐선거 정보를 한곳에서 확인하세요. ${election.districts.length}개 선거구 후보자 경력·공약·재산, 투표 일정·안내, 국회의원 출신 후보 성적표를 제공합니다.`;
+  const description = `2026년 6월 3일 국회의원 재보궐선거 ${election.districts.length}개 선거구를 한곳에서. 부산 북갑(한동훈·박민식·하정우)·평택을(김용남·조국·유의동 등 5파전) 핫스팟, 후보자 경력·공약·재산, 투표 일정과 사전투표(5/29~30)·본투표(6/3) 안내, 국회의원 출신 후보 성적표를 제공합니다.`;
 
   return {
     title: `${election.name} — 지방선거·재보궐 종합 정보`,
