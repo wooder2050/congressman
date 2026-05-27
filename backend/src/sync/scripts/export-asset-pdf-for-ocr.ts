@@ -117,7 +117,9 @@ async function main() {
 
         // PDF 매직 바이트 검증 (%PDF) - NEC에서 누락된 PDF는 HTML 에러 페이지로 옴
         if (buf.length < 4 || buf.slice(0, 4).toString('ascii') !== '%PDF') {
-          console.warn(`  page${pageNum}: NEC PDF 누락 (응답이 PDF 아님, ${buf.length} bytes) skip`);
+          console.warn(
+            `  page${pageNum}: NEC PDF 누락 (응답이 PDF 아님, ${buf.length} bytes) skip`,
+          );
           continue;
         }
 
@@ -126,18 +128,28 @@ async function main() {
         // 2) 고해상도 PNG 변환
         const pngBase = path.join(candidateDir, `page-${pageNum}`);
         try {
-          await execFileP('pdftoppm', ['-png', '-r', String(dpi), '-singlefile', pdfPath, pngBase], {
-            timeout: 60_000,
-          });
+          await execFileP(
+            'pdftoppm',
+            ['-png', '-r', String(dpi), '-singlefile', pdfPath, pngBase],
+            {
+              timeout: 60_000,
+            },
+          );
         } catch (e) {
-          console.warn(`  page${pageNum}: pdftoppm 실패 (${(e as Error).message.slice(0, 80)}) skip`);
-          try { fs.unlinkSync(pdfPath); } catch {}
+          console.warn(
+            `  page${pageNum}: pdftoppm 실패 (${(e as Error).message.slice(0, 80)}) skip`,
+          );
+          try {
+            fs.unlinkSync(pdfPath);
+          } catch {}
           continue;
         }
         const pngPath = `${pngBase}.png`;
         if (!fs.existsSync(pngPath)) {
           console.warn(`  page${pageNum}: pdftoppm output missing`);
-          try { fs.unlinkSync(pdfPath); } catch {}
+          try {
+            fs.unlinkSync(pdfPath);
+          } catch {}
           continue;
         }
         pages.push({ num: pageNum, png: pngPath, sourcePdf: pdfUrl });
