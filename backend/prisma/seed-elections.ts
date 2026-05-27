@@ -468,6 +468,28 @@ async function main() {
       partyId: 'ppp',
       career: '국민의힘 대구 달성군 단수공천\n전 방송통신위원장',
     },
+    // 충남 공주시부여군청양군 (5/27 시점 3파전 확정)
+    {
+      district: '충남 공주시부여군청양군',
+      name: '김영빈',
+      partyId: 'democratic',
+      career:
+        '변호사 (법무법인 승본 대표변호사)\n전 두나무 부사장\n전 서울중앙지검·법무부 정책보좌관실 검사\n공주 출신',
+    },
+    {
+      district: '충남 공주시부여군청양군',
+      name: '윤용근',
+      partyId: 'ppp',
+      career:
+        '변호사 (법무법인 에이플러스 대표변호사)\n전 국민의힘 성남 중원당협위원장\n전 장동혁 대표 당 미디어대변인\n부여 출신',
+    },
+    {
+      district: '충남 공주시부여군청양군',
+      name: '김혁종',
+      partyId: 'independent',
+      career:
+        '전 김태흠 충남도지사 비서\n전 정진석 국회의원(공주·부여·청양) 보좌관\n국민의힘 경선 배제 후 탈당·무소속 출마',
+    },
   ];
 
   for (const c of candidates) {
