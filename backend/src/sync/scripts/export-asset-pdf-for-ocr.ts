@@ -106,24 +106,50 @@ async function main() {
         const pdfUrl = c.assetPdfUrls[i];
         const pageNum = i + 1;
 
-        // 1) PDF 다운로드
+        // 1) PDF 다운로드 (redirect follow)
         const pdfPath = path.join(candidateDir, `page-${pageNum}.pdf`);
-        const res = await fetch(pdfUrl, { headers: HTTP_HEADERS });
+        const res = await fetch(pdfUrl, { headers: HTTP_HEADERS, redirect: 'follow' });
         if (!res.ok) {
           console.warn(`  page${pageNum}: HTTP ${res.status} skip`);
           continue;
         }
         const buf = Buffer.from(await res.arrayBuffer());
+
+        // PDF 매직 바이트 검증 (%PDF) - NEC에서 누락된 PDF는 HTML 에러 페이지로 옴
+        if (buf.length < 4 || buf.slice(0, 4).toString('ascii') !== '%PDF') {
+          console.warn(
+            `  page${pageNum}: NEC PDF 누락 (응답이 PDF 아님, ${buf.length} bytes) skip`,
+          );
+          continue;
+        }
+
         fs.writeFileSync(pdfPath, buf);
 
         // 2) 고해상도 PNG 변환
         const pngBase = path.join(candidateDir, `page-${pageNum}`);
-        await execFileP('pdftoppm', ['-png', '-r', String(dpi), '-singlefile', pdfPath, pngBase], {
-          timeout: 60_000,
-        });
+        try {
+          await execFileP(
+            'pdftoppm',
+            ['-png', '-r', String(dpi), '-singlefile', pdfPath, pngBase],
+            {
+              timeout: 60_000,
+            },
+          );
+        } catch (e) {
+          console.warn(
+            `  page${pageNum}: pdftoppm 실패 (${(e as Error).message.slice(0, 80)}) skip`,
+          );
+          try {
+            fs.unlinkSync(pdfPath);
+          } catch {}
+          continue;
+        }
         const pngPath = `${pngBase}.png`;
         if (!fs.existsSync(pngPath)) {
           console.warn(`  page${pageNum}: pdftoppm output missing`);
+          try {
+            fs.unlinkSync(pdfPath);
+          } catch {}
           continue;
         }
         pages.push({ num: pageNum, png: pngPath, sourcePdf: pdfUrl });
