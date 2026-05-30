@@ -10,6 +10,20 @@ import LocalGovernorHotspots from "./LocalGovernorHotspots";
 import LocalRegistrationBanner from "./LocalRegistrationBanner";
 import RegionGrid from "./RegionGrid";
 
+const EARLY_VOTE_END = new Date(2026, 4, 30); // 5/30 사전투표 종료
+const ELECTION_DAY = new Date(2026, 5, 3); // 6/3 본투표
+
+function getVoteInfo(): { stage: "before" | "early" | "after" | "day"; dDay: number } {
+  const now = new Date();
+  now.setHours(0, 0, 0, 0);
+  const dDay = Math.ceil((ELECTION_DAY.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
+  const earlyStart = new Date(2026, 4, 29);
+  if (now < earlyStart) return { stage: "before", dDay };
+  if (now <= EARLY_VOTE_END) return { stage: "early", dDay };
+  if (dDay > 0) return { stage: "after", dDay };
+  return { stage: "day", dDay };
+}
+
 const TYPE_ROUTES: Record<LocalElectionType, string> = {
   governor: "governor",
   mayor: "mayor",
@@ -22,6 +36,7 @@ const TYPE_ROUTES: Record<LocalElectionType, string> = {
 
 export default function LocalElectionLanding({ year }: { year: string }) {
   const { data: election } = useCongressSuspenseQuery(getLocalElection, `local-${year}`);
+  const voteInfo = getVoteInfo();
 
   if (!election) {
     return (
@@ -87,7 +102,13 @@ export default function LocalElectionLanding({ year }: { year: string }) {
             <div>
               <h3 className="font-bold text-(--color-text-primary)">투표 안내</h3>
               <p className="text-sm text-(--color-text-secondary)">
-                사전투표 5/29~30 · 본투표 6/3 · 투표용지 최대 7장
+                {voteInfo.stage === "after"
+                  ? `사전투표 23.51% 마감(역대 최고) · 본투표 D-${voteInfo.dDay}(6/3) · 투표용지 최대 7장`
+                  : voteInfo.stage === "early"
+                    ? "사전투표 진행 중(5/29~30, 06~18시) · 본투표 6/3 · 투표용지 최대 7장"
+                    : voteInfo.stage === "day"
+                      ? "오늘은 6·3 지방선거 본투표일 · 06~18시 · 투표용지 최대 7장"
+                      : "사전투표 5/29~30 · 본투표 6/3 · 투표용지 최대 7장"}
               </p>
             </div>
           </div>
