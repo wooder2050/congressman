@@ -5,7 +5,7 @@ import LocalElectionSkeleton from "@/components/local-elections/LocalElectionSke
 import LocalCandidateDetailInner from "@/components/local-elections/LocalCandidateDetailInner";
 import JsonLd from "@/components/seo/JsonLd";
 
-export const revalidate = 60; // 개표일 득표 결과 갱신
+export const revalidate = 1800; // 30min (ISR Write 절감, 6/3 개표 갱신 유지)
 export const dynamicParams = true;
 
 export function generateStaticParams() {

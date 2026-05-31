@@ -6,7 +6,7 @@ import RaceListInner from "@/components/local-elections/RaceListInner";
 import JsonLd from "@/components/seo/JsonLd";
 import { sidoToShort } from "@/constants/local-elections";
 
-export const revalidate = 600; // 10min
+export const revalidate = 1800; // 30min (ISR Write 절감, 6/3 개표 갱신 유지)
 export const dynamicParams = true;
 
 export function generateStaticParams() {

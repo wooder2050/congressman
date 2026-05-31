@@ -6,7 +6,7 @@ import RegionDetailInner from "@/components/local-elections/RegionDetailInner";
 import JsonLd from "@/components/seo/JsonLd";
 import { sidoToShort } from "@/constants/local-elections";
 
-export const revalidate = 600; // 10min (개표일 빠른 갱신 필요)
+export const revalidate = 1800; // 30min (ISR Write 절감, 6/3 개표 갱신 유지)
 export const dynamicParams = true;
 
 export function generateStaticParams() {

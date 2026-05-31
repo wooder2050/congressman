@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import JsonLd from "@/components/seo/JsonLd";
 
-export const revalidate = 600; // 10min — 정적 콘텐츠지만 일관성 위해
+export const revalidate = 21600; // 6h — 투표 안내는 정적 콘텐츠라 자주 재생성 불필요 (ISR Write 절감)
 export const dynamicParams = true;
 
 export function generateStaticParams() {
