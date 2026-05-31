@@ -27,6 +27,9 @@ export default function UpcomingSchedules({ termId }: UpcomingSchedulesProps) {
       </div>
 
       {schedules.length === 0 ? (
+        // TODO(2026-06-06): 22대 후반기 의장단 본회의(6/5 목)가 끝나고 daily sync로 국회
+        // 일정이 다시 채워지면 이 임시 안내 카드를 제거하고 원래 빈 메시지로 되돌릴 것.
+        // 임시 안내는 5/29~6/4 국회 휴지기 구간에서만 유효함.
         <div className="rounded-xl border border-(--color-primary) bg-blue-50 p-4 sm:p-5 dark:bg-blue-950/30">
           <div className="flex flex-wrap items-center gap-2">
             <span className="rounded-md bg-(--color-primary) px-2 py-0.5 text-xs font-bold text-white">
