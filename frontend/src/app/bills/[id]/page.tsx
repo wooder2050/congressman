@@ -5,7 +5,7 @@ import BillDetailInner from "@/components/bills/BillDetailInner";
 import BillJsonLd from "@/components/seo/BillJsonLd";
 import BreadcrumbJsonLd from "@/components/seo/BreadcrumbJsonLd";
 
-export const revalidate = 21600; // 6h
+export const revalidate = 172800; // 2d — 법안은 발의 후 거의 불변, 크롤링 재생성 절감 (AI 요약 반영 지연 최대 2일)
 export const dynamicParams = true;
 
 // 빈 배열을 반환해 첫 방문 시 ISR로 정적 생성되도록 한다.

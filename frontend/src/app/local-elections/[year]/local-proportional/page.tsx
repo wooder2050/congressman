@@ -6,7 +6,7 @@ import LocalProportionalNotice from "@/components/local-elections/LocalProportio
 import RaceListInner from "@/components/local-elections/RaceListInner";
 import JsonLd from "@/components/seo/JsonLd";
 
-export const revalidate = 600; // 10min
+export const revalidate = 21600; // 6h — NEC 미제공 안내 정적 페이지 (ISR Write 절감)
 export const dynamicParams = true;
 
 export function generateStaticParams() {

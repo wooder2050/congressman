@@ -5,7 +5,7 @@ import LocalElectionSkeleton from "@/components/local-elections/LocalElectionSke
 import RaceDetailInner from "@/components/local-elections/RaceDetailInner";
 import JsonLd from "@/components/seo/JsonLd";
 
-export const revalidate = 60; // 60s — 개표일 race 단위 갱신 (다른 지방선거 페이지는 600s)
+export const revalidate = 1800; // 30min (ISR Write 절감, 6/3 개표 갱신 유지)
 export const dynamicParams = true;
 
 export function generateStaticParams() {

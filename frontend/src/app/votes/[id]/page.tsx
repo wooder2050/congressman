@@ -5,7 +5,7 @@ import VoteDetailInner from "@/components/votes/VoteDetailInner";
 import VoteJsonLd from "@/components/seo/VoteJsonLd";
 import BreadcrumbJsonLd from "@/components/seo/BreadcrumbJsonLd";
 
-export const revalidate = 21600; // 6h
+export const revalidate = 172800; // 2d — 표결은 종료 후 불변, 크롤링 재생성 절감
 export const dynamicParams = true;
 
 export function generateStaticParams() {

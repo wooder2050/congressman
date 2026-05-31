@@ -4,7 +4,7 @@ import LocalElectionBreadcrumb from "@/components/local-elections/LocalElectionB
 import RegionGrid from "@/components/local-elections/RegionGrid";
 import JsonLd from "@/components/seo/JsonLd";
 
-export const revalidate = 600; // 10min
+export const revalidate = 1800; // 30min (ISR Write 절감, 6/3 개표 갱신 유지)
 export const dynamicParams = true;
 
 export function generateStaticParams() {
