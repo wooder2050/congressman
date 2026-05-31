@@ -27,9 +27,24 @@ export default function UpcomingSchedules({ termId }: UpcomingSchedulesProps) {
       </div>
 
       {schedules.length === 0 ? (
-        <p className="flex min-h-30 items-center justify-center text-center text-sm text-(--color-text-tertiary)">
-          예정된 일정이 없습니다.
-        </p>
+        <div className="rounded-xl border border-(--color-primary) bg-blue-50 p-4 sm:p-5 dark:bg-blue-950/30">
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="rounded-md bg-(--color-primary) px-2 py-0.5 text-xs font-bold text-white">
+              국회 휴지기
+            </span>
+            <span className="text-xs font-semibold text-(--color-text-secondary)">
+              22대 전반기 종료(5/29) · 6·3 지방선거 주간
+            </span>
+          </div>
+          <h3 className="mt-2.5 text-base font-bold text-(--color-text-primary) sm:text-lg">
+            🏛️ 6/5(목) 22대 국회 후반기 의장단 선출 본회의부터 일정 재개
+          </h3>
+          <p className="mt-1.5 text-sm leading-relaxed text-(--color-text-secondary)">
+            6월 5일 오후 2시 본회의에서 조정식 신임 국회의장(민주, 6선)과 부의장 남인순(민주,
+            4선)·박덕흠(국힘, 4선)이 정식 선출됩니다. 6·3 지방선거 결과 발표 직후 후반기 입법 활동이
+            본격화되며, 국회 일정이 등록되는 대로 자동으로 표시됩니다.
+          </p>
+        </div>
       ) : (
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
           {schedules.map((schedule) => (
