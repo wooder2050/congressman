@@ -119,7 +119,9 @@ export default function BallotCard({ number, ballotLabel, kind, type, races, yea
                 {race.topCandidates.map((c) => (
                   <span
                     key={c.id}
-                    className="inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-medium"
+                    className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-medium ${
+                      c.isWinner ? "ring-1 ring-green-500" : ""
+                    }`}
                     style={{
                       backgroundColor: c.party?.color
                         ? `${c.party.color}18`
@@ -127,10 +129,16 @@ export default function BallotCard({ number, ballotLabel, kind, type, races, yea
                       color: c.party?.color ?? "var(--color-text-secondary)",
                     }}
                   >
+                    {c.isWinner && (
+                      <span className="font-bold text-green-600 dark:text-green-400">✓</span>
+                    )}
                     {c.candidateNumber != null && (
                       <span className="font-bold">{c.candidateNumber}</span>
                     )}
                     {c.name}
+                    {c.voteRate != null && (
+                      <span className="text-(--color-text-tertiary)">{c.voteRate.toFixed(1)}%</span>
+                    )}
                   </span>
                 ))}
                 {race.candidateCount > race.topCandidates.length && (

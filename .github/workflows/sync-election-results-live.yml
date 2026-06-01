@@ -1,0 +1,64 @@
+name: Sync Local Election Results (Manual)
+
+# 수동 실행 전용. 6/3 개표 시간대에 필요할 때마다 GitHub UI에서 Run workflow.
+# 반복 실행이 필요하면 화면을 열어둔 채 주기적으로 누르거나, 잠시 schedule을 임시 활성화.
+on:
+  workflow_dispatch: {}
+
+concurrency:
+  group: sync-election-results-live
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    name: Run local election results sync
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    defaults:
+      run:
+        working-directory: backend
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          package_json_file: package.json
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - name: Install dependencies
+        run: cd .. && pnpm install --frozen-lockfile
+
+      - name: Generate Prisma Client
+        run: pnpm prisma:generate
+
+      - name: Run results sync
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          NEC_API_KEY: ${{ secrets.NEC_API_KEY }}
+          UPSTASH_REDIS_REST_URL: ${{ secrets.UPSTASH_REDIS_REST_URL }}
+          UPSTASH_REDIS_REST_TOKEN: ${{ secrets.UPSTASH_REDIS_REST_TOKEN }}
+        run: pnpm sync:local-election-results
+
+      - name: Create issue on failure
+        if: failure()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const title = `[Sync] Election results sync failed — ${new Date().toISOString()}`;
+            const body = `Manual election results sync failed.\n\nRun: ${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`;
+            await github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title,
+              body,
+              labels: ['sync-failure'],
+            });

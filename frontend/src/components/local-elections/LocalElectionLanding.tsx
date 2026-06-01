@@ -5,9 +5,11 @@ import { useCongressSuspenseQuery } from "@/hooks/useCongressQuery";
 import { getLocalElection } from "@/lib/api";
 import type { LocalElectionType } from "@/types";
 import { ELECTION_TYPES } from "@/constants/local-elections";
+import { isElectionMode } from "@/lib/local-election-result";
 import LocalElectionHeader from "./LocalElectionHeader";
 import LocalGovernorHotspots from "./LocalGovernorHotspots";
 import LocalRegistrationBanner from "./LocalRegistrationBanner";
+import LocalResultSummary from "./LocalResultSummary";
 import RegionGrid from "./RegionGrid";
 
 const EARLY_VOTE_END = new Date(2026, 4, 30); // 5/30 사전투표 종료
@@ -46,15 +48,20 @@ export default function LocalElectionLanding({ year }: { year: string }) {
     );
   }
 
+  const resultMode = isElectionMode(election.status);
+
   return (
     <div className="space-y-8">
       <LocalElectionHeader election={election} />
 
-      {/* 후보등록 마감 안내 배너 (5/14~15 전까지만 노출) */}
-      <LocalRegistrationBanner />
+      {/* 후보등록 마감 안내 배너 (5/14~15 전까지만 노출, 개표 모드에선 숨김) */}
+      <LocalRegistrationBanner resultMode={resultMode} />
 
-      {/* 광역단체장 격전지 */}
-      <LocalGovernorHotspots />
+      {/* 개표 현황 — 개표 시작(status === "completed") 시 정당별 당선 수 요약을 최상단에 */}
+      {resultMode && <LocalResultSummary electionId={election.id} />}
+
+      {/* 광역단체장 격전지 — 여론조사 기반 정적 콘텐츠라 개표 후에는 숨김 */}
+      {!resultMode && <LocalGovernorHotspots />}
 
       {/* 선거 유형별 카드 */}
       <section>
@@ -100,15 +107,19 @@ export default function LocalElectionLanding({ year }: { year: string }) {
           <div className="flex items-center gap-3">
             <span className="text-2xl">🗳️</span>
             <div>
-              <h3 className="font-bold text-(--color-text-primary)">투표 안내</h3>
+              <h3 className="font-bold text-(--color-text-primary)">
+                {resultMode ? "개표 현황" : "투표 안내"}
+              </h3>
               <p className="text-sm text-(--color-text-secondary)">
-                {voteInfo.stage === "after"
-                  ? `사전투표 23.51% 마감(역대 최고) · 본투표 D-${voteInfo.dDay}(6/3) · 투표용지 최대 7장`
-                  : voteInfo.stage === "early"
-                    ? "사전투표 진행 중(5/29~30, 06~18시) · 본투표 6/3 · 투표용지 최대 7장"
-                    : voteInfo.stage === "day"
-                      ? "오늘은 6·3 지방선거 본투표일 · 06~18시 · 투표용지 최대 7장"
-                      : "사전투표 5/29~30 · 본투표 6/3 · 투표용지 최대 7장"}
+                {resultMode
+                  ? "6·3 지방선거 개표가 진행 중입니다 · 선거구별 당선 결과를 확인하세요"
+                  : voteInfo.stage === "after"
+                    ? `사전투표 23.51% 마감(역대 최고) · 본투표 D-${voteInfo.dDay}(6/3) · 투표용지 최대 7장`
+                    : voteInfo.stage === "early"
+                      ? "사전투표 진행 중(5/29~30, 06~18시) · 본투표 6/3 · 투표용지 최대 7장"
+                      : voteInfo.stage === "day"
+                        ? "오늘은 6·3 지방선거 본투표일 · 06~18시 · 투표용지 최대 7장"
+                        : "사전투표 5/29~30 · 본투표 6/3 · 투표용지 최대 7장"}
               </p>
             </div>
           </div>

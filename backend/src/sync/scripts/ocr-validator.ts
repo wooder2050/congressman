@@ -71,11 +71,14 @@ interface RawItem {
   relation?: unknown;
   description?: unknown;
   currentValue?: unknown;
+  // amount: currentValue 별칭 (OCR 입력이 amount 키를 쓰는 경우 지원)
+  amount?: unknown;
   previousValue?: unknown;
   increaseValue?: unknown;
   decreaseValue?: unknown;
   marketPrice?: unknown;
   changeReason?: unknown;
+  note?: unknown;
 }
 
 interface RawCandidate {
@@ -261,12 +264,19 @@ export function validateInput(raw: RawInput): ValidatedCandidate[] {
           ? null
           : vString(item.changeReason, `${itemCtx}.changeReason`, { max: 200 });
 
+      // currentValue 우선, 없으면 amount 별칭 사용
+      const currentValueRaw = item.currentValue ?? item.amount;
+      const currentValueField =
+        item.currentValue !== undefined && item.currentValue !== null
+          ? `${itemCtx}.currentValue`
+          : `${itemCtx}.amount`;
+
       validatedItems.push({
         category,
         subCategory,
         relation,
         description,
-        currentValue: vMoney(item.currentValue, `${itemCtx}.currentValue`),
+        currentValue: vMoney(currentValueRaw, currentValueField),
         previousValue: vMoney(item.previousValue, `${itemCtx}.previousValue`),
         increaseValue: vMoney(item.increaseValue, `${itemCtx}.increaseValue`, false),
         decreaseValue: vMoney(item.decreaseValue, `${itemCtx}.decreaseValue`, false),
