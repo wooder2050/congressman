@@ -684,6 +684,10 @@ export interface LocalElectionCandidatePreview {
   party: Party | null;
   candidateNumber: number | null;
   photoUrl: string | null;
+  /** 개표 결과 — 개표 전에는 false/null */
+  isWinner: boolean;
+  voteCount: number | null;
+  voteRate: number | null;
 }
 
 export interface LocalElectionPartyGroup {
@@ -750,6 +754,8 @@ export interface LocalElectionRaceDetail {
   district: string;
   displayName: string;
   seatCount: number;
+  /** 선거 전체 상태 — "completed"면 개표 모드 */
+  electionStatus: "upcoming" | "active" | "completed";
   candidates: LocalElectionCandidateDetail[];
 }
 
@@ -807,9 +813,13 @@ export interface LocalElectionRegionDetail {
 export interface LocalElectionStats {
   totalRaces: number;
   totalCandidates: number;
+  /** 개표 모드 — 당선 확정 총 인원 */
+  totalWinners: number;
   racesByType: Record<string, number>;
   candidatesByType: Record<string, number>;
   candidatesByParty: Record<string, number>;
+  /** 개표 모드 — 정당별 당선 수 */
+  winnersByParty: Record<string, number>;
 }
 
 // ====== 유저 환경설정 ======

@@ -311,13 +311,19 @@ export class LocalElectionsService {
       ];
     }
 
-    const [races, total] = await Promise.all([
+    const [races, total, election] = await Promise.all([
       this.prisma.localElectionRace.findMany({
         where,
         include: {
           candidates: {
             include: { party: true },
-            orderBy: [{ candidateNumber: { sort: 'asc', nulls: 'last' } }, { name: 'asc' }],
+            // 당선자가 take 안에 항상 포함되도록 isWinner 우선 정렬 (개표 모드 목록 요약용)
+            orderBy: [
+              { isWinner: 'desc' },
+              { voteCount: { sort: 'desc', nulls: 'last' } },
+              { candidateNumber: { sort: 'asc', nulls: 'last' } },
+              { name: 'asc' },
+            ],
             take: 3,
           },
           _count: { select: { candidates: true } },
@@ -327,6 +333,10 @@ export class LocalElectionsService {
         take: filter.limit,
       }),
       this.prisma.localElectionRace.count({ where }),
+      this.prisma.localElection.findUnique({
+        where: { id },
+        select: { status: true },
+      }),
     ]);
 
     const result = {
@@ -352,13 +362,16 @@ export class LocalElectionsService {
             : null,
           candidateNumber: c.candidateNumber,
           photoUrl: c.photoUrl,
+          isWinner: c.isWinner,
+          voteCount: c.voteCount,
+          voteRate: c.voteRate,
         })),
       })),
       total,
     };
 
     if (cacheKey) {
-      await this.redis.set(cacheKey, result, 3600); // 1시간 (개표 결과 분기는 후속 PR에서)
+      await this.redis.set(cacheKey, result, getCacheTTL(election?.status ?? 'upcoming'));
     }
     return result;
   }
@@ -390,6 +403,7 @@ export class LocalElectionsService {
       district: race.district,
       displayName: race.displayName,
       seatCount: race.seatCount,
+      electionStatus: race.election.status,
       candidates: race.candidates.map(mapLocalCandidate),
     };
 
@@ -590,6 +604,9 @@ export class LocalElectionsService {
           : null,
         candidateNumber: c.candidateNumber,
         photoUrl: c.photoUrl,
+        isWinner: c.isWinner,
+        voteCount: c.voteCount,
+        voteRate: c.voteRate,
       }));
 
       return {
@@ -622,7 +639,11 @@ export class LocalElectionsService {
       sigunguList,
     };
 
-    await this.redis.set(key, result, 3600);
+    const election = await this.prisma.localElection.findUnique({
+      where: { id },
+      select: { status: true },
+    });
+    await this.redis.set(key, result, getCacheTTL(election?.status ?? 'upcoming'));
     return result;
   }
 
@@ -639,7 +660,12 @@ export class LocalElectionsService {
 
     const candidates = await this.prisma.localElectionCandidate.findMany({
       where: { race: { electionId: id } },
-      select: { partyId: true, status: true, race: { select: { electionType: true } } },
+      select: {
+        partyId: true,
+        status: true,
+        isWinner: true,
+        race: { select: { electionType: true } },
+      },
     });
 
     // 유형별 race 수
@@ -661,15 +687,32 @@ export class LocalElectionsService {
       candidatesByType[c.race.electionType] = (candidatesByType[c.race.electionType] ?? 0) + 1;
     }
 
+    // 정당별 당선 수 (개표 모드 — 당선자 집계). totalWinners로 전체 개표 진척도 가늠 가능.
+    const winnersByParty: Record<string, number> = {};
+    let totalWinners = 0;
+    for (const c of candidates) {
+      if (!c.isWinner) continue;
+      const pid = c.partyId ?? 'independent';
+      winnersByParty[pid] = (winnersByParty[pid] ?? 0) + 1;
+      totalWinners += 1;
+    }
+
+    const election = await this.prisma.localElection.findUnique({
+      where: { id },
+      select: { status: true },
+    });
+
     const result = {
       totalRaces: races.length,
       totalCandidates: candidates.length,
+      totalWinners,
       racesByType,
       candidatesByType,
       candidatesByParty,
+      winnersByParty,
     };
 
-    await this.redis.set(key, result, 3600);
+    await this.redis.set(key, result, getCacheTTL(election?.status ?? 'upcoming'));
     return result;
   }
 }
