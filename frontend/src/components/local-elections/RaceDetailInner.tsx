@@ -6,6 +6,7 @@ import { useCongressSuspenseQuery } from "@/hooks/useCongressQuery";
 import { getLocalElectionRace } from "@/lib/api";
 import { electionTypeLabel, sidoToShort } from "@/constants/local-elections";
 import type { LocalElectionCandidateDetail, LocalElectionType } from "@/types";
+import { isElectionMode, isRaceTallied, sortByResult } from "@/lib/local-election-result";
 import LocalCandidateCard from "./LocalCandidateCard";
 import RacePollTimeseries from "@/components/polls/RacePollTimeseries";
 
@@ -64,10 +65,21 @@ export default function RaceDetailInner({ electionId, raceId }: Props) {
     raceId,
   });
 
+  // 개표 모드: 전역(election.status === "completed") + race별 개표 여부
+  const resultMode = isElectionMode(race?.electionStatus);
+  const tallied = race ? isRaceTallied(race.candidates) : false;
+  const showResults = resultMode && tallied;
+
   const partyBuckets = useMemo(() => {
     if (!race || !PROPORTIONAL_TYPES.has(race.electionType)) return null;
     return groupByParty(race.candidates);
   }, [race]);
+
+  // 개표 완료 시 비례 외 후보는 득표순(당선자 우선) 정렬
+  const orderedCandidates = useMemo(() => {
+    if (!race) return [];
+    return showResults ? sortByResult(race.candidates) : race.candidates;
+  }, [race, showResults]);
 
   if (!race) {
     return (
@@ -116,16 +128,34 @@ export default function RaceDetailInner({ electionId, raceId }: Props) {
 
       {/* 헤더 */}
       <section className="space-y-2">
-        <span className="inline-block rounded bg-(--color-bg-tertiary) px-2 py-0.5 text-xs font-medium text-(--color-text-tertiary)">
-          {electionTypeLabel(race.electionType)}
-        </span>
+        <div className="flex items-center gap-2">
+          <span className="inline-block rounded bg-(--color-bg-tertiary) px-2 py-0.5 text-xs font-medium text-(--color-text-tertiary)">
+            {electionTypeLabel(race.electionType)}
+          </span>
+          {resultMode && (
+            <span
+              className={`inline-block rounded px-2 py-0.5 text-xs font-bold ${
+                showResults
+                  ? "bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-300"
+                  : "bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300"
+              }`}
+            >
+              {showResults ? "개표 완료" : "개표 진행 중"}
+            </span>
+          )}
+        </div>
         <h1 className="text-2xl font-bold text-(--color-text-primary)">{race.displayName}</h1>
         <p className="text-sm text-(--color-text-secondary)">
           {isProportional
             ? `${partyBuckets.length}개 정당 · 명부 후보 ${race.candidates.length}명`
             : `후보 ${race.candidates.length}명${race.seatCount > 1 ? ` · ${race.seatCount}석 선출` : ""}`}
         </p>
-        {isProportional && (
+        {resultMode && !showResults && (
+          <p className="text-xs text-(--color-text-tertiary)">
+            개표가 진행 중입니다. 득표 결과는 NEC 당선인 정보가 이관되는 대로 자동 반영됩니다.
+          </p>
+        )}
+        {isProportional && !resultMode && (
           <p className="text-xs text-(--color-text-tertiary)">
             정당별 비례대표 명부입니다. 번호는 정당 안에서의 추천순위이며, 사용자는 정당에
             투표합니다.
@@ -153,8 +183,13 @@ export default function RaceDetailInner({ electionId, raceId }: Props) {
                 </span>
               </header>
               <div className="grid gap-3 p-4 sm:grid-cols-2">
-                {bucket.candidates.map((c) => (
-                  <LocalCandidateCard key={c.id} candidate={c} year={year} />
+                {(showResults ? sortByResult(bucket.candidates) : bucket.candidates).map((c) => (
+                  <LocalCandidateCard
+                    key={c.id}
+                    candidate={c}
+                    year={year}
+                    resultMode={showResults}
+                  />
                 ))}
               </div>
             </section>
@@ -163,17 +198,19 @@ export default function RaceDetailInner({ electionId, raceId }: Props) {
       ) : (
         <section>
           <div className="grid gap-4 sm:grid-cols-2">
-            {race.candidates.map((c) => (
-              <LocalCandidateCard key={c.id} candidate={c} year={year} />
+            {orderedCandidates.map((c) => (
+              <LocalCandidateCard key={c.id} candidate={c} year={year} resultMode={showResults} />
             ))}
           </div>
         </section>
       )}
 
-      {/* 여론조사 시계열 추이 */}
-      <div className="border-t border-(--color-border-primary) pt-6">
-        <RacePollTimeseries raceId={race.id} />
-      </div>
+      {/* 여론조사 시계열 추이 — 개표 완료 후에는 결과가 우선이므로 노출하지 않음 */}
+      {!showResults && (
+        <div className="border-t border-(--color-border-primary) pt-6">
+          <RacePollTimeseries raceId={race.id} />
+        </div>
+      )}
 
       {/* 시도 페이지로 돌아가기 — 모바일에서 페이지 하단 액션으로도 노출 */}
       <section className="border-t border-(--color-border-primary) pt-4">

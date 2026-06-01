@@ -35,9 +35,16 @@ function daysUntil(target: Date): number {
   return Math.ceil((target.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
 }
 
-export default function LocalRegistrationBanner() {
+interface Props {
+  /** 개표 모드(선거 status === "completed")면 후보 안내 배너를 숨긴다 */
+  resultMode?: boolean;
+}
+
+export default function LocalRegistrationBanner({ resultMode = false }: Props) {
   const stage = getStage();
 
+  // 개표가 시작되면(전역 status completed) 후보 정보 안내 배너는 노출하지 않음
+  if (resultMode) return null;
   if (stage === "after") return null;
 
   const daysToReg = daysUntil(REGISTRATION_START);
