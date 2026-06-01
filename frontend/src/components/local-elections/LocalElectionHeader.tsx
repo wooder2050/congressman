@@ -30,15 +30,20 @@ export default function LocalElectionHeader({ election }: { election: LocalElect
   const dday = getDDay(election.electionDate);
   const status = STATUS_LABEL[election.status] ?? STATUS_LABEL.upcoming;
 
+  const isCompleted = election.status === "completed";
+
   return (
     <section className="space-y-3">
       <div className="flex flex-wrap items-center gap-2">
         <span className={`rounded-md px-2 py-0.5 text-xs font-bold ${status.className}`}>
           {status.text}
         </span>
-        <span className="rounded-md bg-rose-100 px-2 py-0.5 text-xs font-bold text-rose-700 dark:bg-rose-900/40 dark:text-rose-300">
-          {dday}
-        </span>
+        {/* 개표 완료 후에는 D-day가 의미 없으므로 숨김 */}
+        {!isCompleted && (
+          <span className="rounded-md bg-rose-100 px-2 py-0.5 text-xs font-bold text-rose-700 dark:bg-rose-900/40 dark:text-rose-300">
+            {dday}
+          </span>
+        )}
       </div>
 
       <h1 className="text-2xl font-bold sm:text-3xl sm:font-extrabold sm:tracking-tight">
