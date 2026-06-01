@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import { useCongressSuspenseQuery } from "@/hooks/useCongressQuery";
 import { getLocalElectionRace } from "@/lib/api";
@@ -8,6 +9,7 @@ import { electionTypeLabel, sidoToShort } from "@/constants/local-elections";
 import type { LocalElectionCandidateDetail, LocalElectionType } from "@/types";
 import { isElectionMode, isRaceTallied, sortByResult } from "@/lib/local-election-result";
 import LocalCandidateCard from "./LocalCandidateCard";
+import LocalResultCandidateRow from "./LocalResultCandidateRow";
 import RacePollTimeseries from "@/components/polls/RacePollTimeseries";
 
 interface Props {
@@ -80,6 +82,21 @@ export default function RaceDetailInner({ electionId, raceId }: Props) {
     if (!race) return [];
     return showResults ? sortByResult(race.candidates) : race.candidates;
   }, [race, showResults]);
+
+  // 개표 결과 요약: 최다 득표(바 정규화 기준)와 1·2위 격차
+  const resultSummary = useMemo(() => {
+    if (!showResults || orderedCandidates.length === 0) return null;
+    const top = orderedCandidates[0];
+    const runnerUp = orderedCandidates[1];
+    const maxVoteCount = top.voteCount ?? 0;
+    const gapRate =
+      top.voteRate != null && runnerUp?.voteRate != null ? top.voteRate - runnerUp.voteRate : null;
+    const gapVotes =
+      top.voteCount != null && runnerUp?.voteCount != null
+        ? top.voteCount - runnerUp.voteCount
+        : null;
+    return { winner: top.isWinner ? top : null, maxVoteCount, gapRate, gapVotes };
+  }, [showResults, orderedCandidates]);
 
   if (!race) {
     return (
@@ -163,8 +180,88 @@ export default function RaceDetailInner({ electionId, raceId }: Props) {
         )}
       </section>
 
+      {/* 개표 결과 요약 — 당선자 헤드라인(사진·득표율)과 1·2위 격차 */}
+      {resultSummary?.winner && (
+        <section className="overflow-hidden rounded-2xl border border-green-500/50 bg-green-50/70 dark:border-green-400/40 dark:bg-green-950/20">
+          <div className="flex items-center gap-4 p-4 sm:p-5">
+            {/* 당선자 사진 */}
+            <div
+              className="relative size-16 shrink-0 overflow-hidden rounded-full border-2 sm:size-20"
+              style={{ borderColor: resultSummary.winner.party?.color ?? "#16a34a" }}
+            >
+              {resultSummary.winner.photoUrl ? (
+                <Image
+                  src={resultSummary.winner.photoUrl}
+                  alt={resultSummary.winner.name}
+                  fill
+                  className="object-cover"
+                  unoptimized
+                />
+              ) : (
+                <div
+                  className="flex size-full items-center justify-center text-2xl font-bold text-white"
+                  style={{ backgroundColor: resultSummary.winner.party?.color ?? "#16a34a" }}
+                >
+                  {resultSummary.winner.name.slice(0, 1)}
+                </div>
+              )}
+            </div>
+
+            <div className="min-w-0 flex-1">
+              <span className="inline-flex items-center rounded-full bg-green-600 px-2.5 py-0.5 text-xs font-bold text-white">
+                당선 확정
+              </span>
+              <p className="mt-1.5 truncate text-xl font-bold text-(--color-text-primary) sm:text-2xl">
+                {resultSummary.winner.name}
+              </p>
+              <p className="truncate text-sm text-(--color-text-secondary)">
+                {resultSummary.winner.party?.name ?? "무소속"}
+                {resultSummary.gapRate != null && (
+                  <span className="text-(--color-text-tertiary)">
+                    {" · "}2위와 {resultSummary.gapRate.toFixed(1)}%p
+                    {resultSummary.gapVotes != null
+                      ? ` (${resultSummary.gapVotes.toLocaleString()}표)`
+                      : ""}{" "}
+                    차이
+                  </span>
+                )}
+              </p>
+            </div>
+
+            {/* 당선 득표율 — 헤드라인 수치 */}
+            {resultSummary.winner.voteRate != null && (
+              <div className="shrink-0 text-right">
+                <p className="text-3xl font-extrabold tabular-nums text-green-700 sm:text-4xl dark:text-green-400">
+                  {resultSummary.winner.voteRate.toFixed(1)}
+                  <span className="text-xl font-bold sm:text-2xl">%</span>
+                </p>
+                {resultSummary.winner.voteCount != null && (
+                  <p className="text-xs tabular-nums text-(--color-text-tertiary)">
+                    {resultSummary.winner.voteCount.toLocaleString()}표
+                  </p>
+                )}
+              </div>
+            )}
+          </div>
+        </section>
+      )}
+
       {/* 후보자 목록 */}
-      {isProportional ? (
+      {showResults && !isProportional ? (
+        /* 개표 결과 — 득표율 바 리스트 */
+        <section>
+          <ul className="space-y-2.5">
+            {orderedCandidates.map((c, i) => (
+              <LocalResultCandidateRow
+                key={c.id}
+                candidate={c}
+                rank={i + 1}
+                maxVoteCount={resultSummary?.maxVoteCount ?? 0}
+              />
+            ))}
+          </ul>
+        </section>
+      ) : isProportional ? (
         <div className="space-y-6">
           {partyBuckets.map((bucket) => (
             <section

@@ -17,8 +17,7 @@ export const breakingNews: BreakingNewsItem[] = [
       },
       {
         label: "국힘 장동혁 동선",
-        value:
-          '제주 동문재래시장→서귀포 매일올레시장→울산 신정시장 — "투표로 이재명 폭주 멈추자"',
+        value: '제주 동문재래시장→서귀포 매일올레시장→울산 신정시장 — "투표로 이재명 폭주 멈추자"',
       },
       {
         label: "개혁신당 이준석",
@@ -31,8 +30,7 @@ export const breakingNews: BreakingNewsItem[] = [
       },
       {
         label: "이재명 대통령 메시지",
-        value:
-          '5/30 SNS "투표 포기는 중립 아닌, 공동체 해치는 그들 편드는 것" 투표 독려',
+        value: '5/30 SNS "투표 포기는 중립 아닌, 공동체 해치는 그들 편드는 것" 투표 독려',
       },
       {
         label: "막판 관전 포인트",
@@ -41,8 +39,7 @@ export const breakingNews: BreakingNewsItem[] = [
       },
       {
         label: "본투표 일정",
-        value:
-          "6/3(수) 오전 6시~오후 6시, 전국 14,288개 투표소 — 지정 본인 투표소에서만 가능",
+        value: "6/3(수) 오전 6시~오후 6시, 전국 14,288개 투표소 — 지정 본인 투표소에서만 가능",
       },
     ],
     sources: [
@@ -52,13 +49,11 @@ export const breakingNews: BreakingNewsItem[] = [
         url: "https://www.fnnews.com/news/202606010502223899",
       },
       {
-        title:
-          "[6·3 선거 D-2] 정청래, 충청·영남 순회 유세…장동혁, 제주·울산서 표심 공략 / 뉴스핌",
+        title: "[6·3 선거 D-2] 정청래, 충청·영남 순회 유세…장동혁, 제주·울산서 표심 공략 / 뉴스핌",
         url: "https://www.newspim.com/news/view/20260601000060",
       },
       {
-        title:
-          "[6·3 지선 D-2] 당대표보다 주목 받는 전·현직 대통령…MB·박근혜 광폭 행보 / 뉴스핌",
+        title: "[6·3 지선 D-2] 당대표보다 주목 받는 전·현직 대통령…MB·박근혜 광폭 행보 / 뉴스핌",
         url: "https://www.newspim.com/news/view/20260601000969",
       },
       {
