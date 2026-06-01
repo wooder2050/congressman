@@ -1,7 +1,6 @@
 "use client";
 
 import { useMemo } from "react";
-import Image from "next/image";
 import Link from "next/link";
 import { useCongressSuspenseQuery } from "@/hooks/useCongressQuery";
 import { getLocalElectionRace } from "@/lib/api";
@@ -145,20 +144,23 @@ export default function RaceDetailInner({ electionId, raceId }: Props) {
 
       {/* 헤더 */}
       <section className="space-y-2">
-        <div className="flex items-center gap-2">
-          <span className="inline-block rounded bg-(--color-bg-tertiary) px-2 py-0.5 text-xs font-medium text-(--color-text-tertiary)">
+        <div className="flex items-center gap-2 text-xs">
+          <span className="font-medium text-(--color-text-tertiary)">
             {electionTypeLabel(race.electionType)}
           </span>
           {resultMode && (
-            <span
-              className={`inline-block rounded px-2 py-0.5 text-xs font-bold ${
-                showResults
-                  ? "bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-300"
-                  : "bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300"
-              }`}
-            >
-              {showResults ? "개표 완료" : "개표 진행 중"}
-            </span>
+            <>
+              <span aria-hidden="true" className="text-(--color-text-tertiary)">
+                ·
+              </span>
+              <span className="inline-flex items-center gap-1 font-semibold text-(--color-text-secondary)">
+                <span
+                  className={`size-1.5 rounded-full ${showResults ? "bg-(--color-text-secondary)" : "animate-pulse bg-(--color-text-tertiary)"}`}
+                  aria-hidden="true"
+                />
+                {showResults ? "개표 완료" : "개표 진행 중"}
+              </span>
+            </>
           )}
         </div>
         <h1 className="text-2xl font-bold text-(--color-text-primary)">{race.displayName}</h1>
@@ -180,77 +182,47 @@ export default function RaceDetailInner({ electionId, raceId }: Props) {
         )}
       </section>
 
-      {/* 개표 결과 요약 — 당선자 헤드라인(사진·득표율)과 1·2위 격차 */}
-      {resultSummary?.winner && (
-        <section className="overflow-hidden rounded-2xl border border-green-500/50 bg-green-50/70 dark:border-green-400/40 dark:bg-green-950/20">
-          <div className="flex items-center gap-4 p-4 sm:p-5">
-            {/* 당선자 사진 */}
+      {/* 개표 결과 — 당선자 헤드라인 한 줄 + 득표율 구분선 리스트 (에디토리얼 톤) */}
+      {showResults && !isProportional ? (
+        <section className="rounded-lg border border-(--color-border-primary)">
+          {/* 당선자 헤드라인 — 상단 정당색 키라인 */}
+          {resultSummary?.winner && (
             <div
-              className="relative size-16 shrink-0 overflow-hidden rounded-full border-2 sm:size-20"
-              style={{ borderColor: resultSummary.winner.party?.color ?? "#16a34a" }}
+              className="border-b border-(--color-border-primary) px-4 py-3.5"
+              style={{
+                boxShadow: `inset 3px 0 0 ${resultSummary.winner.party?.color ?? "var(--color-text-secondary)"}`,
+              }}
             >
-              {resultSummary.winner.photoUrl ? (
-                <Image
-                  src={resultSummary.winner.photoUrl}
-                  alt={resultSummary.winner.name}
-                  fill
-                  className="object-cover"
-                  unoptimized
-                />
-              ) : (
-                <div
-                  className="flex size-full items-center justify-center text-2xl font-bold text-white"
-                  style={{ backgroundColor: resultSummary.winner.party?.color ?? "#16a34a" }}
-                >
-                  {resultSummary.winner.name.slice(0, 1)}
-                </div>
-              )}
-            </div>
-
-            <div className="min-w-0 flex-1">
-              <span className="inline-flex items-center rounded-full bg-green-600 px-2.5 py-0.5 text-xs font-bold text-white">
-                당선 확정
-              </span>
-              <p className="mt-1.5 truncate text-xl font-bold text-(--color-text-primary) sm:text-2xl">
-                {resultSummary.winner.name}
+              <p className="text-xs font-semibold tracking-wide text-(--color-text-tertiary)">
+                당선
               </p>
-              <p className="truncate text-sm text-(--color-text-secondary)">
-                {resultSummary.winner.party?.name ?? "무소속"}
-                {resultSummary.gapRate != null && (
-                  <span className="text-(--color-text-tertiary)">
-                    {" · "}2위와 {resultSummary.gapRate.toFixed(1)}%p
-                    {resultSummary.gapVotes != null
-                      ? ` (${resultSummary.gapVotes.toLocaleString()}표)`
-                      : ""}{" "}
-                    차이
+              <p className="mt-0.5 flex items-baseline gap-2">
+                <span className="text-lg font-bold text-(--color-text-primary)">
+                  {resultSummary.winner.name}
+                </span>
+                <span className="text-sm text-(--color-text-secondary)">
+                  {resultSummary.winner.party?.name ?? "무소속"}
+                </span>
+                {resultSummary.winner.voteRate != null && (
+                  <span className="ml-auto text-lg font-bold text-(--color-text-primary) tabular-nums">
+                    {resultSummary.winner.voteRate.toFixed(1)}%
                   </span>
                 )}
               </p>
-            </div>
-
-            {/* 당선 득표율 — 헤드라인 수치 */}
-            {resultSummary.winner.voteRate != null && (
-              <div className="shrink-0 text-right">
-                <p className="text-3xl font-extrabold tabular-nums text-green-700 sm:text-4xl dark:text-green-400">
-                  {resultSummary.winner.voteRate.toFixed(1)}
-                  <span className="text-xl font-bold sm:text-2xl">%</span>
+              {resultSummary.gapRate != null && (
+                <p className="mt-0.5 text-xs text-(--color-text-tertiary)">
+                  2위와 {resultSummary.gapRate.toFixed(1)}%p
+                  {resultSummary.gapVotes != null
+                    ? ` · ${resultSummary.gapVotes.toLocaleString()}표`
+                    : ""}{" "}
+                  차이
                 </p>
-                {resultSummary.winner.voteCount != null && (
-                  <p className="text-xs tabular-nums text-(--color-text-tertiary)">
-                    {resultSummary.winner.voteCount.toLocaleString()}표
-                  </p>
-                )}
-              </div>
-            )}
-          </div>
-        </section>
-      )}
+              )}
+            </div>
+          )}
 
-      {/* 후보자 목록 */}
-      {showResults && !isProportional ? (
-        /* 개표 결과 — 득표율 바 리스트 */
-        <section>
-          <ul className="space-y-2.5">
+          {/* 전체 순위 리스트 */}
+          <ul className="divide-y divide-(--color-border-primary) px-4">
             {orderedCandidates.map((c, i) => (
               <LocalResultCandidateRow
                 key={c.id}
