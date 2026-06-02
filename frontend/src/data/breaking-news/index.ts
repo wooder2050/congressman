@@ -55,8 +55,7 @@ export const breakingNews: BreakingNewsItem[] = [
         url: "https://www.fnnews.com/news/202606021819482653",
       },
       {
-        title:
-          "[6·3 선거 D-1] 정청래, 서울 청계광장서 마지막 유세…장동혁은 천안서 마무리 / 뉴스핌",
+        title: "[6·3 선거 D-1] 정청래, 서울 청계광장서 마지막 유세…장동혁은 천안서 마무리 / 뉴스핌",
         url: "https://www.newspim.com/news/view/20260602000064",
       },
       {
@@ -64,8 +63,7 @@ export const breakingNews: BreakingNewsItem[] = [
         url: "https://segye.com/newsView/20260602512764",
       },
       {
-        title:
-          "6·3 지선 D-1···정청래 '강원·수도권', 장동혁 '충남' 마지막 유세 / 경향신문",
+        title: "6·3 지선 D-1···정청래 '강원·수도권', 장동혁 '충남' 마지막 유세 / 경향신문",
         url: "https://www.khan.co.kr/article/202606020712001/",
       },
     ],
