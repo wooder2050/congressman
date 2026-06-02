@@ -6,6 +6,7 @@ import { getLocalElection } from "@/lib/api";
 import type { LocalElectionType } from "@/types";
 import { ELECTION_TYPES } from "@/constants/local-elections";
 import { isElectionMode } from "@/lib/local-election-result";
+import EarlyVoteTurnoutBanner from "@/components/elections/EarlyVoteTurnoutBanner";
 import LocalElectionHeader from "./LocalElectionHeader";
 import LocalGovernorHotspots from "./LocalGovernorHotspots";
 import LocalRegistrationBanner from "./LocalRegistrationBanner";
@@ -52,6 +53,25 @@ export default function LocalElectionLanding({ year }: { year: string }) {
 
   return (
     <div className="space-y-8">
+      {/* 사전투표율 요약 — 사전투표 종료 후 본투표 전까지 최상단 노출 (개표 모드 진입 시 숨김) */}
+      {!resultMode && (
+        <EarlyVoteTurnoutBanner
+          scopeLabel="6·3 지방선거"
+          rate={23.51}
+          comparison="역대 지방선거 최고치 (직전 20.62% 대비 +2.89%p)"
+          detail="유권자 4,464만9,908명 중 1,049만8,411명 참여 · 사전투표 1천만 명 첫 돌파"
+          regions={[
+            { region: "전남", rate: 38.95 },
+            { region: "전북", rate: 35.05 },
+            { region: "광주", rate: 27.83 },
+            { region: "서울", rate: 23.84 },
+            { region: "부산", rate: 21.29 },
+            { region: "경기", rate: 20.96 },
+            { region: "대구", rate: 18.65 },
+          ]}
+        />
+      )}
+
       <LocalElectionHeader election={election} />
 
       {/* 후보등록 마감 안내 배너 (5/14~15 전까지만 노출, 개표 모드에선 숨김) */}
