@@ -7,7 +7,9 @@ import { useCongressSuspenseQuery } from "@/hooks/useCongressQuery";
 import { getElection } from "@/lib/api";
 import type { ByElectionDetail, ElectionDistrictInfo } from "@/types";
 import { proxyPhotoUrl } from "@/lib/photo";
+import { isElectionMode } from "@/lib/local-election-result";
 import ElectionHeader from "./ElectionHeader";
+import EarlyVoteTurnoutBanner from "./EarlyVoteTurnoutBanner";
 import ElectionTimeline from "./ElectionTimeline";
 import VoteGuidePreview from "./VoteGuidePreview";
 import DistrictSection from "./DistrictSection";
@@ -88,6 +90,16 @@ export default function ElectionPageInner({ electionId }: { electionId: string }
 
   return (
     <div className="space-y-6">
+      {/* 사전투표율 요약 — 사전투표 종료 후 본투표 전까지 최상단 노출 (개표 모드 진입 시 숨김) */}
+      {!isElectionMode(election.status) && (
+        <EarlyVoteTurnoutBanner
+          scopeLabel="6·3 재보궐선거 14곳"
+          rate={24.12}
+          comparison="재보선 14곳 평균 · 지방선거(23.51%)보다 소폭 높음"
+          detail="유권자 226만7,121명 중 54만6,757명 참여 · 부산 북구갑 25.57% · 경기 평택을 18.39%"
+        />
+      )}
+
       <ElectionHeader election={election} />
 
       {/* 일정 타임라인 */}
@@ -96,8 +108,8 @@ export default function ElectionPageInner({ electionId }: { electionId: string }
       {/* 후보등록 마감 안내 배너 (5/14~15 전까지만 노출) */}
       <RegistrationDeadlineBanner />
 
-      {/* 핫스팟 선거구 미리보기 */}
-      <ByElectionHotspots />
+      {/* 핫스팟 선거구 미리보기 — 여론조사 기반 정적 콘텐츠라 개표 후에는 숨김 */}
+      {!isElectionMode(election.status) && <ByElectionHotspots />}
 
       {/* 요약 테이블 */}
       <section className="overflow-hidden rounded-xl border border-(--color-border-primary) bg-(--color-bg-primary)">
