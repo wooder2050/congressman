@@ -27,7 +27,7 @@ export default function UpcomingSchedules({ termId }: UpcomingSchedulesProps) {
       </div>
 
       {schedules.length === 0 ? (
-        // TODO(2026-06-06): 22대 후반기 의장단 본회의(6/5 목)가 끝나고 daily sync로 국회
+        // TODO(2026-06-06): 22대 후반기 의장단 본회의(6/5 금)가 끝나고 daily sync로 국회
         // 일정이 다시 채워지면 이 임시 안내 카드를 제거하고 원래 빈 메시지로 되돌릴 것.
         // 임시 안내는 5/29~6/4 국회 휴지기 구간에서만 유효함.
         <div className="rounded-xl border border-(--color-primary) bg-blue-50 p-4 sm:p-5 dark:bg-blue-950/30">
@@ -40,7 +40,7 @@ export default function UpcomingSchedules({ termId }: UpcomingSchedulesProps) {
             </span>
           </div>
           <h3 className="mt-2.5 text-base font-bold text-(--color-text-primary) sm:text-lg">
-            🏛️ 6/5(목) 22대 국회 후반기 의장단 선출 본회의부터 일정 재개
+            🏛️ 6/5(금) 22대 국회 후반기 의장단 선출 본회의부터 일정 재개
           </h3>
           <p className="mt-1.5 text-sm leading-relaxed text-(--color-text-secondary)">
             6월 5일 오후 2시 본회의에서 조정식 신임 국회의장(민주, 6선)과 부의장 남인순(민주,
