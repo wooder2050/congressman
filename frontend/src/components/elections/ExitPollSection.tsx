@@ -128,11 +128,7 @@ export default function ExitPollSection({ scope, title, initialCount = 6 }: Prop
 
       {/* 출처 탭 — 출처가 둘 이상일 때만 */}
       {hasTabs && (
-        <div
-          className="flex flex-wrap gap-1.5"
-          role="tablist"
-          aria-label={`${title} 출처 선택`}
-        >
+        <div className="flex flex-wrap gap-1.5" role="tablist" aria-label={`${title} 출처 선택`}>
           {sources.map((s, i) => {
             const selected = i === idx;
             return (
