@@ -70,6 +70,10 @@ export default function RaceDetailInner({ electionId, raceId }: Props) {
   const resultMode = isElectionMode(race?.electionStatus, race?.candidates);
   const tallied = race ? isRaceTallied(race.candidates) : false;
   const showResults = resultMode && tallied;
+  // 개표 확정 여부 — 당선자가 확정됐거나 전역 status가 completed일 때만 "개표 완료".
+  // 중간 득표(voteCount)만 들어온 단계는 당선 미확정이므로 "개표 진행 중".
+  const finalized =
+    race?.electionStatus === "completed" || (race?.candidates.some((c) => c.isWinner) ?? false);
 
   const partyBuckets = useMemo(() => {
     if (!race || !PROPORTIONAL_TYPES.has(race.electionType)) return null;
@@ -155,10 +159,10 @@ export default function RaceDetailInner({ electionId, raceId }: Props) {
               </span>
               <span className="inline-flex items-center gap-1 font-semibold text-(--color-text-secondary)">
                 <span
-                  className={`size-1.5 rounded-full ${showResults ? "bg-(--color-text-secondary)" : "animate-pulse bg-(--color-text-tertiary)"}`}
+                  className={`size-1.5 rounded-full ${finalized ? "bg-(--color-text-secondary)" : "animate-pulse bg-(--color-text-tertiary)"}`}
                   aria-hidden="true"
                 />
-                {showResults ? "개표 완료" : "개표 진행 중"}
+                {finalized ? "개표 완료" : "개표 진행 중"}
               </span>
             </>
           )}
@@ -172,6 +176,12 @@ export default function RaceDetailInner({ electionId, raceId }: Props) {
         {resultMode && !showResults && (
           <p className="text-xs text-(--color-text-tertiary)">
             개표가 진행 중입니다. 득표 결과는 NEC 당선인 정보가 이관되는 대로 자동 반영됩니다.
+          </p>
+        )}
+        {showResults && !finalized && (
+          <p className="text-xs text-(--color-text-tertiary)">
+            개표가 진행 중입니다. 득표수는 선관위 개표진행상황 기준으로 갱신되며, 최종 결과와 다를
+            수 있습니다.
           </p>
         )}
         {isProportional && !resultMode && (
