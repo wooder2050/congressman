@@ -1,12 +1,14 @@
 "use client";
 
 import Link from "next/link";
-import { useCongressSuspenseQuery } from "@/hooks/useCongressQuery";
+import { useCongressQuery, useCongressSuspenseQuery } from "@/hooks/useCongressQuery";
 import { getLocalElection } from "@/lib/api";
+import { getElectionTurnout } from "@/lib/turnout";
 import type { LocalElectionType } from "@/types";
 import { ELECTION_TYPES } from "@/constants/local-elections";
 import { isElectionMode } from "@/lib/local-election-result";
 import EarlyVoteTurnoutBanner from "@/components/elections/EarlyVoteTurnoutBanner";
+import LiveTurnoutBanner from "@/components/elections/LiveTurnoutBanner";
 import LocalElectionHeader from "./LocalElectionHeader";
 import LocalGovernorHotspots from "./LocalGovernorHotspots";
 import LocalRegistrationBanner from "./LocalRegistrationBanner";
@@ -39,6 +41,11 @@ const TYPE_ROUTES: Record<LocalElectionType, string> = {
 
 export default function LocalElectionLanding({ year }: { year: string }) {
   const { data: election } = useCongressSuspenseQuery(getLocalElection, `local-${year}`);
+  // 본투표 실시간 투표율 — 데이터가 있으면 사전투표 배너는 축소(compact)로 전환
+  const { data: liveTurnout } = useCongressQuery(getElectionTurnout, "local", {
+    staleTime: 0,
+    refetchInterval: 60_000,
+  });
   const voteInfo = getVoteInfo();
 
   if (!election) {
@@ -50,12 +57,24 @@ export default function LocalElectionLanding({ year }: { year: string }) {
   }
 
   const resultMode = isElectionMode(election.status);
+  const hasLiveTurnout = liveTurnout?.national != null;
 
   return (
     <div className="space-y-8">
-      {/* 사전투표율 요약 — 사전투표 종료 후 본투표 전까지 최상단 노출 (개표 모드 진입 시 숨김) */}
+      {/* 본투표 실시간 투표율 — Supabase ElectionTurnout 직접 조회(데이터 있을 때만 노출, 개표 모드 진입 시 숨김) */}
+      {!resultMode && (
+        <LiveTurnoutBanner
+          scope="local"
+          scopeLabel="6·3 지방선거"
+          badge="본투표 진행 중"
+          asideLabel="오늘 06~18시"
+        />
+      )}
+
+      {/* 사전투표율 요약 — 본투표율 노출 시 축소(compact), 개표 모드 진입 시 숨김 */}
       {!resultMode && (
         <EarlyVoteTurnoutBanner
+          compact={hasLiveTurnout}
           scopeLabel="6·3 지방선거"
           rate={23.51}
           comparison="역대 지방선거 최고치 (직전 20.62% 대비 +2.89%p)"

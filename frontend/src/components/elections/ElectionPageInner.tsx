@@ -3,13 +3,15 @@
 import { useState, useMemo } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { useCongressSuspenseQuery } from "@/hooks/useCongressQuery";
+import { useCongressQuery, useCongressSuspenseQuery } from "@/hooks/useCongressQuery";
 import { getElection } from "@/lib/api";
+import { getElectionTurnout } from "@/lib/turnout";
 import type { ByElectionDetail, ElectionDistrictInfo } from "@/types";
 import { proxyPhotoUrl } from "@/lib/photo";
 import { isElectionMode } from "@/lib/local-election-result";
 import ElectionHeader from "./ElectionHeader";
 import EarlyVoteTurnoutBanner from "./EarlyVoteTurnoutBanner";
+import LiveTurnoutBanner from "./LiveTurnoutBanner";
 import ElectionTimeline from "./ElectionTimeline";
 import VoteGuidePreview from "./VoteGuidePreview";
 import DistrictSection from "./DistrictSection";
@@ -60,6 +62,12 @@ export default function ElectionPageInner({ electionId }: { electionId: string }
     getElection,
     electionId,
   );
+  // 본투표 실시간 투표율 — 데이터가 있으면 사전투표 배너는 축소(compact)로 전환
+  const { data: liveTurnout } = useCongressQuery(getElectionTurnout, "by-election", {
+    staleTime: 0,
+    refetchInterval: 60_000,
+  });
+  const hasLiveTurnout = liveTurnout?.national != null;
 
   const [expandedRegion, setExpandedRegion] = useState<string | null>(null);
   const [selectedDistrict, setSelectedDistrict] = useState<number | null>(null);
@@ -90,9 +98,20 @@ export default function ElectionPageInner({ electionId }: { electionId: string }
 
   return (
     <div className="space-y-6">
-      {/* 사전투표율 요약 — 사전투표 종료 후 본투표 전까지 최상단 노출 (개표 모드 진입 시 숨김) */}
+      {/* 본투표 실시간 투표율 — Supabase ElectionTurnout 직접 조회(데이터 있을 때만 노출, 개표 모드 진입 시 숨김) */}
+      {!isElectionMode(election.status) && (
+        <LiveTurnoutBanner
+          scope="by-election"
+          scopeLabel="6·3 재보궐선거 14곳"
+          badge="본투표 진행 중"
+          asideLabel="오늘 06~18시"
+        />
+      )}
+
+      {/* 사전투표율 요약 — 본투표율 노출 시 축소(compact), 개표 모드 진입 시 숨김 */}
       {!isElectionMode(election.status) && (
         <EarlyVoteTurnoutBanner
+          compact={hasLiveTurnout}
           scopeLabel="6·3 재보궐선거 14곳"
           rate={24.12}
           comparison="재보선 14곳 평균 · 지방선거(23.51%)보다 소폭 높음"
