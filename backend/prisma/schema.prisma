@@ -761,23 +761,25 @@ model ElectionTurnout {
 
 // 출구조사 (18시 마감 직후 방송 3사 공동 예측)
 model ExitPoll {
-  id         BigInt   @id @default(autoincrement())
-  scope      String // governor / superintendent / by-election
-  raceKey    String // 선거구 키
-  raceLabel  String // 선거구 표시명
-  region     String   @default("")
-  candidate  String // 후보자명
-  party      String   @default("")
-  partyColor String   @default("#9ca3af")
-  rateLow    Float // 예측 득표율 하한 (%)
-  rateHigh   Float // 예측 득표율 상한 (%)
-  isLeading  Boolean  @default(false)
-  asOf       String   @default("")
-  note       String   @default("")
-  sortOrder  Int      @default(0)
-  isActive   Boolean  @default(true)
-  updatedAt  DateTime @default(now()) @db.Timestamptz(6)
+  id          BigInt   @id @default(autoincrement())
+  scope       String // governor / superintendent / by-election
+  source      String   @default("방송3사") // 출처(방송사) — 방송3사 / JTBC 등
+  sourceOrder Int      @default(0) // 출처 탭 순서
+  raceKey     String // 선거구 키
+  raceLabel   String // 선거구 표시명
+  region      String   @default("")
+  candidate   String // 후보자명
+  party       String   @default("")
+  partyColor  String   @default("#9ca3af")
+  rateLow     Float // 예측 득표율 하한 (%)
+  rateHigh    Float // 예측 득표율 상한 (%)
+  isLeading   Boolean  @default(false)
+  asOf        String   @default("")
+  note        String   @default("")
+  sortOrder   Int      @default(0)
+  isActive    Boolean  @default(true)
+  updatedAt   DateTime @default(now()) @db.Timestamptz(6)
 
-  @@unique([scope, raceKey, candidate])
-  @@index([scope, isActive, sortOrder], map: "ExitPoll_scope_active_idx")
+  @@unique([scope, source, raceKey, candidate])
+  @@index([scope, isActive, sourceOrder, sortOrder], map: "ExitPoll_scope_source_active_idx")
 }
