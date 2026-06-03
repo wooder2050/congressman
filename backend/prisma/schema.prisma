@@ -735,3 +735,49 @@ model WeeklyArticle {
 
   @@index([publishedDate])
 }
+
+// ====== 선거 실시간 데이터 (프론트 직접 조회, 배포 없이 DB UPDATE만으로 운영) ======
+// 백엔드 API를 거치지 않고 Supabase에서 프론트가 직접 쿼리한다.
+// 운영 중에는 SQL UPSERT로만 갱신하지만, db push가 테이블을 drop 대상으로 보지
+// 않도록 schema에 모델을 반드시 유지해야 한다.
+
+// 실시간 투표율 (선관위 매시 정각 발표, 13시부터 사전투표 합산)
+model ElectionTurnout {
+  id          BigInt   @id @default(autoincrement())
+  scope       String // governor / superintendent / local / by-election 등
+  region      String   @default("전국")
+  turnoutRate Float // 투표율 (%)
+  voterCount  BigInt? // 선거인 수
+  voteCount   BigInt? // 투표자 수
+  asOf        String   @default("") // 기준 시각 표시 문자열
+  note        String   @default("")
+  sortOrder   Int      @default(0)
+  isActive    Boolean  @default(true)
+  updatedAt   DateTime @default(now()) @db.Timestamptz(6)
+
+  @@unique([scope, region])
+  @@index([scope])
+}
+
+// 출구조사 (18시 마감 직후 방송 3사 공동 예측)
+model ExitPoll {
+  id         BigInt   @id @default(autoincrement())
+  scope      String // governor / superintendent / by-election
+  raceKey    String // 선거구 키
+  raceLabel  String // 선거구 표시명
+  region     String   @default("")
+  candidate  String // 후보자명
+  party      String   @default("")
+  partyColor String   @default("#9ca3af")
+  rateLow    Float // 예측 득표율 하한 (%)
+  rateHigh   Float // 예측 득표율 상한 (%)
+  isLeading  Boolean  @default(false)
+  asOf       String   @default("")
+  note       String   @default("")
+  sortOrder  Int      @default(0)
+  isActive   Boolean  @default(true)
+  updatedAt  DateTime @default(now()) @db.Timestamptz(6)
+
+  @@unique([scope, raceKey, candidate])
+  @@index([scope, isActive, sortOrder], map: "ExitPoll_scope_active_idx")
+}
