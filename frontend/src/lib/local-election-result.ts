@@ -15,9 +15,18 @@ interface ResultFields {
   voteRate?: number | null;
 }
 
-/** 전역 개표 모드 여부 — 선거 상태가 completed인가 */
-export function isElectionMode(status: string | null | undefined): boolean {
-  return status === "completed";
+/**
+ * 전역 개표 모드 여부.
+ *  - 선거 상태가 completed면 개표 모드 (NEC 당선인 API 이관 완료)
+ *  - 당선 확정 전에도 선관위 개표진행상황에서 끌어온 중간 득표(voteCount)가
+ *    후보 중 하나라도 들어왔으면 개표 모드로 본다. (status는 active 유지)
+ */
+export function isElectionMode(
+  status: string | null | undefined,
+  candidates?: ResultFields[],
+): boolean {
+  if (status === "completed") return true;
+  return candidates?.some((c) => c.voteCount != null) ?? false;
 }
 
 /** 이 race가 개표되었는지 — 후보 중 당선자 또는 득표수가 들어온 후보가 하나라도 있는가 */
