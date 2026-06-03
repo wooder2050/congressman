@@ -90,13 +90,17 @@ export class ScheduleSyncService {
       const allData = [...plenaryData, ...committeeData];
 
       // 트랜잭션으로 삭제 + 재삽입 (API 데이터 확보 후에만 실행)
-      await this.prisma.$transaction(async (tx) => {
-        await tx.schedule.deleteMany({ where: { termId } });
-        for (let i = 0; i < allData.length; i += BATCH_SIZE) {
-          const batch = allData.slice(i, i + BATCH_SIZE);
-          await tx.schedule.createMany({ data: batch, skipDuplicates: true });
-        }
-      });
+      // 1,700건 이상 batch insert가 기본 5초 interactive transaction 한도를 넘기므로 timeout 상향
+      await this.prisma.$transaction(
+        async (tx) => {
+          await tx.schedule.deleteMany({ where: { termId } });
+          for (let i = 0; i < allData.length; i += BATCH_SIZE) {
+            const batch = allData.slice(i, i + BATCH_SIZE);
+            await tx.schedule.createMany({ data: batch, skipDuplicates: true });
+          }
+        },
+        { timeout: 60000 },
+      );
       console.log(`[ScheduleSync]   Inserted ${allData.length} records`);
 
       await this.syncLog.complete(log.id, allData.length);
