@@ -30,6 +30,13 @@ function formatRate(low: number, high: number): string {
   return `${low.toFixed(1)}~${high.toFixed(1)}%`;
 }
 
+/** 출처 코드 → 하단 출처 문구에 들어갈 정식 명칭 */
+function sourceLabel(source: string): string {
+  if (source === "방송3사") return "지상파 방송 3사(KBS·MBC·SBS) 공동 출구조사";
+  if (source === "JTBC") return "JTBC 예측조사";
+  return `${source} 출구조사`;
+}
+
 function RaceCard({ race }: { race: ExitPollRace }) {
   // 막대 길이 기준은 레이스 내 최고 예측치
   const max = Math.max(...race.candidates.map((c) => c.rateHigh), 1);
@@ -122,6 +129,12 @@ export default function ExitPollSection({ scope, title, initialCount = 6 }: Prop
             출구조사
           </span>
           <h2 className="text-base font-bold text-(--color-text-primary)">{title}</h2>
+          {/* 출처가 하나뿐이라 탭이 없을 때, 어느 출처인지 헤더에 표기 */}
+          {!hasTabs && (
+            <span className="rounded bg-(--color-bg-tertiary) px-1.5 py-0.5 text-[10px] font-medium text-(--color-text-secondary)">
+              {current.source}
+            </span>
+          )}
         </div>
         {asOf && <span className="text-xs text-(--color-text-tertiary)">{asOf}</span>}
       </div>
@@ -171,7 +184,7 @@ export default function ExitPollSection({ scope, title, initialCount = 6 }: Prop
       <p className="text-[10px] text-(--color-text-tertiary)">
         {hasTabs
           ? "방송사별 출구조사 예측치이며 실제 개표 결과와 다를 수 있습니다."
-          : "지상파 방송 3사(KBS·MBC·SBS) 공동 출구조사 예측치이며 실제 개표 결과와 다를 수 있습니다."}
+          : `${sourceLabel(current.source)} 결과이며 실제 개표 결과와 다를 수 있습니다.`}
       </p>
     </section>
   );
