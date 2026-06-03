@@ -13,6 +13,7 @@ import LocalElectionHeader from "./LocalElectionHeader";
 import LocalGovernorHotspots from "./LocalGovernorHotspots";
 import LocalRegistrationBanner from "./LocalRegistrationBanner";
 import LocalResultSummary from "./LocalResultSummary";
+import ExitPollSection from "@/components/elections/ExitPollSection";
 import RegionGrid from "./RegionGrid";
 
 const EARLY_VOTE_END = new Date(2026, 4, 30); // 5/30 사전투표 종료
@@ -95,6 +96,10 @@ export default function LocalElectionLanding({ year }: { year: string }) {
 
       {/* 후보등록 마감 안내 배너 (5/14~15 전까지만 노출, 개표 모드에선 숨김) */}
       <LocalRegistrationBanner resultMode={resultMode} />
+
+      {/* 출구조사 예측 — 18시 마감 직후 방송 3사 공동 출구조사(데이터 있을 때만 노출, 18시 전 자동 숨김) */}
+      <ExitPollSection scope="governor" title="시도지사 출구조사" />
+      <ExitPollSection scope="superintendent" title="교육감 출구조사" />
 
       {/* 개표 현황 — 개표 시작(status === "completed") 시 정당별 당선 수 요약을 최상단에 */}
       {resultMode && <LocalResultSummary electionId={election.id} />}

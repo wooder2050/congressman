@@ -12,6 +12,7 @@ import { isElectionMode } from "@/lib/local-election-result";
 import ElectionHeader from "./ElectionHeader";
 import EarlyVoteTurnoutBanner from "./EarlyVoteTurnoutBanner";
 import LiveTurnoutBanner from "./LiveTurnoutBanner";
+import ExitPollSection from "./ExitPollSection";
 import ElectionTimeline from "./ElectionTimeline";
 import VoteGuidePreview from "./VoteGuidePreview";
 import DistrictSection from "./DistrictSection";
@@ -119,6 +120,9 @@ export default function ElectionPageInner({ electionId }: { electionId: string }
           detail="유권자 226만7,121명 중 54만6,757명 참여 · 부산 북구갑 25.57% · 경기 평택을 18.39%"
         />
       )}
+
+      {/* 재보궐 국회의원 출구조사 예측 — 18시 마감 직후 노출, 데이터 없으면 자동 숨김 */}
+      <ExitPollSection scope="by-election" title="국회의원 재보궐 출구조사" initialCount={14} />
 
       <ElectionHeader election={election} />
 
