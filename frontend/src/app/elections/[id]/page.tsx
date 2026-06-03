@@ -6,6 +6,8 @@ import ElectionSkeleton from "@/components/elections/ElectionSkeleton";
 import ElectionTrendWidget from "@/components/elections/ElectionTrendWidget";
 import JsonLd from "@/components/seo/JsonLd";
 
+export const revalidate = 1800; // 30min (ISR Write 절감, 6/3 개표 갱신 유지)
+
 interface ElectionPageProps {
   params: Promise<{ id: string }>;
 }
