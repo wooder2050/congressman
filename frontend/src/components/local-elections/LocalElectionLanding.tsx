@@ -18,6 +18,7 @@ import RegionGrid from "./RegionGrid";
 
 const EARLY_VOTE_END = new Date(2026, 4, 30); // 5/30 사전투표 종료
 const ELECTION_DAY = new Date(2026, 5, 3); // 6/3 본투표
+const POLL_CLOSE = new Date(2026, 5, 3, 18, 0, 0); // 6/3 18시 본투표 마감 — 이후 개표 단계
 
 function getVoteInfo(): { stage: "before" | "early" | "after" | "day"; dDay: number } {
   const now = new Date();
@@ -59,6 +60,8 @@ export default function LocalElectionLanding({ year }: { year: string }) {
 
   const resultMode = isElectionMode(election.status);
   const hasLiveTurnout = liveTurnout?.national != null;
+  // 개표 단계 — NEC 당선인 status가 아직 active여도 6/3 18시 이후면 개표 종합으로 유도
+  const showResultsHub = resultMode || new Date() >= POLL_CLOSE;
 
   return (
     <div className="space-y-8">
@@ -94,8 +97,8 @@ export default function LocalElectionLanding({ year }: { year: string }) {
       <ExitPollSection scope="governor" title="시도지사 출구조사" />
       <ExitPollSection scope="superintendent" title="교육감 출구조사" />
 
-      {/* 개표 현황 종합 페이지 — 개표 모드일 때 시도지사·교육감·재보궐을 한곳에 모은 페이지로 유도 */}
-      {resultMode && (
+      {/* 개표 현황 종합 페이지 — 개표 단계(6/3 18시 이후)에 시도지사·기초단체장·재보궐을 한곳에 모은 페이지로 유도 */}
+      {showResultsHub && (
         <Link
           href={`/local-elections/${year}/results`}
           className="flex items-center justify-between gap-3 rounded-xl border border-(--color-primary) bg-(--color-primary)/5 p-4 transition-colors hover:bg-(--color-primary)/10"
