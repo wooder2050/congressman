@@ -104,6 +104,25 @@ export default function LocalElectionLanding({ year }: { year: string }) {
       <ExitPollSection scope="governor" title="시도지사 출구조사" />
       <ExitPollSection scope="superintendent" title="교육감 출구조사" />
 
+      {/* 개표 현황 종합 페이지 — 개표 모드일 때 시도지사·교육감·재보궐을 한곳에 모은 페이지로 유도 */}
+      {resultMode && (
+        <Link
+          href={`/local-elections/${year}/results`}
+          className="flex items-center justify-between gap-3 rounded-xl border border-(--color-primary) bg-(--color-primary)/5 p-4 transition-colors hover:bg-(--color-primary)/10"
+        >
+          <div className="flex items-center gap-3">
+            <span className="text-2xl">📊</span>
+            <div>
+              <h3 className="font-bold text-(--color-text-primary)">개표 현황 종합</h3>
+              <p className="text-sm text-(--color-text-secondary)">
+                시도지사·기초단체장·재보궐 개표를 한곳에서 — 당선 유력 추정 포함
+              </p>
+            </div>
+          </div>
+          <span className="shrink-0 text-(--color-primary)">→</span>
+        </Link>
+      )}
+
       {/* 개표 현황 — 개표 시작(status === "completed") 시 정당별 당선 수 요약을 최상단에 */}
       {resultMode && <LocalResultSummary electionId={election.id} />}
 

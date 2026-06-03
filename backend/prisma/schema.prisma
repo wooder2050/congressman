@@ -310,6 +310,10 @@ model ElectionDistrict {
   confirmed          Boolean @default(true)
   status             String  @default("upcoming")
 
+  // 개표 진행 정보 (선관위 개표진행상황에서 채움 — 개표 전 NULL). 당선 유력 추정에 사용
+  countedRate Float? // 개표율 (%)
+  totalVotes  Int? // 투표수 (유효표 + 무효표)
+
   election       ByElection     @relation(fields: [electionId], references: [id])
   previousMember Member?        @relation(fields: [previousMemberId], references: [id])
   previousParty  Party?         @relation(fields: [previousPartyId], references: [id])
@@ -397,6 +401,10 @@ model LocalElectionRace {
 
   sgId       String @default("") // NEC 선거ID
   sgTypecode String @default("") // NEC 선거종류코드
+
+  // 개표 진행 정보 (선관위 개표진행상황에서 채움 — 개표 전 NULL). 당선 유력 추정에 사용
+  countedRate Float? // 개표율 (%)
+  totalVotes  Int? // 투표수 (유효표 + 무효표)
 
   election   LocalElection            @relation(fields: [electionId], references: [id])
   candidates LocalElectionCandidate[]
