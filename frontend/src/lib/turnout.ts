@@ -7,7 +7,11 @@ import { createClient } from "@/lib/supabase/client";
  * (백엔드 API/ISR을 거치지 않으므로 캐시 무효화 불필요)
  */
 
-export type TurnoutScope = "local" | "by-election";
+/**
+ * 투표율 집계 스코프. 재보궐은 지방선거와 동일 투표소 통합 집계라
+ * 별도 행 없이 `local`을 공유한다(향후 단독 집계가 공표되면 값 추가).
+ */
+export type TurnoutScope = "local";
 
 export interface TurnoutRow {
   region: string;
