@@ -148,6 +148,7 @@ export default function ElectionPageInner({ electionId }: { electionId: string }
                 <th className="px-4 py-2.5 sm:px-5">선거구</th>
                 <th className="hidden px-4 py-2.5 sm:table-cell sm:px-5">공석 사유</th>
                 <th className="hidden px-4 py-2.5 md:table-cell md:px-5">전임</th>
+                <th className="px-4 py-2.5 sm:px-5">개표 현황</th>
                 <th className="px-4 py-2.5 text-center sm:px-5">후보</th>
               </tr>
             </thead>
@@ -155,6 +156,14 @@ export default function ElectionPageInner({ electionId }: { electionId: string }
               {election.districts.map((d) => {
                 const prev = d.previousMember;
                 const partyColor = prev?.party?.color ?? "#9ca3af";
+                // 개표 현황 — 득표가 들어온 후보 중 1위(당선 우선 → 득표순)
+                const tallied = d.candidates.some((c) => c.voteCount != null);
+                const leader = tallied
+                  ? [...d.candidates].sort((a, b) => {
+                      if (!!a.isWinner !== !!b.isWinner) return a.isWinner ? -1 : 1;
+                      return (b.voteCount ?? -1) - (a.voteCount ?? -1);
+                    })[0]
+                  : null;
                 return (
                   <tr
                     key={d.id}
@@ -213,6 +222,34 @@ export default function ElectionPageInner({ electionId }: { electionId: string }
                         </div>
                       ) : (
                         <span className="text-xs text-(--color-text-tertiary)">-</span>
+                      )}
+                    </td>
+                    <td className="px-4 py-2.5 sm:px-5">
+                      {leader ? (
+                        <div className="flex items-center gap-1.5">
+                          <span
+                            className="h-2 w-2 shrink-0 rounded-full"
+                            style={{ backgroundColor: leader.party?.color ?? "#9ca3af" }}
+                            aria-hidden="true"
+                          />
+                          <span className="font-medium text-(--color-text-primary)">
+                            {leader.name}
+                          </span>
+                          {leader.voteRate != null && (
+                            <span className="text-(--color-text-secondary) tabular-nums">
+                              {leader.voteRate.toFixed(1)}%
+                            </span>
+                          )}
+                          {leader.isWinner ? (
+                            <span className="rounded bg-(--color-text-primary) px-1 py-0.5 text-[10px] font-bold text-(--color-bg-primary)">
+                              당선
+                            </span>
+                          ) : (
+                            <span className="text-[10px] text-(--color-text-tertiary)">개표중</span>
+                          )}
+                        </div>
+                      ) : (
+                        <span className="text-xs text-(--color-text-tertiary)">개표 전</span>
                       )}
                     </td>
                     <td className="px-4 py-2.5 text-center sm:px-5">
