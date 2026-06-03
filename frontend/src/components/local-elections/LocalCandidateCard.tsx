@@ -12,15 +12,21 @@ interface Props {
    * 6/3 개표 시작(election.status === "completed") 이후 race 화면에서 켠다.
    */
   resultMode?: boolean;
+  /**
+   * 당선(확정 또는 보수적 추정) 여부 — 미전달 시 공식 확정(isWinner)으로 폴백.
+   * 추정 당선은 상위에서 getRaceCallStatus로 판정해 전달한다.
+   */
+  won?: boolean;
 }
 
-export default function LocalCandidateCard({ candidate: c, year, resultMode = false }: Props) {
+export default function LocalCandidateCard({ candidate: c, year, resultMode = false, won }: Props) {
   const partyColor = c.party?.color ?? "#999";
+  const isWon = won ?? c.isWinner;
 
   return (
     <div
       className={`rounded-xl border bg-(--color-bg-primary) p-4 ${
-        resultMode && c.isWinner
+        resultMode && isWon
           ? "border-green-500 ring-1 ring-green-500/40 dark:border-green-400"
           : "border-(--color-border-primary)"
       }`}
@@ -53,9 +59,9 @@ export default function LocalCandidateCard({ candidate: c, year, resultMode = fa
               </span>
             )}
             <h3 className="truncate text-base font-bold text-(--color-text-primary)">{c.name}</h3>
-            {c.isWinner && (
+            {isWon && (
               <span className="rounded bg-green-100 px-1.5 py-0.5 text-[11px] font-bold text-green-700 dark:bg-green-900/40 dark:text-green-300">
-                당선
+                당선{!c.isWinner && " (잠정)"}
               </span>
             )}
           </div>

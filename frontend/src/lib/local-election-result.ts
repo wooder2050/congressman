@@ -124,3 +124,32 @@ export function getRaceCallStatus(race: CallRace, candidates: CallCandidate[]): 
 
   return lead > remaining ? "leading" : "counting";
 }
+
+/**
+ * 후보 단위 "당선" 판정 — 후보 행/카드에 "당선" 뱃지를 붙일지 결정한다.
+ *
+ * 공식 확정(isWinner) 또는 추정 당선(race가 "leading"이고 이 후보가 득표 1위) 모두 true.
+ * 사용자 요청에 따라 "유력"을 별도 표시하지 않고 "당선"으로 통합하되,
+ * getRaceCallStatus의 보수적 판정(개표율 50%+, 무효표 포함 남은표, 마진 없는 엄격 비교)을
+ * 그대로 사용하므로 잘못된 당선 표시 위험은 최소화한다.
+ *
+ * 다인선거구(seatCount>1)는 단일 당선 가정이 깨져 getRaceCallStatus가 "leading"을 내지
+ * 않으므로, 여기서도 공식 확정(isWinner)만 당선으로 본다.
+ */
+export function isCandidateWon<T extends CallCandidate>(
+  race: CallRace,
+  candidates: T[],
+  candidate: T,
+): boolean {
+  if (candidate.isWinner) return true;
+  const call = getRaceCallStatus(race, candidates);
+  if (call !== "leading") return false;
+  // 추정 당선 = 득표 1위 후보. getRaceCallStatus가 "leading"이면 단일 당선 race이므로 1위가 당선.
+  const top = candidates
+    .filter((c) => c.voteCount != null)
+    .reduce<T | null>(
+      (best, c) => (best == null || (c.voteCount ?? 0) > (best.voteCount ?? 0) ? c : best),
+      null,
+    );
+  return top === candidate;
+}
