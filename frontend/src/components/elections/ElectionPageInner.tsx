@@ -62,8 +62,9 @@ export default function ElectionPageInner({ electionId }: { electionId: string }
     getElection,
     electionId,
   );
-  // 본투표 실시간 투표율 — 데이터가 있으면 사전투표 배너는 축소(compact)로 전환
-  const { data: liveTurnout } = useCongressQuery(getElectionTurnout, "by-election", {
+  // 본투표 실시간 투표율 — 재보궐은 지방선거와 동일 투표소 통합 집계라 local scope를 공유한다
+  // (홈·지방선거 페이지와 동일 데이터 → local만 UPDATE하면 세 곳이 함께 갱신)
+  const { data: liveTurnout } = useCongressQuery(getElectionTurnout, "local", {
     staleTime: 0,
     refetchInterval: 60_000,
   });
@@ -98,11 +99,11 @@ export default function ElectionPageInner({ electionId }: { electionId: string }
 
   return (
     <div className="space-y-6">
-      {/* 본투표 실시간 투표율 — Supabase ElectionTurnout 직접 조회(데이터 있을 때만 노출, 개표 모드 진입 시 숨김) */}
+      {/* 본투표 실시간 투표율 — 재보궐은 지방선거와 통합 집계라 local scope를 공유(홈·지방선거 페이지와 동일 데이터) */}
       {!isElectionMode(election.status) && (
         <LiveTurnoutBanner
-          scope="by-election"
-          scopeLabel="6·3 재보궐선거 14곳"
+          scope="local"
+          scopeLabel="6·3 지방선거 동시 투표"
           badge="본투표 진행 중"
           asideLabel="오늘 06~18시"
         />
