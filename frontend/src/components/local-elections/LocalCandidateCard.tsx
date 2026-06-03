@@ -19,12 +19,7 @@ interface Props {
   won?: boolean;
 }
 
-export default function LocalCandidateCard({
-  candidate: c,
-  year,
-  resultMode = false,
-  won,
-}: Props) {
+export default function LocalCandidateCard({ candidate: c, year, resultMode = false, won }: Props) {
   const partyColor = c.party?.color ?? "#999";
   const isWon = won ?? c.isWinner;
 
