@@ -12,8 +12,6 @@ import ByElectionResults from "@/components/elections/ByElectionResults";
 import LocalResultSummary from "./LocalResultSummary";
 import LocalRaceResults from "./LocalRaceResults";
 
-const POLL_CLOSE = new Date(2026, 5, 3, 18, 0, 0); // 6/3 18시 본투표 마감
-
 // 개표 데이터가 없는(또는 비례·의원) 유형은 상세 페이지로 — 바로가기
 const OTHER_TYPES = [
   { route: "metro-council", label: "광역의원" },
@@ -97,8 +95,13 @@ function ByElectionTab() {
   return (
     <section className="space-y-3">
       <div className="flex items-center justify-between">
-        <h2 className="text-base font-bold text-(--color-text-primary)">국회의원 재보궐선거 개표</h2>
-        <Link href="/elections/2026-06-03" className="text-sm text-(--color-primary) hover:underline">
+        <h2 className="text-base font-bold text-(--color-text-primary)">
+          국회의원 재보궐선거 개표
+        </h2>
+        <Link
+          href="/elections/2026-06-03"
+          className="text-sm text-(--color-primary) hover:underline"
+        >
           전체 보기 →
         </Link>
       </div>
@@ -152,8 +155,6 @@ export default function LocalResultsHub({ year }: { year: string }) {
     );
   }
 
-  const isPollClosed = new Date() > POLL_CLOSE;
-
   const TABS: { id: TabId; label: string }[] = [
     { id: "governor", label: "시도지사" },
     { id: "mayor", label: "기초단체장" },
@@ -162,13 +163,8 @@ export default function LocalResultsHub({ year }: { year: string }) {
 
   return (
     <div className="space-y-8">
-      {/* 실시간/최종 투표율 — Supabase ElectionTurnout 직접 조회(데이터 있을 때만 노출) */}
-      <LiveTurnoutBanner
-        scope="local"
-        scopeLabel="6·3 지방선거"
-        badge={isPollClosed ? "투표 마감" : "본투표 진행 중"}
-        asideLabel={isPollClosed ? "최종 투표율" : "오늘 06~18시"}
-      />
+      {/* 실시간/최종 투표율 — Supabase ElectionTurnout 직접 조회(데이터 있을 때만 노출, 마감 여부는 배너가 자동 판단) */}
+      <LiveTurnoutBanner scope="local" scopeLabel="6·3 지방선거" />
 
       {/* 출구조사 — 18시 마감 직후 방송 3사 공동 출구조사(18시 전 자동 숨김) */}
       <ExitPollSection scope="governor" title="시도지사 출구조사" />

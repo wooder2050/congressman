@@ -67,8 +67,8 @@ export default async function LocalElectionResultsPage({ params }: Props) {
       <header className="space-y-1">
         <h1 className="text-2xl font-bold text-(--color-text-primary)">개표 현황 종합</h1>
         <p className="text-sm text-(--color-text-secondary)">
-          시도지사·기초단체장과 국회의원 재보궐선거 개표를 한곳에서 — 투표율·출구조사·당선
-          유력 추정 포함
+          시도지사·기초단체장과 국회의원 재보궐선거 개표를 한곳에서 — 투표율·출구조사·당선 유력 추정
+          포함
         </p>
       </header>
 

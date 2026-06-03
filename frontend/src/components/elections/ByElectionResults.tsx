@@ -147,7 +147,8 @@ export default function ByElectionResults({ districts }: Props) {
         })}
       </div>
       <p className="border-t border-(--color-border-primary) px-4 py-2.5 text-xs text-(--color-text-tertiary) sm:px-5">
-        ※ 선관위 개표진행상황 기준으로 갱신되며, ‘유력’은 잠정 추정으로 최종 결과와 다를 수 있습니다.
+        ※ 선관위 개표진행상황 기준으로 갱신되며, ‘유력’은 잠정 추정으로 최종 결과와 다를 수
+        있습니다.
       </p>
     </section>
   );

@@ -18,7 +18,6 @@ import RegionGrid from "./RegionGrid";
 
 const EARLY_VOTE_END = new Date(2026, 4, 30); // 5/30 사전투표 종료
 const ELECTION_DAY = new Date(2026, 5, 3); // 6/3 본투표
-const POLL_CLOSE = new Date(2026, 5, 3, 18, 0, 0); // 6/3 18시 본투표 마감
 
 function getVoteInfo(): { stage: "before" | "early" | "after" | "day"; dDay: number } {
   const now = new Date();
@@ -60,20 +59,11 @@ export default function LocalElectionLanding({ year }: { year: string }) {
 
   const resultMode = isElectionMode(election.status);
   const hasLiveTurnout = liveTurnout?.national != null;
-  // 본투표 마감(6/3 18시) 이후 — 배너 문구를 "투표 마감 · 최종 투표율"로 전환
-  const isPollClosed = new Date() > POLL_CLOSE;
 
   return (
     <div className="space-y-8">
       {/* 본투표 실시간 투표율 — Supabase ElectionTurnout 직접 조회(데이터 있을 때만 노출, 개표 모드 진입 시 숨김) */}
-      {!resultMode && (
-        <LiveTurnoutBanner
-          scope="local"
-          scopeLabel="6·3 지방선거"
-          badge={isPollClosed ? "투표 마감" : "본투표 진행 중"}
-          asideLabel={isPollClosed ? "최종 투표율" : "오늘 06~18시"}
-        />
-      )}
+      {!resultMode && <LiveTurnoutBanner scope="local" scopeLabel="6·3 지방선거" />}
 
       {/* 사전투표율 요약 — 본투표율 노출 시 축소(compact), 개표 모드 진입 시 숨김 */}
       {!resultMode && (
