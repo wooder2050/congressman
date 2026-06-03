@@ -86,6 +86,24 @@ export default function CandidateCard({
               &ldquo;{candidate.slogan}&rdquo;
             </p>
           )}
+          {/* 개표 결과 — 득표가 들어온 경우에만 노출 */}
+          {candidate.voteCount != null && (
+            <div className="mt-2 flex flex-wrap items-center gap-2">
+              {candidate.isWinner && (
+                <span className="rounded-md bg-(--color-text-primary) px-2 py-0.5 text-xs font-bold text-(--color-bg-primary)">
+                  당선
+                </span>
+              )}
+              {candidate.voteRate != null && (
+                <span className="text-sm font-bold text-(--color-text-primary) tabular-nums">
+                  {candidate.voteRate.toFixed(1)}%
+                </span>
+              )}
+              <span className="text-xs text-(--color-text-secondary) tabular-nums">
+                {candidate.voteCount.toLocaleString()}표
+              </span>
+            </div>
+          )}
         </div>
       </div>
 

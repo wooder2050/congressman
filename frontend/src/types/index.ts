@@ -629,6 +629,10 @@ export interface ElectionCandidate extends CandidateDisclosure {
   candidateNumber: number | null;
   status: string;
   memberIdRef: string | null;
+  /** 개표 결과 — 개표 후에만 채워짐 (선관위 개표진행상황) */
+  voteCount?: number | null;
+  voteRate?: number | null;
+  isWinner?: boolean;
   /** 항목별 재산 명세 — 다중 source 중 우선순위가 가장 높은 1개만 노출됨 */
   assetItems?: CandidateAssetItem[];
   /** 현재 노출되는 source identifier (선택된 데이터의 source) */

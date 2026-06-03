@@ -80,6 +80,10 @@ function mapCandidate(c: Candidate & { party: Party | null }) {
     candidateNumber: c.candidateNumber,
     status: c.status,
     memberIdRef: c.memberIdRef,
+    // 개표 결과 (선관위 개표진행상황, 개표 전 null)
+    voteCount: c.voteCount,
+    voteRate: c.voteRate,
+    isWinner: c.isWinner,
   };
 }
 
