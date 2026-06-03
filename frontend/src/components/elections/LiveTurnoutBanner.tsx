@@ -48,6 +48,7 @@ export default function LiveTurnoutBanner({ scope, scopeLabel, badge, asideLabel
       badge={badge}
       asideLabel={asideLabel}
       sourceNote={sourceNote}
+      keepAfterClose
     />
   );
 }

@@ -38,6 +38,8 @@ interface Props {
   sourceNote?: string;
   /** 축소 모드 — 본투표율 배너와 함께 노출될 때 한 줄로 간략히 표시 */
   compact?: boolean;
+  /** 마감(6/3 18시) 이후에도 계속 노출 — 최종 투표율 표시용 */
+  keepAfterClose?: boolean;
 }
 
 export default function EarlyVoteTurnoutBanner({
@@ -50,10 +52,11 @@ export default function EarlyVoteTurnoutBanner({
   asideLabel = "본투표 6/3(수)",
   sourceNote = "중앙선거관리위원회 최종 집계(5/30 18시 마감) 기준",
   compact = false,
+  keepAfterClose = false,
 }: Props) {
   const [expanded, setExpanded] = useState(false);
 
-  if (new Date() > HIDE_AFTER) return null;
+  if (!keepAfterClose && new Date() > HIDE_AFTER) return null;
 
   // 축소 모드: 본투표율 배너와 겹칠 때 한 줄 요약만 노출
   if (compact) {
