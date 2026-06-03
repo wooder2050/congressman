@@ -66,8 +66,8 @@ export default function RaceDetailInner({ electionId, raceId }: Props) {
     raceId,
   });
 
-  // 개표 모드: 전역(election.status === "completed") + race별 개표 여부
-  const resultMode = isElectionMode(race?.electionStatus);
+  // 개표 모드: 전역(election.status === "completed") 또는 중간 득표 유입 + race별 개표 여부
+  const resultMode = isElectionMode(race?.electionStatus, race?.candidates);
   const tallied = race ? isRaceTallied(race.candidates) : false;
   const showResults = resultMode && tallied;
 
