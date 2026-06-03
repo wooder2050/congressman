@@ -339,6 +339,11 @@ model Candidate {
   candidateNumber Int? // 기호 번호
   status          String  @default("registered")
 
+  // 개표 결과 (선관위 개표진행상황에서 채움 — 개표 전 NULL)
+  voteCount Int? // 득표수
+  voteRate  Float? // 득표율 (%)
+  isWinner  Boolean @default(false) // 당선 여부
+
   // 후보자정보공개자료 (공직선거법 제49조, info.nec.go.kr 상세 페이지 요약)
   assetDeclared      BigInt? // 재산신고액 (원)
   militaryService    String? // 병역신고사항(본인)
@@ -515,34 +520,34 @@ model Poll {
   electionId       String? // LocalElection.id (예: "local-2026") — 매칭 가능할 때만 채움
 
   // 조사 메타
-  pollName  String // NESDC "여론조사 명칭(지역)" 원문
-  agency    String // 조사기관명
-  client    String // 조사의뢰자
-  sido      String // 조사지역 시·도 (예: "강원특별자치도", "전국")
-  sigungu   String @default("") // 시·군·구 (있을 때만)
+  pollName        String // NESDC "여론조사 명칭(지역)" 원문
+  agency          String // 조사기관명
+  client          String // 조사의뢰자
+  sido            String // 조사지역 시·도 (예: "강원특별자치도", "전국")
+  sigungu         String    @default("") // 시·군·구 (있을 때만)
   surveyStartedAt DateTime? // 조사 시작 일시
   surveyEndedAt   DateTime? // 조사 종료 일시
   surveyDays      Int? // 조사일수
   surveyMinutes   Int? // 조사시간(분)
 
   // 표본 / 방법
-  sampleSize          Int? // 조사완료 사례수(명)
-  weightedSampleSize  Int? // 가중값 적용 기준 사례수(명)
-  surveyMethod        String? // "무선전화면접", "무선 ARS" 등
-  samplingFrame       String? // "무선전화번호 휴대전화 가상번호" 등
-  contactRate         Float? // 접촉률 (%)
-  responseRate        Float? // 응답률 (%)
-  aaporResponseRate   Float? // 국제기준 응답률 (계산: contactRate × responseRate / 100)
-  marginOfError       Float? // 표본오차 (±%P)
-  confidenceLevel     Float? // 신뢰수준 (%, 통상 95)
-  weightingMethod     String? // 가중값 산출 및 적용방법
-  weightingTarget     String? // 기준 인구통계 (예: "2026년 4월말 행정안전부 주민등록 인구 기준")
+  sampleSize         Int? // 조사완료 사례수(명)
+  weightedSampleSize Int? // 가중값 적용 기준 사례수(명)
+  surveyMethod       String? // "무선전화면접", "무선 ARS" 등
+  samplingFrame      String? // "무선전화번호 휴대전화 가상번호" 등
+  contactRate        Float? // 접촉률 (%)
+  responseRate       Float? // 응답률 (%)
+  aaporResponseRate  Float? // 국제기준 응답률 (계산: contactRate × responseRate / 100)
+  marginOfError      Float? // 표본오차 (±%P)
+  confidenceLevel    Float? // 신뢰수준 (%, 통상 95)
+  weightingMethod    String? // 가중값 산출 및 적용방법
+  weightingTarget    String? // 기준 인구통계 (예: "2026년 4월말 행정안전부 주민등록 인구 기준")
 
   // 공표
-  publishMedia        String? // 공표·보도 매체 (예: "방송")
-  publishMediaName    String? // 공표·보도 매체명
-  publishedAt         DateTime? // 최초 공표·보도 지정일시
-  registeredAt        DateTime // 등록일
+  publishMedia     String? // 공표·보도 매체 (예: "방송")
+  publishMediaName String? // 공표·보도 매체명
+  publishedAt      DateTime? // 최초 공표·보도 지정일시
+  registeredAt     DateTime // 등록일
 
   // 본문 원문 (디버깅용)
   rawHtml String? // 상세 페이지 HTML 원본 일부 (스키마 변화 추적용)
@@ -576,7 +581,7 @@ model PollAttachment {
   // NESDC FileDown.do 파라미터 (디코딩 전 원문 유지)
   atchFileId  String
   fileSn      String
-  bbsId       String  @default("B0000005")
+  bbsId       String @default("B0000005")
   bbsKey      String
   downloadUrl String // 조립된 풀 URL
 
@@ -587,9 +592,9 @@ model PollAttachment {
   byteSize    Int?
 
   // 다운로드 상태
-  status        String  @default("pending") // "pending" | "downloaded" | "failed" | "not_yet_public"
-  errorMessage  String?
-  downloadedAt  DateTime?
+  status       String    @default("pending") // "pending" | "downloaded" | "failed" | "not_yet_public"
+  errorMessage String?
+  downloadedAt DateTime?
 
   poll Poll @relation(fields: [pollId], references: [id], onDelete: Cascade)
 
@@ -653,8 +658,8 @@ model PollResponse {
   partyName     String? // 매칭 실패 시 원문 보존
 
   // 응답률
-  subgroup    String  @default("전체") // "전체" | "남성" | "20대" | "1권역" 등
-  subgroupKey String  @default("total") // 정규화 키 ("total" | "gender:male" 등)
+  subgroup    String @default("전체") // "전체" | "남성" | "20대" | "1권역" 등
+  subgroupKey String @default("total") // 정규화 키 ("total" | "gender:male" 등)
   rate        Float // 지지율 (%)
   sampleSize  Int? // 해당 subgroup 가중값 적용 사례수
 
