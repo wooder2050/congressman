@@ -7,6 +7,11 @@ interface Props {
   rank: number;
   /** 이 race 최다 득표수 — 바 너비 정규화 기준 */
   maxVoteCount: number;
+  /**
+   * 당선(확정 또는 보수적 추정) 여부 — 미전달 시 공식 확정(isWinner)으로 폴백.
+   * 추정 당선은 상위에서 getRaceCallStatus로 판정해 전달한다.
+   */
+  won?: boolean;
 }
 
 /**
@@ -14,13 +19,14 @@ interface Props {
  * 색은 정당색 득표율 바에만 쓰고, 당선 표시는 활자 굵기와 라벨로 처리한다.
  * 카드 박스 대신 상위에서 divide-y 구분선으로 묶는다.
  */
-export default function LocalResultCandidateRow({ candidate: c, rank, maxVoteCount }: Props) {
+export default function LocalResultCandidateRow({ candidate: c, rank, maxVoteCount, won }: Props) {
   const partyColor = c.party?.color ?? "var(--color-text-tertiary)";
   const hasVotes = c.voteCount != null;
   const barPct = hasVotes && maxVoteCount > 0 ? (c.voteCount! / maxVoteCount) * 100 : 0;
+  const isWon = won ?? c.isWinner;
 
   return (
-    <li className={`py-3.5 ${c.isWinner ? "" : "opacity-90"}`}>
+    <li className={`py-3.5 ${isWon ? "" : "opacity-90"}`}>
       <div className="flex items-center gap-3">
         {/* 순위 — 활자만 */}
         <span className="w-4 shrink-0 text-sm font-semibold text-(--color-text-tertiary) tabular-nums">
@@ -48,14 +54,14 @@ export default function LocalResultCandidateRow({ candidate: c, rank, maxVoteCou
             />
             <span
               className={`truncate text-(--color-text-primary) ${
-                c.isWinner ? "text-[15px] font-bold" : "text-sm font-medium"
+                isWon ? "text-[15px] font-bold" : "text-sm font-medium"
               }`}
             >
               {c.name}
             </span>
-            {c.isWinner && (
+            {isWon && (
               <span className="shrink-0 text-xs font-semibold text-(--color-text-secondary)">
-                당선
+                당선{!c.isWinner && " (잠정)"}
               </span>
             )}
           </div>
@@ -69,7 +75,7 @@ export default function LocalResultCandidateRow({ candidate: c, rank, maxVoteCou
         <div className="shrink-0 text-right">
           <p
             className={`text-(--color-text-primary) tabular-nums ${
-              c.isWinner ? "text-base font-bold" : "text-sm font-semibold"
+              isWon ? "text-base font-bold" : "text-sm font-semibold"
             }`}
           >
             {c.voteRate != null ? `${c.voteRate.toFixed(1)}%` : "—"}
@@ -89,7 +95,7 @@ export default function LocalResultCandidateRow({ candidate: c, rank, maxVoteCou
           style={{
             width: `${barPct}%`,
             backgroundColor: partyColor,
-            opacity: c.isWinner ? 1 : 0.5,
+            opacity: isWon ? 1 : 0.5,
           }}
           aria-hidden="true"
         />
