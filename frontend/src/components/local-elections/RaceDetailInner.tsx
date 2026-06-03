@@ -180,7 +180,8 @@ export default function RaceDetailInner({ electionId, raceId }: Props) {
         )}
         {showResults && !finalized && (
           <p className="text-xs text-(--color-text-tertiary)">
-            개표가 진행 중입니다. 득표수는 선관위 개표진행상황 기준으로 갱신되며, 최종 결과와 다를 수 있습니다.
+            개표가 진행 중입니다. 득표수는 선관위 개표진행상황 기준으로 갱신되며, 최종 결과와 다를
+            수 있습니다.
           </p>
         )}
         {isProportional && !resultMode && (
