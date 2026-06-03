@@ -524,6 +524,10 @@ export interface ElectionDistrictInfo {
   vacancyReason: string;
   confirmed: boolean;
   status: string;
+  /** 개표율 (%) — 개표 전 null. 당선 유력 추정에 사용 */
+  countedRate?: number | null;
+  /** 투표수 (유효표 + 무효표) — 개표 전 null */
+  totalVotes?: number | null;
   previousMember: {
     id: string | null;
     name: string;
@@ -710,6 +714,10 @@ export interface LocalElectionRaceSummary {
   district: string;
   displayName: string;
   seatCount: number;
+  /** 개표율 (%) — 개표 전 null. 당선 유력 추정에 사용 */
+  countedRate?: number | null;
+  /** 투표수 (유효표 + 무효표) — 개표 전 null */
+  totalVotes?: number | null;
   candidateCount: number;
   topCandidates: LocalElectionCandidatePreview[];
   /** 비례대표 race에만 채워짐 — 정당별 명부 후보 수 */
@@ -758,6 +766,10 @@ export interface LocalElectionRaceDetail {
   district: string;
   displayName: string;
   seatCount: number;
+  /** 개표율 (%) — 개표 전 null. 당선 유력 추정에 사용 */
+  countedRate?: number | null;
+  /** 투표수 (유효표 + 무효표) — 개표 전 null */
+  totalVotes?: number | null;
   /** 선거 전체 상태 — "completed"면 개표 모드 */
   electionStatus: "upcoming" | "active" | "completed";
   candidates: LocalElectionCandidateDetail[];

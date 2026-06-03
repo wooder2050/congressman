@@ -18,7 +18,6 @@ import RegionGrid from "./RegionGrid";
 
 const EARLY_VOTE_END = new Date(2026, 4, 30); // 5/30 사전투표 종료
 const ELECTION_DAY = new Date(2026, 5, 3); // 6/3 본투표
-const POLL_CLOSE = new Date(2026, 5, 3, 18, 0, 0); // 6/3 18시 본투표 마감
 
 function getVoteInfo(): { stage: "before" | "early" | "after" | "day"; dDay: number } {
   const now = new Date();
@@ -60,20 +59,11 @@ export default function LocalElectionLanding({ year }: { year: string }) {
 
   const resultMode = isElectionMode(election.status);
   const hasLiveTurnout = liveTurnout?.national != null;
-  // 본투표 마감(6/3 18시) 이후 — 배너 문구를 "투표 마감 · 최종 투표율"로 전환
-  const isPollClosed = new Date() > POLL_CLOSE;
 
   return (
     <div className="space-y-8">
       {/* 본투표 실시간 투표율 — Supabase ElectionTurnout 직접 조회(데이터 있을 때만 노출, 개표 모드 진입 시 숨김) */}
-      {!resultMode && (
-        <LiveTurnoutBanner
-          scope="local"
-          scopeLabel="6·3 지방선거"
-          badge={isPollClosed ? "투표 마감" : "본투표 진행 중"}
-          asideLabel={isPollClosed ? "최종 투표율" : "오늘 06~18시"}
-        />
-      )}
+      {!resultMode && <LiveTurnoutBanner scope="local" scopeLabel="6·3 지방선거" />}
 
       {/* 사전투표율 요약 — 본투표율 노출 시 축소(compact), 개표 모드 진입 시 숨김 */}
       {!resultMode && (
@@ -103,6 +93,25 @@ export default function LocalElectionLanding({ year }: { year: string }) {
       {/* 출구조사 예측 — 18시 마감 직후 방송 3사 공동 출구조사(데이터 있을 때만 노출, 18시 전 자동 숨김) */}
       <ExitPollSection scope="governor" title="시도지사 출구조사" />
       <ExitPollSection scope="superintendent" title="교육감 출구조사" />
+
+      {/* 개표 현황 종합 페이지 — 개표 모드일 때 시도지사·교육감·재보궐을 한곳에 모은 페이지로 유도 */}
+      {resultMode && (
+        <Link
+          href={`/local-elections/${year}/results`}
+          className="flex items-center justify-between gap-3 rounded-xl border border-(--color-primary) bg-(--color-primary)/5 p-4 transition-colors hover:bg-(--color-primary)/10"
+        >
+          <div className="flex items-center gap-3">
+            <span className="text-2xl">📊</span>
+            <div>
+              <h3 className="font-bold text-(--color-text-primary)">개표 현황 종합</h3>
+              <p className="text-sm text-(--color-text-secondary)">
+                시도지사·기초단체장·재보궐 개표를 한곳에서 — 당선 유력 추정 포함
+              </p>
+            </div>
+          </div>
+          <span className="shrink-0 text-(--color-primary)">→</span>
+        </Link>
+      )}
 
       {/* 개표 현황 — 개표 시작(status === "completed") 시 정당별 당선 수 요약을 최상단에 */}
       {resultMode && <LocalResultSummary electionId={election.id} />}

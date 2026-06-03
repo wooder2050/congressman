@@ -1,17 +1,15 @@
-import type { ElectionCandidate, ElectionDistrictInfo } from "@/types";
-import { getRaceCallStatus } from "@/lib/local-election-result";
-import RaceCallBadge from "@/components/local-elections/RaceCallBadge";
+import Link from "next/link";
+import type { LocalElectionCandidatePreview, LocalElectionRaceSummary } from "@/types";
+import { getRaceCallStatus, sortByResult } from "@/lib/local-election-result";
+import RaceCallBadge from "./RaceCallBadge";
 
 interface Props {
-  districts: ElectionDistrictInfo[];
-}
-
-/** 당선 우선 → 득표순 정렬 (원본 불변) */
-function sortByResult(cands: ElectionCandidate[]): ElectionCandidate[] {
-  return [...cands].sort((a, b) => {
-    if (!!a.isWinner !== !!b.isWinner) return a.isWinner ? -1 : 1;
-    return (b.voteCount ?? -1) - (a.voteCount ?? -1);
-  });
+  /** 선거 id (예: "local-2026") — 선거구 상세 링크 구성용 */
+  electionId: string;
+  /** 섹션 제목 (예: "시도지사 개표") */
+  title: string;
+  /** 선거구 목록 — topCandidates에 개표 결과(voteCount/voteRate/isWinner) 포함 */
+  races: LocalElectionRaceSummary[];
 }
 
 function ResultRow({
@@ -20,7 +18,7 @@ function ResultRow({
   maxVoteCount,
   leading,
 }: {
-  candidate: ElectionCandidate;
+  candidate: LocalElectionCandidatePreview;
   rank: number;
   maxVoteCount: number;
   leading: boolean;
@@ -84,65 +82,68 @@ function ResultRow({
 }
 
 /**
- * 재보궐 개표 현황 — 개표가 시작된 선거구만 카드로 모아 후보별 득표를 막대로 표시.
- * 좁은 테이블 셀에 욱여넣는 대신 선거구 단위 카드 그리드로 분리해 가독성을 확보한다.
+ * 지방선거 유형별 개표 현황 — 개표가 시작된 선거구만 카드로 모아 후보별 득표를 막대로 표시.
+ * 재보궐의 ByElectionResults와 같은 선거구 단위 카드 그리드 패턴을 지방선거
+ * LocalElectionRaceSummary(topCandidates 포함)에 맞춘 것.
+ * 카드 헤더에 race 개표 상태(당선/유력/개표중 p%)를 RaceCallBadge로 표시한다.
  * 득표가 들어온 선거구가 없으면 섹션 전체를 렌더하지 않는다(개표 전).
  */
-export default function ByElectionResults({ districts }: Props) {
-  const tallied = districts
-    .filter((d) => d.candidates.some((c) => c.voteCount != null))
-    .map((d) => ({
-      ...d,
-      ordered: sortByResult(d.candidates),
-      // 재보궐은 단일 당선(다수대표제) — electionType/seatCount 기본값으로 단수 취급
-      call: getRaceCallStatus(
-        { countedRate: d.countedRate, totalVotes: d.totalVotes },
-        d.candidates.map((c) => ({ isWinner: !!c.isWinner, voteCount: c.voteCount ?? null })),
-      ),
+export default function LocalRaceResults({ electionId, title, races }: Props) {
+  const tallied = races
+    .filter((r) => r.topCandidates.some((c) => c.voteCount != null))
+    .map((r) => ({
+      ...r,
+      ordered: sortByResult(r.topCandidates),
+      call: getRaceCallStatus(r, r.topCandidates),
     }));
 
   if (tallied.length === 0) return null;
 
-  const anyWinner = tallied.some((d) => d.call === "won");
+  const anyFinal = tallied.some((r) => r.call === "won");
+  const yearPath = electionId.replace(/^local-/, "");
 
   return (
     <section className="overflow-hidden rounded-xl border border-(--color-border-primary) bg-(--color-bg-primary)">
       <div className="flex items-center justify-between border-b border-(--color-border-primary) px-4 py-3 sm:px-5">
-        <h2 className="text-base font-bold text-(--color-text-primary)">개표 현황</h2>
+        <h2 className="text-base font-bold text-(--color-text-primary)">{title}</h2>
         <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-(--color-text-secondary)">
           <span
-            className={`size-1.5 rounded-full ${anyWinner ? "bg-(--color-text-secondary)" : "animate-pulse bg-(--color-text-tertiary)"}`}
+            className={`size-1.5 rounded-full ${anyFinal ? "bg-(--color-text-secondary)" : "animate-pulse bg-(--color-text-tertiary)"}`}
             aria-hidden="true"
           />
           {tallied.length}곳 개표 진행
         </span>
       </div>
       <div className="grid gap-px bg-(--color-border-primary) sm:grid-cols-2">
-        {tallied.map((d) => {
-          const maxVoteCount = d.ordered[0]?.voteCount ?? 0;
+        {tallied.map((r) => {
+          const maxVoteCount = r.ordered[0]?.voteCount ?? 0;
           return (
-            <div key={d.id} className="bg-(--color-bg-primary) px-4 py-3.5 sm:px-5">
+            <Link
+              key={r.id}
+              href={`/local-elections/${yearPath}/races/${r.id}`}
+              className="block bg-(--color-bg-primary) px-4 py-3.5 transition-colors hover:bg-(--color-bg-secondary) sm:px-5"
+            >
               <div className="mb-1 flex items-center gap-2">
                 <span className="rounded bg-(--color-bg-tertiary) px-1.5 py-0.5 text-[11px] font-medium text-(--color-text-secondary)">
-                  {d.region}
+                  {r.sido}
                 </span>
                 <h3 className="min-w-0 flex-1 truncate text-sm font-bold text-(--color-text-primary)">
-                  {d.district}
+                  {r.sigungu || r.displayName}
                 </h3>
-                <RaceCallBadge status={d.call} countedRate={d.countedRate} />
+                <RaceCallBadge status={r.call} countedRate={r.countedRate} />
               </div>
               <ul className="divide-y divide-(--color-border-primary)">
-                {d.ordered.map((c, i) => (
+                {r.ordered.map((c, i) => (
                   <ResultRow
                     key={c.id}
                     candidate={c}
                     rank={i + 1}
                     maxVoteCount={maxVoteCount}
-                    leading={i === 0 && (d.call === "leading" || d.call === "won")}
+                    leading={i === 0 && (r.call === "leading" || r.call === "won")}
                   />
                 ))}
               </ul>
-            </div>
+            </Link>
           );
         })}
       </div>

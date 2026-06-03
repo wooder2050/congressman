@@ -113,13 +113,14 @@ export class LocalElectionsController {
     }
 
     // page 상한 500: race 2,335개를 limit=1로 받아도 충분히 모든 페이지를 커버.
+    // limit 상한 300: 개표 종합 페이지가 기초단체장 227곳을 한 번에 받기 위함(topCandidates 3명씩이라 payload 과하지 않음).
     return this.service.getRaces(id, {
       type: safeType,
       sido: safeSido,
       sigungu: safeSigungu,
       q,
       page: clampInt(page, 1, 1, 500),
-      limit: clampInt(limit, 30, 1, 100),
+      limit: clampInt(limit, 30, 1, 300),
     });
   }
 
