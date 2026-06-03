@@ -6,7 +6,12 @@ import { useCongressSuspenseQuery } from "@/hooks/useCongressQuery";
 import { getLocalElectionRace } from "@/lib/api";
 import { electionTypeLabel, sidoToShort } from "@/constants/local-elections";
 import type { LocalElectionCandidateDetail, LocalElectionType } from "@/types";
-import { isElectionMode, isRaceTallied, sortByResult } from "@/lib/local-election-result";
+import {
+  isCandidateWon,
+  isElectionMode,
+  isRaceTallied,
+  sortByResult,
+} from "@/lib/local-election-result";
 import LocalCandidateCard from "./LocalCandidateCard";
 import LocalResultCandidateRow from "./LocalResultCandidateRow";
 import RacePollTimeseries from "@/components/polls/RacePollTimeseries";
@@ -75,6 +80,17 @@ export default function RaceDetailInner({ electionId, raceId }: Props) {
   const finalized =
     race?.electionStatus === "completed" || (race?.candidates.some((c) => c.isWinner) ?? false);
 
+  // 당선(확정/추정) 후보 id 집합 — 종합 페이지와 동일하게 getRaceCallStatus 기반.
+  // isWinner(공식 확정) 또는 보수적 추정 당선("leading"의 득표 1위)을 "당선"으로 통합 표시.
+  const wonIds = useMemo(() => {
+    if (!race) return new Set<number>();
+    const ids = new Set<number>();
+    for (const c of race.candidates) {
+      if (isCandidateWon(race, race.candidates, c)) ids.add(c.id);
+    }
+    return ids;
+  }, [race]);
+
   const partyBuckets = useMemo(() => {
     if (!race || !PROPORTIONAL_TYPES.has(race.electionType)) return null;
     return groupByParty(race.candidates);
@@ -98,8 +114,8 @@ export default function RaceDetailInner({ electionId, raceId }: Props) {
       top.voteCount != null && runnerUp?.voteCount != null
         ? top.voteCount - runnerUp.voteCount
         : null;
-    return { winner: top.isWinner ? top : null, maxVoteCount, gapRate, gapVotes };
-  }, [showResults, orderedCandidates]);
+    return { winner: wonIds.has(top.id) ? top : null, maxVoteCount, gapRate, gapVotes };
+  }, [showResults, orderedCandidates, wonIds]);
 
   if (!race) {
     return (
@@ -205,6 +221,9 @@ export default function RaceDetailInner({ electionId, raceId }: Props) {
             >
               <p className="text-xs font-semibold tracking-wide text-(--color-text-tertiary)">
                 당선
+                {!resultSummary.winner.isWinner && (
+                  <span className="ml-1 font-normal">(개표 중 잠정)</span>
+                )}
               </p>
               <p className="mt-0.5 flex items-baseline gap-2">
                 <span className="text-lg font-bold text-(--color-text-primary)">
@@ -239,6 +258,7 @@ export default function RaceDetailInner({ electionId, raceId }: Props) {
                 candidate={c}
                 rank={i + 1}
                 maxVoteCount={resultSummary?.maxVoteCount ?? 0}
+                won={wonIds.has(c.id)}
               />
             ))}
           </ul>
@@ -268,6 +288,7 @@ export default function RaceDetailInner({ electionId, raceId }: Props) {
                     candidate={c}
                     year={year}
                     resultMode={showResults}
+                    won={wonIds.has(c.id)}
                   />
                 ))}
               </div>
@@ -278,7 +299,13 @@ export default function RaceDetailInner({ electionId, raceId }: Props) {
         <section>
           <div className="grid gap-4 sm:grid-cols-2">
             {orderedCandidates.map((c) => (
-              <LocalCandidateCard key={c.id} candidate={c} year={year} resultMode={showResults} />
+              <LocalCandidateCard
+                key={c.id}
+                candidate={c}
+                year={year}
+                resultMode={showResults}
+                won={wonIds.has(c.id)}
+              />
             ))}
           </div>
         </section>

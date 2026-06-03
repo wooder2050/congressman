@@ -99,7 +99,8 @@ export default function LocalRaceResults({ electionId, title, races }: Props) {
 
   if (tallied.length === 0) return null;
 
-  const anyFinal = tallied.some((r) => r.call === "won");
+  // 공식 확정(won)·추정 당선(leading) 모두 "당선"으로 표시되므로 헤더 dot도 통합 기준
+  const anyFinal = tallied.some((r) => r.call === "won" || r.call === "leading");
   const yearPath = electionId.replace(/^local-/, "");
 
   return (
@@ -148,8 +149,8 @@ export default function LocalRaceResults({ electionId, title, races }: Props) {
         })}
       </div>
       <p className="border-t border-(--color-border-primary) px-4 py-2.5 text-xs text-(--color-text-tertiary) sm:px-5">
-        ※ 선관위 개표진행상황 기준으로 갱신되며, ‘유력’은 잠정 추정으로 최종 결과와 다를 수
-        있습니다.
+        ※ 선관위 개표진행상황 기준으로 갱신되며, 개표 중 표시되는 ‘당선’은 잠정 추정으로 최종
+        결과와 다를 수 있습니다.
       </p>
     </section>
   );

@@ -50,9 +50,9 @@ function ResultRow({
             {c.party?.shortName ?? c.party?.name ?? "무소속"}
           </span>
         </span>
-        {c.isWinner && (
+        {emphasize && (
           <span className="shrink-0 rounded bg-(--color-text-primary) px-1.5 py-0.5 text-[10px] font-bold text-(--color-bg-primary)">
-            당선
+            당선{!c.isWinner && " (잠정)"}
           </span>
         )}
         <span
@@ -103,7 +103,7 @@ export default function ByElectionResults({ districts }: Props) {
 
   if (tallied.length === 0) return null;
 
-  const anyWinner = tallied.some((d) => d.call === "won");
+  const anyWinner = tallied.some((d) => d.call === "won" || d.call === "leading");
 
   return (
     <section className="overflow-hidden rounded-xl border border-(--color-border-primary) bg-(--color-bg-primary)">
@@ -147,8 +147,8 @@ export default function ByElectionResults({ districts }: Props) {
         })}
       </div>
       <p className="border-t border-(--color-border-primary) px-4 py-2.5 text-xs text-(--color-text-tertiary) sm:px-5">
-        ※ 선관위 개표진행상황 기준으로 갱신되며, ‘유력’은 잠정 추정으로 최종 결과와 다를 수
-        있습니다.
+        ※ 선관위 개표진행상황 기준으로 갱신되며, 개표 중 표시되는 ‘당선’은 잠정 추정으로 최종
+        결과와 다를 수 있습니다.
       </p>
     </section>
   );
