@@ -348,6 +348,8 @@ export class LocalElectionsService {
         district: r.district,
         displayName: r.displayName,
         seatCount: r.seatCount,
+        countedRate: r.countedRate,
+        totalVotes: r.totalVotes,
         candidateCount: r._count.candidates,
         topCandidates: r.candidates.map((c) => ({
           id: c.id,
@@ -403,6 +405,8 @@ export class LocalElectionsService {
       district: race.district,
       displayName: race.displayName,
       seatCount: race.seatCount,
+      countedRate: race.countedRate,
+      totalVotes: race.totalVotes,
       electionStatus: race.election.status,
       candidates: race.candidates.map(mapLocalCandidate),
     };
@@ -617,6 +621,8 @@ export class LocalElectionsService {
         district: r.district,
         displayName: r.displayName,
         seatCount: r.seatCount,
+        countedRate: r.countedRate,
+        totalVotes: r.totalVotes,
         candidateCount: r._count.candidates,
         topCandidates,
         partyGroups: isProportional ? (partyGroupsByRace.get(r.id) ?? []) : undefined,

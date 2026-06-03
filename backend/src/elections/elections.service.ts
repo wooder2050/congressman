@@ -153,6 +153,8 @@ export class ElectionsService {
         vacancyReason: d.vacancyReason,
         confirmed: d.confirmed,
         status: d.status,
+        countedRate: d.countedRate,
+        totalVotes: d.totalVotes,
         previousMember: d.previousMember
           ? {
               id: d.previousMember.id,

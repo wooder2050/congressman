@@ -103,12 +103,7 @@ export default function ElectionPageInner({ electionId }: { electionId: string }
     <div className="space-y-6">
       {/* 본투표 실시간 투표율 — 재보궐은 지방선거와 통합 집계라 local scope를 공유(홈·지방선거 페이지와 동일 데이터) */}
       {!isElectionMode(election.status) && (
-        <LiveTurnoutBanner
-          scope="local"
-          scopeLabel="6·3 지방선거 동시 투표"
-          badge="본투표 진행 중"
-          asideLabel="오늘 06~18시"
-        />
+        <LiveTurnoutBanner scope="local" scopeLabel="6·3 지방선거 동시 투표" />
       )}
 
       {/* 사전투표율 요약 — 본투표율 노출 시 축소(compact), 개표 모드 진입 시 숨김 */}
