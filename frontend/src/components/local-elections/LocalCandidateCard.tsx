@@ -129,23 +129,6 @@ export default function LocalCandidateCard({ candidate: c, year, resultMode = fa
             </div>
           )}
 
-          {/* 공약 */}
-          {c.pledges.length > 0 && (
-            <div className="mt-3">
-              <h4 className="mb-1 text-xs font-bold text-(--color-text-tertiary)">주요 공약</h4>
-              <ul className="space-y-1">
-                {c.pledges.map((p, i) => (
-                  <li key={i} className="text-xs text-(--color-text-secondary)">
-                    <span className="font-medium text-(--color-text-primary)">{p.title}</span>
-                    {p.description && (
-                      <span className="text-(--color-text-tertiary)"> — {p.description}</span>
-                    )}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )}
-
           {/* 재산 (구 텍스트 — 최신 데이터는 후보자정보공개자료로 대체) */}
           {c.assets && c.assetDeclared === null && (
             <div className="mt-2">
@@ -167,6 +150,28 @@ export default function LocalCandidateCard({ candidate: c, year, resultMode = fa
             </Link>
           )}
         </>
+      )}
+
+      {/* 개표 모드 — 당선자에 한해 공약을 노출(당선자 공약 확인 요청). 낙선자는 결과만 표시 */}
+      {resultMode && isWon && c.pledges.length > 0 && (
+        <div className="mt-3">
+          <h4 className="mb-1 text-xs font-bold text-(--color-text-tertiary)">주요 공약</h4>
+          <ul className="space-y-1">
+            {c.pledges.map((p, i) => (
+              <li key={i} className="text-xs text-(--color-text-secondary)">
+                <span className="font-medium text-(--color-text-primary)">{p.title}</span>
+              </li>
+            ))}
+          </ul>
+          {year && (
+            <Link
+              href={`/local-elections/${year}/candidates/${c.id}`}
+              className="mt-2 inline-flex items-center gap-1 text-xs font-medium text-(--color-primary) hover:underline"
+            >
+              공약 자세히 보기 →
+            </Link>
+          )}
+        </div>
       )}
     </div>
   );
