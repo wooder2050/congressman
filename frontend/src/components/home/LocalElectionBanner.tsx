@@ -31,9 +31,9 @@ export default function LocalElectionBanner() {
   const href = isCounting ? "/local-elections/2026/results" : "/local-elections/2026";
   const badge = isCounting ? "개표" : dday;
   const subtitle = isCounting
-    ? "시도지사·기초단체장·재보궐 개표를 한곳에서 · 당선 유력 추정 포함"
+    ? "시도지사·기초단체장·재보궐 개표 결과를 한곳에서 · 당선 결과 포함"
     : `${getRegistrationStatus()} · 광역단체장·기초단체장·교육감·광역의원·기초의원`;
-  const cta = isCounting ? "개표 현황 →" : "보기 →";
+  const cta = isCounting ? "개표 결과 →" : "보기 →";
 
   return (
     <section>
@@ -48,7 +48,7 @@ export default function LocalElectionBanner() {
             </span>
             <div className="min-w-0">
               <h2 className="truncate text-base font-bold text-(--color-text-primary) sm:text-lg">
-                {isCounting ? "6·3 지방선거 개표 현황" : "6·3 전국동시지방선거"}
+                {isCounting ? "6·3 지방선거 개표 결과" : "6·3 전국동시지방선거"}
               </h2>
               <p className="mt-0.5 truncate text-xs text-(--color-text-secondary) sm:text-sm">
                 {subtitle}

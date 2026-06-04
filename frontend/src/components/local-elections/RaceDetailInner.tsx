@@ -75,10 +75,12 @@ export default function RaceDetailInner({ electionId, raceId }: Props) {
   const resultMode = isElectionMode(race?.electionStatus, race?.candidates);
   const tallied = race ? isRaceTallied(race.candidates) : false;
   const showResults = resultMode && tallied;
-  // 개표 확정 여부 — 당선자가 확정됐거나 전역 status가 completed일 때만 "개표 완료".
-  // 중간 득표(voteCount)만 들어온 단계는 당선 미확정이므로 "개표 진행 중".
+  // 개표 완료 여부 — 전역 status가 completed, 당선자 확정, 또는 race 개표율이 사실상 100%(≥99%)일 때 "개표 완료".
+  // 다인선거구·비례는 당선자(isWinner)를 단정하지 않아도 개표율로 완료를 판정한다(당선 표기는 wonIds로 별도 처리).
   const finalized =
-    race?.electionStatus === "completed" || (race?.candidates.some((c) => c.isWinner) ?? false);
+    race?.electionStatus === "completed" ||
+    (race?.candidates.some((c) => c.isWinner) ?? false) ||
+    (race?.countedRate != null && race.countedRate >= 99);
 
   // 당선(확정/추정) 후보 id 집합 — 종합 페이지와 동일하게 getRaceCallStatus 기반.
   // isWinner(공식 확정) 또는 보수적 추정 당선("leading"의 득표 1위)을 "당선"으로 통합 표시.
@@ -198,6 +200,11 @@ export default function RaceDetailInner({ electionId, raceId }: Props) {
           <p className="text-xs text-(--color-text-tertiary)">
             개표가 진행 중입니다. 득표수는 선관위 개표진행상황 기준으로 갱신되며, 최종 결과와 다를
             수 있습니다.
+          </p>
+        )}
+        {showResults && finalized && wonIds.size === 0 && (
+          <p className="text-xs text-(--color-text-tertiary)">
+            개표가 완료됐습니다. 의석별 당선인은 NEC 당선인 정보가 이관되는 대로 반영됩니다.
           </p>
         )}
         {isProportional && !resultMode && (

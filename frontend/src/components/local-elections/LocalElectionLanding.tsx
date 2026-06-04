@@ -106,9 +106,9 @@ export default function LocalElectionLanding({ year }: { year: string }) {
           <div className="flex items-center gap-3">
             <span className="text-2xl">📊</span>
             <div>
-              <h3 className="font-bold text-(--color-text-primary)">개표 현황 종합</h3>
+              <h3 className="font-bold text-(--color-text-primary)">개표 결과 종합</h3>
               <p className="text-sm text-(--color-text-secondary)">
-                시도지사·기초단체장·재보궐 개표를 한곳에서 — 당선 유력 추정 포함
+                시도지사·기초단체장·재보궐 개표 결과를 한곳에서 — 당선 결과 포함
               </p>
             </div>
           </div>
@@ -167,11 +167,11 @@ export default function LocalElectionLanding({ year }: { year: string }) {
             <span className="text-2xl">🗳️</span>
             <div>
               <h3 className="font-bold text-(--color-text-primary)">
-                {resultMode ? "개표 현황" : "투표 안내"}
+                {resultMode ? "개표 결과" : "투표 안내"}
               </h3>
               <p className="text-sm text-(--color-text-secondary)">
                 {resultMode
-                  ? "6·3 지방선거 개표가 진행 중입니다 · 선거구별 당선 결과를 확인하세요"
+                  ? "6·3 지방선거 개표 결과입니다 · 선거구별 당선 결과를 확인하세요"
                   : voteInfo.stage === "after"
                     ? `사전투표 23.51% 마감(역대 최고) · 본투표 D-${voteInfo.dDay}(6/3) · 투표용지 최대 7장`
                     : voteInfo.stage === "early"
