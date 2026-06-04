@@ -21,7 +21,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { year } = await params;
   const election = await getLocalElection(`local-${year}`);
   const name = election?.name ?? `${year} 지방선거`;
-  const description = `${name} 개표 결과를 한곳에서. 시도지사·기초단체장과 국회의원 재보궐선거의 득표·투표율·당선 결과를 모아 봅니다.`;
+  const description = `${name} 개표 결과를 한곳에서. 시도지사·기초단체장과 국회의원 재보궐선거의 득표·당선 결과를 모아 봅니다.`;
 
   return {
     title: `${name} 개표 결과 — 종합`,
@@ -67,7 +67,7 @@ export default async function LocalElectionResultsPage({ params }: Props) {
       <header className="space-y-1">
         <h1 className="text-2xl font-bold text-(--color-text-primary)">개표 결과 종합</h1>
         <p className="text-sm text-(--color-text-secondary)">
-          시도지사·기초단체장과 국회의원 재보궐선거 개표 결과를 한곳에서 — 투표율·당선 결과 포함
+          시도지사·기초단체장과 국회의원 재보궐선거 개표 결과를 한곳에서 — 득표·당선 결과 포함
         </p>
       </header>
 

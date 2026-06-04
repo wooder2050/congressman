@@ -26,8 +26,9 @@ const STATUS_LABEL: Record<string, { text: string; className: string }> = {
 };
 
 export default function ElectionHeader({ election }: { election: ByElectionDetail }) {
-  const dday = getDDay(election.electionDate);
   const status = STATUS_LABEL[election.status] ?? STATUS_LABEL.upcoming;
+  // 개표 완료 후에는 D-day 카운트다운이 의미 없으므로 숨김
+  const dday = election.status === "completed" ? null : getDDay(election.electionDate);
 
   return (
     <section className="space-y-3">
@@ -35,9 +36,11 @@ export default function ElectionHeader({ election }: { election: ByElectionDetai
         <span className={`rounded-md px-2 py-0.5 text-xs font-bold ${status.className}`}>
           {status.text}
         </span>
-        <span className="rounded-md bg-rose-100 px-2 py-0.5 text-xs font-bold text-rose-700 dark:bg-rose-900/40 dark:text-rose-300">
-          {dday}
-        </span>
+        {dday && (
+          <span className="rounded-md bg-rose-100 px-2 py-0.5 text-xs font-bold text-rose-700 dark:bg-rose-900/40 dark:text-rose-300">
+            {dday}
+          </span>
+        )}
       </div>
 
       <h1 className="text-2xl font-bold sm:text-3xl sm:font-extrabold sm:tracking-tight">
