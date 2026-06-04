@@ -99,8 +99,11 @@ export default function LocalRaceResults({ electionId, title, races }: Props) {
 
   if (tallied.length === 0) return null;
 
-  // 공식 확정(won)·추정 당선(leading) 모두 "당선"으로 표시되므로 헤더 dot도 통합 기준
-  const anyFinal = tallied.some((r) => r.call === "won" || r.call === "leading");
+  // race가 사실상 개표 완료인지 — 당선 확정/추정(won·leading) 또는 개표율 ≥99%.
+  const isRaceDone = (r: (typeof tallied)[number]) =>
+    r.call === "won" || r.call === "leading" || (r.countedRate != null && r.countedRate >= 99);
+  // 모든 선거구가 완료면 헤더를 "개표 완료"로, 일부만이면 진행 dot 유지.
+  const allDone = tallied.every(isRaceDone);
   const yearPath = electionId.replace(/^local-/, "");
 
   return (
@@ -109,10 +112,10 @@ export default function LocalRaceResults({ electionId, title, races }: Props) {
         <h2 className="text-base font-bold text-(--color-text-primary)">{title}</h2>
         <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-(--color-text-secondary)">
           <span
-            className={`size-1.5 rounded-full ${anyFinal ? "bg-(--color-text-secondary)" : "animate-pulse bg-(--color-text-tertiary)"}`}
+            className={`size-1.5 rounded-full ${allDone ? "bg-(--color-text-secondary)" : "animate-pulse bg-(--color-text-tertiary)"}`}
             aria-hidden="true"
           />
-          {tallied.length}곳 개표 진행
+          {tallied.length}곳 {allDone ? "개표 완료" : "개표 진행"}
         </span>
       </div>
       <div className="grid gap-px bg-(--color-border-primary) sm:grid-cols-2">
@@ -149,8 +152,8 @@ export default function LocalRaceResults({ electionId, title, races }: Props) {
         })}
       </div>
       <p className="border-t border-(--color-border-primary) px-4 py-2.5 text-xs text-(--color-text-tertiary) sm:px-5">
-        ※ 선관위 개표진행상황 기준으로 갱신되며, 개표 중 표시되는 ‘당선’은 잠정 추정으로 최종 결과와
-        다를 수 있습니다.
+        ※ 선관위 개표 결과 기준입니다. 다인선거구·비례대표의 의석별 당선인은 NEC 당선인 정보가
+        이관되는 대로 반영됩니다.
       </p>
     </section>
   );

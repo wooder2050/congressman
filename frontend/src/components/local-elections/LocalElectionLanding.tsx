@@ -13,7 +13,6 @@ import LocalElectionHeader from "./LocalElectionHeader";
 import LocalGovernorHotspots from "./LocalGovernorHotspots";
 import LocalRegistrationBanner from "./LocalRegistrationBanner";
 import LocalResultSummary from "./LocalResultSummary";
-import ExitPollSection from "@/components/elections/ExitPollSection";
 import RegionGrid from "./RegionGrid";
 
 const EARLY_VOTE_END = new Date(2026, 4, 30); // 5/30 사전투표 종료
@@ -93,10 +92,6 @@ export default function LocalElectionLanding({ year }: { year: string }) {
       {/* 후보등록 마감 안내 배너 (5/14~15 전까지만 노출, 개표 모드에선 숨김) */}
       <LocalRegistrationBanner resultMode={resultMode} />
 
-      {/* 출구조사 예측 — 18시 마감 직후 방송 3사 공동 출구조사(데이터 있을 때만 노출, 18시 전 자동 숨김) */}
-      <ExitPollSection scope="governor" title="시도지사 출구조사" />
-      <ExitPollSection scope="superintendent" title="교육감 출구조사" />
-
       {/* 개표 현황 종합 페이지 — 개표 단계(6/3 18시 이후)에 시도지사·기초단체장·재보궐을 한곳에 모은 페이지로 유도 */}
       {showResultsHub && (
         <Link
@@ -106,9 +101,9 @@ export default function LocalElectionLanding({ year }: { year: string }) {
           <div className="flex items-center gap-3">
             <span className="text-2xl">📊</span>
             <div>
-              <h3 className="font-bold text-(--color-text-primary)">개표 현황 종합</h3>
+              <h3 className="font-bold text-(--color-text-primary)">개표 결과 종합</h3>
               <p className="text-sm text-(--color-text-secondary)">
-                시도지사·기초단체장·재보궐 개표를 한곳에서 — 당선 유력 추정 포함
+                시도지사·기초단체장·재보궐 개표 결과를 한곳에서 — 당선 결과 포함
               </p>
             </div>
           </div>
@@ -167,11 +162,11 @@ export default function LocalElectionLanding({ year }: { year: string }) {
             <span className="text-2xl">🗳️</span>
             <div>
               <h3 className="font-bold text-(--color-text-primary)">
-                {resultMode ? "개표 현황" : "투표 안내"}
+                {resultMode ? "개표 결과" : "투표 안내"}
               </h3>
               <p className="text-sm text-(--color-text-secondary)">
                 {resultMode
-                  ? "6·3 지방선거 개표가 진행 중입니다 · 선거구별 당선 결과를 확인하세요"
+                  ? "6·3 지방선거 개표 결과입니다 · 선거구별 당선 결과를 확인하세요"
                   : voteInfo.stage === "after"
                     ? `사전투표 23.51% 마감(역대 최고) · 본투표 D-${voteInfo.dDay}(6/3) · 투표용지 최대 7장`
                     : voteInfo.stage === "early"

@@ -21,19 +21,19 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { year } = await params;
   const election = await getLocalElection(`local-${year}`);
   const name = election?.name ?? `${year} 지방선거`;
-  const description = `${name} 개표 현황을 한곳에서. 시도지사·기초단체장과 국회의원 재보궐선거의 실시간 득표·투표율·출구조사·당선 유력 추정을 모아 봅니다.`;
+  const description = `${name} 개표 결과를 한곳에서. 시도지사·기초단체장과 국회의원 재보궐선거의 득표·투표율·출구조사·당선 결과를 모아 봅니다.`;
 
   return {
-    title: `${name} 개표 현황 — 실시간 종합`,
+    title: `${name} 개표 결과 — 종합`,
     description,
     alternates: { canonical: `https://www.lawmake.kr/local-elections/${year}/results` },
     openGraph: {
-      title: `${name} 개표 현황 — 실시간 종합`,
+      title: `${name} 개표 결과 — 종합`,
       description,
       type: "website",
       url: `https://www.lawmake.kr/local-elections/${year}/results`,
     },
-    twitter: { card: "summary", title: `${name} 개표 현황`, description },
+    twitter: { card: "summary", title: `${name} 개표 결과`, description },
   };
 }
 
@@ -57,7 +57,7 @@ export default async function LocalElectionResultsPage({ params }: Props) {
             {
               "@type": "ListItem",
               position: 3,
-              name: "개표 현황",
+              name: "개표 결과",
               item: `https://www.lawmake.kr/local-elections/${year}/results`,
             },
           ],
@@ -65,9 +65,9 @@ export default async function LocalElectionResultsPage({ params }: Props) {
       />
 
       <header className="space-y-1">
-        <h1 className="text-2xl font-bold text-(--color-text-primary)">개표 현황 종합</h1>
+        <h1 className="text-2xl font-bold text-(--color-text-primary)">개표 결과 종합</h1>
         <p className="text-sm text-(--color-text-secondary)">
-          시도지사·기초단체장과 국회의원 재보궐선거 개표를 한곳에서 — 투표율·출구조사·당선 유력 추정
+          시도지사·기초단체장과 국회의원 재보궐선거 개표 결과를 한곳에서 — 투표율·출구조사·당선 결과
           포함
         </p>
       </header>

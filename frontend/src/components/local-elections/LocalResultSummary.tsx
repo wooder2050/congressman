@@ -41,7 +41,7 @@ export default function LocalResultSummary({ electionId }: Props) {
   return (
     <section className="rounded-xl border border-(--color-border-primary) bg-(--color-bg-primary) p-5">
       <div className="mb-4 flex items-center justify-between">
-        <h2 className="text-lg font-bold text-(--color-text-primary)">개표 현황</h2>
+        <h2 className="text-lg font-bold text-(--color-text-primary)">개표 결과</h2>
         <span className="text-sm text-(--color-text-secondary)">
           당선 확정 {stats.totalWinners.toLocaleString()}명
         </span>
