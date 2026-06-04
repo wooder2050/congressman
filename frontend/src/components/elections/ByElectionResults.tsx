@@ -104,7 +104,8 @@ export default function ByElectionResults({ districts }: Props) {
   if (tallied.length === 0) return null;
 
   const allDone = tallied.every(
-    (d) => d.call === "won" || d.call === "leading" || (d.countedRate != null && d.countedRate >= 99),
+    (d) =>
+      d.call === "won" || d.call === "leading" || (d.countedRate != null && d.countedRate >= 99),
   );
 
   return (
@@ -149,8 +150,8 @@ export default function ByElectionResults({ districts }: Props) {
         })}
       </div>
       <p className="border-t border-(--color-border-primary) px-4 py-2.5 text-xs text-(--color-text-tertiary) sm:px-5">
-        ※ 선관위 개표 결과 기준입니다. 일부 초접전 선거구의 ‘당선’은 잠정 추정으로 최종 결과와 다를 수
-        있습니다.
+        ※ 선관위 개표 결과 기준입니다. 일부 초접전 선거구의 ‘당선’은 잠정 추정으로 최종 결과와 다를
+        수 있습니다.
       </p>
     </section>
   );

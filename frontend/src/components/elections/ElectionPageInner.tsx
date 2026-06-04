@@ -12,7 +12,6 @@ import { isElectionMode } from "@/lib/local-election-result";
 import ElectionHeader from "./ElectionHeader";
 import EarlyVoteTurnoutBanner from "./EarlyVoteTurnoutBanner";
 import LiveTurnoutBanner from "./LiveTurnoutBanner";
-import ExitPollSection from "./ExitPollSection";
 import ElectionTimeline from "./ElectionTimeline";
 import VoteGuidePreview from "./VoteGuidePreview";
 import DistrictSection from "./DistrictSection";
@@ -117,11 +116,8 @@ export default function ElectionPageInner({ electionId }: { electionId: string }
         />
       )}
 
-      {/* 개표 현황 — 득표가 들어온 선거구만 카드로 표시, 개표 전이면 자동 숨김 */}
+      {/* 개표 결과 — 득표가 들어온 선거구만 카드로 표시, 개표 전이면 자동 숨김 */}
       <ByElectionResults districts={election.districts} />
-
-      {/* 재보궐 국회의원 출구조사 예측 — 18시 마감 직후 노출, 데이터 없으면 자동 숨김 */}
-      <ExitPollSection scope="by-election" title="국회의원 재보궐 출구조사" initialCount={14} />
 
       <ElectionHeader election={election} />
 
