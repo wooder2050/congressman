@@ -3,15 +3,12 @@
 import { useState, useMemo } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { useCongressQuery, useCongressSuspenseQuery } from "@/hooks/useCongressQuery";
+import { useCongressSuspenseQuery } from "@/hooks/useCongressQuery";
 import { getElection } from "@/lib/api";
-import { getElectionTurnout } from "@/lib/turnout";
 import type { ByElectionDetail, ElectionDistrictInfo } from "@/types";
 import { proxyPhotoUrl } from "@/lib/photo";
 import { isElectionMode } from "@/lib/local-election-result";
 import ElectionHeader from "./ElectionHeader";
-import EarlyVoteTurnoutBanner from "./EarlyVoteTurnoutBanner";
-import LiveTurnoutBanner from "./LiveTurnoutBanner";
 import ElectionTimeline from "./ElectionTimeline";
 import VoteGuidePreview from "./VoteGuidePreview";
 import DistrictSection from "./DistrictSection";
@@ -63,13 +60,6 @@ export default function ElectionPageInner({ electionId }: { electionId: string }
     getElection,
     electionId,
   );
-  // 본투표 실시간 투표율 — 재보궐은 지방선거와 동일 투표소 통합 집계라 local scope를 공유한다
-  // (홈·지방선거 페이지와 동일 데이터 → local만 UPDATE하면 세 곳이 함께 갱신)
-  const { data: liveTurnout } = useCongressQuery(getElectionTurnout, "local", {
-    staleTime: 0,
-    refetchInterval: 60_000,
-  });
-  const hasLiveTurnout = liveTurnout?.national != null;
 
   const [expandedRegion, setExpandedRegion] = useState<string | null>(null);
   const [selectedDistrict, setSelectedDistrict] = useState<number | null>(null);
@@ -100,22 +90,6 @@ export default function ElectionPageInner({ electionId }: { electionId: string }
 
   return (
     <div className="space-y-6">
-      {/* 본투표 실시간 투표율 — 재보궐은 지방선거와 통합 집계라 local scope를 공유(홈·지방선거 페이지와 동일 데이터) */}
-      {!isElectionMode(election.status) && (
-        <LiveTurnoutBanner scope="local" scopeLabel="6·3 지방선거 동시 투표" />
-      )}
-
-      {/* 사전투표율 요약 — 본투표율 노출 시 축소(compact), 개표 모드 진입 시 숨김 */}
-      {!isElectionMode(election.status) && (
-        <EarlyVoteTurnoutBanner
-          compact={hasLiveTurnout}
-          scopeLabel="6·3 재보궐선거 14곳"
-          rate={24.12}
-          comparison="재보선 14곳 평균 · 지방선거(23.51%)보다 소폭 높음"
-          detail="유권자 226만7,121명 중 54만6,757명 참여 · 부산 북구갑 25.57% · 경기 평택을 18.39%"
-        />
-      )}
-
       {/* 개표 결과 — 득표가 들어온 선거구만 카드로 표시, 개표 전이면 자동 숨김 */}
       <ByElectionResults districts={election.districts} />
 
@@ -390,8 +364,8 @@ export default function ElectionPageInner({ electionId }: { electionId: string }
         </Link>
       </section>
 
-      {/* 투표 안내 프리뷰 */}
-      <VoteGuidePreview electionId={electionId} />
+      {/* 투표 안내 프리뷰 — 개표 완료 후에는 투표 일정 안내가 무의미하므로 숨김 */}
+      {!isElectionMode(election.status) && <VoteGuidePreview electionId={electionId} />}
     </div>
   );
 }

@@ -6,7 +6,6 @@ import { useCongressQuery, useCongressSuspenseQuery } from "@/hooks/useCongressQ
 import { getElection, getLocalElection, getLocalElectionRaces } from "@/lib/api";
 import type { LocalElectionRaceSummary, LocalElectionType } from "@/types";
 import { SIDO_LIST } from "@/constants/local-elections";
-import LiveTurnoutBanner from "@/components/elections/LiveTurnoutBanner";
 import ByElectionResults from "@/components/elections/ByElectionResults";
 import LocalResultSummary from "./LocalResultSummary";
 import LocalRaceResults from "./LocalRaceResults";
@@ -162,9 +161,6 @@ export default function LocalResultsHub({ year }: { year: string }) {
 
   return (
     <div className="space-y-8">
-      {/* 실시간/최종 투표율 — Supabase ElectionTurnout 직접 조회(데이터 있을 때만 노출, 마감 여부는 배너가 자동 판단) */}
-      <LiveTurnoutBanner scope="local" scopeLabel="6·3 지방선거" />
-
       {/* 정당별 당선 수 요약 — 당선 확정이 들어오면 노출 */}
       <LocalResultSummary electionId={election.id} />
 
