@@ -126,7 +126,7 @@ export const breakingNews: BreakingNewsItem[] = [
       },
     ],
     linkUrl: "/local-elections/2026/results",
-    active: true,
+    active: false,
   },
   {
     id: "2026-06-03-election-day-voting",
@@ -186,7 +186,7 @@ export const breakingNews: BreakingNewsItem[] = [
       },
     ],
     linkUrl: "/local-elections/2026",
-    active: true,
+    active: false,
   },
   {
     id: "2026-06-02-d1-final-rally-proxy-war",
@@ -255,7 +255,7 @@ export const breakingNews: BreakingNewsItem[] = [
       },
     ],
     linkUrl: "/local-elections/2026",
-    active: true,
+    active: false,
   },
   {
     id: "2026-06-01-d2-final-stretch-ex-presidents",
@@ -322,7 +322,7 @@ export const breakingNews: BreakingNewsItem[] = [
       },
     ],
     linkUrl: "/local-elections/2026",
-    active: true,
+    active: false,
   },
   {
     id: "2026-05-31-early-voting-final-23-51",
@@ -394,7 +394,7 @@ export const breakingNews: BreakingNewsItem[] = [
         url: "https://www.fnnews.com/news/202605302027386714",
       },
     ],
-    active: true,
+    active: false,
   },
   {
     id: "2026-05-30-early-voting-record-turnout",
@@ -446,7 +446,7 @@ export const breakingNews: BreakingNewsItem[] = [
         url: "https://weekly.khan.co.kr/article/202605281045001",
       },
     ],
-    active: true,
+    active: false,
   },
   {
     id: "2026-05-28-early-voting-eve-park-geunhye-gangwon",
@@ -505,7 +505,7 @@ export const breakingNews: BreakingNewsItem[] = [
         url: "https://www.pennmike.com/news/articleView.html?idxno=121203",
       },
     ],
-    active: true,
+    active: false,
   },
   {
     id: "2026-05-27-park-geunhye-busan-blackout-eve",
@@ -563,7 +563,7 @@ export const breakingNews: BreakingNewsItem[] = [
         url: "https://www.sedaily.com/article/20048799",
       },
     ],
-    active: true,
+    active: false,
   },
   {
     id: "2026-05-26-martial-law-judgment-poll-park-geunhye",
@@ -627,7 +627,7 @@ export const breakingNews: BreakingNewsItem[] = [
         url: "https://imnews.imbc.com/replay/2026/nwdesk/article/6823775_37004.html",
       },
     ],
-    active: true,
+    active: false,
   },
   {
     id: "2026-05-25-approval-rating-busan-tight",
@@ -675,7 +675,7 @@ export const breakingNews: BreakingNewsItem[] = [
         url: "https://www.ajunews.com/view/20260523132749643",
       },
     ],
-    active: true,
+    active: false,
   },
   {
     id: "2026-05-24-buddha-day-rally",
@@ -728,7 +728,7 @@ export const breakingNews: BreakingNewsItem[] = [
       },
     ],
     linkUrl: "/local-elections/2026",
-    active: true,
+    active: false,
   },
   {
     id: "2026-05-23-first-weekend-noh-memorial",
@@ -774,7 +774,7 @@ export const breakingNews: BreakingNewsItem[] = [
       },
     ],
     linkUrl: "/local-elections/2026",
-    active: true,
+    active: false,
   },
   {
     id: "2026-05-22-local-election-campaign-day2",
@@ -816,7 +816,7 @@ export const breakingNews: BreakingNewsItem[] = [
       },
     ],
     linkUrl: "/local-elections/2026",
-    active: true,
+    active: false,
   },
   {
     id: "2026-05-21-local-election-campaign-start",
@@ -866,7 +866,7 @@ export const breakingNews: BreakingNewsItem[] = [
       },
     ],
     linkUrl: "/elections/2026-06-03",
-    active: true,
+    active: false,
   },
   {
     id: "2026-05-20-pyeongtaek-eul-gallup-poll",
@@ -914,7 +914,7 @@ export const breakingNews: BreakingNewsItem[] = [
       },
     ],
     linkUrl: "/elections/2026-06-03",
-    active: true,
+    active: false,
   },
   {
     id: "2026-05-20-local-election-day-market-closure",
@@ -956,7 +956,7 @@ export const breakingNews: BreakingNewsItem[] = [
       },
     ],
     linkUrl: "/elections/2026-06-03",
-    active: true,
+    active: false,
   },
   {
     id: "2026-05-19-korea-japan-summit-andong",
@@ -1046,7 +1046,7 @@ export const breakingNews: BreakingNewsItem[] = [
       },
     ],
     linkUrl: "/elections/2026-06-03",
-    active: true,
+    active: false,
   },
   {
     id: "2026-05-18-ballot-printing-starts",
@@ -1097,7 +1097,7 @@ export const breakingNews: BreakingNewsItem[] = [
       },
     ],
     linkUrl: "/elections/2026-06-03",
-    active: true,
+    active: false,
   },
   {
     id: "2026-05-17-gwangju-jeonnam-uncontested-80",
@@ -1143,7 +1143,7 @@ export const breakingNews: BreakingNewsItem[] = [
       },
     ],
     linkUrl: "/local-elections/2026",
-    active: true,
+    active: false,
   },
   {
     id: "2026-05-15-by-election-candidate-registration-closed",
@@ -1183,7 +1183,7 @@ export const breakingNews: BreakingNewsItem[] = [
       },
     ],
     linkUrl: "/elections/2026-06-03",
-    active: true,
+    active: false,
   },
   {
     id: "2026-05-14-busan-buk-a-gallup-poll",
@@ -1285,7 +1285,7 @@ export const breakingNews: BreakingNewsItem[] = [
         url: "https://news.sbs.co.kr/news/endPage.do?news_id=N1008559875",
       },
     ],
-    active: true,
+    active: false,
   },
   {
     id: "2026-05-13-by-election-d21-busan-buk-a-unification-call",
