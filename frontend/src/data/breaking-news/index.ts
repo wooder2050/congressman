@@ -2,6 +2,62 @@ import type { BreakingNewsItem } from "./types";
 
 export const breakingNews: BreakingNewsItem[] = [
   {
+    id: "2026-06-05-assembly-speaker-election",
+    title:
+      "22대 후반기 국회의장에 '6선' 조정식 선출 — 부의장 남인순·박덕흠, 지방선거로 멈췄던 국회 재가동",
+    description:
+      "국회가 6월 5일 본회의를 열어 제22대 국회 후반기 의장단을 선출하며 6·3 지방선거로 멈췄던 의정을 재가동했습니다. 신임 국회의장에는 더불어민주당 6선 조정식 의원이 선출됐습니다. 국회의장은 무기명 투표로 재적의원 과반수 득표를 얻어야 당선되며, 관례에 따라 원내 1당인 민주당이 의장직을 맡았습니다. 국회부의장에는 여당 몫으로 민주당 4선 남인순 의원, 야당 몫으로 국민의힘 4선 박덕흠 의원이 각각 선출됐습니다. 조정식 의장은 '명심(이재명 대통령의 의중)'을 등에 업은 친명계 핵심으로 분류되며, 취임 일성으로 원구성 6월 내 완료를 강조했습니다. 의장단 선출로 후반기 국회가 출범했지만, 곧이어 시작될 상임위원장 배분 등 원구성 협상은 안갯속입니다. 본격 협상은 다음 주로 예상되는 국민의힘 원내대표 선거 이후가 될 전망인 가운데, 최대 쟁점은 법제사법위원장 배분입니다. 국민의힘은 견제와 균형을 내세워 법사위원장을 야당 몫으로 돌려야 한다고 주장하는 반면, 민주당은 이재명 정부의 민생·개혁 입법 추진을 위해 법사위를 양보할 수 없다는 입장이어서 여야 간 치열한 기싸움이 예상됩니다.",
+    date: "2026-06-05",
+    category: "committee",
+    items: [
+      {
+        label: "국회의장",
+        value: "조정식(더불어민주당·6선) — 친명계 핵심, '원구성 6월 내 완료' 강조",
+        memberId: "IN328264",
+      },
+      {
+        label: "부의장(여당)",
+        value: "남인순(더불어민주당·4선)",
+        memberId: "04T3751T",
+      },
+      {
+        label: "부의장(야당)",
+        value: "박덕흠(국민의힘·4선)",
+        memberId: "N4R2421C",
+      },
+      {
+        label: "국회 재가동",
+        value:
+          "6·3 지방선거로 멈췄던 의정 재개 — 후반기 국회 출범, 주요 입법 과제 두고 여야 기싸움 예고",
+      },
+      {
+        label: "원구성 최대 쟁점",
+        value:
+          "법제사법위원장 배분 — 국힘 '견제·균형 위해 야당 몫' vs 민주 '민생·개혁 입법 위해 양보 불가'",
+      },
+    ],
+    sources: [
+      {
+        title: "국회의장·부의장 선출 본회의…원 구성 협상은 안갯속 / 파이낸셜뉴스",
+        url: "https://www.fnnews.com/news/202606050601518867",
+      },
+      {
+        title: "오늘 본회의서 국회의장단 선출…의장 후보에 조정식 / 경향신문",
+        url: "https://www.khan.co.kr/article/202606050714001",
+      },
+      {
+        title: "국회 오늘 후반기 의장단 선출…오는 11일께 원구성 협상 돌입 / 세계일보",
+        url: "https://segye.com/newsView/20260605503337",
+      },
+      {
+        title: "'친명' 조정식, 신임 국회의장에…부의장 與 남인순·野 박덕흠 / 머니투데이",
+        url: "https://www.mt.co.kr/politics/2026/05/13/2026051316114130628",
+      },
+    ],
+    linkUrl: "/members",
+    active: true,
+  },
+  {
     id: "2026-06-04-election-results-final",
     title:
       "6·3 지방선거 개표 완료 — 광역단체장 민주 12 vs 국힘 4, 서울 오세훈 막판 대역전 5선, 재보선 한동훈 당선·조국 낙선",
@@ -70,7 +126,7 @@ export const breakingNews: BreakingNewsItem[] = [
       },
     ],
     linkUrl: "/local-elections/2026/results",
-    active: true,
+    active: false,
   },
   {
     id: "2026-06-03-election-day-voting",
@@ -130,7 +186,7 @@ export const breakingNews: BreakingNewsItem[] = [
       },
     ],
     linkUrl: "/local-elections/2026",
-    active: true,
+    active: false,
   },
   {
     id: "2026-06-02-d1-final-rally-proxy-war",
@@ -199,7 +255,7 @@ export const breakingNews: BreakingNewsItem[] = [
       },
     ],
     linkUrl: "/local-elections/2026",
-    active: true,
+    active: false,
   },
   {
     id: "2026-06-01-d2-final-stretch-ex-presidents",
@@ -266,7 +322,7 @@ export const breakingNews: BreakingNewsItem[] = [
       },
     ],
     linkUrl: "/local-elections/2026",
-    active: true,
+    active: false,
   },
   {
     id: "2026-05-31-early-voting-final-23-51",
@@ -338,7 +394,7 @@ export const breakingNews: BreakingNewsItem[] = [
         url: "https://www.fnnews.com/news/202605302027386714",
       },
     ],
-    active: true,
+    active: false,
   },
   {
     id: "2026-05-30-early-voting-record-turnout",
@@ -390,7 +446,7 @@ export const breakingNews: BreakingNewsItem[] = [
         url: "https://weekly.khan.co.kr/article/202605281045001",
       },
     ],
-    active: true,
+    active: false,
   },
   {
     id: "2026-05-28-early-voting-eve-park-geunhye-gangwon",
@@ -449,7 +505,7 @@ export const breakingNews: BreakingNewsItem[] = [
         url: "https://www.pennmike.com/news/articleView.html?idxno=121203",
       },
     ],
-    active: true,
+    active: false,
   },
   {
     id: "2026-05-27-park-geunhye-busan-blackout-eve",
@@ -507,7 +563,7 @@ export const breakingNews: BreakingNewsItem[] = [
         url: "https://www.sedaily.com/article/20048799",
       },
     ],
-    active: true,
+    active: false,
   },
   {
     id: "2026-05-26-martial-law-judgment-poll-park-geunhye",
@@ -571,7 +627,7 @@ export const breakingNews: BreakingNewsItem[] = [
         url: "https://imnews.imbc.com/replay/2026/nwdesk/article/6823775_37004.html",
       },
     ],
-    active: true,
+    active: false,
   },
   {
     id: "2026-05-25-approval-rating-busan-tight",
@@ -619,7 +675,7 @@ export const breakingNews: BreakingNewsItem[] = [
         url: "https://www.ajunews.com/view/20260523132749643",
       },
     ],
-    active: true,
+    active: false,
   },
   {
     id: "2026-05-24-buddha-day-rally",
@@ -672,7 +728,7 @@ export const breakingNews: BreakingNewsItem[] = [
       },
     ],
     linkUrl: "/local-elections/2026",
-    active: true,
+    active: false,
   },
   {
     id: "2026-05-23-first-weekend-noh-memorial",
@@ -718,7 +774,7 @@ export const breakingNews: BreakingNewsItem[] = [
       },
     ],
     linkUrl: "/local-elections/2026",
-    active: true,
+    active: false,
   },
   {
     id: "2026-05-22-local-election-campaign-day2",
@@ -760,7 +816,7 @@ export const breakingNews: BreakingNewsItem[] = [
       },
     ],
     linkUrl: "/local-elections/2026",
-    active: true,
+    active: false,
   },
   {
     id: "2026-05-21-local-election-campaign-start",
@@ -810,7 +866,7 @@ export const breakingNews: BreakingNewsItem[] = [
       },
     ],
     linkUrl: "/elections/2026-06-03",
-    active: true,
+    active: false,
   },
   {
     id: "2026-05-20-pyeongtaek-eul-gallup-poll",
@@ -858,7 +914,7 @@ export const breakingNews: BreakingNewsItem[] = [
       },
     ],
     linkUrl: "/elections/2026-06-03",
-    active: true,
+    active: false,
   },
   {
     id: "2026-05-20-local-election-day-market-closure",
@@ -900,7 +956,7 @@ export const breakingNews: BreakingNewsItem[] = [
       },
     ],
     linkUrl: "/elections/2026-06-03",
-    active: true,
+    active: false,
   },
   {
     id: "2026-05-19-korea-japan-summit-andong",
@@ -990,7 +1046,7 @@ export const breakingNews: BreakingNewsItem[] = [
       },
     ],
     linkUrl: "/elections/2026-06-03",
-    active: true,
+    active: false,
   },
   {
     id: "2026-05-18-ballot-printing-starts",
@@ -1041,7 +1097,7 @@ export const breakingNews: BreakingNewsItem[] = [
       },
     ],
     linkUrl: "/elections/2026-06-03",
-    active: true,
+    active: false,
   },
   {
     id: "2026-05-17-gwangju-jeonnam-uncontested-80",
@@ -1087,7 +1143,7 @@ export const breakingNews: BreakingNewsItem[] = [
       },
     ],
     linkUrl: "/local-elections/2026",
-    active: true,
+    active: false,
   },
   {
     id: "2026-05-15-by-election-candidate-registration-closed",
@@ -1127,7 +1183,7 @@ export const breakingNews: BreakingNewsItem[] = [
       },
     ],
     linkUrl: "/elections/2026-06-03",
-    active: true,
+    active: false,
   },
   {
     id: "2026-05-14-busan-buk-a-gallup-poll",
@@ -1229,7 +1285,7 @@ export const breakingNews: BreakingNewsItem[] = [
         url: "https://news.sbs.co.kr/news/endPage.do?news_id=N1008559875",
       },
     ],
-    active: true,
+    active: false,
   },
   {
     id: "2026-05-13-by-election-d21-busan-buk-a-unification-call",
