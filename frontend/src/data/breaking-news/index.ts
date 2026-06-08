@@ -2,6 +2,66 @@ import type { BreakingNewsItem } from "./types";
 
 export const breakingNews: BreakingNewsItem[] = [
   {
+    id: "2026-06-08-ballot-shortage-state-investigation",
+    title:
+      "6·3 투표용지 부족 사태 후폭풍 — 여야, 국정조사 요구서 동시 제출·특검법 발의, 선관위 진상조사위 구성",
+    description:
+      "6·3 지방선거 당일 발생한 투표용지 부족 사태가 국회 차원의 국정조사 정국으로 번졌습니다. 선거관리위원회 집계 결과 용지 부족은 당초 알려진 14곳을 넘어 전국 50여 곳에서 발생했고, 이 중 22곳에서는 한때 투표가 중단됐습니다. 6월 8일 더불어민주당과 국민의힘은 국회 의안과에 각각 진상규명을 위한 국정조사 요구서를 제출했습니다. 국민의힘은 의원 110명 전원 명의로 요구서를 내고 '명백한 참정권 침해'라며 공세 수위를 높였고, 김은혜 의원은 '6·3 지방선거 투표농단 특검법'을 발의했습니다. 장동혁 국민의힘 대표는 '국정조사보다 특검, 특검보다 재선거가 먼저'라며 재선거까지 요구한 반면, 더불어민주당은 국정조사에는 동의하면서도 특검·재선거 주장에는 '정치 공세'라며 선을 그었습니다. 이재명 대통령은 국회에 국정조사 추진을 요청하고 검·경 합동수사본부 구성을 지시했으며, 노태악 중앙선관위원장은 사퇴 의사를 밝히고 외부 전문가가 참여하는 진상조사위원회를 구성해 다음 주부터 전수조사에 착수하기로 했습니다.",
+    date: "2026-06-08",
+    category: "politics",
+    items: [
+      {
+        label: "사태 규모",
+        value: "투표용지 부족 전국 50여 곳(당초 14곳→확대) — 22곳서 한때 투표 중단, 헌정사상 초유",
+      },
+      {
+        label: "국정조사",
+        value:
+          "6/8 여야 각각 요구서 국회 제출 — 국민의힘 110명 전원 명의, 여야 모두 국조에는 공감대",
+      },
+      {
+        label: "특검·재선거 공방",
+        value:
+          "국힘 '국조<특검<재선거' 총공세(김은혜 투표농단 특검법 발의) vs 민주 '국조로 충분, 특검·재선거는 정치공세'",
+      },
+      {
+        label: "정부·선관위 대응",
+        value:
+          "이재명 대통령 국조 요청·검경 합동수사본부 지시 — 노태악 선관위원장 사퇴 시사, 외부 진상조사위 구성·전수조사",
+      },
+    ],
+    sources: [
+      {
+        title:
+          "'투표용지 부족' 사상 첫 선관위 국정조사 현실화…여야, 재선거 '줄다리기' [9시 뉴스] / KBS 2026.06.08.",
+        url: "https://www.youtube.com/watch?v=CVz8_zp_mAQ",
+      },
+      {
+        title:
+          "[🔴속보] 여야, 오늘 '투표용지 부족' 국정조사요구서 제출… 검·경 합수본 \"국민적 의혹 엄정히 규명\" / 연합뉴스TV",
+        url: "https://www.youtube.com/watch?v=6jqw46ylTgc",
+      },
+      {
+        title: "여야, '투표용지 부족' 국정조사요구서 제출…재선거 공방도 / 연합뉴스TV",
+        url: "https://www.youtube.com/watch?v=GrHK47lYXxE",
+      },
+      {
+        title:
+          '장동혁 "투표용지 부족 사태, 국조보다 특검·특검보다 재선거가 먼저" [현장영상] / 채널A',
+        url: "https://www.youtube.com/watch?v=0YWBMupI4OU",
+      },
+      {
+        title: "투표용지 부족, 14곳 아닌 '전국 50곳'‥진상규명위 구성 / MBC 뉴스데스크",
+        url: "https://imnews.imbc.com/replay/2026/nwdesk/article/6828081_37004.html",
+      },
+      {
+        title: "'국조' '특검' '재선거'… 선관위 개혁 백가쟁명 주장만 난무 / 한국일보",
+        url: "https://www.hankookilbo.com/news/article/A2026060815570002555",
+      },
+    ],
+    active: true,
+  },
+  {
     id: "2026-06-07-second-half-committee-negotiation",
     title:
       "22대 후반기 원 구성 협상 본격화 — 법제사법위원장 두고 여야 강대강 대치, 검찰개혁 입법이 변수",
@@ -1064,7 +1124,7 @@ export const breakingNews: BreakingNewsItem[] = [
         url: "https://www.korea.kr/news/policyNewsView.do?newsId=148964452",
       },
     ],
-    active: true,
+    active: false,
   },
   {
     id: "2026-05-19-busan-bukgap-unification-stalemate",
