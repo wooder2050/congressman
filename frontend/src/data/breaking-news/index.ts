@@ -2,6 +2,62 @@ import type { BreakingNewsItem } from "./types";
 
 export const breakingNews: BreakingNewsItem[] = [
   {
+    id: "2026-06-10-ppp-floor-leader-election",
+    title:
+      "국민의힘 신임 원내대표에 '당권파' 정점식 — 결선서 김도읍에 7표차 승리, 후반기 원 구성 협상 키맨으로",
+    description:
+      "국민의힘이 6월 10일 의원총회에서 후반기 신임 원내대표로 3선 정점식 의원(경남 통영시고성군)을 선출했습니다. 1차 투표에서 과반 득표자가 없어 1·2위인 정점식·김도읍 의원이 결선에 올랐고, 결선 투표에서 정점식 의원이 55표를 얻어 48표를 받은 김도읍 의원을 7표 차로 눌렀습니다. 정 원내대표는 현 지도부와 보조를 맞춰온 당권파로 분류되며, 6·3 지방선거 참패 이후 쇄신을 내세운 김도읍 의원을 꺾으면서 장동혁 대표 체제가 일단 유지되게 됐습니다. 정 원내대표는 선출 직후 '계파·분열·대립 없이 하나의 국민의힘이 되겠다', '무너진 국민 신뢰를 회복하겠다'고 밝혔습니다. 다만 장동혁 대표 거취에 대해서는 '원내대표 권한은 제한적이며 의원들의 의견을 듣겠다'며 신중한 태도를 보였고, 친한(친한동훈)계가 요구하는 한동훈 무소속 당선인 복당 문제도 향후 논의 과제로 남았습니다. 정 원내대표는 곧바로 22대 후반기 원 구성 협상에서 더불어민주당을 상대할 협상 사령탑을 맡아, 법제사법위원장 배분 등 쟁점을 조율하게 됩니다.",
+    date: "2026-06-10",
+    category: "politics",
+    items: [
+      {
+        label: "신임 원내대표",
+        value: "정점식(국민의힘·3선, 경남 통영시고성군) — 당권파, 결선 55표로 당선",
+        memberId: "LJK4960Z",
+      },
+      {
+        label: "결선 결과",
+        value: "정점식 55표 vs 김도읍 48표(7표차) — 1차 과반자 없어 결선, 성일종 탈락",
+        memberId: "LH97552Q",
+      },
+      {
+        label: "당내 함의",
+        value:
+          "당권파 승리로 장동혁 대표 체제 일단 유지 — 쇄신파 반발·한동훈 복당은 향후 논의 과제",
+      },
+      {
+        label: "원 구성 협상",
+        value:
+          "신임 원내대표로서 후반기 원 구성 협상 사령탑 — 법제사법위원장 등 쟁점 두고 민주당과 협상",
+      },
+    ],
+    sources: [
+      {
+        title:
+          "[🔴속보] 국민의힘 신임 원내대표 정점식…당권파 선출｜김도읍에 7표차 승리 / 연합뉴스TV",
+        url: "https://www.youtube.com/watch?v=-OGFsCEhKoA",
+      },
+      {
+        title:
+          "[다시보기] 국민의힘 신임 원내대표에 정점식 선출 | 2026년 6월 10일 뉴스A 라이브 / 채널A",
+        url: "https://www.youtube.com/watch?v=ToS9A-KzcBo",
+      },
+      {
+        title: "[다시보기] [속보] 국민의힘 신임 원내대표에 3선 정점식 / JTBC News",
+        url: "https://www.youtube.com/watch?v=yExhRCU9B4Y",
+      },
+      {
+        title: '정점식, 野 원내대표 당선…張 거취에는 "의견 듣겠다" / 파이낸셜뉴스',
+        url: "https://www.fnnews.com/news/202606101211402901",
+      },
+      {
+        title: "국민의힘 새 원내대표에 '당권파' 정점식... 이변은 없었다 / 한국일보",
+        url: "https://www.hankookilbo.com/news/article/A2026061011090002735",
+      },
+    ],
+    active: true,
+  },
+  {
     id: "2026-06-08-ballot-shortage-state-investigation",
     title:
       "6·3 투표용지 부족 사태 후폭풍 — 여야, 국정조사 요구서 동시 제출·특검법 발의, 선관위 진상조사위 구성",
@@ -242,7 +298,7 @@ export const breakingNews: BreakingNewsItem[] = [
       },
     ],
     linkUrl: "/local-elections/2026/results",
-    active: true,
+    active: false,
   },
   {
     id: "2026-06-03-election-day-voting",
