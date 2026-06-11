@@ -84,7 +84,7 @@ export default async function OgImage() {
             국회의원·법안·표결 한눈에 비교
           </span>
           <span style={{ fontSize: 28, color: "#9CA3AF" }}>
-            22대 296명 의정활동 · AI 법안 요약 · 선거구 지도
+            22대 300명 의정활동 · AI 법안 요약 · 선거구 지도
           </span>
         </div>
 

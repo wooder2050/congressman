@@ -45,6 +45,7 @@ export class CommitteesService {
       this.prisma.memberTerm.findMany({
         where: {
           termId,
+          isActive: true,
           committeeRoles: { path: [], not: '{}' },
         },
         include: { member: true, party: true },
@@ -53,7 +54,7 @@ export class CommitteesService {
       this.prisma.$queryRaw<{ committee: string; member_count: bigint }[]>`
         SELECT unnest(committees) AS committee, COUNT(DISTINCT "memberId")::bigint AS member_count
         FROM "MemberTerm"
-        WHERE "termId" = ${termId}
+        WHERE "termId" = ${termId} AND "isActive"
         GROUP BY committee
       `,
       // 5. 위원회별 다가오는 일정
@@ -157,6 +158,7 @@ export class CommitteesService {
       this.prisma.memberTerm.findMany({
         where: {
           termId,
+          isActive: true,
           committees: { has: committeeName },
         },
         include: { member: true, party: true },

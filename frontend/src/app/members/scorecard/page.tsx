@@ -8,7 +8,7 @@ export const dynamic = "force-dynamic";
 export const metadata: Metadata = {
   title: "국회의원 의정활동 성적표 — 종합 랭킹",
   description:
-    "22대 국회의원 297명의 의정활동을 출석률, 표결 참여율, 법안 발의, 법안 통과율로 종합 평가한 성적표 랭킹입니다. S~D 등급별, 정당별로 비교할 수 있습니다.",
+    "22대 국회의원 300명의 의정활동을 출석률, 표결 참여율, 법안 발의, 법안 통과율로 종합 평가한 성적표 랭킹입니다. S~D 등급별, 정당별로 비교할 수 있습니다.",
   alternates: { canonical: "https://www.lawmake.kr/members/scorecard" },
 };
 

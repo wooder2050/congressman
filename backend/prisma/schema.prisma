@@ -74,6 +74,7 @@ model MemberTerm {
   committeeHistory Json     @default("[]") // 전체 위원회 이력 [{name, startDate, endDate}]
   committeeRoles   Json     @default("{}") // {"법제사법위원회": "위원장", "예산결산특별위원회": "위원"}
   electedCount     Int      @default(1) // 해당 대수 기준 선수
+  isActive         Boolean  @default(true) // 현직 여부 (사퇴·승계 등으로 임기 중 퇴직 시 false)
 
   member Member @relation(fields: [memberId], references: [id])
   term   Term   @relation(fields: [termId], references: [id])

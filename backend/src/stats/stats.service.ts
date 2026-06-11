@@ -194,7 +194,7 @@ export class StatsService {
       topProposersRaw,
       rejectedVotesRaw,
     ] = await Promise.all([
-      this.prisma.memberTerm.count({ where: { termId } }),
+      this.prisma.memberTerm.count({ where: { termId, isActive: true } }),
       this.prisma.bill.count({ where: { termId } }),
       this.prisma.vote.count({ where: { termId } }),
       this.prisma.attendance.aggregate({

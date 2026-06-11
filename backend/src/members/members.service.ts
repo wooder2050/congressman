@@ -28,7 +28,7 @@ export class MembersService {
     if (cached) return cached;
 
     const memberTerms = await this.prisma.memberTerm.findMany({
-      where: { termId },
+      where: { termId, isActive: true },
       include: { member: true, party: true },
     });
 
@@ -499,7 +499,7 @@ export class MembersService {
   /**
    * 성적표 산출에 공통으로 쓰이는 4종 풀스캔 집계.
    * `getScorecard`(의원별)와 `getScorecardRanking`(전체)이 동일 데이터를 쓰므로
-   * termId 단위로 묶어 캐시한다. 296명 모든 의원 조회가 풀스캔 1회를 공유.
+   * termId 단위로 묶어 캐시한다. 전체 의원 조회가 풀스캔 1회를 공유.
    * Redis 직렬화/역직렬화 후 number/bigint 타입이 string으로 바뀌므로 정규화한다.
    */
   private async getScorecardAggregates(termId: number) {
@@ -597,8 +597,13 @@ export class MembersService {
     });
     if (!memberTerm) return null;
 
-    // 전체 의원 수
-    const totalMembers = await this.prisma.memberTerm.count({ where: { termId } });
+    // 전체 의원 수 (사퇴 의원 제외)
+    const activeTerms = await this.prisma.memberTerm.findMany({
+      where: { termId, isActive: true },
+      select: { memberId: true },
+    });
+    const activeIds = new Set(activeTerms.map((t) => t.memberId));
+    const totalMembers = activeIds.size;
 
     // 전체 의원 통계 4종은 termId 단위로 캐시되는 공통 헬퍼에서 조회한다.
     // 의원 본인 전용 데이터(최근 30일)만 별도로 병렬 조회.
@@ -625,7 +630,12 @@ export class MembersService {
           AND v."procDate" >= (CURRENT_DATE - INTERVAL '30 days')::text
       `,
     ]);
-    const { attendanceRows, voteRows, billRows, passRows } = aggregates;
+    // 사퇴 의원은 순위·백분위 계산에서 제외하되, 본인이 사퇴 의원인 경우(상세 페이지)는 포함
+    const keep = (r: { memberId: string }) => activeIds.has(r.memberId) || r.memberId === memberId;
+    const attendanceRows = aggregates.attendanceRows.filter(keep);
+    const voteRows = aggregates.voteRows.filter(keep);
+    const billRows = aggregates.billRows.filter(keep);
+    const passRows = aggregates.passRows.filter(keep);
 
     // === 출석률 점수 ===
     const myAttendance = attendanceRows.find((r) => r.memberId === memberId);
@@ -910,17 +920,21 @@ export class MembersService {
     const cached = await this.redis.get(key);
     if (cached) return cached;
 
-    const totalMembers = await this.prisma.memberTerm.count({ where: { termId } });
-
-    // 전체 의원 기본 정보
+    // 전체 의원 기본 정보 (사퇴 의원 제외)
     const allMemberTerms = await this.prisma.memberTerm.findMany({
-      where: { termId },
+      where: { termId, isActive: true },
       include: { member: true, party: true },
     });
+    const totalMembers = allMemberTerms.length;
+    const activeIds = new Set(allMemberTerms.map((mt) => mt.memberId));
 
-    // getScorecard와 동일한 4종 집계를 termId 단위 캐시로 공유
-    const { attendanceRows, voteRows, billRows, passRows } =
-      await this.getScorecardAggregates(termId);
+    // getScorecard와 동일한 4종 집계를 termId 단위 캐시로 공유 (사퇴 의원 제외)
+    const aggregates = await this.getScorecardAggregates(termId);
+    const keep = (r: { memberId: string }) => activeIds.has(r.memberId);
+    const attendanceRows = aggregates.attendanceRows.filter(keep);
+    const voteRows = aggregates.voteRows.filter(keep);
+    const billRows = aggregates.billRows.filter(keep);
+    const passRows = aggregates.passRows.filter(keep);
 
     // 각 의원별 점수 계산
     const rankings = allMemberTerms.map((mt) => {
