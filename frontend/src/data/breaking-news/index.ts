@@ -52,8 +52,7 @@ export const breakingNews: BreakingNewsItem[] = [
         url: "https://www.fnnews.com/news/202606111502246021",
       },
       {
-        title:
-          "정점식, 취임 첫날 한병도·조정식·홍익표 릴레이 회동…국조·원구성 협상 시동 / 뉴스핌",
+        title: "정점식, 취임 첫날 한병도·조정식·홍익표 릴레이 회동…국조·원구성 협상 시동 / 뉴스핌",
         url: "https://www.newspim.com/news/view/20260611000963",
       },
       {
