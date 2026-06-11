@@ -93,6 +93,11 @@ export class MemberSyncService {
         }
       }
 
+      // 현직 API 응답에서 사라진 의원(사퇴·승계 등)은 비활성 처리
+      if (termId === CURRENT_TERM) {
+        await this.deactivateDepartedMembers(termId, rows);
+      }
+
       // API가 현재 시점 기준 누적 선수를 반환하므로, 과거 대수의 선수를 보정
       await this.fixElectedCounts();
 
@@ -103,6 +108,28 @@ export class MemberSyncService {
       await this.syncLog.fail(log.id, msg);
       console.error(`[MemberSync] Failed: ${msg}`);
       throw error;
+    }
+  }
+
+  /**
+   * 현직 API 응답에 없는 의원을 isActive=false로 표시한다.
+   * 정원(300)에 크게 못 미치는 응답은 API 장애일 수 있으므로 건너뛴다.
+   */
+  private async deactivateDepartedMembers(termId: number, rows: MemberApiRow[]): Promise<void> {
+    if (rows.length < 250) {
+      console.warn(
+        `[MemberSync] Only ${rows.length} members in API response — skipping deactivation (possible API issue)`,
+      );
+      return;
+    }
+
+    const activeIds = rows.map((r) => r.MONA_CD);
+    const deactivated = await this.prisma.memberTerm.updateMany({
+      where: { termId, isActive: true, memberId: { notIn: activeIds } },
+      data: { isActive: false },
+    });
+    if (deactivated.count > 0) {
+      console.log(`[MemberSync] Deactivated ${deactivated.count} departed members`);
     }
   }
 
@@ -151,7 +178,14 @@ export class MemberSyncService {
     });
 
     // 역대 API에는 CMITS, JOB_RES_NM이 없으므로, 빈 값이면 기존 값 보존
-    const termUpdate: Record<string, unknown> = { partyId, district, proportional, electedCount };
+    // isActive: API 응답에 있는 의원은 현직 (사퇴 후 재등원 시 재활성화)
+    const termUpdate: Record<string, unknown> = {
+      partyId,
+      district,
+      proportional,
+      electedCount,
+      isActive: true,
+    };
     if (committees.length > 0) {
       termUpdate.committees = committees;
 

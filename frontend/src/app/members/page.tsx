@@ -9,12 +9,12 @@ import MemberListSkeleton from "@/components/skeletons/MemberListSkeleton";
 import { DistrictFinderSkeleton } from "@/components/skeletons/HomeSkeleton";
 
 export const metadata: Metadata = {
-  title: "국회의원 목록 — 22대 국회의원 297명 의정활동 검색",
+  title: "국회의원 목록 — 22대 국회의원 300명 의정활동 검색",
   description:
-    "22대 국회의원 297명의 의정활동 정보를 검색하세요. 지역구 의원 찾기, 정당별 필터, 법안 발의 건수·출석률 비교 기능을 제공합니다. 내 지역 국회의원을 찾아보세요.",
+    "22대 국회의원 300명의 의정활동 정보를 검색하세요. 지역구 의원 찾기, 정당별 필터, 법안 발의 건수·출석률 비교 기능을 제공합니다. 내 지역 국회의원을 찾아보세요.",
   alternates: { canonical: "https://www.lawmake.kr/members" },
   openGraph: {
-    title: "국회의원 목록 — 22대 국회의원 297명 의정활동 검색",
+    title: "국회의원 목록 — 22대 국회의원 300명 의정활동 검색",
     description:
       "22대 국회의원의 법안 발의, 출석률, 표결 참여를 검색하고 비교하세요. 지역구 의원 찾기 기능 제공.",
     url: "https://www.lawmake.kr/members",
@@ -38,7 +38,7 @@ export default async function MembersPage({ searchParams }: MembersPageProps) {
           "@type": "Dataset",
           name: "22대 국회의원 의정활동 데이터",
           description:
-            "제22대 대한민국 국회(2024년 5월 30일 ~ 2028년 5월 29일)의 현역 국회의원 297명의 의정활동을 종합한 데이터셋입니다. 의원별 프로필(소속 정당·지역구·당선 횟수·약력)과 의정활동 지표인 법안 발의 건수, 본회의 표결 참여 내역, 위원회 출석률, 신고 재산 현황을 제공합니다. 국회사무처와 공공데이터포털 자료를 기반으로 매일 자동 갱신됩니다.",
+            "제22대 대한민국 국회(2024년 5월 30일 ~ 2028년 5월 29일)의 현역 국회의원 300명의 의정활동을 종합한 데이터셋입니다. 의원별 프로필(소속 정당·지역구·당선 횟수·약력)과 의정활동 지표인 법안 발의 건수, 본회의 표결 참여 내역, 위원회 출석률, 신고 재산 현황을 제공합니다. 국회사무처와 공공데이터포털 자료를 기반으로 매일 자동 갱신됩니다.",
           url: "https://www.lawmake.kr/members",
           keywords: ["국회의원", "의정활동", "법안 발의", "표결", "출석률"],
           license: "https://www.data.go.kr/ugs/selectPublicDataUseGuide.do",
@@ -71,7 +71,7 @@ export default async function MembersPage({ searchParams }: MembersPageProps) {
         <div className="space-y-3 text-sm leading-relaxed text-(--color-text-secondary)">
           <p>
             22대 국회는 2024년 5월 30일에 개원하여 2028년 5월 29일까지 4년간의 임기를 수행합니다. 총
-            300석 중 지역구 254석, 비례대표 46석으로 구성되어 있으며, 현재 297명의 의원이 활동하고
+            300석 중 지역구 254석, 비례대표 46석으로 구성되어 있으며, 현재 300명의 의원이 활동하고
             있습니다.
           </p>
           <p>
