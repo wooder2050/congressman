@@ -46,7 +46,8 @@ export async function generateMetadata({ params }: BillDetailPageProps): Promise
   return {
     title,
     description,
-    robots: !bill.simpleSummary && !bill.summary ? { index: false, follow: true } : undefined,
+    // AI 요약 없는 법안은 국회 원문 복제라 색인 제외 — sitemap(getIndexableBillIds)과 동일 기준
+    robots: !bill.simpleSummary ? { index: false, follow: true } : undefined,
     alternates: { canonical: `https://www.lawmake.kr/bills/${id}` },
     openGraph: {
       title,
