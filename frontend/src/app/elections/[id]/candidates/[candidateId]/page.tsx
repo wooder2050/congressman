@@ -6,7 +6,7 @@ import CongressWrapper from "@/common/CongressWrapper";
 import ByElectionCandidateDetailInner from "@/components/elections/ByElectionCandidateDetailInner";
 import { getElectionCandidate } from "@/lib/api";
 
-export const revalidate = 1800; // 30min (ISR Write 절감, 6/3 개표 갱신 유지)
+export const revalidate = 86400; // 1d — 개표 종료(6/4)로 데이터 확정, 봇 재크롤링 ISR Write 절감
 export const dynamicParams = true;
 
 export function generateStaticParams() {
