@@ -13,7 +13,6 @@ import LatestWeeklyNews from "@/components/home/LatestWeeklyNews";
 import PropertyHighlight from "@/components/home/PropertyHighlight";
 import ScorecardHighlight from "@/components/home/ScorecardHighlight";
 import BreakingNewsBanner from "@/components/home/BreakingNewsBanner";
-import LocalElectionBanner from "@/components/home/LocalElectionBanner";
 import CivicKnowledge from "@/components/home/CivicKnowledge";
 import TopicGuide from "@/components/home/TopicGuide";
 import HomeMoreSections from "@/components/home/HomeMoreSections";
@@ -119,9 +118,6 @@ export default async function HomePage({ searchParams }: HomePageProps) {
       <div className="space-y-8">
         {/* 헤더: 검색·탐색 게이트 */}
         <HeroSearch />
-
-        {/* 6·3 지방선거 배너 */}
-        <LocalElectionBanner />
 
         {/* 통계 요약 — 사이트 정체성을 첫 화면에 노출 */}
         <CongressWrapper key={`stats-${termId}`} fallback={<HomeStatsSkeleton />}>
