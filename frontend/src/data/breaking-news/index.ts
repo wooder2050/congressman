@@ -289,7 +289,7 @@ export const breakingNews: BreakingNewsItem[] = [
         url: "https://www.sedaily.com/article/20052395",
       },
     ],
-    active: true,
+    active: false,
   },
   {
     id: "2026-06-05-assembly-speaker-election",
