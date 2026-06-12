@@ -14,6 +14,7 @@ const navItems = [
   { href: "/committees", label: "위원회" },
   { href: "/compare", label: "비교" },
   { href: "/weekly", label: "주간뉴스" },
+  { href: "/local-elections/2026", label: "지방선거" },
   { href: "/guide", label: "안내" },
 ];
 
