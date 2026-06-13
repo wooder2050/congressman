@@ -64,6 +64,8 @@ export interface WeeklyHighlight {
   slug?: string;
   /** 기사 본문 */
   article?: ArticleSection[];
+  /** 관련 뉴스/영상 출처 */
+  sources?: { title: string; url: string; type?: "article" | "youtube" }[];
 }
 
 export interface WeeklyStats {
