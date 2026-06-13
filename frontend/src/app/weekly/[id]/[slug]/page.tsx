@@ -70,7 +70,7 @@ function findArticleBySlug(article: ReturnType<typeof getWeeklyArticle>, slug: s
       status: null,
       proposer: undefined,
       voteResult: undefined,
-      sources: undefined,
+      sources: hl.sources,
       article: hl.article,
     };
   }
