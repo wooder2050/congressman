@@ -44,14 +44,12 @@ const article: WeeklyArticle = {
       ],
       sources: [
         {
-          title:
-            "'투표지 부족' 국정조사요구서 보고…여야, 구성 방식 기싸움 / KBS 2026.06.11.",
+          title: "'투표지 부족' 국정조사요구서 보고…여야, 구성 방식 기싸움 / KBS 2026.06.11.",
           url: "https://www.youtube.com/watch?v=DnDmJm7suzA",
           type: "youtube",
         },
         {
-          title:
-            "국정조사 요구서, 오늘 국회 보고...\"선관위 대수술\"·\"전국 재선거\" / YTN",
+          title: '국정조사 요구서, 오늘 국회 보고..."선관위 대수술"·"전국 재선거" / YTN',
           url: "https://www.youtube.com/watch?v=bbUdslpXTqY",
           type: "youtube",
         },
@@ -125,8 +123,7 @@ const article: WeeklyArticle = {
       ],
       sources: [
         {
-          title:
-            "새 국무총리 한성숙 '깜짝 인선'…야당선 '타이밍' 놓고 비판 / JTBC 뉴스룸",
+          title: "새 국무총리 한성숙 '깜짝 인선'…야당선 '타이밍' 놓고 비판 / JTBC 뉴스룸",
           url: "https://www.youtube.com/watch?v=ZY4BAjYK17k",
           type: "youtube",
         },
@@ -147,8 +144,7 @@ const article: WeeklyArticle = {
           type: "article",
         },
         {
-          title:
-            "한 총리 후보자 인준절차, 인사청문회·본회의 거쳐야…내달초 취임 전망 / 헤럴드경제",
+          title: "한 총리 후보자 인준절차, 인사청문회·본회의 거쳐야…내달초 취임 전망 / 헤럴드경제",
           url: "https://biz.heraldcorp.com/article/10765457",
           type: "article",
         },
@@ -163,8 +159,7 @@ const article: WeeklyArticle = {
   highlights: [
     {
       category: "politics",
-      title:
-        "국민의힘 신임 원내대표 '당권파' 정점식 — 결선서 김도읍에 7표차(55:48) 승리",
+      title: "국민의힘 신임 원내대표 '당권파' 정점식 — 결선서 김도읍에 7표차(55:48) 승리",
       slug: "정점식-원내대표-선출",
       description:
         "국민의힘이 6월 10일 의원총회에서 후반기 신임 원내대표로 3선 정점식 의원(경남 통영시고성군)을 선출했다. 1차 투표에서 과반자가 없어 1·2위 정점식·김도읍 의원이 결선에 올랐고, 결선에서 정점식 55표 vs 김도읍 48표로 7표 차 승리했다. 현 지도부와 보조를 맞춰온 당권파 정 원내대표의 선출로 지방선거 참패 후 쇄신을 내세운 김도읍 의원이 밀리면서 장동혁 대표 체제가 일단 유지되게 됐다. 정 원내대표는 곧바로 후반기 원 구성 협상 사령탑을 맡았다.",
@@ -190,8 +185,7 @@ const article: WeeklyArticle = {
           type: "youtube",
         },
         {
-          title:
-            "국민의힘 신임 원내대표로 선출된 정점식, 한동훈 복당 질문에 '회피' / KNN",
+          title: "국민의힘 신임 원내대표로 선출된 정점식, 한동훈 복당 질문에 '회피' / KNN",
           url: "https://www.youtube.com/watch?v=KEU5s3E6XnU",
           type: "youtube",
         },
@@ -222,14 +216,12 @@ const article: WeeklyArticle = {
           type: "youtube",
         },
         {
-          title:
-            "[다시보기] 한병도 원내대표, 정점식 원내대표 접견 [이슈현장] / JTBC News",
+          title: "[다시보기] 한병도 원내대표, 정점식 원내대표 접견 [이슈현장] / JTBC News",
           url: "https://www.youtube.com/watch?v=gMvC844lp98",
           type: "youtube",
         },
         {
-          title:
-            "선관위 국조엔 공감한 한병도·정점식…원구성·법사위원장 협상도 풀릴까 / TJB",
+          title: "선관위 국조엔 공감한 한병도·정점식…원구성·법사위원장 협상도 풀릴까 / TJB",
           url: "https://www.youtube.com/watch?v=fFUnQYAfLJM",
           type: "youtube",
         },

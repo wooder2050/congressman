@@ -37,7 +37,7 @@ export const breakingNews: BreakingNewsItem[] = [
         url: "https://www.sedaily.com/article/20055271",
       },
       {
-        title: '정점식 "\'법사+경제 상임위\' 野 맡아야…한성숙 다주택 검증 철저" / 파이낸셜뉴스',
+        title: "정점식 \"'법사+경제 상임위' 野 맡아야…한성숙 다주택 검증 철저\" / 파이낸셜뉴스",
         url: "https://www.fnnews.com/news/202606121105081593",
       },
       {
