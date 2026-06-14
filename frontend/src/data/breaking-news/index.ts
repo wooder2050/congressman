@@ -37,8 +37,7 @@ export const breakingNews: BreakingNewsItem[] = [
         url: "https://www.youtube.com/watch?v=LKddy1t-x8Q",
       },
       {
-        title:
-          "번호 없는 투표용지까지 배부...'절차·보고 체계 붕괴' 선관위 총체적 난국 / 시사저널",
+        title: "번호 없는 투표용지까지 배부...'절차·보고 체계 붕괴' 선관위 총체적 난국 / 시사저널",
         url: "https://www.sisajournal.com/news/articleView.html?idxno=376370",
       },
       {
