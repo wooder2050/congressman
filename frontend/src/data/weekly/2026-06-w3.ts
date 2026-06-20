@@ -51,14 +51,12 @@ const article: WeeklyArticle = {
           type: "youtube",
         },
         {
-          title:
-            "[속보] 국회, 투표용지 부족 국정조사 계획서 의결.. 45일간 진행 / MBC뉴스",
+          title: "[속보] 국회, 투표용지 부족 국정조사 계획서 의결.. 45일간 진행 / MBC뉴스",
           url: "https://www.youtube.com/watch?v=DsQDhKLlc4M",
           type: "youtube",
         },
         {
-          title:
-            "국회 본회의 '투표용지 부족사태 국조계획서' 등 32건 처리 / 약사공론",
+          title: "국회 본회의 '투표용지 부족사태 국조계획서' 등 32건 처리 / 약사공론",
           url: "https://www.kpanews.co.kr/news/articleView.html?idxno=536983",
           type: "article",
         },
@@ -137,8 +135,7 @@ const article: WeeklyArticle = {
           type: "youtube",
         },
         {
-          title:
-            "한성숙 인사청문회 25~26일 개최...與 간사 김한규 '국정과제 완수 돕겠다' / 뉴스핌",
+          title: "한성숙 인사청문회 25~26일 개최...與 간사 김한규 '국정과제 완수 돕겠다' / 뉴스핌",
           url: "https://www.newspim.com/news/view/20260617000928",
           type: "article",
         },
@@ -180,7 +177,8 @@ const article: WeeklyArticle = {
           type: "youtube",
         },
         {
-          title: "[자막] 한병도 원내대표, 국민의힘의 법사위원 집착 질타하며 여당의 '법사위원장 사수' 선언 / 춘천MBC뉴스",
+          title:
+            "[자막] 한병도 원내대표, 국민의힘의 법사위원 집착 질타하며 여당의 '법사위원장 사수' 선언 / 춘천MBC뉴스",
           url: "https://www.youtube.com/watch?v=qpRMjhykKQI",
           type: "youtube",
         },
@@ -190,14 +188,12 @@ const article: WeeklyArticle = {
           type: "article",
         },
         {
-          title:
-            "여야, 원구성 계속 난항…'안정적 국정운영' vs '거대여당 견제' / 이투데이",
+          title: "여야, 원구성 계속 난항…'안정적 국정운영' vs '거대여당 견제' / 이투데이",
           url: "https://www.etoday.co.kr/news/view/2595499",
           type: "article",
         },
         {
-          title:
-            "법사위에 막힌 원구성 협상…여야 원내대표, 내일 다시 회동 / 이데일리",
+          title: "법사위에 막힌 원구성 협상…여야 원내대표, 내일 다시 회동 / 이데일리",
           url: "https://edaily.co.kr/News/Read?mediaCodeNo=257&newsId=05188966645482704",
           type: "article",
         },
@@ -205,14 +201,14 @@ const article: WeeklyArticle = {
     },
     {
       category: "politics",
-      title:
-        "선관위 국정조사 여야 합의 타결 (6/16) — 45일·국조특위 18명, 위원장 야당 몫으로 절충",
+      title: "선관위 국정조사 여야 합의 타결 (6/16) — 45일·국조특위 18명, 위원장 야당 몫으로 절충",
       slug: "선관위-국조-합의",
       description:
         "6·3 지방선거 투표용지 부족 사태 국정조사의 세부 방안이 6월 16일 여야 합의로 타결됐다. 국정조사를 기본 45일간(연장 가능) 진행하고, 국조특위를 총 18명(민주 9·국힘 7·비교섭 2)으로 구성하되 위원장은 국민의힘이 맡기로 했다. 특위 구성을 두고 민주당은 '의석 비율 배분·위원장 여당'을, 국민의힘은 '여야 동수·위원장 야당'을 주장하며 평행선을 달렸으나, 위원장을 야당 몫으로 넘기는 선에서 절충점을 찾았다. 증인 신청은 행정안전부 장관을 포함한 행안부 공무원과 사태 발생 지역 공무원 등에 대해 '제한 없이' 가능하도록 합의했고, 이 합의가 6월 18일 본회의 계획서 의결로 이어졌다.",
       sources: [
         {
-          title: "[🔴 이슈PLAY l 속보] 여야, '선관위 국정조사' 합의···'위원장은 국힘, 45일간 활동' / 뉴스TVCHOSUN",
+          title:
+            "[🔴 이슈PLAY l 속보] 여야, '선관위 국정조사' 합의···'위원장은 국힘, 45일간 활동' / 뉴스TVCHOSUN",
           url: "https://www.youtube.com/watch?v=z_6mdv4V3lQ",
           type: "youtube",
         },
@@ -222,8 +218,7 @@ const article: WeeklyArticle = {
           type: "youtube",
         },
         {
-          title:
-            "여야, 선관위 국정조사 45일간 진행키로…18일 계획서 처리 / 세계일보",
+          title: "여야, 선관위 국정조사 45일간 진행키로…18일 계획서 처리 / 세계일보",
           url: "https://segye.com/newsView/20260616511079",
           type: "article",
         },
@@ -231,15 +226,13 @@ const article: WeeklyArticle = {
     },
     {
       category: "politics",
-      title:
-        "한성숙 청문회 앞두고 자산 정리 — 해외주식 전량 처분, 다주택·자산 검증 대응",
+      title: "한성숙 청문회 앞두고 자산 정리 — 해외주식 전량 처분, 다주택·자산 검증 대응",
       slug: "한성숙-자산-정리",
       description:
         "한성숙 국무총리 후보자가 인사청문회를 앞두고 보유 중이던 해외주식을 전량 처분하기로 했다. 국내주식과 가상자산은 이미 매도한 것으로 알려졌다. 국민의힘이 한 후보자의 다주택 보유 문제를 집중 검증하겠다고 예고한 가운데, 자산 관련 논란을 사전에 차단하려는 조치로 풀이된다. 한 후보자는 6월 15일부터 인사청문 준비단 사무실에서 부처별 현안 보고를 받으며 청문회 준비에 들어갔다. 20년 만의 여성·첫 IT 기업인 출신 총리 후보로서, 개인 검증을 넘어 이재명 정부 2기 국정 운영의 시험대가 될 전망이다.",
       sources: [
         {
-          title:
-            "한성숙, 청문회 전 해외주식 전량 처분한다…국내주식·가상자산은 이미 매도 / 뉴시스",
+          title: "한성숙, 청문회 전 해외주식 전량 처분한다…국내주식·가상자산은 이미 매도 / 뉴시스",
           url: "https://www.newsis.com/view/NISX20260611_0003666146",
           type: "article",
         },
