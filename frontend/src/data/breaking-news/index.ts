@@ -2,6 +2,48 @@ import type { BreakingNewsItem } from "./types";
 
 export const breakingNews: BreakingNewsItem[] = [
   {
+    id: "2026-06-21-floor-deadline-2425-pm-hearing-zero-witness",
+    title:
+      "원 구성 '24~25일 본회의' 마지노선 — 민주 '법사위원장 협상 여지 없다' vs 국힘 '입법 독주 견제', 한성숙 청문회 '증인 0명' 공방",
+    description:
+      "22대 후반기 국회 원 구성 협상이 주말인 6월 21일에도 법제사법위원장 배분 문제에 막혀 물밑 조율만 이어졌습니다. 더불어민주당은 오는 24~25일 본회의를 원 구성 처리의 사실상 마지노선으로 보고, 늦어도 6월 말까지는 협상을 마무리한다는 방침입니다. 이주희 민주당 원내대변인은 '산적한 민생 현안을 조속히 추진하기 위해서라도 법사위원장은 반드시 민주당이 책임져야 한다'며 '협상 여지가 없다'고 못 박았습니다. 반면 국민의힘은 법사위가 각 상임위를 통과한 법안의 최종 관문인 만큼 제1야당이 맡아 정부·여당의 입법 독주를 견제해야 한다는 입장을 고수하고, 민주당의 법사위 고수 배경에 조작기소 특검법 추진 의도가 있다고 의심하고 있습니다. 합의가 끝내 무산되면 과반인 민주당이 단독으로 상임위원장을 선출하는 방안도 거론되나, 정치적 부담 탓에 막판까지 협상이 이어질 전망입니다. 한편 한성숙 국무총리 후보자 인사청문회(6/25~26)를 앞두고 증인 채택을 둘러싼 갈등도 격화됐습니다. 국민의힘은 후보자 동생과 이해진 네이버 창업자 등 11명을 증인·참고인으로 신청했으나, 민주당이 '신상 털기·정권 흠집 내기'라며 전원 반대해 사실상 '증인 0명' 청문회가 될 전망입니다. 김승수 국민의힘 원내운영수석부대표는 '증인·참고인이 1명도 없는 앙꼬 없는 청문회가 될 우려가 있다'고 비판했습니다. 청문회에서는 한 후보자가 본인·모친 명의로 신고한 250억원대 재산과 다주택 보유(삼청동 단독주택·역삼동 오피스텔·양평 주택), 잠실 아파트 처분 차익 등 재산 형성 과정이 핵심 쟁점이 될 전망입니다. 민주당은 청문회 직후인 6월 29일 인사청문경과보고서 채택을 목표로 하고 있습니다.",
+    date: "2026-06-21",
+    category: "committee",
+    items: [
+      {
+        label: "원 구성 마지노선",
+        value:
+          "민주, 24~25일 본회의를 원 구성 처리 사실상 마지노선으로 설정 — 늦어도 6월 말까지 마무리 방침, 주말 물밑 조율 지속",
+      },
+      {
+        label: "법사위원장 평행선",
+        value:
+          "민주 이주희 '민생 위해 법사위원장 사수, 협상 여지 없다' vs 국힘 '입법 독주 견제 위해 1야당 몫' — 국힘, 조작기소 특검법 의도 의심",
+      },
+      {
+        label: "청문회 증인 0명",
+        value:
+          "국힘, 후보자 동생·이해진 네이버 창업자 등 11명 증인·참고인 신청 → 민주 전원 반대로 '증인 0명' 청문회 전망, 김승수 '앙꼬 없는 청문회' 비판",
+      },
+      {
+        label: "재산 쟁점 청문",
+        value:
+          "한성숙 본인·모친 250억원대 재산·다주택(삼청동·역삼동·양평)·잠실 처분 차익 도마 — 청문회 6/25~26, 경과보고서 6/29 채택 목표",
+      },
+    ],
+    sources: [
+      {
+        title: "원구성 협상 정리될까…與 '24~25일 마지노선' 野 '법사위 내놔야' / 파이낸셜뉴스",
+        url: "https://www.fnnews.com/news/202606210602228026",
+      },
+      {
+        title: "한성숙 총리 후보자 청문회 금주 개최…'증인 0명·재산 형성' 공방 예상 / 파이낸셜뉴스",
+        url: "https://www.fnnews.com/news/202606210601459245",
+      },
+    ],
+    active: true,
+  },
+  {
     id: "2026-06-20-floor-deadline-month-end",
     title:
       "원 구성 협상 데드라인 '6월 말'로 재설정 — 한병도 '21대 법사위서 노란봉투법 등 폐기' vs 국힘 '권력 사유화 막아야', 한성숙 청문회 D-5",
@@ -329,7 +371,7 @@ export const breakingNews: BreakingNewsItem[] = [
         url: "https://www.fnnews.com/news/202606090501132196",
       },
     ],
-    active: true,
+    active: false,
   },
   {
     id: "2026-06-12-han-seong-sook-pm-confirmation",
@@ -379,7 +421,7 @@ export const breakingNews: BreakingNewsItem[] = [
         url: "https://v.daum.net/v/20260610131700567",
       },
     ],
-    active: true,
+    active: false,
   },
   {
     id: "2026-06-12-judiciary-chair-standoff",
@@ -435,7 +477,7 @@ export const breakingNews: BreakingNewsItem[] = [
         url: "https://www.sedaily.com/article/20054231",
       },
     ],
-    active: true,
+    active: false,
   },
   {
     id: "2026-06-11-floor-leaders-first-meeting",
@@ -496,7 +538,7 @@ export const breakingNews: BreakingNewsItem[] = [
         url: "https://www.etoday.co.kr/news/view/2592748",
       },
     ],
-    active: true,
+    active: false,
   },
   {
     id: "2026-06-10-ppp-floor-leader-election",
@@ -552,7 +594,7 @@ export const breakingNews: BreakingNewsItem[] = [
         url: "https://www.hankookilbo.com/news/article/A2026061011090002735",
       },
     ],
-    active: true,
+    active: false,
   },
   {
     id: "2026-06-08-ballot-shortage-state-investigation",
@@ -612,7 +654,7 @@ export const breakingNews: BreakingNewsItem[] = [
         url: "https://www.hankookilbo.com/news/article/A2026060815570002555",
       },
     ],
-    active: true,
+    active: false,
   },
   {
     id: "2026-06-07-second-half-committee-negotiation",
