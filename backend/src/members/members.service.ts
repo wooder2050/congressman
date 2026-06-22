@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { RedisService } from '../redis/redis.service';
+import { isCacheablePage } from '../common/query-parsers';
 
 const TTL_DAY = 60 * 60 * 24; // 24h
 const TTL_6H = 60 * 60 * 6; // 6h
@@ -413,9 +414,14 @@ export class MembersService {
     memberId: string,
     params: { termId: number; page: number; limit: number; result?: string; month?: string },
   ) {
-    const key = `member:votes:${memberId}:${params.termId}:${params.result ?? ''}:${params.month ?? ''}:${params.page}:${params.limit}`;
-    const cached = await this.redis.get(key);
-    if (cached) return cached;
+    // 깊은 페이지는 캐시 skip(봇/크롤러의 ?page=N 키 폭발 방지)
+    const key = isCacheablePage(params.page)
+      ? `member:votes:${memberId}:${params.termId}:${params.result ?? ''}:${params.month ?? ''}:${params.page}:${params.limit}`
+      : null;
+    if (key) {
+      const cached = await this.redis.get(key);
+      if (cached) return cached;
+    }
 
     const voteFilter: Record<string, unknown> = { termId: params.termId };
     if (params.month) {
@@ -482,7 +488,7 @@ export class MembersService {
       months: monthlyRows.map((r) => ({ month: r.month, count: Number(r.count) })),
     };
 
-    await this.redis.set(key, result, TTL_6H);
+    if (key) await this.redis.set(key, result, TTL_6H);
     return result;
   }
 

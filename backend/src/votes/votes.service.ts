@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { RedisService } from '../redis/redis.service';
 import { Prisma } from '@prisma/client';
+import { isCacheablePage } from '../common/query-parsers';
 
 interface FindAllParams {
   termId?: number;
@@ -28,10 +29,11 @@ export class VotesService {
   ) {}
 
   async findAll(params: FindAllParams) {
-    const isSearchQuery = Boolean(params.search);
-    const key = isSearchQuery
-      ? null
-      : `votes:${params.termId ?? ''}:${params.resultCode ?? ''}:${params.month ?? ''}:${params.page}:${params.limit}`;
+    // 캐시 skip 조건: 검색어가 있거나(키 폭발), 깊은 페이지(봇/크롤러의 ?page=N 키 폭발)
+    const cacheable = !params.search && isCacheablePage(params.page);
+    const key = cacheable
+      ? `votes:${params.termId ?? ''}:${params.resultCode ?? ''}:${params.month ?? ''}:${params.page}:${params.limit}`
+      : null;
     if (key) {
       const cached = await this.redis.get(key);
       if (cached) return cached;

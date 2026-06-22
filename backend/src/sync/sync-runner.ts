@@ -108,7 +108,7 @@ async function invalidateCache(command: string) {
 
   for (const prefix of prefixes) {
     const scanAndDelete = async (cur: number): Promise<number> => {
-      const [nextCursor, keys] = await redis.scan(cur, { match: `${prefix}*`, count: 100 });
+      const [nextCursor, keys] = await redis.scan(cur, { match: `${prefix}*`, count: 1000 });
       if (keys.length > 0) {
         await redis.del(...keys);
         console.log(`[SyncRunner] Invalidated ${keys.length} cache keys (${prefix}*)`);
