@@ -10,6 +10,7 @@ import {
 } from '../elections/asset-source.helper';
 import { getLawmakerSummary } from '../elections/lawmaker-stats.helper';
 import { ALLOWED_SIDO_LIST } from './region-allowlist';
+import { isCacheablePage } from '../common/query-parsers';
 
 /**
  * assetItems + availableSources + itemsBySource + 검수 메타 + 합계 대조 (codex #2, #6)
@@ -286,10 +287,11 @@ export class LocalElectionsService {
 
   /** race 목록 (필터 + 페이지네이션 + 검색) */
   async getRaces(id: string, filter: RaceFilter) {
-    const isSearchQuery = Boolean(filter.q);
-    const cacheKey = isSearchQuery
-      ? null
-      : `local-elections:${id}:races:${filter.type ?? ''}:${filter.sido ?? ''}:${filter.sigungu ?? ''}:${filter.page}:${filter.limit}:v1`;
+    // 캐시 skip 조건: 검색어가 있거나(키 폭발), 깊은 페이지(봇/크롤러의 ?page=N 키 폭발)
+    const cacheable = !filter.q && isCacheablePage(filter.page);
+    const cacheKey = cacheable
+      ? `local-elections:${id}:races:${filter.type ?? ''}:${filter.sido ?? ''}:${filter.sigungu ?? ''}:${filter.page}:${filter.limit}:v1`
+      : null;
     if (cacheKey) {
       const cached = await this.redis.get(cacheKey);
       if (cached) return cached;

@@ -52,7 +52,7 @@ export class RedisService implements OnModuleInit {
     const scanAndDelete = async (cur: number): Promise<number> => {
       const [nextCursor, keys] = await client.scan(cur, {
         match: `${prefix}*`,
-        count: 100,
+        count: 1000,
       });
       if (keys.length > 0) {
         await client.del(...keys);

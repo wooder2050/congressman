@@ -25,7 +25,7 @@ async function invalidateCache(prefixes: string[]) {
   for (const prefix of prefixes) {
     let cursor = 0;
     do {
-      const [nextCursor, keys] = await redis.scan(cursor, { match: `${prefix}*`, count: 100 });
+      const [nextCursor, keys] = await redis.scan(cursor, { match: `${prefix}*`, count: 1000 });
       if (keys.length > 0) {
         await redis.del(...keys);
         console.log(`[Weekly] Invalidated ${keys.length} keys (${prefix}*)`);

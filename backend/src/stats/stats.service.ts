@@ -459,12 +459,17 @@ export class StatsService {
   async getRadar(termId: number, topics: string[]) {
     if (!topics.length) return { bills: [], topics: [] };
 
-    const key = `stats:radar:${termId}:${topics.sort().join(',')}`;
+    // 캐시 키 폭발 방지: 입력 토픽을 유효한 표준 토픽으로만 정제(중복 제거·정렬·상한).
+    // 임의 문자열/오타/부분집합 조합이 새 키를 무한 생성하던 누수를 차단한다.
+    const normalizedTopics = this.normalizeRadarTopics(topics);
+    if (!normalizedTopics.length) return { bills: [], topics: [] };
+
+    const key = `stats:radar:${termId}:${normalizedTopics.join(',')}`;
     const cached = await this.redis.get(key);
     if (cached) return cached;
 
     // 정규화된 토픽에 해당하는 모든 alias를 포함하여 검색
-    const expandedTopics = this.getTopicAliases(topics);
+    const expandedTopics = this.getTopicAliases(normalizedTopics);
 
     const bills = await this.prisma.bill.findMany({
       where: {
@@ -485,9 +490,20 @@ export class StatsService {
       },
     });
 
-    const result = { bills, topics };
+    const result = { bills, topics: normalizedTopics };
     await this.redis.set(key, result, TTL_6H);
     return result;
+  }
+
+  /**
+   * 레이더 입력 토픽을 캐시 키에 안전한 표준 토픽 배열로 정제한다.
+   * - 유효한 표준 토픽(getTopicAliases가 alias를 찾아내는 토픽)만 남김
+   * - 중복 제거 + 정렬로 키를 결정적으로 만들고, 최대 8개로 상한
+   * 임의 문자열/오타/부분집합 조합이 distinct 캐시 키를 무한 생성하던 누수를 차단한다.
+   */
+  private normalizeRadarTopics(topics: string[]): string[] {
+    const valid = topics.filter((t) => this.getTopicAliases([t]).length > 0);
+    return Array.from(new Set(valid)).sort().slice(0, 8);
   }
 
   /** 한국 시간 기준 날짜 (YYYY-MM-DD) — 런타임 타임존 무관 */
