@@ -76,7 +76,7 @@ export function parsePagination(
  * 이 값을 넘는 페이지는 캐시하지 않아(키 폭발 방지), 봇/크롤러가 ?page=N(대형 N)으로
  * Redis 키를 무한 생성하는 것을 막는다. 실제 사용자는 거의 도달하지 않는 깊이.
  */
-export const CACHE_MAX_PAGE = 20;
+const CACHE_MAX_PAGE = 20;
 
 /** 주어진 page가 캐시 가능한 범위(1..CACHE_MAX_PAGE)인지 */
 export function isCacheablePage(page: number): boolean {
