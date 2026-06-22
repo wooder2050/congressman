@@ -37,8 +37,6 @@ interface PaginationOptions {
   defaultLimit?: number;
   minLimit?: number;
   maxLimit?: number;
-  /** 허용 limit 값 화이트리스트. 지정 시 이 목록에 없는 limit은 defaultLimit으로 정규화한다. */
-  allowedLimits?: number[];
 }
 
 interface Pagination {
@@ -51,23 +49,11 @@ export function parsePagination(
   limit: string | undefined,
   options: PaginationOptions = {},
 ): Pagination {
-  const {
-    defaultPage = 1,
-    defaultLimit = 20,
-    minLimit = 1,
-    maxLimit = 100,
-    allowedLimits,
-  } = options;
+  const { defaultPage = 1, defaultLimit = 20, minLimit = 1, maxLimit = 100 } = options;
   const parsedLimit = parseIntOrUndefined(limit) ?? defaultLimit;
-  // 캐시 키 폭발 방지: limit이 화이트리스트에 없으면 기본값으로 정규화해 키 분기를 유한하게 유지
-  const limitValue = allowedLimits
-    ? allowedLimits.includes(parsedLimit)
-      ? parsedLimit
-      : defaultLimit
-    : Math.min(Math.max(parsedLimit, minLimit), maxLimit);
   return {
     page: parsePage(page, defaultPage),
-    limit: limitValue,
+    limit: Math.min(Math.max(parsedLimit, minLimit), maxLimit),
   };
 }
 

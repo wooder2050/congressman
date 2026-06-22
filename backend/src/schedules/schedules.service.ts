@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { RedisService } from '../redis/redis.service';
+import { isCacheablePage } from '../common/query-parsers';
 
 const TTL_HOUR = 60 * 60;
 
@@ -12,9 +13,14 @@ export class SchedulesService {
   ) {}
 
   async getSchedules(termId: number, type?: string, page = 1, limit = 30) {
-    const key = `schedules:list:${termId}:${type ?? 'all'}:${page}:${limit}`;
-    const cached = await this.redis.get(key);
-    if (cached) return cached;
+    // 깊은 페이지는 캐시 skip(봇/크롤러의 ?page=N 키 폭발 방지)
+    const key = isCacheablePage(page)
+      ? `schedules:list:${termId}:${type ?? 'all'}:${page}:${limit}`
+      : null;
+    if (key) {
+      const cached = await this.redis.get(key);
+      if (cached) return cached;
+    }
 
     const where: { termId: number; type?: string } = { termId };
     if (type) where.type = type;
@@ -30,7 +36,7 @@ export class SchedulesService {
     ]);
 
     const result = { schedules, total };
-    await this.redis.set(key, result, TTL_HOUR);
+    if (key) await this.redis.set(key, result, TTL_HOUR);
     return result;
   }
 
