@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { RedisService } from '../redis/redis.service';
+import { isCacheablePage } from '../common/query-parsers';
 
 const TTL_6H = 60 * 60 * 6;
 
@@ -206,9 +207,14 @@ export class CommitteesService {
   }
 
   async getCommitteeMinutes(committeeName: string, termId: number, page: number) {
-    const key = `committees:minutes:${termId}:${committeeName}:${page}`;
-    const cached = await this.redis.get(key);
-    if (cached) return cached;
+    // 깊은 페이지는 캐시 skip(봇/크롤러의 ?page=N 키 폭발 방지)
+    const key = isCacheablePage(page)
+      ? `committees:minutes:${termId}:${committeeName}:${page}`
+      : null;
+    if (key) {
+      const cached = await this.redis.get(key);
+      if (cached) return cached;
+    }
 
     const pageSize = 5;
     const [items, total] = await Promise.all([
@@ -238,7 +244,7 @@ export class CommitteesService {
       totalPages: Math.ceil(total / pageSize),
     };
 
-    await this.redis.set(key, result, TTL_6H);
+    if (key) await this.redis.set(key, result, TTL_6H);
     return result;
   }
 }

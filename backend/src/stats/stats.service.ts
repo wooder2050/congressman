@@ -351,106 +351,117 @@ export class StatsService {
     return result;
   }
 
-  /** 정규화된 토픽에 해당하는 모든 alias 키를 반환 */
-  private getTopicAliases(normalizedTopics: string[]): string[] {
-    // bills.service.ts의 TOPIC_NORMALIZE와 동일한 매핑
-    const TOPIC_NORMALIZE: Record<string, string> = {
-      '경제·산업': '경제·산업',
-      economy: '경제·산업',
-      '세금·경제': '경제·산업',
-      경제: '경제·산업',
-      금융: '경제·산업',
-      finance: '경제·산업',
-      tax: '경제·산업',
-      industry: '경제·산업',
-      산업: '경제·산업',
-      공정거래: '경제·산업',
-      조세: '경제·산업',
-      '법·사법': '법·사법',
-      law: '법·사법',
-      '사법·인권': '법·사법',
-      사법: '법·사법',
-      justice: '법·사법',
-      human_rights: '법·사법',
-      법무: '법·사법',
-      '환경·에너지': '환경·에너지',
-      environment: '환경·에너지',
-      환경: '환경·에너지',
-      에너지: '환경·에너지',
-      energy: '환경·에너지',
-      '노동·고용': '노동·고용',
-      labor: '노동·고용',
-      '노동·일자리': '노동·고용',
-      노동: '노동·고용',
-      고용: '노동·고용',
-      '보건·의료': '보건·의료',
-      health: '보건·의료',
-      '의료·건강': '보건·의료',
-      보건: '보건·의료',
-      '복지·건강': '보건·의료',
-      '교통·물류': '교통·물류',
-      transport: '교통·물류',
-      '교통·건설': '교통·물류',
-      교통: '교통·물류',
-      transportation: '교통·물류',
-      건설: '교통·물류',
-      국토: '교통·물류',
-      '부동산·주거': '부동산·주거',
-      housing: '부동산·주거',
-      부동산: '부동산·주거',
-      '복지·돌봄': '복지·돌봄',
-      welfare: '복지·돌봄',
-      복지: '복지·돌봄',
-      보훈: '복지·돌봄',
-      society: '복지·돌봄',
-      '육아·교육': '육아·교육',
-      education: '육아·교육',
-      교육: '육아·교육',
-      청년정책: '육아·교육',
-      youth: '육아·교육',
-      '행정·지방자치': '행정·지방자치',
-      administration: '행정·지방자치',
-      '행정·제도': '행정·지방자치',
-      행정: '행정·지방자치',
-      정치: '행정·지방자치',
-      politics: '행정·지방자치',
-      autonomy: '행정·지방자치',
-      regional: '행정·지방자치',
-      선거: '행정·지방자치',
-      지역발전: '행정·지방자치',
-      인구: '행정·지방자치',
-      '농업·식품': '농업·식품',
-      agriculture: '농업·식품',
-      '농림·수산': '농업·식품',
-      농업: '농업·식품',
-      농림: '농업·식품',
-      해양: '농업·식품',
-      maritime: '농업·식품',
-      '문화·체육': '문화·체육',
-      culture: '문화·체육',
-      문화: '문화·체육',
-      '통신·방송': '문화·체육',
-      관광: '문화·체육',
-      '과학기술·ICT': '과학기술·ICT',
-      technology: '과학기술·ICT',
-      '기술·AI': '과학기술·ICT',
-      '과학·기술': '과학기술·ICT',
-      science: '과학기술·ICT',
-      digital: '과학기술·ICT',
-      정보통신: '과학기술·ICT',
-      '외교·안보': '외교·안보',
-      diplomacy: '외교·안보',
-      '외교·국방': '외교·안보',
-      국방: '외교·안보',
-      defense: '외교·안보',
-      외교: '외교·안보',
-      '안전·치안': '안전·치안',
-      safety: '안전·치안',
-      안전: '안전·치안',
-    };
+  // bills.service.ts의 TOPIC_NORMALIZE와 동일한 매핑 (alias·표준값 → 표준 토픽)
+  private static readonly TOPIC_NORMALIZE: Record<string, string> = {
+    '경제·산업': '경제·산업',
+    economy: '경제·산업',
+    '세금·경제': '경제·산업',
+    경제: '경제·산업',
+    금융: '경제·산업',
+    finance: '경제·산업',
+    tax: '경제·산업',
+    industry: '경제·산업',
+    산업: '경제·산업',
+    공정거래: '경제·산업',
+    조세: '경제·산업',
+    '법·사법': '법·사법',
+    law: '법·사법',
+    '사법·인권': '법·사법',
+    사법: '법·사법',
+    justice: '법·사법',
+    human_rights: '법·사법',
+    법무: '법·사법',
+    '환경·에너지': '환경·에너지',
+    environment: '환경·에너지',
+    환경: '환경·에너지',
+    에너지: '환경·에너지',
+    energy: '환경·에너지',
+    '노동·고용': '노동·고용',
+    labor: '노동·고용',
+    '노동·일자리': '노동·고용',
+    노동: '노동·고용',
+    고용: '노동·고용',
+    '보건·의료': '보건·의료',
+    health: '보건·의료',
+    '의료·건강': '보건·의료',
+    보건: '보건·의료',
+    '복지·건강': '보건·의료',
+    '교통·물류': '교통·물류',
+    transport: '교통·물류',
+    '교통·건설': '교통·물류',
+    교통: '교통·물류',
+    transportation: '교통·물류',
+    건설: '교통·물류',
+    국토: '교통·물류',
+    '부동산·주거': '부동산·주거',
+    housing: '부동산·주거',
+    부동산: '부동산·주거',
+    '복지·돌봄': '복지·돌봄',
+    welfare: '복지·돌봄',
+    복지: '복지·돌봄',
+    보훈: '복지·돌봄',
+    society: '복지·돌봄',
+    '육아·교육': '육아·교육',
+    education: '육아·교육',
+    교육: '육아·교육',
+    청년정책: '육아·교육',
+    youth: '육아·교육',
+    '행정·지방자치': '행정·지방자치',
+    administration: '행정·지방자치',
+    '행정·제도': '행정·지방자치',
+    행정: '행정·지방자치',
+    정치: '행정·지방자치',
+    politics: '행정·지방자치',
+    autonomy: '행정·지방자치',
+    regional: '행정·지방자치',
+    선거: '행정·지방자치',
+    지역발전: '행정·지방자치',
+    인구: '행정·지방자치',
+    '농업·식품': '농업·식품',
+    agriculture: '농업·식품',
+    '농림·수산': '농업·식품',
+    농업: '농업·식품',
+    농림: '농업·식품',
+    해양: '농업·식품',
+    maritime: '농업·식품',
+    '문화·체육': '문화·체육',
+    culture: '문화·체육',
+    문화: '문화·체육',
+    '통신·방송': '문화·체육',
+    관광: '문화·체육',
+    '과학기술·ICT': '과학기술·ICT',
+    technology: '과학기술·ICT',
+    '기술·AI': '과학기술·ICT',
+    '과학·기술': '과학기술·ICT',
+    science: '과학기술·ICT',
+    digital: '과학기술·ICT',
+    정보통신: '과학기술·ICT',
+    '외교·안보': '외교·안보',
+    diplomacy: '외교·안보',
+    '외교·국방': '외교·안보',
+    국방: '외교·안보',
+    defense: '외교·안보',
+    외교: '외교·안보',
+    '안전·치안': '안전·치안',
+    safety: '안전·치안',
+    안전: '안전·치안',
+  };
 
-    const topicSet = new Set(normalizedTopics);
-    return Object.entries(TOPIC_NORMALIZE)
+  /**
+   * 입력 토픽(alias 또는 표준값)을 표준 토픽으로 정규화한다.
+   * 매핑에 없는 값은 제외. 중복 제거.
+   */
+  private toCanonicalTopics(topics: string[]): string[] {
+    const canonical = topics
+      .map((t) => StatsService.TOPIC_NORMALIZE[t])
+      .filter((v): v is string => Boolean(v));
+    return Array.from(new Set(canonical));
+  }
+
+  /** 표준 토픽에 해당하는 모든 alias 키를 반환 (DB topic 컬럼 매칭용) */
+  private getTopicAliases(canonicalTopics: string[]): string[] {
+    const topicSet = new Set(canonicalTopics);
+    return Object.entries(StatsService.TOPIC_NORMALIZE)
       .filter(([, v]) => topicSet.has(v))
       .map(([k]) => k);
   }
@@ -459,17 +470,23 @@ export class StatsService {
   async getRadar(termId: number, topics: string[]) {
     if (!topics.length) return { bills: [], topics: [] };
 
-    const key = `stats:radar:${termId}:${topics.sort().join(',')}`;
+    // 캐시 키 폭발 방지: 입력 토픽을 유효한 표준 토픽으로만 정제(중복 제거·정렬·상한).
+    // 임의 문자열/오타/부분집합 조합이 새 키를 무한 생성하던 누수를 차단한다.
+    const normalizedTopics = this.normalizeRadarTopics(topics);
+    if (!normalizedTopics.length) return { bills: [], topics: [] };
+
+    const key = `stats:radar:${termId}:${normalizedTopics.join(',')}`;
     const cached = await this.redis.get(key);
     if (cached) return cached;
 
-    // 정규화된 토픽에 해당하는 모든 alias를 포함하여 검색
-    const expandedTopics = this.getTopicAliases(topics);
+    // 정규화된 표준 토픽에 해당하는 모든 alias를 포함하여 검색
+    // (DB topic 컬럼에는 alias 형태가 저장돼 있을 수 있어 확장 필요)
+    const expandedTopics = this.getTopicAliases(normalizedTopics);
 
     const bills = await this.prisma.bill.findMany({
       where: {
         termId,
-        topic: { in: expandedTopics.length > 0 ? expandedTopics : topics },
+        topic: { in: expandedTopics },
       },
       orderBy: { proposedDate: 'desc' },
       take: 10,
@@ -485,9 +502,19 @@ export class StatsService {
       },
     });
 
-    const result = { bills, topics };
+    const result = { bills, topics: normalizedTopics };
     await this.redis.set(key, result, TTL_6H);
     return result;
+  }
+
+  /**
+   * 레이더 입력 토픽을 캐시 키에 안전한 표준 토픽 배열로 정제한다.
+   * - alias·표준값 입력을 모두 표준 토픽(canonical)으로 변환 → alias 다양성으로 인한 키 폭발 차단
+   * - 중복 제거 + 정렬로 키를 결정적으로 만들고, 최대 8개로 상한
+   * 표준 토픽은 약 15종으로 유한하므로, 임의 문자열/오타가 distinct 캐시 키를 만들던 누수가 사라진다.
+   */
+  private normalizeRadarTopics(topics: string[]): string[] {
+    return this.toCanonicalTopics(topics).sort().slice(0, 8);
   }
 
   /** 한국 시간 기준 날짜 (YYYY-MM-DD) — 런타임 타임존 무관 */

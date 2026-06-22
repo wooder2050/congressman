@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { RedisService } from '../redis/redis.service';
+import { isCacheablePage } from '../common/query-parsers';
 
 const DEFAULT_TTL_SECONDS = 3600;
 const NESDC_VIEW_BASE = 'https://www.nesdc.go.kr/portal/bbs/B0000005/view.do';
@@ -64,8 +65,9 @@ export class PollsService {
     private readonly redis: RedisService,
   ) {}
 
-  /** 필터 → 캐시 키 생성 (입력 정규화 후 결정적 해시) */
-  private listCacheKey(filter: PollsListFilter): string {
+  /** 필터 → 캐시 키 생성 (입력 정규화 후 결정적 해시). 깊은 페이지는 null(캐시 skip). */
+  private listCacheKey(filter: PollsListFilter): string | null {
+    if (!isCacheablePage(filter.page)) return null;
     const parts = [
       filter.electionCategory ?? '',
       filter.sido ?? '',
@@ -80,8 +82,10 @@ export class PollsService {
 
   async list(filter: PollsListFilter) {
     const key = this.listCacheKey(filter);
-    const cached = await this.redis.get<unknown>(key);
-    if (cached) return cached;
+    if (key) {
+      const cached = await this.redis.get<unknown>(key);
+      if (cached) return cached;
+    }
 
     const where: Prisma.PollWhereInput = {};
     if (filter.electionCategory) where.electionCategory = filter.electionCategory;
@@ -128,7 +132,7 @@ export class PollsService {
       limit: filter.limit,
       polls: polls.map(pollListItem),
     };
-    await this.redis.set(key, result, DEFAULT_TTL_SECONDS);
+    if (key) await this.redis.set(key, result, DEFAULT_TTL_SECONDS);
     return result;
   }
 
