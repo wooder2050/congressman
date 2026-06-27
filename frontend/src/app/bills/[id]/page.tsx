@@ -43,11 +43,16 @@ export async function generateMetadata({ params }: BillDetailPageProps): Promise
   ];
   const description = descParts.filter(Boolean).join(" ").slice(0, 160);
 
+  // 색인 기준 = sitemap(getIndexableBillIds)과 동일:
+  // AI 요약(simpleSummary) 보유 + 실제 입법 과정(위원회 또는 본회의 처리 결과) 도달.
+  // 제출만 된 계류·단순 발의 법안은 thin content이므로 색인 제외(2026-06 AdSense 대응).
+  const reachedProcess = !!(bill.progress?.committeeResult || bill.progress?.lawResult);
+  const isIndexable = !!bill.simpleSummary && reachedProcess;
+
   return {
     title,
     description,
-    // AI 요약 없는 법안은 국회 원문 복제라 색인 제외 — sitemap(getIndexableBillIds)과 동일 기준
-    robots: !bill.simpleSummary ? { index: false, follow: true } : undefined,
+    robots: !isIndexable ? { index: false, follow: true } : undefined,
     alternates: { canonical: `https://www.lawmake.kr/bills/${id}` },
     openGraph: {
       title,

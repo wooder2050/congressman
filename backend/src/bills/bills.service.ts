@@ -269,13 +269,21 @@ export class BillsService {
     return result;
   }
 
-  /** AI 요약(simpleSummary)이 있는 법안 ID만 반환. AdSense thin-content 대응 sitemap용 */
+  /**
+   * 색인 가치가 높은 법안 ID만 반환. AdSense thin-content 대응 sitemap용.
+   *
+   * 기준(AND): simpleSummary(AI 요약) 보유 + 실제 입법 과정 도달
+   *   - 위원회 심사 결과(committeeResultCode) 또는 본회의 결과(lawResultCode)가 있는 법안만.
+   *   - "제출만 된 계류"·과거 대수의 단순 발의 법안은 thin content이므로 제외.
+   * AI 자동요약 한 줄만 있는 대량 페이지가 Google에 thin/scaled content로
+   * 판정되어 AdSense가 반려된 데 대한 대응(2026-06).
+   */
   async findIndexableIds() {
     if (indexableIdsMemoryCache && indexableIdsMemoryCache.expiresAt > Date.now()) {
       return indexableIdsMemoryCache.data;
     }
 
-    const key = 'bills:indexable-ids:v1';
+    const key = 'bills:indexable-ids:v2';
     const cached = await this.redis.get<{ id: string; proposedDate: string }[]>(key);
     if (cached) {
       indexableIdsMemoryCache = { data: cached, expiresAt: Date.now() + ALL_IDS_MEMORY_TTL_MS };
@@ -283,7 +291,10 @@ export class BillsService {
     }
 
     const bills = await this.prisma.bill.findMany({
-      where: { simpleSummary: { not: null } },
+      where: {
+        simpleSummary: { not: null },
+        OR: [{ committeeResultCode: { not: null } }, { lawResultCode: { not: null } }],
+      },
       select: { id: true, proposedDate: true },
       orderBy: { proposedDate: 'desc' },
     });
