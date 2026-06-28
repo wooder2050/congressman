@@ -40,6 +40,21 @@ export default function MemberProfile({ member, memberTerm, allTermIds }: Member
                 {member.name}
               </h1>
               <MemberBookmarkButton memberId={member.id} />
+              {member.youtubeUrl && (
+                <a
+                  href={member.youtubeUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label={`${member.name} 의원 유튜브 채널 (새 창)`}
+                  title={`${member.name} 의원 유튜브 채널`}
+                  className="inline-flex h-7 w-7 items-center justify-center rounded-full transition-opacity hover:opacity-80"
+                  style={{ backgroundColor: "rgba(255,255,255,0.25)" }}
+                >
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="#FF0000" aria-hidden="true">
+                    <path d="M23.5 6.2a3.02 3.02 0 0 0-2.12-2.14C19.5 3.55 12 3.55 12 3.55s-7.5 0-9.38.51A3.02 3.02 0 0 0 .5 6.2C0 8.08 0 12 0 12s0 3.92.5 5.8a3.02 3.02 0 0 0 2.12 2.14c1.88.51 9.38.51 9.38.51s7.5 0 9.38-.51a3.02 3.02 0 0 0 2.12-2.14C24 15.92 24 12 24 12s0-3.92-.5-5.8ZM9.6 15.57V8.43L15.82 12 9.6 15.57Z" />
+                  </svg>
+                </a>
+              )}
             </div>
             <div className="mt-1 flex items-center gap-2">
               <ColorBadge label={memberTerm.party.name} color={memberTerm.party.color} />

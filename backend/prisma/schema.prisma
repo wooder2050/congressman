@@ -50,6 +50,7 @@ model Member {
   birthDate    String?
   electedCount Int     @default(1)
   career       String? // MEM_TITLE: 경력사항 텍스트 (줄바꿈 구분)
+  youtubeUrl   String? // 개인 유튜브 채널 URL (수동 큐레이션, member sync가 덮어쓰지 않음)
 
   memberTerms       MemberTerm[]
   memberVotes       MemberVote[]
