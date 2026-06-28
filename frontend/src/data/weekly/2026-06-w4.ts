@@ -42,7 +42,7 @@ const article: WeeklyArticle = {
       sources: [
         {
           title:
-            "[🔴 이슈PLAY] 한성숙 국무총리 후보자, 청문회서 6·25 질문에 \"당연히 북침\"···\"긴장해서\" 답변 정정",
+            '[🔴 이슈PLAY] 한성숙 국무총리 후보자, 청문회서 6·25 질문에 "당연히 북침"···"긴장해서" 답변 정정',
           url: "https://www.youtube.com/watch?v=FO-AdF7NA3U",
           type: "youtube",
         },
@@ -78,7 +78,7 @@ const article: WeeklyArticle = {
       ],
       sources: [
         {
-          title: "\"정오까지 명단 달라\"‥\"법사위 먼저 포기하라\" (2026.06.26/뉴스투데이/MBC)",
+          title: '"정오까지 명단 달라"‥"법사위 먼저 포기하라" (2026.06.26/뉴스투데이/MBC)',
           url: "https://www.youtube.com/watch?v=_WdSDIOye8I",
           type: "youtube",
         },
@@ -88,8 +88,7 @@ const article: WeeklyArticle = {
           type: "youtube",
         },
         {
-          title:
-            "한병도 '29일부터 전 의원 비상대기…원 구성 6월 내 무조건 처리' / 시사저널",
+          title: "한병도 '29일부터 전 의원 비상대기…원 구성 6월 내 무조건 처리' / 시사저널",
           url: "https://www.sisajournal.com/news/articleView.html?idxno=377908",
           type: "article",
         },
@@ -115,8 +114,7 @@ const article: WeeklyArticle = {
       ],
       sources: [
         {
-          title:
-            "한성숙, '모두의 창업' 정보유출 사과…'책임 통감' / KBS 2026.06.22.",
+          title: "한성숙, '모두의 창업' 정보유출 사과…'책임 통감' / KBS 2026.06.22.",
           url: "https://www.youtube.com/watch?v=G9qthP3wOqA",
           type: "youtube",
         },
