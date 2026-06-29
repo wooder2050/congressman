@@ -85,29 +85,35 @@ export async function getBreakingNews(): Promise<BreakingNewsItem[]> {
 }
 
 export async function getMembers(termId: number): Promise<MemberWithTerm[]> {
-  return fetchApi(`/api/members?termId=${termId}`);
+  return fetchApi(`/api/members?termId=${termId}`, { revalidate: 86400, tags: ["members"] });
 }
 
 export async function getMember(id: string): Promise<Member | null> {
-  return fetchApi(`/api/members/${id}`);
+  return fetchApi(`/api/members/${id}`, { revalidate: 86400, tags: ["members"] });
 }
 
 export async function getMemberTerms(memberId: string): Promise<MemberTerm[]> {
-  return fetchApi(`/api/members/${memberId}/terms`);
+  return fetchApi(`/api/members/${memberId}/terms`, { revalidate: 86400, tags: ["members"] });
 }
 
 export async function getAttendance(params: {
   memberId: string;
   termId: number;
 }): Promise<AttendanceRecord | null> {
-  return fetchApi(`/api/attendance?memberId=${params.memberId}&termId=${params.termId}`);
+  return fetchApi(`/api/attendance?memberId=${params.memberId}&termId=${params.termId}`, {
+    revalidate: 3600,
+    tags: ["attendance"],
+  });
 }
 
 export async function getAbsenceDetails(params: {
   memberId: string;
   termId: number;
 }): Promise<AbsenceDetail[]> {
-  return fetchApi(`/api/attendance/absence?memberId=${params.memberId}&termId=${params.termId}`);
+  return fetchApi(`/api/attendance/absence?memberId=${params.memberId}&termId=${params.termId}`, {
+    revalidate: 3600,
+    tags: ["attendance"],
+  });
 }
 
 export async function getBills(params: {
@@ -133,11 +139,11 @@ export async function getBills(params: {
   if (params.topic) searchParams.set("topic", params.topic);
   if (params.page) searchParams.set("page", String(params.page));
   if (params.limit) searchParams.set("limit", String(params.limit));
-  return fetchApi(`/api/bills?${searchParams.toString()}`);
+  return fetchApi(`/api/bills?${searchParams.toString()}`, { revalidate: 3600, tags: ["bills"] });
 }
 
 export async function getBillSummary(termId: number): Promise<BillSummary> {
-  return fetchApi(`/api/bills/summary?termId=${termId}`);
+  return fetchApi(`/api/bills/summary?termId=${termId}`, { revalidate: 3600, tags: ["bills"] });
 }
 
 export async function getBillTopics(termId: number): Promise<{ topic: string; count: number }[]> {
@@ -148,11 +154,11 @@ export async function getBillTopics(termId: number): Promise<{ topic: string; co
 }
 
 export async function getBillCommittees(termId: number): Promise<string[]> {
-  return fetchApi(`/api/bills/committees?termId=${termId}`);
+  return fetchApi(`/api/bills/committees?termId=${termId}`, { revalidate: 86400, tags: ["bills"] });
 }
 
 export async function getMemberHistory(memberId: string): Promise<TermActivity[]> {
-  return fetchApi(`/api/members/${memberId}/history`);
+  return fetchApi(`/api/members/${memberId}/history`, { revalidate: 86400, tags: ["members"] });
 }
 
 export async function getVotes(params: {
@@ -170,11 +176,11 @@ export async function getVotes(params: {
   if (params.search) searchParams.set("search", params.search);
   if (params.page) searchParams.set("page", String(params.page));
   if (params.limit) searchParams.set("limit", String(params.limit));
-  return fetchApi(`/api/votes?${searchParams.toString()}`);
+  return fetchApi(`/api/votes?${searchParams.toString()}`, { revalidate: 3600, tags: ["votes"] });
 }
 
 export async function getVoteSummary(termId: number): Promise<VoteSummary> {
-  return fetchApi(`/api/votes/summary?termId=${termId}`);
+  return fetchApi(`/api/votes/summary?termId=${termId}`, { revalidate: 3600, tags: ["votes"] });
 }
 
 export async function getMemberVotes(params: {
@@ -191,32 +197,44 @@ export async function getMemberVotes(params: {
   if (params.limit) searchParams.set("limit", String(params.limit));
   if (params.result) searchParams.set("result", params.result);
   if (params.month) searchParams.set("month", params.month);
-  return fetchApi(`/api/members/${params.memberId}/votes?${searchParams.toString()}`);
+  return fetchApi(`/api/members/${params.memberId}/votes?${searchParams.toString()}`, {
+    revalidate: 3600,
+    tags: ["votes"],
+  });
 }
 
 export async function getMonthlyAttendance(params: {
   memberId: string;
   termId: number;
 }): Promise<MonthlyAttendance[]> {
-  return fetchApi(`/api/members/${params.memberId}/monthly-attendance?termId=${params.termId}`);
+  return fetchApi(`/api/members/${params.memberId}/monthly-attendance?termId=${params.termId}`, {
+    revalidate: 3600,
+    tags: ["attendance"],
+  });
 }
 
 export async function getCommitteeBills(params: {
   memberId: string;
   termId: number;
 }): Promise<CommitteeBillCount[]> {
-  return fetchApi(`/api/members/${params.memberId}/committee-bills?termId=${params.termId}`);
+  return fetchApi(`/api/members/${params.memberId}/committee-bills?termId=${params.termId}`, {
+    revalidate: 3600,
+    tags: ["members"],
+  });
 }
 
 export async function getCommitteeActivity(params: {
   memberId: string;
   termId: number;
 }): Promise<CommitteeActivity[]> {
-  return fetchApi(`/api/members/${params.memberId}/committee-activity?termId=${params.termId}`);
+  return fetchApi(`/api/members/${params.memberId}/committee-activity?termId=${params.termId}`, {
+    revalidate: 3600,
+    tags: ["members"],
+  });
 }
 
 export async function getAssets(memberId: string): Promise<AssetResponse> {
-  return fetchApi(`/api/members/${memberId}/assets`);
+  return fetchApi(`/api/members/${memberId}/assets`, { revalidate: 86400, tags: ["members"] });
 }
 
 export async function getBillIds(): Promise<{ id: string; proposedDate: string }[]> {
@@ -233,11 +251,11 @@ export async function getVoteIds(): Promise<{ id: string; procDate: string }[]> 
 }
 
 export async function getBill(id: string): Promise<BillDetail | null> {
-  return fetchApi(`/api/bills/${id}`);
+  return fetchApi(`/api/bills/${id}`, { revalidate: 86400, tags: ["bills"] });
 }
 
 export async function getVoteMemberVotes(voteId: string): Promise<VoteWithMemberVotes | null> {
-  return fetchApi(`/api/votes/${voteId}/member-votes`);
+  return fetchApi(`/api/votes/${voteId}/member-votes`, { revalidate: 86400, tags: ["votes"] });
 }
 
 export async function getAttendanceRanking(termId: number): Promise<AttendanceRanking> {
@@ -276,7 +294,7 @@ export async function getSchedules(params: {
 }
 
 export async function getCommitteeStats(termId: number): Promise<CommitteeStats[]> {
-  return fetchApi(`/api/committees?termId=${termId}`);
+  return fetchApi(`/api/committees?termId=${termId}`, { revalidate: 86400, tags: ["committees"] });
 }
 
 export async function getCommitteeDetail(params: {
@@ -310,18 +328,24 @@ export async function getActivityHeatmap(params: {
 }
 
 export async function getPropertyStats(): Promise<PropertyStatsResponse> {
-  return fetchApi("/api/stats/property");
+  return fetchApi("/api/stats/property", { revalidate: 86400, tags: ["members"] });
 }
 
 export async function getMemberScorecard(params: {
   memberId: string;
   termId: number;
 }): Promise<MemberScorecard | null> {
-  return fetchApi(`/api/members/${params.memberId}/scorecard?termId=${params.termId}`);
+  return fetchApi(`/api/members/${params.memberId}/scorecard?termId=${params.termId}`, {
+    revalidate: 3600,
+    tags: ["members"],
+  });
 }
 
 export async function getScorecardRanking(termId: number): Promise<ScorecardRankingResponse> {
-  return fetchApi(`/api/stats/scorecard-ranking?termId=${termId}`);
+  return fetchApi(`/api/stats/scorecard-ranking?termId=${termId}`, {
+    revalidate: 3600,
+    tags: ["rankings"],
+  });
 }
 
 export async function getLastSync(): Promise<{ lastSyncAt: string | null }> {
@@ -388,7 +412,10 @@ export async function getDistrictReport(params: {
   memberId: string;
   termId: number;
 }): Promise<DistrictReport | null> {
-  return fetchApi(`/api/members/${params.memberId}/district-report?termId=${params.termId}`);
+  return fetchApi(`/api/members/${params.memberId}/district-report?termId=${params.termId}`, {
+    revalidate: 3600,
+    tags: ["members"],
+  });
 }
 
 Object.defineProperty(getDistrictReport, "queryKey", { value: "districtReport" });

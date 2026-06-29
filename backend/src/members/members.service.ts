@@ -75,6 +75,7 @@ export class MembersService {
       birthDate: member.birthDate,
       electedCount: member.electedCount,
       career: member.career ?? null,
+      youtubeUrl: member.youtubeUrl ?? null,
     };
 
     await this.redis.set(key, result, TTL_DAY);

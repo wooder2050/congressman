@@ -23,6 +23,7 @@ export interface Member {
   birthDate?: string;
   electedCount: number;
   career?: string | null;
+  youtubeUrl?: string | null;
 }
 
 // ====== 위원회 이력 ======
