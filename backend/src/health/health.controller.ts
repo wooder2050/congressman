@@ -1,5 +1,6 @@
 import { Controller, Get, ServiceUnavailableException } from '@nestjs/common';
 import { ApiTags, ApiOperation } from '@nestjs/swagger';
+import { SkipThrottle } from '@nestjs/throttler';
 import { PrismaService } from '../prisma/prisma.service';
 import { RedisService } from '../redis/redis.service';
 
@@ -26,6 +27,9 @@ export class HealthController {
   }
 
   @Get()
+  // Railway readiness healthcheck가 자주 호출하므로 이 엔드포인트만 rate limit에서 제외.
+  // last-sync·deep은 기본 제한 유지(deep은 매 요청 DB·Redis 호출).
+  @SkipThrottle()
   @ApiOperation({ summary: '헬스체크', description: 'DB 연결 상태 확인 (readiness)' })
   async check() {
     try {

@@ -54,11 +54,13 @@ export class ScheduleSyncService {
         `[ScheduleSync] Fetched ${plenaryRows.length} plenary + ${committeeRows.length} committee schedules`,
       );
 
-      // API 응답이 비어있으면 삭제 스킵 (API 장애 대비)
-      if (plenaryRows.length === 0 && committeeRows.length === 0) {
-        console.warn('[ScheduleSync] API returned 0 records — skipping to preserve existing data');
-        await this.syncLog.complete(log.id, 0);
-        return;
+      // fetchAll은 strict라 API 장애·부분 응답이면 이미 throw된다. 여기 도달한 빈 배열은 "정상 0건"이지만,
+      // 본회의·위원회 일정이 한쪽이라도 0이면 term 전체 스냅샷이 불완전할 수 있으므로 삭제하지 않고 보존한다.
+      // (전체 교체는 양쪽 모두 데이터가 있을 때만 수행). throw해 sync를 실패로 기록 → 이상을 드러낸다.
+      if (plenaryRows.length === 0 || committeeRows.length === 0) {
+        throw new Error(
+          `Incomplete schedule snapshot (plenary=${plenaryRows.length}, committee=${committeeRows.length}) — skipping replacement to preserve existing data`,
+        );
       }
 
       const plenaryData = plenaryRows.map((row) => ({

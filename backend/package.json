@@ -50,6 +50,7 @@
     "@nestjs/core": "^11.0.0",
     "@nestjs/platform-express": "^11.0.0",
     "@nestjs/swagger": "^11.2.6",
+    "@nestjs/throttler": "^6.5.0",
     "@prisma/client": "^6.0.0",
     "@supabase/supabase-js": "^2.105.1",
     "@upstash/redis": "^1.34.0",
@@ -58,6 +59,7 @@
     "class-validator": "^0.15.1",
     "csv-parse": "^6.1.0",
     "dotenv": "^16.4.0",
+    "helmet": "^8.2.0",
     "reflect-metadata": "^0.2.2",
     "rxjs": "^7.8.0",
     "tsx": "^4.0.0"
