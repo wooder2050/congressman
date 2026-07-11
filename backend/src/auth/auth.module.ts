@@ -1,8 +1,8 @@
 import { Module } from '@nestjs/common';
-import { SupabaseAuthGuard } from './auth.guard';
+import { SupabaseAuthGuard, AdminGuard } from './auth.guard';
 
 @Module({
-  providers: [SupabaseAuthGuard],
-  exports: [SupabaseAuthGuard],
+  providers: [SupabaseAuthGuard, AdminGuard],
+  exports: [SupabaseAuthGuard, AdminGuard],
 })
 export class AuthModule {}

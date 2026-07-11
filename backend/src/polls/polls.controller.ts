@@ -12,7 +12,7 @@ import {
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { PollsService } from './polls.service';
-import { SupabaseAuthGuard } from '../auth/auth.guard';
+import { AdminGuard } from '../auth/auth.guard';
 
 const ALLOWED_CATEGORIES = new Set(['제9회 전국동시지방선거', '2026년 재·보궐선거']);
 
@@ -127,7 +127,7 @@ export class PollsController {
   }
 
   @Get('admin/pending-mappings')
-  @UseGuards(SupabaseAuthGuard)
+  @UseGuards(AdminGuard)
   @ApiBearerAuth()
   @ApiOperation({ summary: '관리자: race 매칭 안 된 PollResponse 보유 Poll 목록' })
   @ApiQuery({ name: 'limit', required: false, type: Number })
@@ -139,7 +139,7 @@ export class PollsController {
   }
 
   @Post('admin/assign-race/:pollId')
-  @UseGuards(SupabaseAuthGuard)
+  @UseGuards(AdminGuard)
   @ApiBearerAuth()
   @ApiOperation({ summary: '관리자: Poll의 unmapped 응답을 race에 일괄 지정' })
   async assignRace(
