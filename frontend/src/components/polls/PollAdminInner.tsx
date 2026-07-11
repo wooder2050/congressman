@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useAuth } from "@/lib/auth-context";
+import { createClient } from "@/lib/supabase/client";
 
 const ADMIN_EMAILS = ["wooder2050@gmail.com"];
 
@@ -30,9 +31,17 @@ type RaceOption = { id: number; displayName: string; sido: string; sigungu: stri
 
 async function fetchJson<T>(path: string, init?: RequestInit): Promise<T> {
   if (!API_BASE) throw new Error("NEXT_PUBLIC_API_URL not set");
+  const supabase = createClient();
+  const token = supabase
+    ? (await supabase.auth.getSession()).data.session?.access_token
+    : undefined;
   const res = await fetch(`${API_BASE}${path}`, {
     ...init,
-    headers: { "Content-Type": "application/json", ...(init?.headers ?? {}) },
+    headers: {
+      "Content-Type": "application/json",
+      ...(token && { Authorization: `Bearer ${token}` }),
+      ...(init?.headers ?? {}),
+    },
   });
   if (!res.ok) throw new Error(`API ${res.status}`);
   return res.json();

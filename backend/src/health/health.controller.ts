@@ -1,4 +1,4 @@
-import { Controller, Get } from '@nestjs/common';
+import { Controller, Get, ServiceUnavailableException } from '@nestjs/common';
 import { ApiTags, ApiOperation } from '@nestjs/swagger';
 import { PrismaService } from '../prisma/prisma.service';
 import { RedisService } from '../redis/redis.service';
@@ -26,16 +26,15 @@ export class HealthController {
   }
 
   @Get()
-  @ApiOperation({ summary: '헬스체크', description: 'DB 연결 상태 확인' })
+  @ApiOperation({ summary: '헬스체크', description: 'DB 연결 상태 확인 (readiness)' })
   async check() {
-    let dbStatus = 'ok';
     try {
       await this.prisma.$queryRaw`SELECT 1`;
     } catch {
-      dbStatus = 'error';
+      // DB 연결 실패 시 503을 반환해 Railway healthcheck가 비정상을 감지하도록 함
+      throw new ServiceUnavailableException({ status: 'error', db: 'error' });
     }
-    const status = dbStatus === 'ok' ? 'ok' : 'error';
-    return { status, db: dbStatus };
+    return { status: 'ok', db: 'ok' };
   }
 
   @Get('deep')
