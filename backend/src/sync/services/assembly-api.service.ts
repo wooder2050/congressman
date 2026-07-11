@@ -1,4 +1,4 @@
-export interface FetchAllOptions {
+interface FetchAllOptions {
   /** 페이지당 요청 크기 (기본 100) */
   pageSize?: number;
   /** 요청 1회 timeout(ms, 기본 10000) */
