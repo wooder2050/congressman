@@ -42,7 +42,6 @@ const API_BASE = process.env.NEXT_PUBLIC_API_URL;
 
 type FetchApiOptions = {
   revalidate?: number;
-  tags?: string[];
 };
 
 async function fetchApi<T>(path: string, options?: FetchApiOptions): Promise<T> {
@@ -50,12 +49,9 @@ async function fetchApi<T>(path: string, options?: FetchApiOptions): Promise<T> 
     throw new Error("NEXT_PUBLIC_API_URL 환경변수가 설정되지 않았습니다.");
   }
 
-  const init: RequestInit & { next?: { revalidate?: number; tags?: string[] } } = {};
-  const hasCacheHint = options?.revalidate !== undefined || !!options?.tags?.length;
-  if (hasCacheHint) {
-    init.next = {};
-    if (options?.revalidate !== undefined) init.next.revalidate = options.revalidate;
-    if (options?.tags?.length) init.next.tags = options.tags;
+  const init: RequestInit & { next?: { revalidate?: number } } = {};
+  if (options?.revalidate !== undefined) {
+    init.next = { revalidate: options.revalidate };
     // Next.js 16 defaults fetch to no-store; force-cache is required to actually
     // hit the data cache. Only apply server-side — client React Query manages
     // its own cache and we don't want to interfere with browser cache semantics.
@@ -73,27 +69,26 @@ async function fetchApi<T>(path: string, options?: FetchApiOptions): Promise<T> 
 }
 
 export async function getTerms(): Promise<AssemblyTerm[]> {
-  return fetchApi("/api/terms", { revalidate: 3600, tags: ["terms"] });
+  return fetchApi("/api/terms", { revalidate: 3600 });
 }
 
 export async function getBreakingNews(): Promise<BreakingNewsItem[]> {
   const data = await fetchApi<BreakingNewsItem[] | null>("/api/breaking-news", {
     revalidate: 300,
-    tags: ["breaking-news"],
   });
   return data ?? [];
 }
 
 export async function getMembers(termId: number): Promise<MemberWithTerm[]> {
-  return fetchApi(`/api/members?termId=${termId}`, { revalidate: 86400, tags: ["members"] });
+  return fetchApi(`/api/members?termId=${termId}`, { revalidate: 86400 });
 }
 
 export async function getMember(id: string): Promise<Member | null> {
-  return fetchApi(`/api/members/${id}`, { revalidate: 86400, tags: ["members"] });
+  return fetchApi(`/api/members/${id}`, { revalidate: 86400 });
 }
 
 export async function getMemberTerms(memberId: string): Promise<MemberTerm[]> {
-  return fetchApi(`/api/members/${memberId}/terms`, { revalidate: 86400, tags: ["members"] });
+  return fetchApi(`/api/members/${memberId}/terms`, { revalidate: 86400 });
 }
 
 export async function getAttendance(params: {
@@ -102,7 +97,6 @@ export async function getAttendance(params: {
 }): Promise<AttendanceRecord | null> {
   return fetchApi(`/api/attendance?memberId=${params.memberId}&termId=${params.termId}`, {
     revalidate: 3600,
-    tags: ["attendance"],
   });
 }
 
@@ -112,7 +106,6 @@ export async function getAbsenceDetails(params: {
 }): Promise<AbsenceDetail[]> {
   return fetchApi(`/api/attendance/absence?memberId=${params.memberId}&termId=${params.termId}`, {
     revalidate: 3600,
-    tags: ["attendance"],
   });
 }
 
@@ -139,26 +132,25 @@ export async function getBills(params: {
   if (params.topic) searchParams.set("topic", params.topic);
   if (params.page) searchParams.set("page", String(params.page));
   if (params.limit) searchParams.set("limit", String(params.limit));
-  return fetchApi(`/api/bills?${searchParams.toString()}`, { revalidate: 3600, tags: ["bills"] });
+  return fetchApi(`/api/bills?${searchParams.toString()}`, { revalidate: 3600 });
 }
 
 export async function getBillSummary(termId: number): Promise<BillSummary> {
-  return fetchApi(`/api/bills/summary?termId=${termId}`, { revalidate: 3600, tags: ["bills"] });
+  return fetchApi(`/api/bills/summary?termId=${termId}`, { revalidate: 3600 });
 }
 
 export async function getBillTopics(termId: number): Promise<{ topic: string; count: number }[]> {
   return fetchApi(`/api/bills/topics?termId=${termId}`, {
     revalidate: 300,
-    tags: ["bills"],
   });
 }
 
 export async function getBillCommittees(termId: number): Promise<string[]> {
-  return fetchApi(`/api/bills/committees?termId=${termId}`, { revalidate: 86400, tags: ["bills"] });
+  return fetchApi(`/api/bills/committees?termId=${termId}`, { revalidate: 86400 });
 }
 
 export async function getMemberHistory(memberId: string): Promise<TermActivity[]> {
-  return fetchApi(`/api/members/${memberId}/history`, { revalidate: 86400, tags: ["members"] });
+  return fetchApi(`/api/members/${memberId}/history`, { revalidate: 86400 });
 }
 
 export async function getVotes(params: {
@@ -176,11 +168,11 @@ export async function getVotes(params: {
   if (params.search) searchParams.set("search", params.search);
   if (params.page) searchParams.set("page", String(params.page));
   if (params.limit) searchParams.set("limit", String(params.limit));
-  return fetchApi(`/api/votes?${searchParams.toString()}`, { revalidate: 3600, tags: ["votes"] });
+  return fetchApi(`/api/votes?${searchParams.toString()}`, { revalidate: 3600 });
 }
 
 export async function getVoteSummary(termId: number): Promise<VoteSummary> {
-  return fetchApi(`/api/votes/summary?termId=${termId}`, { revalidate: 3600, tags: ["votes"] });
+  return fetchApi(`/api/votes/summary?termId=${termId}`, { revalidate: 3600 });
 }
 
 export async function getMemberVotes(params: {
@@ -199,7 +191,6 @@ export async function getMemberVotes(params: {
   if (params.month) searchParams.set("month", params.month);
   return fetchApi(`/api/members/${params.memberId}/votes?${searchParams.toString()}`, {
     revalidate: 3600,
-    tags: ["votes"],
   });
 }
 
@@ -209,7 +200,6 @@ export async function getMonthlyAttendance(params: {
 }): Promise<MonthlyAttendance[]> {
   return fetchApi(`/api/members/${params.memberId}/monthly-attendance?termId=${params.termId}`, {
     revalidate: 3600,
-    tags: ["attendance"],
   });
 }
 
@@ -219,7 +209,6 @@ export async function getCommitteeBills(params: {
 }): Promise<CommitteeBillCount[]> {
   return fetchApi(`/api/members/${params.memberId}/committee-bills?termId=${params.termId}`, {
     revalidate: 3600,
-    tags: ["members"],
   });
 }
 
@@ -229,12 +218,11 @@ export async function getCommitteeActivity(params: {
 }): Promise<CommitteeActivity[]> {
   return fetchApi(`/api/members/${params.memberId}/committee-activity?termId=${params.termId}`, {
     revalidate: 3600,
-    tags: ["members"],
   });
 }
 
 export async function getAssets(memberId: string): Promise<AssetResponse> {
-  return fetchApi(`/api/members/${memberId}/assets`, { revalidate: 86400, tags: ["members"] });
+  return fetchApi(`/api/members/${memberId}/assets`, { revalidate: 86400 });
 }
 
 export async function getBillIds(): Promise<{ id: string; proposedDate: string }[]> {
@@ -251,31 +239,28 @@ export async function getVoteIds(): Promise<{ id: string; procDate: string }[]> 
 }
 
 export async function getBill(id: string): Promise<BillDetail | null> {
-  return fetchApi(`/api/bills/${id}`, { revalidate: 86400, tags: ["bills"] });
+  return fetchApi(`/api/bills/${id}`, { revalidate: 86400 });
 }
 
 export async function getVoteMemberVotes(voteId: string): Promise<VoteWithMemberVotes | null> {
-  return fetchApi(`/api/votes/${voteId}/member-votes`, { revalidate: 86400, tags: ["votes"] });
+  return fetchApi(`/api/votes/${voteId}/member-votes`, { revalidate: 86400 });
 }
 
 export async function getAttendanceRanking(termId: number): Promise<AttendanceRanking> {
   return fetchApi(`/api/stats/attendance-ranking?termId=${termId}`, {
     revalidate: 300,
-    tags: ["rankings"],
   });
 }
 
 export async function getHomeStats(termId: number): Promise<HomeStats> {
   return fetchApi(`/api/stats/home?termId=${termId}`, {
     revalidate: 60,
-    tags: ["home"],
   });
 }
 
 export async function getUpcomingSchedules(termId: number): Promise<Schedule[]> {
   return fetchApi(`/api/schedules/upcoming?termId=${termId}`, {
     revalidate: 60,
-    tags: ["schedules"],
   });
 }
 
@@ -294,7 +279,7 @@ export async function getSchedules(params: {
 }
 
 export async function getCommitteeStats(termId: number): Promise<CommitteeStats[]> {
-  return fetchApi(`/api/committees?termId=${termId}`, { revalidate: 86400, tags: ["committees"] });
+  return fetchApi(`/api/committees?termId=${termId}`, { revalidate: 86400 });
 }
 
 export async function getCommitteeDetail(params: {
@@ -328,7 +313,7 @@ export async function getActivityHeatmap(params: {
 }
 
 export async function getPropertyStats(): Promise<PropertyStatsResponse> {
-  return fetchApi("/api/stats/property", { revalidate: 86400, tags: ["members"] });
+  return fetchApi("/api/stats/property", { revalidate: 86400 });
 }
 
 export async function getMemberScorecard(params: {
@@ -337,14 +322,12 @@ export async function getMemberScorecard(params: {
 }): Promise<MemberScorecard | null> {
   return fetchApi(`/api/members/${params.memberId}/scorecard?termId=${params.termId}`, {
     revalidate: 3600,
-    tags: ["members"],
   });
 }
 
 export async function getScorecardRanking(termId: number): Promise<ScorecardRankingResponse> {
   return fetchApi(`/api/stats/scorecard-ranking?termId=${termId}`, {
     revalidate: 3600,
-    tags: ["rankings"],
   });
 }
 
@@ -364,7 +347,6 @@ export async function getRadar(params: { termId: number; topics: string[] }): Pr
 export async function getTodayBriefing(termId: number): Promise<TodayBriefing> {
   return fetchApi(`/api/stats/today?termId=${termId}`, {
     revalidate: 60,
-    tags: ["today"],
   });
 }
 
@@ -414,7 +396,6 @@ export async function getDistrictReport(params: {
 }): Promise<DistrictReport | null> {
   return fetchApi(`/api/members/${params.memberId}/district-report?termId=${params.termId}`, {
     revalidate: 3600,
-    tags: ["members"],
   });
 }
 
