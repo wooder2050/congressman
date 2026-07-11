@@ -15,6 +15,13 @@ export const revalidate = 86400;
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL;
 
+/** scorecard-ranking 응답에서 sitemap 필터에 필요한 최소 필드 */
+interface MemberScore {
+  memberId: string;
+  voteParticipation: { rate: number };
+  billProposal: { representativeCount: number };
+}
+
 async function buildSitemap(id: number) {
   // Sitemap 0: static pages + members
   if (id === 0) {
@@ -80,24 +87,36 @@ async function buildSitemap(id: number) {
 
     if (API_BASE) {
       try {
-        const [membersRes, committeesRes] = await Promise.all([
-          fetch(`${API_BASE}/api/members?termId=22`),
+        // scorecard-ranking으로 memberId + 활동 지표를 한 번에 받아,
+        // members/[id] 페이지의 noindex 기준(표결 참여 0% AND 대표발의 0건)과 동일하게
+        // 무활동 의원을 sitemap에서 제외한다(색인 신호 정합성).
+        const [rankingRes, committeesRes] = await Promise.all([
+          fetch(`${API_BASE}/api/stats/scorecard-ranking?termId=22`),
           fetch(`${API_BASE}/api/committees?termId=22`),
         ]);
-        if (membersRes.ok) {
-          const members: { id: string }[] = await membersRes.json();
-          for (const m of members) {
+        if (rankingRes.ok) {
+          const { rankings }: { rankings: MemberScore[] } = await rankingRes.json();
+          const indexableMembers = rankings.filter(
+            (m) => !(m.voteParticipation.rate === 0 && m.billProposal.representativeCount === 0),
+          );
+          for (const m of indexableMembers) {
             entries.push(
-              urlEntry(`${BASE}/members/${m.id}`, { changefreq: "weekly", priority: 0.7 }),
+              urlEntry(`${BASE}/members/${m.memberId}`, {
+                changefreq: "weekly",
+                priority: 0.7,
+              }),
             );
             entries.push(
-              urlEntry(`${BASE}/members/${m.id}/attendance`, {
+              urlEntry(`${BASE}/members/${m.memberId}/attendance`, {
                 changefreq: "weekly",
                 priority: 0.6,
               }),
             );
             entries.push(
-              urlEntry(`${BASE}/members/${m.id}/history`, { changefreq: "monthly", priority: 0.5 }),
+              urlEntry(`${BASE}/members/${m.memberId}/history`, {
+                changefreq: "monthly",
+                priority: 0.5,
+              }),
             );
           }
         }
