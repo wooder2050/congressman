@@ -375,11 +375,8 @@ export class BillSyncService {
       }
     }
 
-    // BillProposer는 매번 재구축 (발의자 변경 반영)
-    console.log(`[BillSync]   Rebuilding proposer links...`);
-    await this.prisma.billProposer.deleteMany({
-      where: { bill: { termId } },
-    });
+    // BillProposer 재구축(발의자 변경 반영)은 batchLinkProposers에서
+    // delete+insert를 한 트랜잭션으로 원자적으로 수행한다(여기서 미리 삭제하지 않음).
   }
 
   private async batchLinkProposers(rows: BillApiRow[], termId: number): Promise<void> {
@@ -419,16 +416,36 @@ export class BillSyncService {
       }
     }
 
-    console.log(`[BillSync] Inserting ${allProposers.length} proposer links in batches...`);
-    for (let i = 0; i < allProposers.length; i += BATCH_SIZE) {
-      const batch = allProposers.slice(i, i + BATCH_SIZE);
-      await this.prisma.billProposer.createMany({ data: batch, skipDuplicates: true });
-      if ((i + BATCH_SIZE) % 5000 < BATCH_SIZE) {
-        console.log(
-          `[BillSync]   Proposers: ${Math.min(i + BATCH_SIZE, allProposers.length)}/${allProposers.length}`,
-        );
-      }
+    // 안전 가드 1: 파싱된 발의자가 0이면 교체하지 않고 기존 데이터 보존.
+    // rows가 0이든(빈 API 응답) 매칭 전량 실패든, 그대로 진행하면 delete만 되고 발의자 관계가 전멸한다.
+    if (allProposers.length === 0) {
+      throw new Error(
+        `[BillSync] Aborting proposer rebuild: 0 proposers parsed from ${rows.length} bills (preserving existing links)`,
+      );
     }
+
+    // 안전 가드 2: 새로 구축할 발의자 수가 기존의 50% 미만으로 급감하면 API 이상으로 보고 중단.
+    // (파싱 1건만 성공해도 79만 건을 통째로 교체하는 사고 방지)
+    const existingCount = await this.prisma.billProposer.count({ where: { bill: { termId } } });
+    if (existingCount > 0 && allProposers.length < existingCount * 0.5) {
+      throw new Error(
+        `[BillSync] Aborting proposer rebuild: parsed ${allProposers.length} < 50% of existing ${existingCount} (suspected API anomaly, preserving existing links)`,
+      );
+    }
+
+    // delete + insert를 한 트랜잭션으로 원자화(중간 실패 시 기존 발의자 관계 보존).
+    // API 호출·이름 매칭·파싱은 이미 트랜잭션 밖에서 끝났다.
+    console.log(`[BillSync] Rebuilding ${allProposers.length} proposer links (atomic)...`);
+    await this.prisma.$transaction(
+      async (tx) => {
+        await tx.billProposer.deleteMany({ where: { bill: { termId } } });
+        for (let i = 0; i < allProposers.length; i += BATCH_SIZE) {
+          const batch = allProposers.slice(i, i + BATCH_SIZE);
+          await tx.billProposer.createMany({ data: batch, skipDuplicates: true });
+        }
+      },
+      { timeout: 300_000 },
+    );
   }
 
   private async buildMemberNameMap(termId: number): Promise<Map<string, string>> {
