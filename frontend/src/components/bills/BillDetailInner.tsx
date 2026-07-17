@@ -3,7 +3,8 @@ import ColorBadge from "@/components/ui/color-badge";
 import TermHint from "@/components/ui/term-hint";
 import MemberAvatar from "@/components/members/MemberAvatar";
 import { formatDate, formatDistrict } from "@/lib/utils";
-import { BILL_STATUS_MAP } from "@/lib/constants";
+import { BILL_STATUS_MAP, TOPIC_EXPLANATIONS, normalizeTopic } from "@/lib/constants";
+import { billDisplayTitle } from "@/lib/bill-title";
 import BillProgressTimeline from "@/components/bills/BillProgressTimeline";
 import BookmarkButton from "@/components/ui/BookmarkButton";
 import ShareButton from "@/components/ui/ShareButton";
@@ -16,6 +17,14 @@ interface BillDetailInnerProps {
 export default function BillDetailInner({ bill }: BillDetailInnerProps) {
   const statusInfo = BILL_STATUS_MAP[bill.status];
 
+  // 제목 중복 해소: 요약 핵심구로 고유 H1을 만들고, 원 의안명은 부제로 유지.
+  const displayTitle = billDisplayTitle(bill.title, bill.simpleSummary);
+  const hasDistinctTitle = displayTitle !== bill.title;
+
+  // topic이 80종으로 파편화(영문·유사 한글)돼 있어 15개 canonical로 정규화 후 표시·해설한다.
+  const canonicalTopic = normalizeTopic(bill.topic);
+  const topicExplanation = canonicalTopic ? TOPIC_EXPLANATIONS[canonicalTopic] : null;
+
   return (
     <div className="mx-auto max-w-7xl space-y-6">
       <Link
@@ -27,9 +36,14 @@ export default function BillDetailInner({ bill }: BillDetailInnerProps) {
 
       <div className="space-y-4 rounded-xl border border-(--color-border-primary) bg-(--color-bg-primary) p-5">
         <div className="flex items-start justify-between gap-3">
-          <h1 className="text-xl font-bold text-(--color-text-primary) sm:text-2xl">
-            {bill.title}
-          </h1>
+          <div className="min-w-0 space-y-1">
+            <h1 className="text-xl font-bold text-(--color-text-primary) sm:text-2xl">
+              {displayTitle}
+            </h1>
+            {hasDistinctTitle && (
+              <p className="text-sm text-(--color-text-tertiary)">{bill.title}</p>
+            )}
+          </div>
           <div className="flex shrink-0 items-center gap-2">
             <ColorBadge
               label={statusInfo.label}
@@ -49,9 +63,9 @@ export default function BillDetailInner({ bill }: BillDetailInnerProps) {
           </span>
           <span>{formatDate(bill.proposedDate)}</span>
           {bill.committee && <span>{bill.committee}</span>}
-          {bill.topic && (
+          {canonicalTopic && (
             <span className="rounded-full bg-(--color-bg-tertiary) px-2.5 py-0.5 text-xs font-medium text-(--color-text-secondary)">
-              {bill.topic}
+              {canonicalTopic}
             </span>
           )}
         </div>
@@ -135,44 +149,15 @@ export default function BillDetailInner({ bill }: BillDetailInnerProps) {
         />
       )}
 
-      {bill.topic && (
+      {canonicalTopic && topicExplanation && (
         <div className="space-y-3 rounded-xl border border-amber-200 bg-amber-50 p-5 dark:border-amber-800/40 dark:bg-amber-950/20">
           <h2 className="flex items-center gap-2 text-lg font-bold text-amber-900 dark:text-amber-200">
             <span>💡</span>이 법안이 왜 중요한가요?
           </h2>
           <div className="space-y-2 text-sm leading-relaxed text-amber-800 dark:text-amber-300">
             <p>
-              이 법안은 <strong>{bill.topic}</strong> 분야에 해당하는 법안으로,
-              {bill.topic === "보건·의료" &&
-                " 국민의 건강권과 의료 접근성에 직접적인 영향을 미칩니다. 건강보험 보장 범위, 의료인력 확충, 공공의료 인프라 등 의료 정책의 방향을 결정짓는 중요한 입법 활동입니다."}
-              {bill.topic === "부동산·주거" &&
-                " 국민의 주거 안정과 부동산 시장에 영향을 줍니다. 주택 공급, 임대차 보호, 부동산 세제 등 주거 정책은 국민 생활과 밀접하게 연결되어 있습니다."}
-              {bill.topic === "경제·산업" &&
-                " 국가 경제 성장과 산업 경쟁력에 영향을 미칩니다. 기업 활동, 공정거래, 소비자 보호 등 경제 전반의 규칙을 정하는 중요한 법안입니다."}
-              {bill.topic === "노동·고용" &&
-                " 근로자의 권리와 고용 환경에 직접적인 영향을 줍니다. 근로조건, 산업안전, 고용보험 등 노동 정책은 수천만 근로자의 삶의 질을 좌우합니다."}
-              {bill.topic === "육아·교육" &&
-                " 미래 세대의 교육 환경과 보육 정책에 영향을 미칩니다. 교육 과정, 보육 지원, 학생 인권 등 교육 정책은 사회의 미래를 결정짓습니다."}
-              {bill.topic === "환경·에너지" &&
-                " 기후변화 대응과 지속가능한 발전에 영향을 미칩니다. 탄소중립, 재생에너지, 환경오염 규제 등은 현세대와 미래 세대 모두에게 중요합니다."}
-              {bill.topic === "법·사법" &&
-                " 법치주의의 근간을 이루는 사법 체계에 영향을 줍니다. 형사·민사 절차, 인권 보호, 사법 접근성 등 국민의 기본권과 직결됩니다."}
-              {bill.topic === "교통·물류" &&
-                " 국민의 이동권과 물류 인프라에 영향을 미칩니다. 교통안전, 대중교통, 물류 효율화 등 일상생활과 밀접한 분야입니다."}
-              {bill.topic === "복지·돌봄" &&
-                " 사회적 약자 보호와 복지 체계에 영향을 줍니다. 기초생활보장, 장애인 지원, 노인 돌봄 등 사회 안전망을 강화하는 입법 활동입니다."}
-              {bill.topic === "행정·지방자치" &&
-                " 정부 운영과 지방자치 제도에 영향을 미칩니다. 행정 효율화, 지방분권, 공무원 제도 등 국가 행정의 기본 틀을 정합니다."}
-              {bill.topic === "농업·식품" &&
-                " 농업인의 권익과 식품 안전에 영향을 줍니다. 농업 경쟁력 강화, 식품 위생, 농촌 지역 발전 등 1차 산업의 미래를 결정짓습니다."}
-              {bill.topic === "문화·체육" &&
-                " 국민의 문화생활과 체육 활동에 영향을 미칩니다. 문화 진흥, 예술인 지원, 체육 시설 확충 등 삶의 질을 높이는 정책입니다."}
-              {bill.topic === "과학기술·ICT" &&
-                " 기술 혁신과 디지털 경제에 영향을 미칩니다. AI·반도체·우주산업 등 첨단 기술 육성과 개인정보 보호 등 디지털 사회의 규범을 정합니다."}
-              {bill.topic === "외교·안보" &&
-                " 국가 안보와 국제 관계에 영향을 미칩니다. 국방력 강화, 동맹 관계, 통상 정책 등 대한민국의 국제적 위상과 안전에 직결됩니다."}
-              {bill.topic === "안전·치안" &&
-                " 국민의 안전과 치안 유지에 영향을 줍니다. 재난 대응, 범죄 예방, 소방·경찰 인력 등 안전한 사회를 만드는 기반이 됩니다."}
+              이 법안은 <strong>{canonicalTopic}</strong> 분야에 해당하는 법안으로,
+              {topicExplanation}
             </p>
             <p>
               시민으로서 이 법안의 진행 상황을 관심 있게 지켜보고, 국회의원의 입법 활동을 평가하는
