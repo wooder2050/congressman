@@ -313,8 +313,11 @@ const TOPIC_ALIASES: Record<string, string> = {
  */
 export function normalizeTopic(topic: string | null | undefined): string | null {
   if (!topic) return null;
-  if (topic in TOPIC_MAP) return topic;
-  return TOPIC_ALIASES[topic] ?? null;
+  // hasOwnProperty로 자체 속성만 확인 — `in`은 "__proto__"·"constructor" 등
+  // 프로토타입 키에도 true라 미매칭 topic이 canonical로 통과하는 것을 막는다.
+  if (Object.prototype.hasOwnProperty.call(TOPIC_MAP, topic)) return topic;
+  if (Object.prototype.hasOwnProperty.call(TOPIC_ALIASES, topic)) return TOPIC_ALIASES[topic];
+  return null;
 }
 
 /**
