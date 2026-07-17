@@ -58,10 +58,7 @@ export function billSummaryHeadline(
  * 요약 핵심구가 있으면 "핵심구 (법이름)", 없으면 원 제목을 그대로 반환.
  * 예: "친환경차 개소세 감면 4년 연장 (조세특례제한법)"
  */
-export function billDisplayTitle(
-  title: string,
-  simpleSummary: string | null | undefined,
-): string {
+export function billDisplayTitle(title: string, simpleSummary: string | null | undefined): string {
   const headline = billSummaryHeadline(simpleSummary);
   if (!headline) return title;
   const lawName = shortBillLawName(title);
