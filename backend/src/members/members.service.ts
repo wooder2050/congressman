@@ -883,6 +883,7 @@ export class MembersService {
         tenureDays(memberTerm.startDate, new Date(), openingDateOf(termId)) <
         PROVISIONAL_TENURE_DAYS,
       startDate: memberTerm.startDate,
+      cabinetPosition: memberTerm.cabinetPosition, // 겸직이면 UI에서 '평가 제외' 안내 표시
 
       recentActivity: {
         last30Days: {

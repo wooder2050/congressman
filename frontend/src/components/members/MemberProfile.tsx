@@ -61,15 +61,6 @@ export default function MemberProfile({ member, memberTerm, allTermIds }: Member
               <span className="text-sm" style={{ color: contrastColor, opacity: 0.8 }}>
                 {getElectedLabel(memberTerm.electedCount)}
               </span>
-              {memberTerm.cabinetPosition && (
-                <span
-                  className="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-semibold"
-                  style={{ backgroundColor: "rgba(255,255,255,0.28)", color: contrastColor }}
-                  title="국무위원을 겸직 중이어서 의정활동 평가 순위 집계에서 제외됩니다"
-                >
-                  🏛️ {memberTerm.cabinetPosition} 겸직
-                </span>
-              )}
             </div>
             <p className="mt-1 text-base" style={{ color: contrastColor, opacity: 0.9 }}>
               {memberTerm.proportional ? "비례대표" : formatDistrict(memberTerm.district)}
@@ -92,6 +83,22 @@ export default function MemberProfile({ member, memberTerm, allTermIds }: Member
             )}
           </div>
         </div>
+
+        {/* 국무위원 겸직 안내 — 눈에 띄는 강조 배너 */}
+        {memberTerm.cabinetPosition && (
+          <div className="flex items-start gap-2 border-t border-white/15 bg-amber-400/20 px-5 py-3">
+            <span className="text-lg leading-none">🏛️</span>
+            <div>
+              <p className="text-sm font-bold" style={{ color: contrastColor }}>
+                현재 {memberTerm.cabinetPosition} 겸직 중
+              </p>
+              <p className="mt-0.5 text-xs" style={{ color: contrastColor, opacity: 0.85 }}>
+                국무위원 겸직으로 본회의 표결·법안 발의 등 의정활동이 제한되어, 의정활동 평가 순위
+                집계에서는 제외됩니다.
+              </p>
+            </div>
+          </div>
+        )}
 
         {/* 위원회 정보 — 프로필 카드 내부 */}
         {(standingCommittees.length > 0 || specialCommittees.length > 0) && (

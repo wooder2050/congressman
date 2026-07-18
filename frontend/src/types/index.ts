@@ -473,6 +473,7 @@ export interface MemberScorecard {
   overallRank: number;
   provisional?: boolean; // 재직 90일 미만 — 순위 해석 잠정
   startDate?: string | null; // 공식 임기 개시일(재보궐·승계는 늦음)
+  cabinetPosition?: string | null; // 국무위원 겸직 직책 — 평가 순위 집계 제외 안내용
 
   recentActivity: {
     last30Days: {
