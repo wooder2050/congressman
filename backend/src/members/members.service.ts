@@ -53,6 +53,7 @@ export class MembersService {
         proportional: mt.proportional,
         committees: mt.committees,
         committeeRoles: mt.committeeRoles as Record<string, string>,
+        cabinetPosition: mt.cabinetPosition,
       },
     }));
 
@@ -108,6 +109,7 @@ export class MembersService {
       committeeHistory: mt.committeeHistory,
       committeeRoles: mt.committeeRoles as Record<string, string>,
       electedCount: mt.electedCount,
+      cabinetPosition: mt.cabinetPosition,
     }));
 
     await this.redis.set(key, result, TTL_DAY);
@@ -604,9 +606,10 @@ export class MembersService {
     });
     if (!memberTerm) return null;
 
-    // 전체 의원 수 (사퇴 의원 제외)
+    // 전체 의원 수 (사퇴 의원 + 국무위원 겸직 의원 제외) — 백분위 계산 모수를
+    // getScorecardRanking과 동일하게 맞춰, 겸직 의원이 남의 순위에 영향 주지 않도록 함.
     const activeTerms = await this.prisma.memberTerm.findMany({
-      where: { termId, isActive: true },
+      where: { termId, isActive: true, cabinetPosition: null },
       select: { memberId: true },
     });
     const activeIds = new Set(activeTerms.map((t) => t.memberId));
@@ -927,9 +930,10 @@ export class MembersService {
     const cached = await this.redis.get(key);
     if (cached) return cached;
 
-    // 전체 의원 기본 정보 (사퇴 의원 제외)
+    // 전체 의원 기본 정보 (사퇴 의원 + 국무위원 겸직 의원 제외)
+    // 겸직(총리·장관) 의원은 의정활동이 저조해 평가가 왜곡되므로 랭킹·백분위 계산에서 제외.
     const allMemberTerms = await this.prisma.memberTerm.findMany({
-      where: { termId, isActive: true },
+      where: { termId, isActive: true, cabinetPosition: null },
       include: { member: true, party: true },
     });
     const totalMembers = allMemberTerms.length;

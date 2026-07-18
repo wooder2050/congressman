@@ -44,6 +44,7 @@ export interface MemberTerm {
   committeeHistory: CommitteeHistoryEntry[];
   committeeRoles: Record<string, string>; // {"법제사법위원회": "위원장"}
   electedCount: number; // 해당 대수 기준 선수
+  cabinetPosition?: string | null; // 국무위원 겸직 직책(예: "법무부 장관"). null이면 겸직 아님
 }
 
 // ====== 출석 ======
