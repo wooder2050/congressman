@@ -471,6 +471,8 @@ export interface MemberScorecard {
   totalScore: number;
   grade: ScorecardGrade;
   overallRank: number;
+  provisional?: boolean; // 재직 90일 미만 — 순위 해석 잠정
+  startDate?: string | null; // 공식 임기 개시일(재보궐·승계는 늦음)
 
   recentActivity: {
     last30Days: {
@@ -490,6 +492,7 @@ export interface ScorecardRankingItem {
   district: string;
   totalScore: number;
   grade: ScorecardGrade;
+  provisional?: boolean; // 재직 90일 미만 — 순위 해석 잠정
   attendance: { rate: number; score: number };
   voteParticipation: { rate: number; score: number };
   billProposal: { representativeCount: number; score: number };
