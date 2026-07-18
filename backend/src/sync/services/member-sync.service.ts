@@ -3,6 +3,7 @@ import { AssemblyApiService } from './assembly-api.service';
 import { SyncLogService } from './sync-log.service';
 import { getPartyId, getPartyColor } from '../constants/party-map';
 import { parseElectedCount } from '../constants/elected-count-map';
+import { CABINET_MEMBERS, parseCabinetFromCareer } from '../constants/cabinet-members';
 
 /** 현직 국회의원 인적사항 API 응답 row */
 interface MemberApiRow {
@@ -96,6 +97,8 @@ export class MemberSyncService {
       // 현직 API 응답에서 사라진 의원(사퇴·승계 등)은 비활성 처리
       if (termId === CURRENT_TERM) {
         await this.deactivateDepartedMembers(termId, rows);
+        // 국무위원 겸직 명단과 API 약력을 대조해 새 겸직/복귀 감지 → 로그로 알림
+        this.detectCabinetDrift(rows);
       }
 
       // API가 현재 시점 기준 누적 선수를 반환하므로, 과거 대수의 선수를 보정
@@ -130,6 +133,43 @@ export class MemberSyncService {
     });
     if (deactivated.count > 0) {
       console.log(`[MemberSync] Deactivated ${deactivated.count} departed members`);
+    }
+  }
+
+  /**
+   * 국무위원 겸직 명단(CABINET_MEMBERS)과 국회 API 약력(MEM_TITLE)을 대조해
+   * 명단 이탈(drift)을 감지하고 경고 로그를 남긴다. 자동 수정은 하지 않는다
+   * (오탐 방지 — API 반영이 늦은 장관 겸직이 많아 사람이 확인 후 명단을 갱신).
+   *
+   * - API 약력엔 겸직으로 나오는데 명단에 없음 → 새 입각(추가 필요)
+   * - 명단엔 있는데 API 약력에서 겸직이 사라짐 → 복귀 가능성(제거 검토)
+   */
+  private detectCabinetDrift(rows: MemberApiRow[]): void {
+    const apiCabinet = new Map<string, string>();
+    for (const r of rows) {
+      const pos = parseCabinetFromCareer(r.MEM_TITLE);
+      if (pos) apiCabinet.set(r.MONA_CD, pos);
+    }
+
+    // 새 입각: API 약력엔 겸직인데 명단에 없음
+    for (const [id, pos] of apiCabinet) {
+      if (!(id in CABINET_MEMBERS)) {
+        const name = rows.find((r) => r.MONA_CD === id)?.HG_NM ?? id;
+        console.warn(
+          `[MemberSync] ⚠️ 겸직 명단 누락 의심: ${name}(${id}) 약력에 "${pos}" — cabinet-members.ts에 추가 검토`,
+        );
+      }
+    }
+
+    // 복귀 가능성: 명단엔 있는데 API 약력에서 겸직이 사라짐
+    const activeIds = new Set(rows.map((r) => r.MONA_CD));
+    for (const id of Object.keys(CABINET_MEMBERS)) {
+      if (activeIds.has(id) && !apiCabinet.has(id)) {
+        const name = rows.find((r) => r.MONA_CD === id)?.HG_NM ?? id;
+        console.warn(
+          `[MemberSync] ⚠️ 겸직 복귀 가능성: ${name}(${id}) 약력에서 겸직 표기 사라짐 — cabinet-members.ts에서 제거 검토(단, 장관 겸직은 API 반영이 늦을 수 있음)`,
+        );
+      }
     }
   }
 
@@ -179,12 +219,17 @@ export class MemberSyncService {
 
     // 역대 API에는 CMITS, JOB_RES_NM이 없으므로, 빈 값이면 기존 값 보존
     // isActive: API 응답에 있는 의원은 현직 (사퇴 후 재등원 시 재활성화)
+    // 국무위원 겸직: 명단(source of truth) 기준으로 설정. 겸직에서 빠지면 null로 복원돼
+    // 평가 지표에 자동 재편입된다.
+    const cabinetPosition = CABINET_MEMBERS[memberId] ?? null;
+
     const termUpdate: Record<string, unknown> = {
       partyId,
       district,
       proportional,
       electedCount,
       isActive: true,
+      cabinetPosition,
     };
     if (committees.length > 0) {
       termUpdate.committees = committees;
@@ -227,6 +272,7 @@ export class MemberSyncService {
         committees,
         committeeRoles: termUpdate.committeeRoles ?? {},
         electedCount,
+        cabinetPosition,
       },
     });
   }

@@ -56,11 +56,20 @@ export default function MemberProfile({ member, memberTerm, allTermIds }: Member
                 </a>
               )}
             </div>
-            <div className="mt-1 flex items-center gap-2">
+            <div className="mt-1 flex flex-wrap items-center gap-2">
               <ColorBadge label={memberTerm.party.name} color={memberTerm.party.color} />
               <span className="text-sm" style={{ color: contrastColor, opacity: 0.8 }}>
                 {getElectedLabel(memberTerm.electedCount)}
               </span>
+              {memberTerm.cabinetPosition && (
+                <span
+                  className="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-semibold"
+                  style={{ backgroundColor: "rgba(255,255,255,0.28)", color: contrastColor }}
+                  title="국무위원을 겸직 중이어서 의정활동 평가 순위 집계에서 제외됩니다"
+                >
+                  🏛️ {memberTerm.cabinetPosition} 겸직
+                </span>
+              )}
             </div>
             <p className="mt-1 text-base" style={{ color: contrastColor, opacity: 0.9 }}>
               {memberTerm.proportional ? "비례대표" : formatDistrict(memberTerm.district)}

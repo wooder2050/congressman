@@ -76,6 +76,7 @@ model MemberTerm {
   committeeRoles   Json     @default("{}") // {"법제사법위원회": "위원장", "예산결산특별위원회": "위원"}
   electedCount     Int      @default(1) // 해당 대수 기준 선수
   isActive         Boolean  @default(true) // 현직 여부 (사퇴·승계 등으로 임기 중 퇴직 시 false)
+  cabinetPosition  String? // 국무위원 겸직 시 직책(예: "국무총리", "법무부 장관"). null이면 겸직 아님. 의정활동 평가 지표에서 제외
 
   member Member @relation(fields: [memberId], references: [id])
   term   Term   @relation(fields: [termId], references: [id])
