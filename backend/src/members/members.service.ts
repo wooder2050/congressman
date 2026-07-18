@@ -44,6 +44,19 @@ function openingDateOf(termId: number): string {
   return map[termId] ?? '2024-05-30';
 }
 
+const CURRENT_TERM = 22;
+
+/**
+ * 재직기간 계산의 기준 시각(asOf). 현재 대수는 '지금', 종료된 과거 대수는 그 대수 종료일을
+ * 쓴다(현재시각을 쓰면 이미 끝난 임기가 몇 년치로 계산돼 tenure가 오염됨).
+ */
+function scoreAsOf(termId: number, now: Date): Date {
+  if (termId >= CURRENT_TERM) return now;
+  // 과거 대수: 다음 대수 개원일 하루 전 = 임기 종료일로 근사
+  const nextOpening = openingDateOf(termId + 1);
+  return new Date(new Date(`${nextOpening}T00:00:00Z`).getTime() - 86400000);
+}
+
 @Injectable()
 export class MembersService {
   constructor(
@@ -589,17 +602,14 @@ export class MembersService {
         FROM "BillProposer" bp
         JOIN "Bill" b ON b.id = bp."billId"
         WHERE bp.role = 'representative' AND b."termId" = ${termId}
-          AND b."proposedDate" <= ${new Date(Date.now() - PASS_RATE_MIN_AGE_DAYS * 86400000).toISOString().slice(0, 10)}
+          AND b."proposedDate" <= ((CURRENT_TIMESTAMP AT TIME ZONE 'Asia/Seoul')::date - ${PASS_RATE_MIN_AGE_DAYS}::int)::text
         GROUP BY bp."memberId"
       `,
     ]);
 
-    // 통과율 베이지안 평활: 전체 통과율을 사전값으로, 가상표본 m=10건을 섞어 소표본 안정화.
-    // (1건 발의 1건 통과 → 100%가 아니라 약 27%로 완화)
-    const totalRepAll = passRowsRaw.reduce((s, r) => s + safeBigIntToNumber(r.total_rep), 0);
-    const totalPassedAll = passRowsRaw.reduce((s, r) => s + safeBigIntToNumber(r.passed), 0);
-    const globalPassRate = totalRepAll > 0 ? totalPassedAll / totalRepAll : 0.2;
-
+    // passRows는 원값(total_rep, passed)만 반환한다. 베이지안 평활의 사전값(globalPassRate)은
+    // 겸직·사퇴 의원을 제외한 '평가대상'만으로 계산해야 정확하므로, 필터가 이뤄지는 호출부
+    // (applyPassRateSmoothing)에서 rate를 계산한다.
     const result = {
       attendanceRows: attendanceRowsRaw,
       voteRows: voteRowsRaw.map((r) => ({
@@ -612,14 +622,12 @@ export class MembersService {
         memberId: r.memberId,
         cnt: safeBigIntToNumber(r.cnt),
       })),
-      passRows: passRowsRaw.map((r) => {
-        const total = safeBigIntToNumber(r.total_rep);
-        const passed = safeBigIntToNumber(r.passed);
-        // 베이지안 평활: (통과 + 전체통과율×m) / (발의 + m)
-        const rate =
-          ((passed + globalPassRate * PASS_RATE_PRIOR_N) / (total + PASS_RATE_PRIOR_N)) * 100;
-        return { memberId: r.memberId, total_rep: total, passed, rate };
-      }),
+      passRows: passRowsRaw.map((r) => ({
+        memberId: r.memberId,
+        total_rep: safeBigIntToNumber(r.total_rep),
+        passed: safeBigIntToNumber(r.passed),
+        rate: 0, // 평활 rate는 호출부에서 채움
+      })),
     };
 
     await this.redis.set(key, result, TTL_6H);
@@ -653,6 +661,23 @@ export class MembersService {
       );
     }
     return map;
+  }
+
+  /**
+   * 통과율 베이지안 평활. 사전값(전체 통과율)을 '평가대상 passRows'만으로 계산해,
+   * 겸직·사퇴 의원이 다른 의원 점수에 영향 주지 않도록 한다. rate(%)를 채워 반환.
+   */
+  private applyPassRateSmoothing(
+    passRows: { memberId: string; total_rep: number; passed: number; rate: number }[],
+  ): { memberId: string; total_rep: number; passed: number; rate: number }[] {
+    const totalRep = passRows.reduce((s, r) => s + r.total_rep, 0);
+    const totalPassed = passRows.reduce((s, r) => s + r.passed, 0);
+    const globalPassRate = totalRep > 0 ? totalPassed / totalRep : 0.2;
+    return passRows.map((r) => ({
+      ...r,
+      rate:
+        ((r.passed + globalPassRate * PASS_RATE_PRIOR_N) / (r.total_rep + PASS_RATE_PRIOR_N)) * 100,
+    }));
   }
 
   async getScorecard(memberId: string, termId: number) {
@@ -706,7 +731,7 @@ export class MembersService {
     const attendanceRows = aggregates.attendanceRows.filter(keep);
     const voteRows = aggregates.voteRows.filter(keep);
     const billRows = aggregates.billRows.filter(keep);
-    const passRows = aggregates.passRows.filter(keep);
+    const passRows = this.applyPassRateSmoothing(aggregates.passRows.filter(keep));
 
     // === 출석률 점수 ===
     const myAttendance = attendanceRows.find((r) => r.memberId === memberId);
@@ -748,18 +773,21 @@ export class MembersService {
     const myBill = billRows.find((r) => r.memberId === memberId);
     const repCount = myBill ? Number(myBill.cnt) : 0;
     // 본인이 사퇴 의원이면 activeTerms에 없으므로 합류시켜 월생산성 계산 대상에 포함
+    const scAsOf = scoreAsOf(termId, new Date());
     const termsForRep = activeTerms.some((t) => t.memberId === memberId)
       ? activeTerms
       : [...activeTerms, { memberId, startDate: memberTerm.startDate }];
-    const smoothedRep = this.computeSmoothedRep(termsForRep, billRows, termId, new Date());
+    const smoothedRep = this.computeSmoothedRep(termsForRep, billRows, termId, scAsOf);
     const smoothedRepValues = [...smoothedRep.values()];
     const myRepProd = smoothedRep.get(memberId) ?? 0;
+    // 분모는 비교군 크기-1로 통일(본인이 사퇴 의원이면 termsForRep에 합류돼 totalMembers보다
+    // 1 클 수 있으므로 smoothedRepValues.length 기준으로 계산 — 백분위 100% 초과 방지).
+    const repDenom = smoothedRepValues.length - 1;
     const billPercentile =
-      smoothedRepValues.length > 1
-        ? (smoothedRepValues.filter((v) => v < myRepProd).length / (totalMembers - 1)) * 100
-        : 0;
+      repDenom > 0 ? (smoothedRepValues.filter((v) => v < myRepProd).length / repDenom) * 100 : 0;
     const billScore = Math.round((billPercentile / 100) * 25 * 10) / 10;
-    const billRank = myBill ? billRows.findIndex((r) => r.memberId === memberId) + 1 : totalMembers;
+    // 발의 순위도 월생산성 기준으로(절대건수 순위와 발의점수가 모순되지 않도록)
+    const billRank = smoothedRepValues.filter((v) => v > myRepProd).length + 1;
 
     // 공동발의 건수
     const coCountResult = await this.prisma.billProposer.count({
@@ -806,9 +834,7 @@ export class MembersService {
       // 대표발의: 랭킹과 동일하게 재직기간 정규화 월생산성 백분위 사용
       const myProd = smoothedRep.get(mid) ?? 0;
       const blPct =
-        smoothedRepValues.length > 1
-          ? (smoothedRepValues.filter((v) => v < myProd).length / (totalMembers - 1)) * 100
-          : 0;
+        repDenom > 0 ? (smoothedRepValues.filter((v) => v < myProd).length / repDenom) * 100 : 0;
       const blScore = Math.round((blPct / 100) * 25 * 10) / 10;
 
       const ps = passRows.find((r) => r.memberId === mid);
@@ -880,8 +906,7 @@ export class MembersService {
       overallRank,
       // 재직 90일 미만 — 표본이 얕아 순위 해석 잠정(UI에서 안내)
       provisional:
-        tenureDays(memberTerm.startDate, new Date(), openingDateOf(termId)) <
-        PROVISIONAL_TENURE_DAYS,
+        tenureDays(memberTerm.startDate, scAsOf, openingDateOf(termId)) < PROVISIONAL_TENURE_DAYS,
       startDate: memberTerm.startDate,
       cabinetPosition: memberTerm.cabinetPosition, // 겸직이면 UI에서 '평가 제외' 안내 표시
 
@@ -1018,12 +1043,13 @@ export class MembersService {
     const attendanceRows = aggregates.attendanceRows.filter(keep);
     const voteRows = aggregates.voteRows.filter(keep);
     const billRows = aggregates.billRows.filter(keep);
-    const passRows = aggregates.passRows.filter(keep);
+    const passRows = this.applyPassRateSmoothing(aggregates.passRows.filter(keep));
 
     // ── 재보궐 보정용 사전 계산 ──
     // 대표발의: 재직 개월수로 정규화한 '월평균 발의 건수'를 3개월 동료평균으로 평활한 값으로
     // 백분위를 매겨(절대건수 대신), 재직기간이 짧은 의원의 불이익을 제거한다.
-    const asOf = new Date();
+    // asOf는 과거 대수면 그 대수 종료일(현재시각 쓰면 tenure가 몇 년치로 오염됨).
+    const asOf = scoreAsOf(termId, new Date());
     const fallbackStart = openingDateOf(termId);
     const smoothedRep = this.computeSmoothedRep(allMemberTerms, billRows, termId, asOf);
     const smoothedRepValues = [...smoothedRep.values()];

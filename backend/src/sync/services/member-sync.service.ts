@@ -223,8 +223,9 @@ export class MemberSyncService {
     // 역대 API에는 CMITS, JOB_RES_NM이 없으므로, 빈 값이면 기존 값 보존
     // isActive: API 응답에 있는 의원은 현직 (사퇴 후 재등원 시 재활성화)
     // 국무위원 겸직: 명단(source of truth) 기준으로 설정. 겸직에서 빠지면 null로 복원돼
-    // 평가 지표에 자동 재편입된다.
-    const cabinetPosition = CABINET_MEMBERS[memberId] ?? null;
+    // 평가 지표에 자동 재편입된다. 겸직은 현직(현재 대수)에만 유효하므로 과거 대수엔 적용하지
+    // 않는다(과거 재직 기록이 현재 겸직으로 오염되는 것 방지).
+    const cabinetPosition = termId === CURRENT_TERM ? (CABINET_MEMBERS[memberId] ?? null) : null;
 
     const termUpdate: Record<string, unknown> = {
       partyId,
