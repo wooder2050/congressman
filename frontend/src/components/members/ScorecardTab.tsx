@@ -169,6 +169,11 @@ export default function ScorecardTab({ memberId, termId }: ScorecardTabProps) {
                 {scorecard.overallRank}위
               </span>
             </div>
+            {scorecard.provisional && (
+              <div className="mt-2 inline-flex items-center gap-1 rounded-full bg-amber-100 px-2.5 py-1 text-xs font-medium text-amber-800 dark:bg-amber-950/40 dark:text-amber-300">
+                ⏳ 재직 90일 미만 — 잠정 순위 (표본 누적 중)
+              </div>
+            )}
           </div>
           <ShareButton
             memberId={memberId}

@@ -46,6 +46,9 @@ interface HistoricalMemberApiRow {
 /** 현재 국회 대수 — 현직 API는 이 대수에만 사용 */
 const CURRENT_TERM = 22;
 
+/** 대수별 개원일 — 신규 MemberTerm의 startDate 기본값 */
+const TERM_OPENING_DATE: Record<number, string> = { 22: '2024-05-30' };
+
 export class MemberSyncService {
   constructor(
     private readonly prisma: PrismaClient,
@@ -260,6 +263,20 @@ export class MemberSyncService {
       termUpdate.committeeRoles = committeeRoles;
     }
 
+    // 신규 MemberTerm(임기 중 합류 = 재보궐·승계 가능성)이면 경고 로그를 남긴다.
+    // 개원 초기 일괄 생성이 아니라 이후 새로 등장한 의원은 startDate를 실제 취임일로
+    // 교정할 필요가 있어 알린다(평가 재직기간 정확도). update에는 startDate를 넣지 않아
+    // backfill/교정한 정확한 날짜를 보존한다.
+    const existing = await this.prisma.memberTerm.findUnique({
+      where: { memberId_termId: { memberId, termId } },
+      select: { id: true },
+    });
+    if (!existing && termId === CURRENT_TERM) {
+      console.warn(
+        `[MemberSync] ⚠️ 신규 의원 등장: ${row.HG_NM}(${memberId}) — 재보궐·승계면 startDate를 실제 취임일로 교정 필요(기본값=개원일)`,
+      );
+    }
+
     await this.prisma.memberTerm.upsert({
       where: { memberId_termId: { memberId, termId } },
       update: termUpdate,
@@ -273,6 +290,7 @@ export class MemberSyncService {
         committeeRoles: termUpdate.committeeRoles ?? {},
         electedCount,
         cabinetPosition,
+        startDate: TERM_OPENING_DATE[termId] ?? null,
       },
     });
   }

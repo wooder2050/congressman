@@ -220,6 +220,14 @@ export default function ScorecardRankingClient() {
                 <div className="flex items-center gap-2">
                   <span className="font-bold text-(--color-text-primary)">{item.name}</span>
                   <ColorBadge label={item.party.shortName} color={item.party.color} size="sm" />
+                  {item.provisional && (
+                    <span
+                      className="rounded-full bg-amber-100 px-1.5 py-0.5 text-[10px] font-medium text-amber-800 dark:bg-amber-950/40 dark:text-amber-300"
+                      title="재직 90일 미만 — 잠정 순위(표본 누적 중)"
+                    >
+                      잠정
+                    </span>
+                  )}
                 </div>
                 <div className="text-xs text-(--color-text-tertiary)">{item.district}</div>
               </div>
