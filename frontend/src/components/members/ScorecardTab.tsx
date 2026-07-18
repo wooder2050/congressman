@@ -151,6 +151,23 @@ export default function ScorecardTab({ memberId, termId }: ScorecardTabProps) {
 
   return (
     <div className="space-y-5">
+      {/* 국무위원 겸직 안내 — 평가 순위 제외 */}
+      {scorecard.cabinetPosition && (
+        <div className="flex items-start gap-2 rounded-xl border border-amber-300 bg-amber-50 p-4 dark:border-amber-800/50 dark:bg-amber-950/30">
+          <span className="text-lg leading-none">🏛️</span>
+          <div>
+            <p className="text-sm font-bold text-amber-900 dark:text-amber-200">
+              현재 {scorecard.cabinetPosition} 겸직 중 — 참고용 점수입니다
+            </p>
+            <p className="mt-1 text-xs leading-relaxed text-amber-800 dark:text-amber-300">
+              국무위원(장관·총리)을 겸직하면 본회의 표결·법안 발의 등 의정활동이 제한되므로, 이
+              성적표는 전체 의원 순위 집계에서 제외됩니다. 아래 점수는 겸직 기간을 포함한 참고
+              수치이며, 다른 의원과 단순 비교하기 어렵습니다.
+            </p>
+          </div>
+        </div>
+      )}
+
       {/* 종합 등급 카드 */}
       <div className={`rounded-2xl border-2 ${gradeStyle.border} ${gradeStyle.bg} p-6`}>
         <div className="flex items-center justify-between">
@@ -164,12 +181,18 @@ export default function ScorecardTab({ memberId, termId }: ScorecardTabProps) {
               </span>
             </div>
             <div className="mt-2 text-sm text-(--color-text-secondary)">
-              전체 {scorecard.attendance.totalMembers}명 중{" "}
-              <span className="font-bold text-(--color-text-primary)">
-                {scorecard.overallRank}위
-              </span>
+              {scorecard.cabinetPosition ? (
+                <span className="font-bold text-(--color-text-primary)">순위 집계 제외</span>
+              ) : (
+                <>
+                  전체 {scorecard.attendance.totalMembers}명 중{" "}
+                  <span className="font-bold text-(--color-text-primary)">
+                    {scorecard.overallRank}위
+                  </span>
+                </>
+              )}
             </div>
-            {scorecard.provisional && (
+            {!scorecard.cabinetPosition && scorecard.provisional && (
               <div className="mt-2 inline-flex items-center gap-1 rounded-full bg-amber-100 px-2.5 py-1 text-xs font-medium text-amber-800 dark:bg-amber-950/40 dark:text-amber-300">
                 ⏳ 재직 90일 미만 — 잠정 순위 (표본 누적 중)
               </div>
