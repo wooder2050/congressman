@@ -20,7 +20,7 @@
  *
  * 최종 확인: 2026-07-19 (이재명 정부, 위키백과 국무위원 명단 × DB 22대 의원 교차 검증)
  */
-export interface CabinetTenure {
+interface CabinetTenure {
   position: string;
   startDate: string; // YYYY-MM-DD (취임일)
   endDate: string | null; // 이임일. null이면 현재 재임 중

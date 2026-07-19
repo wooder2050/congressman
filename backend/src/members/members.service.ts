@@ -31,22 +31,49 @@ interface CabinetTenure {
   endDate: string | null;
 }
 
-/** [start, asOf] 구간과 국무위원 재임 이력이 겹치는 일수의 합(평가 제외 기간). */
+/**
+ * [start, asOf] 구간에서 국무위원 재임 기간이 차지하는 일수(평가 제외 기간).
+ * 겹치는 이력은 병합해 이중 차감을 막고, JSON이 배열이 아니거나 원소가 불완전해도 안전하게 무시.
+ * 이임일(endDate)은 그날까지 재임한 것으로 보아 하루를 포함(+1일)한다.
+ */
 function cabinetExcludedDays(
   start: Date,
   asOf: Date,
   history: CabinetTenure[] | null | undefined,
 ): number {
-  if (!history || history.length === 0) return 0;
-  let excluded = 0;
+  if (!Array.isArray(history) || history.length === 0) return 0;
+  const DAY = 1000 * 60 * 60 * 24;
+  const lo = start.getTime();
+  const hi = asOf.getTime();
+
+  // 각 이력을 평가구간과 교차시킨 [s,e] 구간으로 변환(안전 파싱)
+  const spans: [number, number][] = [];
   for (const h of history) {
+    if (!h || typeof h.startDate !== 'string') continue;
     const cs = new Date(`${h.startDate}T00:00:00Z`).getTime();
-    const ce = (h.endDate ? new Date(`${h.endDate}T00:00:00Z`) : asOf).getTime();
-    const overlapStart = Math.max(start.getTime(), cs);
-    const overlapEnd = Math.min(asOf.getTime(), ce);
-    if (overlapEnd > overlapStart) excluded += (overlapEnd - overlapStart) / (1000 * 60 * 60 * 24);
+    // endDate 있으면 그날 자정 + 하루(이임일 포함), 없으면(현재 재임) asOf까지
+    const ce = h.endDate ? new Date(`${h.endDate}T00:00:00Z`).getTime() + DAY : hi;
+    if (Number.isNaN(cs) || Number.isNaN(ce)) continue;
+    const s = Math.max(lo, cs);
+    const e = Math.min(hi, ce);
+    if (e > s) spans.push([s, e]);
   }
-  return excluded;
+  if (spans.length === 0) return 0;
+
+  // 겹치는 구간 병합 후 합산(이중 차감 방지)
+  spans.sort((a, b) => a[0] - b[0]);
+  let excludedMs = 0;
+  let [curS, curE] = spans[0];
+  for (let i = 1; i < spans.length; i++) {
+    const [s, e] = spans[i];
+    if (s <= curE) curE = Math.max(curE, e);
+    else {
+      excludedMs += curE - curS;
+      [curS, curE] = [s, e];
+    }
+  }
+  excludedMs += curE - curS;
+  return excludedMs / DAY;
 }
 
 /**
@@ -72,7 +99,9 @@ function tenureMonths(
   cabinetHistory?: CabinetTenure[] | null,
 ): number {
   const days = tenureDays(startDate, asOf, fallbackStart, cabinetHistory);
-  return Math.max(days / AVG_DAYS_PER_MONTH, 0.5); // 하한 0.5개월(0 나눗셈·초단기 폭증 방지)
+  // 하한 1개월: 겸직 제외로 평가가능 기간이 거의 0인 의원의 월생산성(발의÷기간) 폭증 방지.
+  // (0 나눗셈 방지 + 초단기 재직·재임 직후 복귀자의 과대평가 완화)
+  return Math.max(days / AVG_DAYS_PER_MONTH, 1);
 }
 
 /** 대수별 개원일(startDate 미설정 의원의 fallback). */

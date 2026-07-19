@@ -229,8 +229,13 @@ export class MemberSyncService {
     // 국무위원 겸직: 명단(CABINET_TENURES)을 현재 겸직(cabinetPosition)과 종료 이력
     // (cabinetHistory)으로 투영한다. 겸직은 현직(현재 대수)에만 유효하므로 과거 대수엔
     // 적용하지 않는다(과거 재직 기록 오염 방지).
-    const tenures = termId === CURRENT_TERM ? (CABINET_TENURES[memberId] ?? []) : [];
-    const cabinetPosition = tenures.find((t) => t.endDate === null)?.position ?? null;
+    const isCurrentTerm = termId === CURRENT_TERM;
+    const tenures = isCurrentTerm ? (CABINET_TENURES[memberId] ?? []) : [];
+    // 현재 겸직은 endDate=null 항목. 여러 개면 안 되므로 최신(startDate 큰 것) 하나만.
+    const currentTenures = tenures
+      .filter((t) => t.endDate === null)
+      .sort((a, b) => b.startDate.localeCompare(a.startDate));
+    const cabinetPosition = currentTenures[0]?.position ?? null;
     const cabinetHistory = tenures.filter((t) => t.endDate !== null);
 
     const termUpdate: Record<string, unknown> = {
@@ -239,9 +244,13 @@ export class MemberSyncService {
       proportional,
       electedCount,
       isActive: true,
-      cabinetPosition,
-      cabinetHistory,
     };
+    // 겸직 필드는 현재 대수에만 설정한다. 과거 대수 재동기화 시 기존 이력을 덮어써 삭제하지
+    // 않도록, 현재 대수가 아니면 termUpdate에 포함하지 않아 기존 값을 보존한다.
+    if (isCurrentTerm) {
+      termUpdate.cabinetPosition = cabinetPosition;
+      termUpdate.cabinetHistory = cabinetHistory;
+    }
     if (committees.length > 0) {
       termUpdate.committees = committees;
 
