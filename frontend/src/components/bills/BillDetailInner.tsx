@@ -6,6 +6,7 @@ import { formatDate, formatDistrict } from "@/lib/utils";
 import { BILL_STATUS_MAP, TOPIC_EXPLANATIONS, normalizeTopic } from "@/lib/constants";
 import { billDisplayTitle } from "@/lib/bill-title";
 import BillProgressTimeline from "@/components/bills/BillProgressTimeline";
+import BillWatchCTA from "@/components/bills/BillWatchCTA";
 import BookmarkButton from "@/components/ui/BookmarkButton";
 import ShareButton from "@/components/ui/ShareButton";
 import type { BillDetail, BillStructuredSummary } from "@/types";
@@ -101,6 +102,9 @@ export default function BillDetailInner({ bill }: BillDetailInnerProps) {
           )}
         </div>
       </div>
+
+      {/* Radar: 법안 변경 알림 CTA (feature flag OFF면 렌더 안 됨) */}
+      <BillWatchCTA billId={bill.id} />
 
       {bill.simpleSummary && (
         <div className="space-y-4 rounded-xl border border-(--color-border-primary) bg-(--color-bg-primary) p-5">

@@ -19,6 +19,7 @@ import { HealthModule } from './health/health.module';
 import { RedisModule } from './redis/redis.module';
 import { AuthModule } from './auth/auth.module';
 import { UserPreferencesModule } from './user-preferences/user-preferences.module';
+import { WatchesModule } from './watches/watches.module';
 import { BreakingNewsModule } from './breaking-news/breaking-news.module';
 import { WeeklyModule } from './weekly/weekly.module';
 
@@ -45,6 +46,7 @@ import { WeeklyModule } from './weekly/weekly.module';
     PollsModule,
     AuthModule,
     UserPreferencesModule,
+    WatchesModule,
     BreakingNewsModule,
     WeeklyModule,
   ],

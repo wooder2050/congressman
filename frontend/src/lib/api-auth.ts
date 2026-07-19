@@ -61,3 +61,30 @@ export async function removeMemberBookmark(memberId: string): Promise<UserPrefer
     method: "DELETE",
   });
 }
+
+// ── Lawmake Radar: 법안 변경 알림(Watch) ──
+
+export interface WatchItem {
+  id: string;
+  billId: string;
+  enabled: boolean;
+  createdAt: string;
+  bill: { id: string; title: string; status: string; proposedDate: string } | null;
+}
+
+/** 내 법안 알림 목록 */
+export async function getWatches(): Promise<WatchItem[]> {
+  return fetchAuthApi("/api/user/watches");
+}
+
+/** 법안 알림 생성(멱등) */
+export async function createWatch(
+  billId: string,
+): Promise<{ id: string; billId: string; enabled: boolean }> {
+  return fetchAuthApi(`/api/user/watches/bills/${billId}`, { method: "POST" });
+}
+
+/** 법안 알림 해제(enabled=false) */
+export async function deleteWatch(watchId: string): Promise<{ id: string; enabled: boolean }> {
+  return fetchAuthApi(`/api/user/watches/${watchId}`, { method: "DELETE" });
+}

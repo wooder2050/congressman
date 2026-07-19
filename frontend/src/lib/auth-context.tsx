@@ -4,11 +4,12 @@ import { createContext, useContext, useEffect, useState, useCallback, useMemo } 
 import type { User } from "@supabase/supabase-js";
 import { useQueryClient } from "@tanstack/react-query";
 import { createClient } from "@/lib/supabase/client";
+import { isSafeInternalPath } from "@/lib/safe-redirect";
 
 interface AuthContextType {
   user: User | null;
   loading: boolean;
-  signInWithGoogle: () => Promise<void>;
+  signInWithGoogle: (returnTo?: string) => Promise<void>;
   signOut: () => Promise<void>;
 }
 
@@ -48,13 +49,22 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     return () => subscription.unsubscribe();
   }, [supabase]);
 
-  const signInWithGoogle = useCallback(async () => {
-    if (!supabase) return;
-    await supabase.auth.signInWithOAuth({
-      provider: "google",
-      options: { redirectTo: `${window.location.origin}/auth/callback` },
-    });
-  }, [supabase]);
+  const signInWithGoogle = useCallback(
+    async (returnTo?: string) => {
+      if (!supabase) return;
+      // 로그인 후 원래 페이지로 복귀. 같은 origin의 단일 슬래시 절대경로만 허용해
+      // open redirect(//host, /\host, scheme:...)를 차단한다. callback route도 next를 재검증.
+      const safeReturn = isSafeInternalPath(returnTo) ? returnTo! : null;
+      const callback = safeReturn
+        ? `${window.location.origin}/auth/callback?next=${encodeURIComponent(safeReturn)}`
+        : `${window.location.origin}/auth/callback`;
+      await supabase.auth.signInWithOAuth({
+        provider: "google",
+        options: { redirectTo: callback },
+      });
+    },
+    [supabase],
+  );
 
   const signOut = useCallback(async () => {
     try {
