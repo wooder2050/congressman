@@ -6,9 +6,11 @@ import { useAuth } from "@/lib/auth-context";
 interface LoginModalProps {
   open: boolean;
   onClose: () => void;
+  /** 로그인 후 복귀할 경로(같은 origin 상대 경로). 없으면 홈으로. */
+  returnTo?: string;
 }
 
-export default function LoginModal({ open, onClose }: LoginModalProps) {
+export default function LoginModal({ open, onClose, returnTo }: LoginModalProps) {
   const { signInWithGoogle } = useAuth();
 
   return (
@@ -50,7 +52,7 @@ export default function LoginModal({ open, onClose }: LoginModalProps) {
           <div className="space-y-3">
             <button
               type="button"
-              onClick={signInWithGoogle}
+              onClick={() => signInWithGoogle(returnTo)}
               className="flex w-full items-center justify-center gap-3 rounded-xl border border-(--color-border-primary) bg-white px-4 py-3 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50"
             >
               <svg width="20" height="20" viewBox="0 0 24 24">
