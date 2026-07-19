@@ -11,20 +11,40 @@
  * member sync가 매번 API 약력을 파싱해 이 명단과 대조한다(detectCabinetDrift). 새 겸직·복귀가
  * 감지되면 경고 로그를 남기므로, 로그를 보고 이 파일을 갱신하면 된다.
  *
- * key = 국회의원 코드(MONA_CD), value = 겸직 직책.
- * 겸직에서 물러나 의정활동에 복귀하면 해당 항목을 제거한다.
+ * ── 데이터 구조 ──
+ * CABINET_TENURES: 의원코드(MONA_CD) → 국무위원 재임 이력 배열.
+ *   각 원소 { position, startDate, endDate }. endDate=null이면 "현재 겸직 중",
+ *   endDate가 있으면 "종료된 과거 이력"(예: 김민석 국무총리 후 평의원 복귀).
+ * 겸직에서 물러나도 항목을 지우지 말고 endDate만 채운다(이력 보존).
+ * member sync가 이를 DB의 cabinetPosition(현재)+cabinetHistory(과거)로 투영한다.
  *
- * 최종 확인: 2026-07-18 (이재명 정부, 위키백과 국무위원 명단 × DB 22대 의원 교차 검증)
+ * 최종 확인: 2026-07-19 (이재명 정부, 위키백과 국무위원 명단 × DB 22대 의원 교차 검증)
  */
-export const CABINET_MEMBERS: Record<string, string> = {
-  V429892C: '법무부 장관', // 정성호 (경기 동두천·양주·연천갑)
-  M0A1658U: '행정안전부 장관', // 윤호중 (경기 구리시)
-  TST4507I: '국방부 장관', // 안규백 (서울 동대문구갑)
-  ARP89147: '통일부 장관', // 정동영 (전북 전주시병)
-  XSP20229: '기후에너지환경부 장관', // 김성환 (서울 노원구을)
-  JZY9937U: '국토교통부 장관', // 김윤덕 (전북 전주시갑)
-  S824682L: '기획예산처 장관', // 박홍근 (서울 중랑구을)
+interface CabinetTenure {
+  position: string;
+  startDate: string; // YYYY-MM-DD (취임일)
+  endDate: string | null; // 이임일. null이면 현재 재임 중
+}
+
+export const CABINET_TENURES: Record<string, CabinetTenure[]> = {
+  // ── 현재 겸직 중(endDate=null) ──
+  V429892C: [{ position: '법무부 장관', startDate: '2025-07-18', endDate: null }], // 정성호
+  M0A1658U: [{ position: '행정안전부 장관', startDate: '2025-07-19', endDate: null }], // 윤호중
+  TST4507I: [{ position: '국방부 장관', startDate: '2025-07-25', endDate: null }], // 안규백
+  ARP89147: [{ position: '통일부 장관', startDate: '2025-07-25', endDate: null }], // 정동영
+  XSP20229: [{ position: '기후에너지환경부 장관', startDate: '2025-10-01', endDate: null }], // 김성환
+  JZY9937U: [{ position: '국토교통부 장관', startDate: '2025-07-31', endDate: null }], // 김윤덕
+  S824682L: [{ position: '기획예산처 장관', startDate: '2026-03-25', endDate: null }], // 박홍근
+  // ── 종료된 과거 이력(endDate 있음) ──
+  MLH1404S: [{ position: '국무총리', startDate: '2025-07-04', endDate: '2026-06-30' }], // 김민석(제49대 국무총리 후 평의원 복귀)
 };
+
+/** 현재 겸직(endDate=null) 직책만 매핑. 기존 코드 하위호환 + 랭킹 제외 판정에 사용. */
+export const CABINET_MEMBERS: Record<string, string> = Object.fromEntries(
+  Object.entries(CABINET_TENURES)
+    .map(([id, tenures]) => [id, tenures.find((t) => t.endDate === null)?.position])
+    .filter(([, pos]) => pos != null) as [string, string][],
+);
 
 /**
  * 국회 약력(MEM_TITLE)에서 現(현) 국무총리·장관 겸직을 추출한다.

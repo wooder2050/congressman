@@ -76,7 +76,8 @@ model MemberTerm {
   committeeRoles   Json     @default("{}") // {"법제사법위원회": "위원장", "예산결산특별위원회": "위원"}
   electedCount     Int      @default(1) // 해당 대수 기준 선수
   isActive         Boolean  @default(true) // 현직 여부 (사퇴·승계 등으로 임기 중 퇴직 시 false)
-  cabinetPosition  String? // 국무위원 겸직 시 직책(예: "국무총리", "법무부 장관"). null이면 겸직 아님. 의정활동 평가 지표에서 제외
+  cabinetPosition  String? // 국무위원 현재 겸직 직책(예: "국무총리", "법무부 장관"). null이면 현재 겸직 아님. 의정활동 평가 지표에서 제외
+  cabinetHistory   Json     @default("[]") // 임기 중 종료된 국무위원 겸직 이력 [{position, startDate, endDate}]. 예: 김민석 국무총리 후 평의원 복귀. 평가 시 이 기간을 제외해 공정성 확보
   startDate        String? // 공식 임기 개시일(YYYY-MM-DD). 재보궐·승계로 임기 중 합류 시 늦음. 평가 지표를 재직기간 기준으로 보정하는 데 사용. null이면 대수 개원일로 간주
 
   member Member @relation(fields: [memberId], references: [id])

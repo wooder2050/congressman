@@ -67,12 +67,28 @@ export default function MemberActivitySummary({
           : "적은";
 
   const district = memberTerm.proportional ? "비례대표" : memberTerm.district || "";
+  const pastCabinet = memberTerm.cabinetHistory?.[memberTerm.cabinetHistory.length - 1];
 
   return (
     <div className="rounded-xl border border-(--color-border-primary) bg-(--color-bg-primary) p-5">
       <h2 className="mb-3 text-base font-bold text-(--color-text-primary)">
         제{termId}대 국회 활동 요약
       </h2>
+      {/* 국무위원 겸직 안내 — 활동요약 최상단에 명확히 표시 */}
+      {memberTerm.cabinetPosition ? (
+        <p className="mb-2 rounded-lg bg-blue-50 px-3 py-2 text-sm font-medium text-blue-900 dark:bg-blue-950/30 dark:text-blue-200">
+          🏛️ {memberName} 의원은 현재 <strong>{memberTerm.cabinetPosition}</strong>을(를) 겸직
+          중입니다. 겸직 기간에는 본회의 표결·법안 발의 등 의정활동이 제한되므로, 아래 수치는
+          참고용이며 의정활동 평가 순위 집계에서는 제외됩니다.
+        </p>
+      ) : pastCabinet ? (
+        <p className="mb-2 rounded-lg bg-slate-50 px-3 py-2 text-sm font-medium text-slate-700 dark:bg-slate-800/50 dark:text-slate-200">
+          🏛️ {memberName} 의원은 제{termId}대 국회 임기 중 <strong>{pastCabinet.position}</strong>
+          을(를) 지낸 뒤({pastCabinet.startDate.replace(/-/g, ".")}~
+          {pastCabinet.endDate?.replace(/-/g, ".")}) 국회의원 활동에 복귀했습니다. 해당 재임 기간은
+          의정활동 평가 가능 기간에서 제외해 계산합니다.
+        </p>
+      ) : null}
       <p className="text-sm leading-relaxed text-(--color-text-secondary)">
         {memberName} {memberTerm.party.name} 의원({district})은 제{termId}대 국회에서{" "}
         <strong>

@@ -1,9 +1,13 @@
-import { PrismaClient } from '@prisma/client';
+import { Prisma, PrismaClient } from '@prisma/client';
 import { AssemblyApiService } from './assembly-api.service';
 import { SyncLogService } from './sync-log.service';
 import { getPartyId, getPartyColor } from '../constants/party-map';
 import { parseElectedCount } from '../constants/elected-count-map';
-import { CABINET_MEMBERS, parseCabinetFromCareer } from '../constants/cabinet-members';
+import {
+  CABINET_MEMBERS,
+  CABINET_TENURES,
+  parseCabinetFromCareer,
+} from '../constants/cabinet-members';
 
 /** 현직 국회의원 인적사항 API 응답 row */
 interface MemberApiRow {
@@ -222,10 +226,17 @@ export class MemberSyncService {
 
     // 역대 API에는 CMITS, JOB_RES_NM이 없으므로, 빈 값이면 기존 값 보존
     // isActive: API 응답에 있는 의원은 현직 (사퇴 후 재등원 시 재활성화)
-    // 국무위원 겸직: 명단(source of truth) 기준으로 설정. 겸직에서 빠지면 null로 복원돼
-    // 평가 지표에 자동 재편입된다. 겸직은 현직(현재 대수)에만 유효하므로 과거 대수엔 적용하지
-    // 않는다(과거 재직 기록이 현재 겸직으로 오염되는 것 방지).
-    const cabinetPosition = termId === CURRENT_TERM ? (CABINET_MEMBERS[memberId] ?? null) : null;
+    // 국무위원 겸직: 명단(CABINET_TENURES)을 현재 겸직(cabinetPosition)과 종료 이력
+    // (cabinetHistory)으로 투영한다. 겸직은 현직(현재 대수)에만 유효하므로 과거 대수엔
+    // 적용하지 않는다(과거 재직 기록 오염 방지).
+    const isCurrentTerm = termId === CURRENT_TERM;
+    const tenures = isCurrentTerm ? (CABINET_TENURES[memberId] ?? []) : [];
+    // 현재 겸직은 endDate=null 항목. 여러 개면 안 되므로 최신(startDate 큰 것) 하나만.
+    const currentTenures = tenures
+      .filter((t) => t.endDate === null)
+      .sort((a, b) => b.startDate.localeCompare(a.startDate));
+    const cabinetPosition = currentTenures[0]?.position ?? null;
+    const cabinetHistory = tenures.filter((t) => t.endDate !== null);
 
     const termUpdate: Record<string, unknown> = {
       partyId,
@@ -233,8 +244,13 @@ export class MemberSyncService {
       proportional,
       electedCount,
       isActive: true,
-      cabinetPosition,
     };
+    // 겸직 필드는 현재 대수에만 설정한다. 과거 대수 재동기화 시 기존 이력을 덮어써 삭제하지
+    // 않도록, 현재 대수가 아니면 termUpdate에 포함하지 않아 기존 값을 보존한다.
+    if (isCurrentTerm) {
+      termUpdate.cabinetPosition = cabinetPosition;
+      termUpdate.cabinetHistory = cabinetHistory;
+    }
     if (committees.length > 0) {
       termUpdate.committees = committees;
 
@@ -291,6 +307,7 @@ export class MemberSyncService {
         committeeRoles: termUpdate.committeeRoles ?? {},
         electedCount,
         cabinetPosition,
+        cabinetHistory: cabinetHistory as unknown as Prisma.InputJsonValue,
         startDate: TERM_OPENING_DATE[termId] ?? null,
       },
     });
