@@ -1,6 +1,7 @@
-import { PrismaClient } from '@prisma/client';
+import { Prisma, PrismaClient } from '@prisma/client';
 import { AssemblyApiService } from './assembly-api.service';
 import { SyncLogService } from './sync-log.service';
+import { buildPolicyEvent } from './policy-event-builder';
 
 /** 의원 발의 법안 API 응답 row */
 interface BillApiRow {
@@ -31,14 +32,27 @@ const BATCH_SIZE = 500;
 const UPDATE_BATCH_SIZE = 50;
 
 export class BillSyncService {
+  /**
+   * Radar: 이번 sync 실행 식별자. PolicyEvent의 @@unique([runId, billId]) key로 쓰여
+   * 같은 날 재실행 시 동일 변경이 중복 이벤트가 되지 않게 한다(KST 날짜 단위).
+   */
+  private syncRunId = '';
+
   constructor(
     private readonly prisma: PrismaClient,
     private readonly api: AssemblyApiService,
     private readonly syncLog: SyncLogService,
   ) {}
 
+  /** KST 날짜 기준 runId(YYYY-MM-DD). 같은 날 재실행은 같은 runId → 중복 이벤트 방지. */
+  private makeRunId(): string {
+    const kst = new Date(Date.now() + 9 * 60 * 60 * 1000); // UTC→KST
+    return kst.toISOString().slice(0, 10);
+  }
+
   async syncBills(termId: number): Promise<void> {
     const log = await this.syncLog.start('bills', termId);
+    this.syncRunId = this.makeRunId();
 
     try {
       const rows = await this.api.fetchAll<BillApiRow>('nzmimeepazxkubdpn', {
@@ -71,6 +85,7 @@ export class BillSyncService {
    */
   async syncBillsSafe(termId: number): Promise<void> {
     const log = await this.syncLog.start('bills-safe', termId);
+    this.syncRunId = this.makeRunId();
 
     try {
       const rows = await this.api.fetchAll<BillApiRow>('nzmimeepazxkubdpn', {
@@ -267,6 +282,11 @@ export class BillSyncService {
     const existingMap = new Map(existingBills.map((b) => [b.id, b]));
     const existingIds = new Set(existingBills.map((b) => b.id));
 
+    // Radar: 의미 있는 변경(상태·처리결과)을 PolicyEvent로 기록(서버 flag ON일 때만).
+    const radarOn = process.env.RADAR_ENABLED === 'true';
+    const runId = this.syncRunId; // 이번 sync 실행 식별자(재실행 중복 방지 key)
+    const policyEventDrafts: Prisma.PolicyEventCreateManyInput[] = [];
+
     const newRows: BillApiRow[] = [];
     const updateRows: BillApiRow[] = [];
     for (const row of rows) {
@@ -301,6 +321,37 @@ export class BillSyncService {
           existing.plenaryDate !== progress.plenaryDate
         ) {
           updateRows.push(row);
+
+          // 의미 있는 변경(상태·결과)만 PolicyEvent로. title·날짜 단독 변경은 제외.
+          if (radarOn) {
+            const draft = buildPolicyEvent(
+              {
+                status: existing.status,
+                committeeResultCode: existing.committeeResultCode,
+                committeeResultDate: existing.committeeResultDate,
+                lawResultCode: existing.lawResultCode,
+                lawResultDate: existing.lawResultDate,
+                plenaryDate: existing.plenaryDate,
+              },
+              {
+                status: newStatus,
+                committeeResultCode: progress.committeeResultCode,
+                committeeResultDate: progress.committeeResultDate,
+                lawResultCode: progress.lawResultCode,
+                lawResultDate: progress.lawResultDate,
+                plenaryDate: progress.plenaryDate,
+              },
+            );
+            if (draft) {
+              policyEventDrafts.push({
+                billId: row.BILL_ID,
+                runId,
+                eventType: draft.eventType,
+                changes: draft.changes as unknown as Prisma.InputJsonValue,
+                sourceChangedAt: draft.sourceChangedAt,
+              });
+            }
+          }
         }
       }
     }
@@ -351,6 +402,23 @@ export class BillSyncService {
             `[BillSync]   Bills: ${Math.min(i + UPDATE_BATCH_SIZE, updateRows.length)}/${updateRows.length}`,
           );
         }
+      }
+    }
+
+    // Radar: 수집한 PolicyEvent 저장(@@unique([runId, billId])로 같은 sync 재실행 시 중복 방지).
+    // bill update 이후에 기록하되, skipDuplicates로 부분 재실행에도 안전.
+    if (radarOn && policyEventDrafts.length > 0) {
+      if (process.env.RADAR_DRY_RUN === 'true') {
+        console.log(
+          `[BillSync]   Radar[DRY_RUN]: would record ${policyEventDrafts.length} policy events (not saved). ` +
+            `sample=${JSON.stringify(policyEventDrafts.slice(0, 3))}`,
+        );
+      } else {
+        const created = await this.prisma.policyEvent.createMany({
+          data: policyEventDrafts,
+          skipDuplicates: true,
+        });
+        console.log(`[BillSync]   Radar: recorded ${created.count} policy events`);
       }
     }
 
