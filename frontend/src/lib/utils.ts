@@ -92,3 +92,18 @@ export function getContrastColor(hex: string): string {
   const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
   return luminance > 0.5 ? "#1a1a1a" : "#ffffff";
 }
+
+/**
+ * 한글 받침 유무에 따라 조사를 선택해 붙인다.
+ * 예: withJosa("법무부 장관", "을", "를") → "법무부 장관을", withJosa("총리", "을", "를") → "총리를"
+ * 마지막 글자가 한글이 아니면 withConsonant(받침 있을 때 조사)를 기본으로 쓴다.
+ */
+export function withJosa(word: string, withConsonant: string, withoutConsonant: string): string {
+  if (!word) return word;
+  const last = word[word.length - 1];
+  const code = last.charCodeAt(0);
+  // 한글 음절 범위(가~힣)에서 받침(종성) 유무 판정
+  if (code < 0xac00 || code > 0xd7a3) return word + withConsonant;
+  const hasJongseong = (code - 0xac00) % 28 !== 0;
+  return word + (hasJongseong ? withConsonant : withoutConsonant);
+}
