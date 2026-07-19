@@ -8,7 +8,7 @@ import { BILL_STATUS_MAP } from "@/lib/constants";
 
 export default function AlertsPageClient() {
   const { user, loading } = useAuth();
-  const { data: watches, isLoading } = useWatches();
+  const { data: watches, isLoading, isError } = useWatches();
   const deleteWatch = useDeleteWatch();
 
   if (!RADAR_ENABLED) {
@@ -31,6 +31,10 @@ export default function AlertsPageClient() {
     <div className="space-y-4">
       {isLoading ? (
         <p className="text-sm text-(--color-text-tertiary)">불러오는 중…</p>
+      ) : isError ? (
+        <p className="rounded-xl border border-red-300 bg-red-50 p-5 text-sm text-red-700 dark:border-red-800/50 dark:bg-red-950/30 dark:text-red-300">
+          알림 목록을 불러오지 못했습니다. 잠시 후 다시 시도해 주세요.
+        </p>
       ) : active.length === 0 ? (
         <div className="rounded-xl border border-(--color-border-primary) bg-(--color-bg-secondary) p-5">
           <p className="text-sm text-(--color-text-secondary)">

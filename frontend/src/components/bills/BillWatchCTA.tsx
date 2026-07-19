@@ -27,12 +27,14 @@ const loginFlowKey = (billId: string) => `radar_login_flow:${billId}`;
 export default function BillWatchCTA({ billId }: { billId: string }) {
   const { user, loading } = useAuth();
   const [loginOpen, setLoginOpen] = useState(false);
-  const { data: watches } = useWatches();
+  const { data: watches, isLoading: watchesLoading } = useWatches();
   const createWatch = useCreateWatch();
   // 노출 이벤트를 billId당 1회만 발화(같은 컴포넌트가 다른 법안으로 재사용돼도 재발화).
   const viewedBillRef = useRef<string | null>(null);
 
-  // 이 법안에 대한 활성 알림이 이미 있는지
+  // 이 법안에 대한 활성 알림이 이미 있는지. 로그인 사용자의 목록이 로딩 중이면 판정 보류
+  // (기존 구독자에게 '변경 알림 받기' CTA가 잠시 노출되는 깜빡임 방지).
+  const watchStateResolved = !user || !watchesLoading;
   const activeWatch = watches?.find((w) => w.billId === billId && w.enabled);
 
   // 인증 로딩이 끝난 뒤, 현재 billId에 대해 노출 이벤트를 1회 발화.
@@ -74,6 +76,10 @@ export default function BillWatchCTA({ billId }: { billId: string }) {
     // 로그인 사용자: 실제 Watch 생성(멱등)
     createWatch.mutate(billId);
   };
+
+  // 로그인 사용자의 구독 상태가 아직 로딩 중이면 CTA를 그리지 않음(구독자에게 미구독 CTA 깜빡임 방지).
+  // 노출 이벤트(useEffect)는 이미 발화됐으므로 측정엔 영향 없음.
+  if (!watchStateResolved) return null;
 
   // 이미 알림을 설정한 상태 — 성공 안내 + 관리 링크
   if (activeWatch) {
