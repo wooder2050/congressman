@@ -141,6 +141,7 @@ model Bill {
 
   term      Term           @relation(fields: [termId], references: [id])
   proposers BillProposer[]
+  watches   Watch[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -800,4 +801,23 @@ model ExitPoll {
 
   @@unique([scope, source, raceKey, candidate])
   @@index([scope, isActive, sourceOrder, sortOrder], map: "ExitPoll_scope_source_active_idx")
+}
+
+/// Lawmake Radar: 사용자가 특정 법안의 변경 알림을 구독하는 관계.
+/// userId는 Supabase auth.users UUID(FK 없이 String, UserPreference와 동일 방식).
+/// 베타는 법안(BILL)만 지원하므로 billId를 명시적으로 둔다(targetType/targetId 미도입).
+model Watch {
+  id      String  @id @default(cuid())
+  userId  String // Supabase auth.users UUID (FK 없음)
+  billId  String
+  enabled Boolean @default(true) // 해제 시 물리삭제 대신 false (이탈 분석·재활성화)
+
+  bill Bill @relation(fields: [billId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([userId, billId]) // 같은 사용자·법안 중복 방지(멱등 생성)
+  @@index([userId, enabled])
+  @@index([billId, enabled])
 }
