@@ -18,6 +18,16 @@ export function makeRunId(): string {
   return `${new Date().toISOString()}-${randomUUID()}`;
 }
 
+/**
+ * PolicyEvent '수집'을 켤지 여부. UI/Watch 생성용 RADAR_ENABLED와 분리한다.
+ * 이유: 이메일 발송(Phase 4)은 그동안 쌓인 이벤트를 보내는데, 수집이 UI flag와 함께 OFF면
+ * 보낼 이벤트 자체가 없다. 그래서 수집은 UI 공개보다 먼저 켜서 데이터를 축적한다.
+ * 하위호환: 기존에 RADAR_ENABLED만 켜둔 환경도 계속 수집되도록 둘 중 하나면 ON.
+ */
+export function isRadarEventCollectionEnabled(): boolean {
+  return process.env.RADAR_EVENTS_ENABLED === 'true' || process.env.RADAR_ENABLED === 'true';
+}
+
 /** 감지에 필요한 법안 필드 스냅샷(old/new 공통). */
 export interface BillSnapshot {
   status: string;

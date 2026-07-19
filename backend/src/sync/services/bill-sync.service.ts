@@ -2,6 +2,7 @@ import { Prisma, PrismaClient } from '@prisma/client';
 import { AssemblyApiService } from './assembly-api.service';
 import { SyncLogService } from './sync-log.service';
 import {
+  isRadarEventCollectionEnabled,
   makeRunId,
   resolveBillTransition,
   type BillSnapshot,
@@ -169,7 +170,7 @@ export class BillSyncService {
 
       // Radar: safe 경로도 상태·결과 변경을 PolicyEvent로 감지(감지 없이 Bill만 갱신하면
       // 다음 sync에서 old==new가 되어 이벤트가 영구 유실됨). daily 경로와 동일 로직 공유.
-      const radarOn = process.env.RADAR_ENABLED === 'true';
+      const radarOn = isRadarEventCollectionEnabled();
       const radarPreview = radarOn && process.env.RADAR_DRY_RUN === 'true';
       const ctx = { runId: this.syncRunId, radarOn, radarPreview, logTag: '[BillSync:Safe]' };
 
@@ -448,7 +449,7 @@ export class BillSyncService {
 
     // Radar: 의미 있는 변경(상태·처리결과)을 PolicyEvent로 기록(서버 flag ON일 때만).
     // dryRun(PREVIEW)은 'Radar 이벤트만' 미리보기 → Bill 동기화는 정상 반영, PolicyEvent만 미저장.
-    const radarOn = process.env.RADAR_ENABLED === 'true';
+    const radarOn = isRadarEventCollectionEnabled();
     const radarPreview = radarOn && process.env.RADAR_DRY_RUN === 'true';
     const runId = this.syncRunId;
 

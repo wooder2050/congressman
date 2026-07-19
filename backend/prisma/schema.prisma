@@ -710,6 +710,9 @@ model UserPreference {
   bookmarkedMembers      String[] @default([]) // 저장한 의원 ID
   bookmarkedBreakingNews String[] @default([]) // 저장한 속보 ID
 
+  // Radar 주간 다이제스트 이메일 수신 여부. 수신거부 시 false(Watch 자체는 유지).
+  radarEmailOptIn Boolean @default(true)
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -813,9 +816,10 @@ model Watch {
   billId  String
   enabled Boolean @default(true) // 해제 시 물리삭제 대신 false (이탈 분석·재활성화)
 
-  bill Bill @relation(fields: [billId], references: [id], onDelete: Cascade)
+  bill        Bill         @relation(fields: [billId], references: [id], onDelete: Cascade)
+  digestItems DigestItem[]
 
-  createdAt DateTime @default(now())
+  createdAt DateTime @default(now()) // 알림 활성 시점(매칭에서 이 시점 이후 이벤트만 포함)
   updatedAt DateTime @updatedAt
 
   @@unique([userId, billId]) // 같은 사용자·법안 중복 방지(멱등 생성)
@@ -836,9 +840,100 @@ model PolicyEvent {
   detectedAt      DateTime @default(now())
   sourceChangedAt String? // 원천 데이터상 변경일(있으면). YYYY-MM-DD
 
-  bill Bill @relation(fields: [billId], references: [id], onDelete: Cascade)
+  bill        Bill         @relation(fields: [billId], references: [id], onDelete: Cascade)
+  digestItems DigestItem[]
 
   @@unique([runId, billId])
   @@index([billId, detectedAt])
   @@index([detectedAt])
+}
+
+/// Lawmake Radar 주간 다이제스트: 한 번의 발송 배치 '실행'.
+/// periodStart~periodEnd(exclusive) 기간의 PolicyEvent를 사용자 Watch와 매칭해 Digest를 만든다.
+/// status BUILDING→READY 커서로 기간 경계를 관리(마지막 READY의 periodEnd가 다음 실행의 시작).
+/// 배치가 한 주 누락되면 다음 실행이 그 기간까지 자동으로 커버(이벤트 유실 방지).
+/// status: "BUILDING"(빌드 중) | "READY"(빌드 완료, 발송 대상)
+model DigestRun {
+  id           String    @id @default(cuid())
+  periodKey    String    @unique // 기간 식별(예: "2026-W30"). 동일 기간 중복 실행 방지
+  periodStart  DateTime
+  periodEnd    DateTime // exclusive
+  status       String    @default("BUILDING") // "BUILDING" | "READY"
+  cursorUserId String? // 빌드 중단 복구용: 마지막으로 Digest를 만든 userId
+  readyAt      DateTime?
+
+  digests Digest[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([status, updatedAt]) // READY 발송 조회 + 중단된 BUILDING 복구
+}
+
+/// 사용자 1명·1실행의 다이제스트(이메일 1통). 발송 원장.
+/// PENDING으로 먼저 저장 후 발송 → SENT/FAILED. subject/html snapshot으로 재시도 시 동일 payload 보장.
+/// status: "PENDING" | "PREVIEW"(dry-run) | "SENT" | "FAILED" | "SUPPRESSED"(수신거부·이메일없음)
+model Digest {
+  id                String    @id @default(cuid())
+  digestRunId       String
+  userId            String // Supabase auth.users UUID (FK 없음)
+  recipientEmail    String? // 발송 시점 이메일 스냅샷(auth.users에서 조회)
+  status            String    @default("PENDING")
+  subjectSnapshot   String
+  htmlSnapshot      String    @db.Text
+  idempotencyKey    String    @unique // Resend Idempotency-Key로도 사용(중복 발송 방지)
+  attemptCount      Int       @default(0)
+  lastAttemptAt     DateTime?
+  providerMessageId String?   @unique // 공급자 메시지 ID(발송 성공 시)
+  lastError         String?
+  suppressedReason  String?
+  sentAt            DateTime?
+
+  digestRun DigestRun    @relation(fields: [digestRunId], references: [id], onDelete: Restrict)
+  items     DigestItem[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([digestRunId, userId]) // 한 실행에서 사용자당 Digest 하나(중복 발송 방지)
+  @@index([digestRunId, status]) // 실행별 PENDING/FAILED 발송 대상 조회
+  @@index([userId, createdAt]) // 사용자별 발송 이력
+}
+
+/// 다이제스트에 포함된 변경 이벤트 1건(이메일 본문 한 줄). 발송 원장이라 snapshot 보존.
+model DigestItem {
+  id              String    @id @default(cuid())
+  digestId        String
+  userId          String // 실행 간 동일 이벤트 재포함 방지 unique용
+  policyEventId   String? // Bill/PolicyEvent 삭제돼도 원장 보존(SetNull)
+  watchId         String?
+  payloadSnapshot Json // 렌더 시점 스냅샷(법안 제목·상태 변화 등)
+  position        Int
+  clickedAt       DateTime? // 이메일 링크 클릭 기록(1회)
+
+  digest      Digest       @relation(fields: [digestId], references: [id], onDelete: Cascade)
+  policyEvent PolicyEvent? @relation(fields: [policyEventId], references: [id], onDelete: SetNull)
+  watch       Watch?       @relation(fields: [watchId], references: [id], onDelete: SetNull)
+
+  createdAt DateTime @default(now())
+  // Bill 삭제는 Watch/PolicyEvent까지만 cascade. 발송 원장 DigestItem은 snapshot과 함께 보존.
+
+  @@unique([digestId, policyEventId]) // 같은 Digest 내 동일 이벤트 중복 포함 방지
+  @@unique([userId, policyEventId]) // 실행 간에도 같은 사용자에게 같은 이벤트 재발송 방지
+  @@index([digestId, position]) // 항목 순서대로 렌더링
+  @@index([policyEventId])
+  @@index([watchId])
+}
+
+/// Pro 출시 알림 신청(유료 의향 측정). 비로그인 제출도 허용.
+model UpgradeInterest {
+  id              String   @id @default(cuid())
+  userId          String? // 로그인 사용자면 auth UUID(FK 없음)
+  email           String
+  normalizedEmail String   @unique // 소문자·trim 정규화. 중복 신청 방지
+  source          String // 신청 위치(예: "alerts_page")
+  consentedAt     DateTime // 연락 동의 시각
+  createdAt       DateTime @default(now())
+
+  @@index([userId])
 }
