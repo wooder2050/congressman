@@ -8,7 +8,7 @@ import { createClient } from "@/lib/supabase/client";
 interface AuthContextType {
   user: User | null;
   loading: boolean;
-  signInWithGoogle: () => Promise<void>;
+  signInWithGoogle: (returnTo?: string) => Promise<void>;
   signOut: () => Promise<void>;
 }
 
@@ -48,13 +48,23 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     return () => subscription.unsubscribe();
   }, [supabase]);
 
-  const signInWithGoogle = useCallback(async () => {
-    if (!supabase) return;
-    await supabase.auth.signInWithOAuth({
-      provider: "google",
-      options: { redirectTo: `${window.location.origin}/auth/callback` },
-    });
-  }, [supabase]);
+  const signInWithGoogle = useCallback(
+    async (returnTo?: string) => {
+      if (!supabase) return;
+      // 로그인 후 원래 페이지로 복귀(auth/callback이 next 파라미터를 open-redirect 방어와 함께 처리).
+      // 같은 origin의 상대 경로만 전달.
+      const safeReturn =
+        returnTo && returnTo.startsWith("/") && !returnTo.startsWith("//") ? returnTo : null;
+      const callback = safeReturn
+        ? `${window.location.origin}/auth/callback?next=${encodeURIComponent(safeReturn)}`
+        : `${window.location.origin}/auth/callback`;
+      await supabase.auth.signInWithOAuth({
+        provider: "google",
+        options: { redirectTo: callback },
+      });
+    },
+    [supabase],
+  );
 
   const signOut = useCallback(async () => {
     try {
