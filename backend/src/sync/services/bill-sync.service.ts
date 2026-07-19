@@ -1,7 +1,10 @@
 import { Prisma, PrismaClient } from '@prisma/client';
 import { AssemblyApiService } from './assembly-api.service';
 import { SyncLogService } from './sync-log.service';
-import { buildPolicyEvent } from './policy-event-builder';
+import { buildPolicyEvent, effectiveNext } from './policy-event-builder';
+
+/** PolicyEvent createMany 입력(배치 트랜잭션에서 재사용). */
+type PolicyEventInput = Prisma.PolicyEventCreateManyInput;
 
 /** 의원 발의 법안 API 응답 row */
 interface BillApiRow {
@@ -33,8 +36,10 @@ const UPDATE_BATCH_SIZE = 50;
 
 export class BillSyncService {
   /**
-   * Radar: 이번 sync 실행 식별자. PolicyEvent의 @@unique([runId, billId]) key로 쓰여
-   * 같은 날 재실행 시 동일 변경이 중복 이벤트가 되지 않게 한다(KST 날짜 단위).
+   * Radar: 이번 sync '실행'을 식별하는 runId. PolicyEvent @@unique([runId, billId]) key.
+   * 실행 시작 시각(ISO 타임스탬프)으로, 한 프로세스 실행 내에서는 불변(재시도 시 같은 값).
+   * 실행마다 달라지므로 같은 법안이 하루에 두 번(다른 실행에서) 변경돼도 각각 이벤트가 생긴다.
+   * (occurredAt=detectedAt은 별도 저장, 이메일 묶음은 조회 시 날짜로 그룹핑)
    */
   private syncRunId = '';
 
@@ -44,10 +49,9 @@ export class BillSyncService {
     private readonly syncLog: SyncLogService,
   ) {}
 
-  /** KST 날짜 기준 runId(YYYY-MM-DD). 같은 날 재실행은 같은 runId → 중복 이벤트 방지. */
+  /** 실행 시작 시각 기반 runId(ISO). 한 실행 내 불변, 실행마다 달라짐. */
   private makeRunId(): string {
-    const kst = new Date(Date.now() + 9 * 60 * 60 * 1000); // UTC→KST
-    return kst.toISOString().slice(0, 10);
+    return new Date().toISOString();
   }
 
   async syncBills(termId: number): Promise<void> {
@@ -283,77 +287,113 @@ export class BillSyncService {
     const existingIds = new Set(existingBills.map((b) => b.id));
 
     // Radar: 의미 있는 변경(상태·처리결과)을 PolicyEvent로 기록(서버 flag ON일 때만).
+    // dryRun(PREVIEW)이면 Bill·PolicyEvent 모두 쓰지 않고 로그만 남긴다(부분 쓰기로 인한 유실 방지).
     const radarOn = process.env.RADAR_ENABLED === 'true';
-    const runId = this.syncRunId; // 이번 sync 실행 식별자(재실행 중복 방지 key)
-    const policyEventDrafts: Prisma.PolicyEventCreateManyInput[] = [];
+    const dryRun = process.env.RADAR_DRY_RUN === 'true';
+    const runId = this.syncRunId;
 
     const newRows: BillApiRow[] = [];
-    const updateRows: BillApiRow[] = [];
+    // 변경된 법안: update 데이터 + (해당 시) PolicyEvent를 함께 준비해 배치 트랜잭션으로 원자 처리
+    const updatePlans: { id: string; data: Prisma.BillUpdateInput; event?: PolicyEventInput }[] = [];
+
     for (const row of rows) {
       if (!existingIds.has(row.BILL_ID)) {
         newRows.push(row);
-      } else {
-        // 변경된 법안만 업데이트 대상에 포함
-        const existing = existingMap.get(row.BILL_ID)!;
-        const newTitle = row.BILL_NAME;
-        const newProposerName = row.RST_PROPOSER ?? this.extractProposerName(row.PROPOSER);
-        const newCoCount = this.extractCoProposerCount(row.PROPOSER);
-        const newStatus = this.mapStatus(row.PROC_RESULT);
-        const newDate = this.normalizeDate(row.PROPOSE_DT);
-        const newCommittee = row.COMMITTEE || null;
-        const progress = this.mapProgressFields(row);
+        continue;
+      }
+      const existing = existingMap.get(row.BILL_ID)!;
+      const newStatus = this.mapStatus(row.PROC_RESULT);
+      const progress = this.mapProgressFields(row);
 
-        if (
-          existing.title !== newTitle ||
-          existing.proposerName !== newProposerName ||
-          existing.coProposerCount !== newCoCount ||
-          existing.status !== newStatus ||
-          existing.proposedDate !== newDate ||
-          existing.committee !== newCommittee ||
-          existing.committeeDate !== progress.committeeDate ||
-          existing.committeePresentDate !== progress.committeePresentDate ||
-          existing.committeeResultCode !== progress.committeeResultCode ||
-          existing.committeeResultDate !== progress.committeeResultDate ||
-          existing.lawSubmitDate !== progress.lawSubmitDate ||
-          existing.lawPresentDate !== progress.lawPresentDate ||
-          existing.lawResultCode !== progress.lawResultCode ||
-          existing.lawResultDate !== progress.lawResultDate ||
-          existing.plenaryDate !== progress.plenaryDate
-        ) {
-          updateRows.push(row);
+      // 역행/누락 방어: 원천의 status 역행·결과코드 null을 기존 값으로 치환(DB·이벤트 모두 미반영)
+      const eff = effectiveNext(
+        {
+          status: existing.status,
+          committeeResultCode: existing.committeeResultCode,
+          committeeResultDate: existing.committeeResultDate,
+          lawResultCode: existing.lawResultCode,
+          lawResultDate: existing.lawResultDate,
+          plenaryDate: existing.plenaryDate,
+        },
+        {
+          status: newStatus,
+          committeeResultCode: progress.committeeResultCode,
+          committeeResultDate: progress.committeeResultDate,
+          lawResultCode: progress.lawResultCode,
+          lawResultDate: progress.lawResultDate,
+          plenaryDate: progress.plenaryDate,
+        },
+      );
 
-          // 의미 있는 변경(상태·결과)만 PolicyEvent로. title·날짜 단독 변경은 제외.
-          if (radarOn) {
-            const draft = buildPolicyEvent(
-              {
-                status: existing.status,
-                committeeResultCode: existing.committeeResultCode,
-                committeeResultDate: existing.committeeResultDate,
-                lawResultCode: existing.lawResultCode,
-                lawResultDate: existing.lawResultDate,
-                plenaryDate: existing.plenaryDate,
-              },
-              {
-                status: newStatus,
-                committeeResultCode: progress.committeeResultCode,
-                committeeResultDate: progress.committeeResultDate,
-                lawResultCode: progress.lawResultCode,
-                lawResultDate: progress.lawResultDate,
-                plenaryDate: progress.plenaryDate,
-              },
-            );
-            if (draft) {
-              policyEventDrafts.push({
-                billId: row.BILL_ID,
-                runId,
-                eventType: draft.eventType,
-                changes: draft.changes as unknown as Prisma.InputJsonValue,
-                sourceChangedAt: draft.sourceChangedAt,
-              });
-            }
-          }
+      const newTitle = row.BILL_NAME;
+      const newProposerName = row.RST_PROPOSER ?? this.extractProposerName(row.PROPOSER);
+      const newCoCount = this.extractCoProposerCount(row.PROPOSER);
+      const newDate = this.normalizeDate(row.PROPOSE_DT);
+      const newCommittee = row.COMMITTEE || null;
+
+      const changed =
+        existing.title !== newTitle ||
+        existing.proposerName !== newProposerName ||
+        existing.coProposerCount !== newCoCount ||
+        existing.status !== eff.status ||
+        existing.proposedDate !== newDate ||
+        existing.committee !== newCommittee ||
+        existing.committeeDate !== progress.committeeDate ||
+        existing.committeePresentDate !== progress.committeePresentDate ||
+        existing.committeeResultCode !== eff.committeeResultCode ||
+        existing.committeeResultDate !== eff.committeeResultDate ||
+        existing.lawSubmitDate !== progress.lawSubmitDate ||
+        existing.lawPresentDate !== progress.lawPresentDate ||
+        existing.lawResultCode !== eff.lawResultCode ||
+        existing.lawResultDate !== eff.lawResultDate ||
+        existing.plenaryDate !== eff.plenaryDate;
+
+      if (!changed) continue;
+
+      // Bill update 데이터(effectiveNext 반영: 역행/누락 필드는 기존 값 유지)
+      const data: Prisma.BillUpdateInput = {
+        title: newTitle,
+        proposerName: newProposerName,
+        coProposerCount: newCoCount,
+        status: eff.status,
+        proposedDate: newDate,
+        committee: newCommittee,
+        committeeDate: progress.committeeDate,
+        committeePresentDate: progress.committeePresentDate,
+        committeeResultCode: eff.committeeResultCode,
+        committeeResultDate: eff.committeeResultDate,
+        lawSubmitDate: progress.lawSubmitDate,
+        lawPresentDate: progress.lawPresentDate,
+        lawResultCode: eff.lawResultCode,
+        lawResultDate: eff.lawResultDate,
+        plenaryDate: eff.plenaryDate,
+      };
+
+      let event: PolicyEventInput | undefined;
+      if (radarOn) {
+        const draft = buildPolicyEvent(
+          {
+            status: existing.status,
+            committeeResultCode: existing.committeeResultCode,
+            committeeResultDate: existing.committeeResultDate,
+            lawResultCode: existing.lawResultCode,
+            lawResultDate: existing.lawResultDate,
+            plenaryDate: existing.plenaryDate,
+          },
+          eff,
+        );
+        if (draft) {
+          event = {
+            billId: row.BILL_ID,
+            runId,
+            eventType: draft.eventType,
+            changes: draft.changes as unknown as Prisma.InputJsonValue,
+            sourceChangedAt: draft.sourceChangedAt,
+          };
         }
       }
+
+      updatePlans.push({ id: row.BILL_ID, data, event });
     }
 
     // 신규 법안: createMany (빠름)
@@ -377,48 +417,47 @@ export class BillSyncService {
     }
 
     // 기존 법안: 변경된 것만 update (summary/pdfBookId/detailLink 보존)
-    if (updateRows.length > 0) {
-      console.log(
-        `[BillSync]   Updating ${updateRows.length} changed bills (${existingBills.length - newRows.length - updateRows.length} unchanged, skipped)...`,
-      );
-      for (let i = 0; i < updateRows.length; i += UPDATE_BATCH_SIZE) {
-        const batch = updateRows.slice(i, i + UPDATE_BATCH_SIZE);
-        for (const row of batch) {
-          await this.prisma.bill.update({
-            where: { id: row.BILL_ID },
-            data: {
-              title: row.BILL_NAME,
-              proposerName: row.RST_PROPOSER ?? this.extractProposerName(row.PROPOSER),
-              coProposerCount: this.extractCoProposerCount(row.PROPOSER),
-              status: this.mapStatus(row.PROC_RESULT),
-              proposedDate: this.normalizeDate(row.PROPOSE_DT),
-              committee: row.COMMITTEE || null,
-              ...this.mapProgressFields(row),
-            },
-          });
-        }
-        if ((i + UPDATE_BATCH_SIZE) % 500 < UPDATE_BATCH_SIZE) {
-          console.log(
-            `[BillSync]   Bills: ${Math.min(i + UPDATE_BATCH_SIZE, updateRows.length)}/${updateRows.length}`,
-          );
-        }
-      }
-    }
+    if (updatePlans.length > 0) {
+      const eventCount = updatePlans.filter((p) => p.event).length;
+      const unchanged = existingBills.length - newRows.length - updatePlans.length;
 
-    // Radar: 수집한 PolicyEvent 저장(@@unique([runId, billId])로 같은 sync 재실행 시 중복 방지).
-    // bill update 이후에 기록하되, skipDuplicates로 부분 재실행에도 안전.
-    if (radarOn && policyEventDrafts.length > 0) {
-      if (process.env.RADAR_DRY_RUN === 'true') {
+      if (dryRun) {
+        // PREVIEW 모드: Bill·PolicyEvent 모두 쓰지 않고 요약만 로그(Bill만 갱신하는 dry-run 금지)
         console.log(
-          `[BillSync]   Radar[DRY_RUN]: would record ${policyEventDrafts.length} policy events (not saved). ` +
-            `sample=${JSON.stringify(policyEventDrafts.slice(0, 3))}`,
+          `[BillSync]   Radar[PREVIEW]: ${updatePlans.length} bills would update, ` +
+            `${eventCount} policy events would be recorded (nothing written). ` +
+            `sample=${JSON.stringify(updatePlans.filter((p) => p.event).slice(0, 3).map((p) => p.event))}`,
         );
       } else {
-        const created = await this.prisma.policyEvent.createMany({
-          data: policyEventDrafts,
-          skipDuplicates: true,
-        });
-        console.log(`[BillSync]   Radar: recorded ${created.count} policy events`);
+        console.log(
+          `[BillSync]   Updating ${updatePlans.length} changed bills (${unchanged} unchanged, skipped)... ` +
+            `${radarOn ? `+ ${eventCount} policy events` : ''}`,
+        );
+        // 배치 단위 트랜잭션으로 bill.update들 + PolicyEvent.createMany를 원자적으로 묶는다.
+        // (bill만 갱신되고 event가 유실되는 것을 막고, 배치 실패 시 그 배치 전체 롤백 → 재실행 복구)
+        for (let i = 0; i < updatePlans.length; i += UPDATE_BATCH_SIZE) {
+          const batch = updatePlans.slice(i, i + UPDATE_BATCH_SIZE);
+          const events = batch
+            .map((p) => p.event)
+            .filter((e): e is PolicyEventInput => e !== undefined);
+          await this.prisma.$transaction(
+            async (tx) => {
+              for (const plan of batch) {
+                await tx.bill.update({ where: { id: plan.id }, data: plan.data });
+              }
+              if (radarOn && events.length > 0) {
+                await tx.policyEvent.createMany({ data: events, skipDuplicates: true });
+              }
+            },
+            { timeout: 60000 },
+          );
+          if ((i + UPDATE_BATCH_SIZE) % 500 < UPDATE_BATCH_SIZE) {
+            console.log(
+              `[BillSync]   Bills: ${Math.min(i + UPDATE_BATCH_SIZE, updatePlans.length)}/${updatePlans.length}`,
+            );
+          }
+        }
+        if (radarOn) console.log(`[BillSync]   Radar: recorded up to ${eventCount} policy events`);
       }
     }
 

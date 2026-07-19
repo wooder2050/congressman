@@ -37,26 +37,20 @@ export function buildPolicyEvent(
   oldBill: BillSnapshot,
   newBill: BillSnapshot,
 ): PolicyEventDraft | null {
+  // old/new는 이미 effectiveNext(역행·null 치환)를 거친 값이라, 여기서는 순수 비교만 한다.
   const changes: PolicyChange[] = [];
 
-  // status 변경. 단 이미 처리단계에 도달한 법안이 'pending'으로 역행하는 것은 API 일시 오류
-  // (PROC_RESULT 누락 → mapStatus 기본값 pending)일 가능성이 높으므로 이벤트로 만들지 않는다.
-  const regressedToPending = newBill.status === 'pending' && oldBill.status !== 'pending';
-  if (oldBill.status !== newBill.status && !regressedToPending) {
+  if (oldBill.status !== newBill.status) {
     changes.push({ field: 'status', from: oldBill.status, to: newBill.status });
   }
-  // 결과코드도 '있음 → 없음(null)'은 원천 누락 가능성이 높아 제외(값 변경·신규 부여만 감지).
-  if (
-    oldBill.committeeResultCode !== newBill.committeeResultCode &&
-    newBill.committeeResultCode !== null
-  ) {
+  if (oldBill.committeeResultCode !== newBill.committeeResultCode) {
     changes.push({
       field: 'committeeResultCode',
       from: oldBill.committeeResultCode,
       to: newBill.committeeResultCode,
     });
   }
-  if (oldBill.lawResultCode !== newBill.lawResultCode && newBill.lawResultCode !== null) {
+  if (oldBill.lawResultCode !== newBill.lawResultCode) {
     changes.push({
       field: 'lawResultCode',
       from: oldBill.lawResultCode,
@@ -85,4 +79,36 @@ export function buildPolicyEvent(
   }
 
   return { eventType, changes, sourceChangedAt };
+}
+
+/** status 진행 순위(낮을수록 초기 단계). 역행 판정용. */
+const STATUS_RANK: Record<string, number> = {
+  pending: 0,
+  committee: 1,
+  passed: 2,
+  discarded: 2, // 폐기/철회도 종결 단계(pending보다 진행). 역행 아님.
+};
+
+/**
+ * 원천 응답의 '역행/누락'을 기존 값으로 치환한 '유효 다음 값'을 만든다.
+ * API 일시 오류(PROC_RESULT 누락 → status가 pending으로 역행, 결과코드가 null로 사라짐)를
+ * DB에도 이벤트에도 반영하지 않기 위해, 이런 필드는 기존 값을 유지한다.
+ * 정상적인 전진(값 부여·상위 단계)만 새 값을 채택한다.
+ */
+export function effectiveNext(oldBill: BillSnapshot, incoming: BillSnapshot): BillSnapshot {
+  const oldRank = STATUS_RANK[oldBill.status] ?? 0;
+  const newRank = STATUS_RANK[incoming.status] ?? 0;
+  const status = newRank < oldRank ? oldBill.status : incoming.status; // 역행이면 기존 유지
+  return {
+    status,
+    // 결과코드가 '있음 → null'이면 원천 누락 가능성 → 기존 값 유지
+    committeeResultCode: incoming.committeeResultCode ?? oldBill.committeeResultCode,
+    committeeResultDate: incoming.committeeResultCode
+      ? incoming.committeeResultDate
+      : oldBill.committeeResultDate,
+    lawResultCode: incoming.lawResultCode ?? oldBill.lawResultCode,
+    lawResultDate: incoming.lawResultCode ? incoming.lawResultDate : oldBill.lawResultDate,
+    // 본회의 처리일은 한 번 부여되면 유지(누락 시 기존 값)
+    plenaryDate: incoming.plenaryDate ?? oldBill.plenaryDate,
+  };
 }
