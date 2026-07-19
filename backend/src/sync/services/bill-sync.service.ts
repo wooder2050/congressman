@@ -11,8 +11,16 @@ import {
 /** PolicyEvent createMany 입력(배치 트랜잭션에서 재사용). */
 type PolicyEventInput = Prisma.PolicyEventCreateManyInput;
 
-/** 변경된 법안 1건의 Bill patch + (해당 시) PolicyEvent. 배치 트랜잭션 단위. */
-type BillUpdatePlan = { id: string; data: Prisma.BillUpdateInput; event?: PolicyEventInput };
+/**
+ * 변경된 법안 1건의 Bill patch + (해당 시) PolicyEvent. 배치 트랜잭션 단위.
+ * eventDetected: 이벤트가 감지됐는지(PREVIEW라 event가 undefined여도 true) — 요약 카운트용.
+ */
+type BillUpdatePlan = {
+  id: string;
+  data: Prisma.BillUpdateInput;
+  event?: PolicyEventInput;
+  eventDetected: boolean;
+};
 
 /** 상태·결과 필드만 담은 부분 레코드 → 감지용 BillSnapshot. */
 function billSnapshot(b: {
@@ -240,7 +248,8 @@ export class BillSyncService {
     opts: { radarOn: boolean; radarPreview: boolean; unchanged: number },
   ): Promise<void> {
     if (plans.length === 0) return;
-    const eventCount = plans.filter((p) => p.event).length;
+    // 감지된 이벤트 수(PREVIEW면 event가 미저장되므로 eventDetected로 카운트해야 정확).
+    const eventCount = plans.filter((p) => p.eventDetected).length;
     console.log(
       `${logTag}   Updating ${plans.length} changed bills (${opts.unchanged} unchanged, skipped)... ` +
         `${opts.radarOn ? `+ ${opts.radarPreview ? `${eventCount} events PREVIEW(미저장)` : `${eventCount} policy events`}` : ''}`,
@@ -361,7 +370,7 @@ export class BillSyncService {
       );
     }
 
-    return { id: row.BILL_ID, data, event };
+    return { id: row.BILL_ID, data, event, eventDetected: Boolean(draft && ctx.radarOn) };
   }
 
   /** 특정 법안들에 대해서만 proposer 연결 (기존 proposer 삭제 없음) */
@@ -514,8 +523,12 @@ export class BillSyncService {
     console.log(`[BillSync] Linking proposers (${memberMap.size} members in lookup)...`);
 
     const allProposers: { billId: string; memberId: string; role: string }[] = [];
+    // 응답 내 중복 BILL_ID 방어: 첫 등장 row만 처리(순서 의존적 role 선택·건수 부풀림 방지).
+    const seenBills = new Set<string>();
 
     for (const row of rows) {
+      if (seenBills.has(row.BILL_ID)) continue;
+      seenBills.add(row.BILL_ID);
       // 1) 대표발의자: RST_PROPOSER 또는 PROPOSER에서 추출한 이름
       const repName = row.RST_PROPOSER ?? this.extractProposerName(row.PROPOSER);
       const repNames = repName
