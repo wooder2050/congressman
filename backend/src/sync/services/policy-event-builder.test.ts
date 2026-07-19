@@ -92,6 +92,20 @@ describe('effectiveNext (역행/누락 방어)', () => {
     expect(eff.plenaryDate).toBe('2026-07-15');
   });
 
+  it('결과코드는 유지되고 결과일만 null이면 기존 결과일 유지(날짜 유실·재감지 방지)', () => {
+    const old = {
+      ...base,
+      status: 'committee',
+      committeeResultCode: '원안가결',
+      committeeResultDate: '2026-07-01',
+    };
+    // 코드는 그대로인데 이번 응답에서 날짜만 빠진 경우
+    const eff = effectiveNext(old, { ...old, committeeResultDate: null });
+    expect(eff.committeeResultCode).toBe('원안가결');
+    expect(eff.committeeResultDate).toBe('2026-07-01');
+    expect(buildPolicyEvent(old, eff)).toBeNull();
+  });
+
   it('discarded(폐기)는 pending보다 진행 단계라 역행 아님', () => {
     const eff = effectiveNext({ ...base, status: 'committee' }, { ...base, status: 'discarded' });
     expect(eff.status).toBe('discarded');

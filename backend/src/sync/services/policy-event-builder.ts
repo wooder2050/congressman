@@ -6,6 +6,18 @@
  * - 제외: title·proposer·날짜 단독 변경(updatedAt 포함) → 이메일 스팸 방지
  */
 
+import { randomUUID } from 'node:crypto';
+
+/**
+ * sync 실행 식별자. PolicyEvent @@unique([runId, billId]) key.
+ * ISO 시각 + UUID로, 같은 밀리초에 시작한 동시/재시도 실행이 충돌하지 않게 한다
+ * (skipDuplicates가 충돌을 '성공'으로 삼켜 이벤트를 유실하는 것을 방지).
+ * 한 실행 내에서는 한 번만 만들어 불변으로 쓴다.
+ */
+export function makeRunId(): string {
+  return `${new Date().toISOString()}-${randomUUID()}`;
+}
+
 /** 감지에 필요한 법안 필드 스냅샷(old/new 공통). */
 export interface BillSnapshot {
   status: string;
@@ -22,7 +34,7 @@ interface PolicyChange {
   to: string | null;
 }
 
-interface PolicyEventDraft {
+export interface PolicyEventDraft {
   eventType: string; // status_change | committee_result | law_result | plenary
   changes: PolicyChange[];
   sourceChangedAt: string | null; // 원천 변경일(있으면)
@@ -81,6 +93,21 @@ export function buildPolicyEvent(
   return { eventType, changes, sourceChangedAt };
 }
 
+/**
+ * old + incoming(원천 응답) → { effective, event }.
+ * - effective: effectiveNext(역행·null 치환)를 거친 '실제로 DB에 써야 할 상태/결과 필드' 값.
+ *   Bill 갱신과 이벤트 감지가 반드시 같은 값을 쓰도록 한곳에서 계산(재감지 방지).
+ * - event: 의미 있는 변경이 있으면 PolicyEvent 초안, 없으면 null.
+ * bill sync의 세 경로(syncBills / syncBillsSafe / ExtraBillSync)가 공유한다.
+ */
+export function resolveBillTransition(
+  oldBill: BillSnapshot,
+  incoming: BillSnapshot,
+): { effective: BillSnapshot; event: PolicyEventDraft | null } {
+  const effective = effectiveNext(oldBill, incoming);
+  return { effective, event: buildPolicyEvent(oldBill, effective) };
+}
+
 /** status 진행 순위(낮을수록 초기 단계). 역행 판정용. */
 const STATUS_RANK: Record<string, number> = {
   pending: 0,
@@ -99,15 +126,21 @@ export function effectiveNext(oldBill: BillSnapshot, incoming: BillSnapshot): Bi
   const oldRank = STATUS_RANK[oldBill.status] ?? 0;
   const newRank = STATUS_RANK[incoming.status] ?? 0;
   const status = newRank < oldRank ? oldBill.status : incoming.status; // 역행이면 기존 유지
+
+  // 결과코드가 '있음 → null'이면 원천 누락 가능성 → 기존 코드 유지
+  const committeeResultCode = incoming.committeeResultCode ?? oldBill.committeeResultCode;
+  const lawResultCode = incoming.lawResultCode ?? oldBill.lawResultCode;
+
   return {
     status,
-    // 결과코드가 '있음 → null'이면 원천 누락 가능성 → 기존 값 유지
-    committeeResultCode: incoming.committeeResultCode ?? oldBill.committeeResultCode,
-    committeeResultDate: incoming.committeeResultCode
-      ? incoming.committeeResultDate
-      : oldBill.committeeResultDate,
-    lawResultCode: incoming.lawResultCode ?? oldBill.lawResultCode,
-    lawResultDate: incoming.lawResultCode ? incoming.lawResultDate : oldBill.lawResultDate,
+    committeeResultCode,
+    // 코드가 없으면 날짜도 없음. 코드가 있으면 날짜는 (누락 시) 기존 날짜 유지 → DB에서 날짜가
+    // 지워지지 않도록(지우면 다음 sync에서 재감지). 비교와 DB 갱신 모두 이 값을 써야 일관.
+    committeeResultDate: committeeResultCode
+      ? (incoming.committeeResultDate ?? oldBill.committeeResultDate)
+      : null,
+    lawResultCode,
+    lawResultDate: lawResultCode ? (incoming.lawResultDate ?? oldBill.lawResultDate) : null,
     // 본회의 처리일은 한 번 부여되면 유지(누락 시 기존 값)
     plenaryDate: incoming.plenaryDate ?? oldBill.plenaryDate,
   };
