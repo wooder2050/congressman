@@ -25,17 +25,54 @@ const PROVISIONAL_TENURE_DAYS = 90; // 재직 90일 미만은 순위·배지를 
 const PASS_RATE_PRIOR_N = 10; // 통과율 베이지안 평활 강도(가상표본 10건)
 const PASS_RATE_MIN_AGE_DAYS = 180; // 통과율 분모: 발의 후 180일 지난 법안만(통과 시간 확보)
 
-/** startDate(YYYY-MM-DD)와 기준일 사이의 재직 개월수. startDate 없으면 개원일 기준 대체. */
-function tenureMonths(startDate: string | null, asOf: Date, fallbackStart: string): number {
-  const start = new Date(`${startDate ?? fallbackStart}T00:00:00Z`);
-  const days = (asOf.getTime() - start.getTime()) / (1000 * 60 * 60 * 24);
-  return Math.max(days / AVG_DAYS_PER_MONTH, 0.5); // 하한 0.5개월(0 나눗셈·초단기 폭증 방지)
+interface CabinetTenure {
+  position: string;
+  startDate: string;
+  endDate: string | null;
 }
 
-/** 재직일수. */
-function tenureDays(startDate: string | null, asOf: Date, fallbackStart: string): number {
+/** [start, asOf] 구간과 국무위원 재임 이력이 겹치는 일수의 합(평가 제외 기간). */
+function cabinetExcludedDays(
+  start: Date,
+  asOf: Date,
+  history: CabinetTenure[] | null | undefined,
+): number {
+  if (!history || history.length === 0) return 0;
+  let excluded = 0;
+  for (const h of history) {
+    const cs = new Date(`${h.startDate}T00:00:00Z`).getTime();
+    const ce = (h.endDate ? new Date(`${h.endDate}T00:00:00Z`) : asOf).getTime();
+    const overlapStart = Math.max(start.getTime(), cs);
+    const overlapEnd = Math.min(asOf.getTime(), ce);
+    if (overlapEnd > overlapStart) excluded += (overlapEnd - overlapStart) / (1000 * 60 * 60 * 24);
+  }
+  return excluded;
+}
+
+/**
+ * 재직일수 — 국무위원 재임 기간(cabinetHistory)은 표결·발의가 불가능했으므로 제외한다.
+ * (예: 김민석 총리 1년은 평가 가능 기간에서 뺀다 → 복귀 후 활동만 공정 평가)
+ */
+function tenureDays(
+  startDate: string | null,
+  asOf: Date,
+  fallbackStart: string,
+  cabinetHistory?: CabinetTenure[] | null,
+): number {
   const start = new Date(`${startDate ?? fallbackStart}T00:00:00Z`);
-  return Math.max((asOf.getTime() - start.getTime()) / (1000 * 60 * 60 * 24), 0);
+  const raw = (asOf.getTime() - start.getTime()) / (1000 * 60 * 60 * 24);
+  return Math.max(raw - cabinetExcludedDays(start, asOf, cabinetHistory), 0);
+}
+
+/** 평가 가능 재직 개월수(국무위원 재임 기간 제외). */
+function tenureMonths(
+  startDate: string | null,
+  asOf: Date,
+  fallbackStart: string,
+  cabinetHistory?: CabinetTenure[] | null,
+): number {
+  const days = tenureDays(startDate, asOf, fallbackStart, cabinetHistory);
+  return Math.max(days / AVG_DAYS_PER_MONTH, 0.5); // 하한 0.5개월(0 나눗셈·초단기 폭증 방지)
 }
 
 /** 대수별 개원일(startDate 미설정 의원의 fallback). */
@@ -95,6 +132,7 @@ export class MembersService {
         committees: mt.committees,
         committeeRoles: mt.committeeRoles as Record<string, string>,
         cabinetPosition: mt.cabinetPosition,
+        cabinetHistory: mt.cabinetHistory,
       },
     }));
 
@@ -151,6 +189,7 @@ export class MembersService {
       committeeRoles: mt.committeeRoles as Record<string, string>,
       electedCount: mt.electedCount,
       cabinetPosition: mt.cabinetPosition,
+      cabinetHistory: mt.cabinetHistory,
     }));
 
     await this.redis.set(key, result, TTL_DAY);
@@ -639,21 +678,23 @@ export class MembersService {
    * 랭킹과 개별 성적표가 동일 로직을 쓰도록 공유. terms는 평가대상(겸직 제외) 전체.
    */
   private computeSmoothedRep(
-    terms: { memberId: string; startDate: string | null }[],
+    terms: { memberId: string; startDate: string | null; cabinetHistory?: unknown }[],
     billRows: { memberId: string; cnt: number }[],
     termId: number,
     asOf: Date,
   ): Map<string, number> {
     const fallbackStart = openingDateOf(termId);
     const cntOf = (id: string) => Number(billRows.find((r) => r.memberId === id)?.cnt ?? 0);
+    const histOf = (t: { cabinetHistory?: unknown }) =>
+      (t.cabinetHistory as CabinetTenure[] | null) ?? null;
     const globalMonthly =
       terms.reduce(
-        (s, t) => s + cntOf(t.memberId) / tenureMonths(t.startDate, asOf, fallbackStart),
+        (s, t) => s + cntOf(t.memberId) / tenureMonths(t.startDate, asOf, fallbackStart, histOf(t)),
         0,
       ) / Math.max(terms.length, 1);
     const map = new Map<string, number>();
     for (const t of terms) {
-      const months = tenureMonths(t.startDate, asOf, fallbackStart);
+      const months = tenureMonths(t.startDate, asOf, fallbackStart, histOf(t));
       map.set(
         t.memberId,
         (cntOf(t.memberId) + globalMonthly * TENURE_SMOOTH_MONTHS) /
@@ -696,7 +737,7 @@ export class MembersService {
     // getScorecardRanking과 동일하게 맞춰, 겸직 의원이 남의 순위에 영향 주지 않도록 함.
     const activeTerms = await this.prisma.memberTerm.findMany({
       where: { termId, isActive: true, cabinetPosition: null },
-      select: { memberId: true, startDate: true },
+      select: { memberId: true, startDate: true, cabinetHistory: true },
     });
     const activeIds = new Set(activeTerms.map((t) => t.memberId));
     const totalMembers = activeIds.size;
@@ -776,7 +817,14 @@ export class MembersService {
     const scAsOf = scoreAsOf(termId, new Date());
     const termsForRep = activeTerms.some((t) => t.memberId === memberId)
       ? activeTerms
-      : [...activeTerms, { memberId, startDate: memberTerm.startDate }];
+      : [
+          ...activeTerms,
+          {
+            memberId,
+            startDate: memberTerm.startDate,
+            cabinetHistory: memberTerm.cabinetHistory,
+          },
+        ];
     const smoothedRep = this.computeSmoothedRep(termsForRep, billRows, termId, scAsOf);
     const smoothedRepValues = [...smoothedRep.values()];
     const myRepProd = smoothedRep.get(memberId) ?? 0;
@@ -906,7 +954,13 @@ export class MembersService {
       overallRank,
       // 재직 90일 미만 — 표본이 얕아 순위 해석 잠정(UI에서 안내)
       provisional:
-        tenureDays(memberTerm.startDate, scAsOf, openingDateOf(termId)) < PROVISIONAL_TENURE_DAYS,
+        tenureDays(
+          memberTerm.startDate,
+          scAsOf,
+          openingDateOf(termId),
+          memberTerm.cabinetHistory as CabinetTenure[] | null,
+        ) < PROVISIONAL_TENURE_DAYS,
+      cabinetHistory: memberTerm.cabinetHistory, // 과거 국무위원 이력(UI 표시)
       startDate: memberTerm.startDate,
       cabinetPosition: memberTerm.cabinetPosition, // 겸직이면 UI에서 '평가 제외' 안내 표시
 
@@ -1083,7 +1137,9 @@ export class MembersService {
       const psScore = Math.round((psPct / 100) * 20 * 10) / 10;
 
       // 재직 90일 미만은 표본이 얕아 순위 해석이 불안정 → '잠정' 표시
-      const provisional = tenureDays(mt.startDate, asOf, fallbackStart) < PROVISIONAL_TENURE_DAYS;
+      const provisional =
+        tenureDays(mt.startDate, asOf, fallbackStart, mt.cabinetHistory as CabinetTenure[] | null) <
+        PROVISIONAL_TENURE_DAYS;
 
       const total = Math.round((attScore + vtScore + blScore + psScore) * 10) / 10;
 

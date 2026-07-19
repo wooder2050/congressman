@@ -151,7 +151,7 @@ export default function ScorecardTab({ memberId, termId }: ScorecardTabProps) {
 
   return (
     <div className="space-y-5">
-      {/* 국무위원 겸직 안내 — 평가 순위 제외 */}
+      {/* 국무위원 현재 겸직 안내 — 평가 순위 제외 */}
       {scorecard.cabinetPosition && (
         <div className="flex items-start gap-2 rounded-xl border border-amber-300 bg-amber-50 p-4 dark:border-amber-800/50 dark:bg-amber-950/30">
           <span className="text-lg leading-none">🏛️</span>
@@ -167,6 +167,30 @@ export default function ScorecardTab({ memberId, termId }: ScorecardTabProps) {
           </div>
         </div>
       )}
+
+      {/* 과거 국무위원 이력 안내 — 현재는 평의원 복귀, 재임 기간 평가 제외 */}
+      {!scorecard.cabinetPosition &&
+        scorecard.cabinetHistory &&
+        scorecard.cabinetHistory.length > 0 &&
+        (() => {
+          const past = scorecard.cabinetHistory[scorecard.cabinetHistory.length - 1];
+          return (
+            <div className="flex items-start gap-2 rounded-xl border border-slate-300 bg-slate-50 p-4 dark:border-slate-700 dark:bg-slate-800/50">
+              <span className="text-lg leading-none">🏛️</span>
+              <div>
+                <p className="text-sm font-bold text-slate-700 dark:text-slate-200">
+                  {past.position}을(를) 지낸 뒤 국회의원 활동에 복귀
+                </p>
+                <p className="mt-1 text-xs leading-relaxed text-slate-600 dark:text-slate-300">
+                  이 의원은 임기 중 {past.position}({past.startDate.replace(/-/g, ".")}~
+                  {past.endDate?.replace(/-/g, ".")})을(를) 지냈습니다. 겸직 기간에는 의정활동이
+                  제한되므로, 해당 기간을 평가 가능 기간에서 제외하고 복귀 이후 활동만으로 점수를
+                  산정했습니다.
+                </p>
+              </div>
+            </div>
+          );
+        })()}
 
       {/* 종합 등급 카드 */}
       <div className={`rounded-2xl border-2 ${gradeStyle.border} ${gradeStyle.bg} p-6`}>

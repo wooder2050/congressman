@@ -34,6 +34,13 @@ export interface CommitteeHistoryEntry {
 }
 
 // ====== 의원 대수별 활동 ======
+/** 국무위원 재임 이력. endDate=null이면 현재 겸직 중, 있으면 종료된 과거 이력. */
+export interface CabinetTenure {
+  position: string; // "국무총리", "법무부 장관" 등
+  startDate: string; // YYYY-MM-DD
+  endDate: string | null; // 이임일. null이면 현재 재임 중
+}
+
 export interface MemberTerm {
   memberId: string;
   termId: number;
@@ -44,7 +51,8 @@ export interface MemberTerm {
   committeeHistory: CommitteeHistoryEntry[];
   committeeRoles: Record<string, string>; // {"법제사법위원회": "위원장"}
   electedCount: number; // 해당 대수 기준 선수
-  cabinetPosition?: string | null; // 국무위원 겸직 직책(예: "법무부 장관"). null이면 겸직 아님
+  cabinetPosition?: string | null; // 현재 국무위원 겸직 직책(예: "법무부 장관"). null이면 현재 겸직 아님
+  cabinetHistory?: CabinetTenure[]; // 임기 중 종료된 국무위원 겸직 이력(예: 김민석 국무총리 후 복귀)
 }
 
 // ====== 출석 ======
@@ -473,7 +481,8 @@ export interface MemberScorecard {
   overallRank: number;
   provisional?: boolean; // 재직 90일 미만 — 순위 해석 잠정
   startDate?: string | null; // 공식 임기 개시일(재보궐·승계는 늦음)
-  cabinetPosition?: string | null; // 국무위원 겸직 직책 — 평가 순위 집계 제외 안내용
+  cabinetPosition?: string | null; // 현재 국무위원 겸직 직책 — 평가 순위 집계 제외 안내용
+  cabinetHistory?: CabinetTenure[]; // 임기 중 종료된 국무위원 겸직 이력
 
   recentActivity: {
     last30Days: {
