@@ -1,8 +1,10 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { useAuth } from "@/lib/auth-context";
 import LoginModal from "@/components/auth/LoginModal";
+import { useWatches, useCreateWatch } from "@/hooks/useWatches";
 import {
   RADAR_ENABLED,
   trackCtaView,
@@ -17,15 +19,21 @@ const loginFlowKey = (billId: string) => `radar_login_flow:${billId}`;
 /**
  * 법안 상세 "변경 알림 받기" CTA.
  *
- * Phase 1(측정 기반): 노출·클릭·로그인 퍼널 이벤트만 측정한다. 실제 Watch 생성은 Phase 2에서 연결.
+ * Phase 2: 로그인 사용자가 클릭하면 실제 Watch를 생성(멱등)하고 성공 상태를 표시한다.
+ * 비로그인 사용자는 로그인 모달 → 복귀 후 다시 확인해 생성. 퍼널 이벤트도 측정한다.
  * feature flag `NEXT_PUBLIC_RADAR_ENABLED`가 켜졌을 때만 렌더링되며, 꺼지면 아무것도
  * 그리지 않아 이벤트도 발생하지 않는다.
  */
 export default function BillWatchCTA({ billId }: { billId: string }) {
   const { user, loading } = useAuth();
   const [loginOpen, setLoginOpen] = useState(false);
+  const { data: watches } = useWatches();
+  const createWatch = useCreateWatch();
   // 노출 이벤트를 billId당 1회만 발화(같은 컴포넌트가 다른 법안으로 재사용돼도 재발화).
   const viewedBillRef = useRef<string | null>(null);
+
+  // 이 법안에 대한 활성 알림이 이미 있는지
+  const activeWatch = watches?.find((w) => w.billId === billId && w.enabled);
 
   // 인증 로딩이 끝난 뒤, 현재 billId에 대해 노출 이벤트를 1회 발화.
   useEffect(() => {
@@ -63,9 +71,26 @@ export default function BillWatchCTA({ billId }: { billId: string }) {
       setLoginOpen(true);
       return;
     }
-    // Phase 2에서 실제 Watch 생성으로 대체. 현재는 측정만.
-    setLoginOpen(false);
+    // 로그인 사용자: 실제 Watch 생성(멱등)
+    createWatch.mutate(billId);
   };
+
+  // 이미 알림을 설정한 상태 — 성공 안내 + 관리 링크
+  if (activeWatch) {
+    return (
+      <div className="flex flex-col gap-2 rounded-xl border border-(--color-primary)/30 bg-(--color-primary)/5 p-4 sm:flex-row sm:items-center sm:justify-between">
+        <p className="text-sm font-semibold text-(--color-text-primary)">
+          ✓ 알림을 설정했습니다. 변경 사항이 있을 때 주간 이메일로 보내드려요.
+        </p>
+        <Link
+          href="/alerts"
+          className="shrink-0 text-sm font-semibold text-(--color-primary) no-underline hover:underline"
+        >
+          알림 관리 →
+        </Link>
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-col gap-2 rounded-xl border border-(--color-border-primary) bg-(--color-bg-secondary) p-4 sm:flex-row sm:items-center sm:justify-between">
@@ -80,10 +105,10 @@ export default function BillWatchCTA({ billId }: { billId: string }) {
       <button
         type="button"
         onClick={handleClick}
-        disabled={loading}
+        disabled={loading || createWatch.isPending}
         className="shrink-0 rounded-lg bg-(--color-primary) px-4 py-2 text-sm font-semibold text-white transition-opacity hover:opacity-90 disabled:opacity-50"
       >
-        변경 알림 받기
+        {createWatch.isPending ? "설정 중…" : "변경 알림 받기"}
       </button>
       <LoginModal
         open={loginOpen}
