@@ -139,9 +139,10 @@ model Bill {
   pdfBookId            String? // 의안원문 PDF bookId
   detailLink           String? // 의안정보시스템 상세 URL
 
-  term      Term           @relation(fields: [termId], references: [id])
-  proposers BillProposer[]
-  watches   Watch[]
+  term         Term           @relation(fields: [termId], references: [id])
+  proposers    BillProposer[]
+  watches      Watch[]
+  policyEvents PolicyEvent[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -820,4 +821,24 @@ model Watch {
   @@unique([userId, billId]) // 같은 사용자·법안 중복 방지(멱등 생성)
   @@index([userId, enabled])
   @@index([billId, enabled])
+}
+
+/// Lawmake Radar: 법안의 의미 있는 변경(상태·처리결과)이 감지될 때 생성되는 이벤트.
+/// 주간 다이제스트가 이를 사용자 Watch와 매칭한다.
+/// runId는 한 번의 sync 실행을 식별(예: "2026-07-19T04:00Z"). @@unique([runId, billId])로
+/// 같은 sync 재실행 시 중복 이벤트를 막는다.
+model PolicyEvent {
+  id              String   @id @default(cuid())
+  billId          String
+  runId           String // sync 실행 식별자
+  eventType       String // "status_change" | "committee_result" | "law_result" | "plenary"
+  changes         Json // [{ field, from, to }]
+  detectedAt      DateTime @default(now())
+  sourceChangedAt String? // 원천 데이터상 변경일(있으면). YYYY-MM-DD
+
+  bill Bill @relation(fields: [billId], references: [id], onDelete: Cascade)
+
+  @@unique([runId, billId])
+  @@index([billId, detectedAt])
+  @@index([detectedAt])
 }
