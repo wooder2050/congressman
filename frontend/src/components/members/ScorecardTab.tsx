@@ -2,6 +2,7 @@
 
 import { useCongressSuspenseQuery } from "@/hooks/useCongressQuery";
 import { getMemberScorecard } from "@/lib/api";
+import { withJosa } from "@/lib/utils";
 import type { ScorecardGrade } from "@/types";
 
 interface ScorecardTabProps {
@@ -179,13 +180,14 @@ export default function ScorecardTab({ memberId, termId }: ScorecardTabProps) {
               <span className="text-lg leading-none">🏛️</span>
               <div>
                 <p className="text-sm font-bold text-slate-700 dark:text-slate-200">
-                  {past.position}을(를) 지낸 뒤 국회의원 활동에 복귀
+                  {withJosa(past.position, "을", "를")} 지낸 뒤 국회의원 활동에 복귀
                 </p>
                 <p className="mt-1 text-xs leading-relaxed text-slate-600 dark:text-slate-300">
                   이 의원은 임기 중 {past.position}({past.startDate.replace(/-/g, ".")}~
-                  {past.endDate?.replace(/-/g, ".")})을(를) 지냈습니다. 겸직 기간에는 의정활동이
-                  제한되므로, 해당 기간을 평가 가능 기간에서 제외하고 복귀 이후 활동만으로 점수를
-                  산정했습니다.
+                  {past.endDate?.replace(/-/g, ".")}){" "}
+                  {withJosa(past.position, "을", "를").slice(-1)} 지냈습니다. 겸직 기간에는
+                  의정활동이 제한되므로, 해당 기간을 평가 가능 기간에서 제외하고 복귀 이후
+                  활동만으로 점수를 산정했습니다.
                 </p>
               </div>
             </div>
