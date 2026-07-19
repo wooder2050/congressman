@@ -294,7 +294,8 @@ export class BillSyncService {
 
     const newRows: BillApiRow[] = [];
     // 변경된 법안: update 데이터 + (해당 시) PolicyEvent를 함께 준비해 배치 트랜잭션으로 원자 처리
-    const updatePlans: { id: string; data: Prisma.BillUpdateInput; event?: PolicyEventInput }[] = [];
+    const updatePlans: { id: string; data: Prisma.BillUpdateInput; event?: PolicyEventInput }[] =
+      [];
 
     for (const row of rows) {
       if (!existingIds.has(row.BILL_ID)) {
@@ -426,7 +427,12 @@ export class BillSyncService {
         console.log(
           `[BillSync]   Radar[PREVIEW]: ${updatePlans.length} bills would update, ` +
             `${eventCount} policy events would be recorded (nothing written). ` +
-            `sample=${JSON.stringify(updatePlans.filter((p) => p.event).slice(0, 3).map((p) => p.event))}`,
+            `sample=${JSON.stringify(
+              updatePlans
+                .filter((p) => p.event)
+                .slice(0, 3)
+                .map((p) => p.event),
+            )}`,
         );
       } else {
         console.log(

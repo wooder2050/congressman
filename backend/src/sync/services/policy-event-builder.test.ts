@@ -76,7 +76,11 @@ describe('effectiveNext (역행/누락 방어)', () => {
       committeeResultCode: '원안가결',
       committeeResultDate: '2026-07-01',
     };
-    const eff = effectiveNext(old, { ...old, committeeResultCode: null, committeeResultDate: null });
+    const eff = effectiveNext(old, {
+      ...old,
+      committeeResultCode: null,
+      committeeResultDate: null,
+    });
     expect(eff.committeeResultCode).toBe('원안가결');
     expect(eff.committeeResultDate).toBe('2026-07-01');
     expect(buildPolicyEvent(old, eff)).toBeNull();
