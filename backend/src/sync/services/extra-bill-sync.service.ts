@@ -1,6 +1,9 @@
-import { PrismaClient } from '@prisma/client';
+import { Prisma, PrismaClient } from '@prisma/client';
 import { AssemblyApiService } from './assembly-api.service';
 import { SyncLogService } from './sync-log.service';
+import { makeRunId, resolveBillTransition, type BillSnapshot } from './policy-event-builder';
+
+type PolicyEventInput = Prisma.PolicyEventCreateManyInput;
 
 /** TVBPMBILL11 (의안검색) API 응답 row */
 interface ExtraBillApiRow {
@@ -99,40 +102,96 @@ export class ExtraBillSyncService {
     const existingMap = new Map(existingBills.map((b) => [b.id, b]));
     const existingIds = new Set(existingBills.map((b) => b.id));
 
+    // Radar: extra 경로(정부·위원장 대안 법안)도 상태·결과 변경을 PolicyEvent로 감지.
+    // daily 경로이므로 감지 없이 Bill만 갱신하면 다음 sync에서 old==new → 이벤트 영구 유실.
+    const radarOn = process.env.RADAR_ENABLED === 'true';
+    const radarPreview = radarOn && process.env.RADAR_DRY_RUN === 'true';
+    const runId = makeRunId();
+
     const newRows: ExtraBillApiRow[] = [];
-    const updateRows: ExtraBillApiRow[] = [];
+    // 변경된 법안: Bill patch(status·committee·progress) + (해당 시) PolicyEvent
+    const updatePlans: { id: string; data: Prisma.BillUpdateInput; event?: PolicyEventInput }[] =
+      [];
+    const seen = new Set<string>(); // 응답 내 중복 BILL_ID 방어
 
     for (const row of rows) {
+      if (seen.has(row.BILL_ID)) continue;
+      seen.add(row.BILL_ID);
       if (!existingIds.has(row.BILL_ID)) {
         newRows.push(row);
-      } else {
-        const existing = existingMap.get(row.BILL_ID)!;
-        const progress = this.mapProgressFields(row);
-        const newStatus = this.mapStatus(
-          row.PROC_RESULT_CD,
-          row.CMT_PROC_RESULT_CD,
-          row.PASS_GUBUN,
-        );
-        if (
-          existing.status !== newStatus ||
-          existing.committee !== (row.CURR_COMMITTEE || null) ||
-          existing.committeeDate !== progress.committeeDate ||
-          existing.committeePresentDate !== progress.committeePresentDate ||
-          existing.committeeResultCode !== progress.committeeResultCode ||
-          existing.committeeResultDate !== progress.committeeResultDate ||
-          existing.lawSubmitDate !== progress.lawSubmitDate ||
-          existing.lawPresentDate !== progress.lawPresentDate ||
-          existing.lawResultCode !== progress.lawResultCode ||
-          existing.lawResultDate !== progress.lawResultDate ||
-          existing.plenaryDate !== progress.plenaryDate
-        ) {
-          updateRows.push(row);
-        }
+        continue;
       }
+      const existing = existingMap.get(row.BILL_ID)!;
+      const progress = this.mapProgressFields(row);
+      const oldSnap: BillSnapshot = {
+        status: existing.status,
+        committeeResultCode: existing.committeeResultCode,
+        committeeResultDate: existing.committeeResultDate,
+        lawResultCode: existing.lawResultCode,
+        lawResultDate: existing.lawResultDate,
+        plenaryDate: existing.plenaryDate,
+      };
+      const { effective: eff, event: draft } = resolveBillTransition(oldSnap, {
+        status: this.mapStatus(row.PROC_RESULT_CD, row.CMT_PROC_RESULT_CD, row.PASS_GUBUN),
+        committeeResultCode: progress.committeeResultCode,
+        committeeResultDate: progress.committeeResultDate,
+        lawResultCode: progress.lawResultCode,
+        lawResultDate: progress.lawResultDate,
+        plenaryDate: progress.plenaryDate,
+      });
+
+      const newCommittee = row.CURR_COMMITTEE || null;
+      const changed =
+        existing.status !== eff.status ||
+        existing.committee !== newCommittee ||
+        existing.committeeDate !== progress.committeeDate ||
+        existing.committeePresentDate !== progress.committeePresentDate ||
+        existing.committeeResultCode !== eff.committeeResultCode ||
+        existing.committeeResultDate !== eff.committeeResultDate ||
+        existing.lawSubmitDate !== progress.lawSubmitDate ||
+        existing.lawPresentDate !== progress.lawPresentDate ||
+        existing.lawResultCode !== eff.lawResultCode ||
+        existing.lawResultDate !== eff.lawResultDate ||
+        existing.plenaryDate !== eff.plenaryDate;
+      if (!changed) continue;
+
+      // effectiveNext 반영 patch(역행/누락 필드는 기존 값 유지). title/proposer는 보존(미갱신).
+      const data: Prisma.BillUpdateInput = {
+        status: eff.status,
+        committee: newCommittee,
+        committeeDate: progress.committeeDate,
+        committeePresentDate: progress.committeePresentDate,
+        committeeResultCode: eff.committeeResultCode,
+        committeeResultDate: eff.committeeResultDate,
+        lawSubmitDate: progress.lawSubmitDate,
+        lawPresentDate: progress.lawPresentDate,
+        lawResultCode: eff.lawResultCode,
+        lawResultDate: eff.lawResultDate,
+        plenaryDate: eff.plenaryDate,
+      };
+
+      const event =
+        draft && radarOn && !radarPreview
+          ? {
+              billId: row.BILL_ID,
+              runId,
+              eventType: draft.eventType,
+              changes: draft.changes as unknown as Prisma.InputJsonValue,
+              sourceChangedAt: draft.sourceChangedAt,
+            }
+          : undefined;
+      if (draft && radarPreview) {
+        console.log(
+          `[ExtraBillSync]   Radar[EVENT PREVIEW] bill=${row.BILL_ID} ${draft.eventType} ` +
+            `(Bill sync는 정상 반영, PolicyEvent 미저장): ${JSON.stringify(draft.changes)}`,
+        );
+      }
+
+      updatePlans.push({ id: row.BILL_ID, data, event });
     }
 
     console.log(
-      `[ExtraBillSync]   New: ${newRows.length}, Changed: ${updateRows.length}, Unchanged: ${rows.length - newRows.length - updateRows.length}`,
+      `[ExtraBillSync]   New: ${newRows.length}, Changed: ${updatePlans.length}, Unchanged: ${rows.length - newRows.length - updatePlans.length}`,
     );
 
     // 신규 법안 추가
@@ -156,20 +215,25 @@ export class ExtraBillSyncService {
       }
     }
 
-    // 변경된 기존 법안 업데이트 (summary/pdfBookId 보존)
-    if (updateRows.length > 0) {
-      for (let i = 0; i < updateRows.length; i += UPDATE_BATCH_SIZE) {
-        const batch = updateRows.slice(i, i + UPDATE_BATCH_SIZE);
-        for (const row of batch) {
-          await this.prisma.bill.update({
-            where: { id: row.BILL_ID },
-            data: {
-              status: this.mapStatus(row.PROC_RESULT_CD, row.CMT_PROC_RESULT_CD, row.PASS_GUBUN),
-              committee: row.CURR_COMMITTEE || null,
-              ...this.mapProgressFields(row),
-            },
-          });
-        }
+    // 변경된 기존 법안 업데이트 + PolicyEvent(원자적 배치 트랜잭션).
+    // bill만 갱신되고 event가 유실되는 것을 막는다(배치 실패 시 그 배치 전체 롤백).
+    if (updatePlans.length > 0) {
+      for (let i = 0; i < updatePlans.length; i += UPDATE_BATCH_SIZE) {
+        const batch = updatePlans.slice(i, i + UPDATE_BATCH_SIZE);
+        const events = batch
+          .map((p) => p.event)
+          .filter((e): e is PolicyEventInput => e !== undefined);
+        await this.prisma.$transaction(
+          async (tx) => {
+            for (const plan of batch) {
+              await tx.bill.update({ where: { id: plan.id }, data: plan.data });
+            }
+            if (events.length > 0) {
+              await tx.policyEvent.createMany({ data: events, skipDuplicates: true });
+            }
+          },
+          { timeout: 60000 },
+        );
       }
     }
   }
