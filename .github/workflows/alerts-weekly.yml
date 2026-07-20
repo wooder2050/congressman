@@ -2,6 +2,20 @@ name: Radar Weekly Digest
 
 # 주간 다이제스트 빌드+발송. 베타 검증 전까지 자동 스케줄은 주석 처리(수동 실행만).
 # RADAR_DIGEST_ENABLED != true면 배치가 no-op이므로, 잘못 켜져도 발송되지 않는다.
+#
+# ─── Phase 5 스케줄 활성화 체크리스트 (아래 schedule 주석을 풀기 전 전부 완료) ───
+#  1. Resend 계정 + 도메인(mail.lawmake.kr) SPF/DKIM/DMARC 인증 완료
+#  2. GitHub secrets: RESEND_API_KEY, RADAR_LINK_SECRET(≥32자), SUPABASE_URL,
+#     SUPABASE_SERVICE_ROLE_KEY, DATABASE_URL 설정
+#  3. GitHub vars: RADAR_DIGEST_ENABLED=true, RADAR_EMAIL_MODE=ALLOWLIST(먼저),
+#     RADAR_EMAIL_ALLOWLIST=<테스트 이메일>, MAX_EMAILS_PER_RUN=90, RADAR_EMAIL_FROM,
+#     RADAR_API_BASE_URL, RADAR_SITE_URL, RADAR_MANAGEMENT_URL
+#  4. 배포 후 radar_phase4_rls.sql 적용 확인(완료됨)
+#  5. workflow_dispatch로 command=weekly 수동 1회 → SyncLog(radar-digest-send)와
+#     Digest 상태로 발송 결과 확인 → 문제 없으면 ALLOWLIST 확대 → 그 다음 LIVE
+#  6. 위가 안정되면 아래 schedule 주석 해제(매주 월 09:00 KST)
+#
+# 긴급 중단: vars RADAR_DIGEST_ENABLED=false (즉시 no-op) 또는 schedule 재주석 처리.
 on:
   # schedule:
   #   - cron: "0 0 * * 1" # UTC 00:00 Mon = KST 09:00 Mon
