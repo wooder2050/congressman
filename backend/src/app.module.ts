@@ -20,6 +20,7 @@ import { RedisModule } from './redis/redis.module';
 import { AuthModule } from './auth/auth.module';
 import { UserPreferencesModule } from './user-preferences/user-preferences.module';
 import { WatchesModule } from './watches/watches.module';
+import { DigestsModule } from './digests/digests.module';
 import { BreakingNewsModule } from './breaking-news/breaking-news.module';
 import { WeeklyModule } from './weekly/weekly.module';
 
@@ -47,6 +48,7 @@ import { WeeklyModule } from './weekly/weekly.module';
     AuthModule,
     UserPreferencesModule,
     WatchesModule,
+    DigestsModule,
     BreakingNewsModule,
     WeeklyModule,
   ],

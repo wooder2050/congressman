@@ -1,7 +1,12 @@
 import { Prisma, PrismaClient } from '@prisma/client';
 import { AssemblyApiService } from './assembly-api.service';
 import { SyncLogService } from './sync-log.service';
-import { makeRunId, resolveBillTransition, type BillSnapshot } from './policy-event-builder';
+import {
+  isRadarEventCollectionEnabled,
+  makeRunId,
+  resolveBillTransition,
+  type BillSnapshot,
+} from './policy-event-builder';
 
 type PolicyEventInput = Prisma.PolicyEventCreateManyInput;
 
@@ -104,7 +109,7 @@ export class ExtraBillSyncService {
 
     // Radar: extra 경로(정부·위원장 대안 법안)도 상태·결과 변경을 PolicyEvent로 감지.
     // daily 경로이므로 감지 없이 Bill만 갱신하면 다음 sync에서 old==new → 이벤트 영구 유실.
-    const radarOn = process.env.RADAR_ENABLED === 'true';
+    const radarOn = isRadarEventCollectionEnabled();
     const radarPreview = radarOn && process.env.RADAR_DRY_RUN === 'true';
     const runId = makeRunId();
 

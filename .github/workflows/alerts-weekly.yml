@@ -1,0 +1,82 @@
+name: Radar Weekly Digest
+
+# 주간 다이제스트 빌드+발송. 베타 검증 전까지 자동 스케줄은 주석 처리(수동 실행만).
+# RADAR_DIGEST_ENABLED != true면 배치가 no-op이므로, 잘못 켜져도 발송되지 않는다.
+on:
+  # schedule:
+  #   - cron: "0 0 * * 1" # UTC 00:00 Mon = KST 09:00 Mon
+  workflow_dispatch:
+    inputs:
+      command:
+        description: "build | send | weekly"
+        required: false
+        default: "weekly"
+
+# 같은 워크플로우 동시 실행 방지(중복 발송·경합 방지).
+concurrency:
+  group: radar-weekly-digest
+  cancel-in-progress: false
+
+jobs:
+  digest:
+    name: Radar Weekly Digest
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    defaults:
+      run:
+        working-directory: backend
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          package_json_file: package.json
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - name: Install dependencies
+        run: cd .. && pnpm install --frozen-lockfile
+
+      - name: Generate Prisma Client
+        run: pnpm prisma:generate
+
+      - name: Run radar digest
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          # 발송 안전장치: 기본 OFF·DRY_RUN. 실발송은 secrets/vars로 명시 설정 후에만.
+          RADAR_DIGEST_ENABLED: ${{ vars.RADAR_DIGEST_ENABLED }}
+          RADAR_EMAIL_MODE: ${{ vars.RADAR_EMAIL_MODE }}
+          RADAR_EMAIL_ALLOWLIST: ${{ vars.RADAR_EMAIL_ALLOWLIST }}
+          MAX_EMAILS_PER_RUN: ${{ vars.MAX_EMAILS_PER_RUN }}
+          RADAR_EMAIL_FROM: ${{ vars.RADAR_EMAIL_FROM }}
+          RADAR_API_BASE_URL: ${{ vars.RADAR_API_BASE_URL }}
+          RADAR_SITE_URL: ${{ vars.RADAR_SITE_URL }}
+          RADAR_MANAGEMENT_URL: ${{ vars.RADAR_MANAGEMENT_URL }}
+          RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
+          RADAR_LINK_SECRET: ${{ secrets.RADAR_LINK_SECRET }}
+        run: pnpm alerts:${{ github.event.inputs.command || 'weekly' }}
+
+      - name: Create issue on failure
+        if: failure()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const title = `[Radar] Weekly digest failed — ${new Date().toISOString().slice(0, 10)}`;
+            const body = `Radar weekly digest workflow failed.\n\nRun: ${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`;
+            await github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title,
+              body,
+              labels: ['sync-failure'],
+            });
