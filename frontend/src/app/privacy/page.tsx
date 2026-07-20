@@ -35,7 +35,9 @@ export default function PrivacyPage() {
 
       <section>
         <h1 className="text-3xl font-extrabold tracking-tight">개인정보처리방침</h1>
-        <p className="mt-3 text-sm text-(--color-text-tertiary)">시행일: 2025년 11월 1일</p>
+        <p className="mt-3 text-sm text-(--color-text-tertiary)">
+          시행일: 2025년 11월 1일 · 개정일: 2026년 7월 20일
+        </p>
         <p className="mt-3 text-sm leading-relaxed text-(--color-text-secondary)">
           국회의원 의정활동 정보(이하 &apos;서비스&apos;)는 이용자의 개인정보를 소중히 여기며,
           「개인정보 보호법」 등 관련 법령을 준수합니다. 본 개인정보처리방침을 통해 수집하는
@@ -62,11 +64,20 @@ export default function PrivacyPage() {
           </div>
           <div className="rounded-xl border border-(--color-border-primary) bg-(--color-bg-primary) p-5">
             <h3 className="text-base font-bold text-(--color-text-primary)">
-              별도로 수집하지 않는 정보
+              로그인·알림 이용 시 수집되는 정보 (선택)
             </h3>
             <p className="mt-2 text-sm leading-relaxed text-(--color-text-secondary)">
-              본 서비스는 회원가입 기능을 제공하지 않으며, 이름, 이메일 주소, 전화번호 등 개인을
-              직접 식별할 수 있는 정보를 별도로 수집하지 않습니다.
+              서비스의 기본 열람 기능은 로그인 없이 이용할 수 있습니다. 다만 법안 변경 알림 (Lawmake
+              Radar) 등 일부 기능을 이용하기 위해 이용자가 직접 로그인하는 경우, 인증
+              제공자(Supabase)를 통해 아래 정보가 처리됩니다.
+            </p>
+            <ul className="mt-3 list-inside list-disc space-y-1.5 text-sm text-(--color-text-secondary)">
+              <li>이메일 주소 (로그인 및 알림 이메일 발송 목적)</li>
+              <li>알림 설정 내역 (구독한 법안, 수신 여부)</li>
+            </ul>
+            <p className="mt-3 text-sm leading-relaxed text-(--color-text-secondary)">
+              위 정보는 이용자가 알림을 설정하거나 로그인할 때에만 처리되며, 이름·전화번호 등 그
+              밖의 식별 정보는 수집하지 않습니다.
             </p>
           </div>
         </article>
@@ -78,6 +89,10 @@ export default function PrivacyPage() {
               <li>서비스 이용 통계 분석 및 품질 개선</li>
               <li>서비스 안정성 확보 및 부정 이용 방지</li>
               <li>맞춤형 광고 제공 (Google 애드센스)</li>
+              <li>
+                법안 변경 알림(Lawmake Radar) 이메일 발송 — 이용자가 구독한 법안의 처리 상태가 바뀔
+                때 주 1회 이메일로 안내 (이용자가 알림을 설정한 경우에 한함)
+              </li>
             </ul>
           </div>
         </article>
@@ -107,10 +122,19 @@ export default function PrivacyPage() {
                 <strong>Google 애드센스</strong> — 맞춤형 광고 제공 목적. 쿠키를 사용하여 이용자의
                 관심사에 기반한 광고를 표시할 수 있습니다.
               </li>
+              <li>
+                <strong>Supabase</strong> — 로그인·인증 및 알림 설정 저장 목적. 이용자가 로그인하는
+                경우 이메일 주소 등 계정 정보가 처리됩니다.
+              </li>
+              <li>
+                <strong>Resend</strong> — 법안 변경 알림 이메일 발송 목적. 알림을 설정한 이용자의
+                이메일 주소로 주간 이메일을 전송합니다.
+              </li>
             </ul>
             <p className="text-sm leading-relaxed text-(--color-text-secondary)">
               이용자는 브라우저 설정을 통해 쿠키 저장을 거부할 수 있습니다. 다만, 쿠키를 거부할 경우
-              서비스 이용에 일부 제한이 있을 수 있습니다.
+              서비스 이용에 일부 제한이 있을 수 있습니다. 법안 변경 알림 이메일은 모든 발송 메일의
+              &lsquo;수신 거부&rsquo; 링크 또는 알림 관리 화면에서 언제든 해지할 수 있습니다.
             </p>
           </div>
         </article>
