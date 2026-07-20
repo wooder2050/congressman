@@ -183,7 +183,7 @@ export class DigestSendService {
     const clickUrlByItemId = new Map<string, string>();
     for (const it of items) {
       const token = createLinkToken(config.linkSecret, 'click', it.id, config.clickTtlSeconds);
-      clickUrlByItemId.set(it.id, `${config.apiBaseUrl}/r/c/${token}`);
+      clickUrlByItemId.set(it.id, `${config.apiBaseUrl}/api/r/c/${token}`);
     }
     return renderHtml({
       items,
@@ -200,7 +200,7 @@ export class DigestSendService {
       digestId,
       config.unsubscribeTtlSeconds,
     );
-    return `${config.apiBaseUrl}/email/unsubscribe/${token}`;
+    return `${config.apiBaseUrl}/api/email/unsubscribe/${token}`;
   }
 
   private async markSuppressed(digestId: string, reason: string): Promise<void> {
