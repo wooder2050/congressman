@@ -19,7 +19,11 @@ export class HealthController {
   })
   async lastSync() {
     const log = await this.prisma.syncLog.findFirst({
-      where: { status: 'completed' },
+      where: {
+        status: 'completed',
+        // Radar 다이제스트 배치 로그는 '데이터 동기화'가 아니므로 마지막 갱신 시각에서 제외.
+        NOT: { syncType: { startsWith: 'radar-' } },
+      },
       orderBy: { completedAt: 'desc' },
       select: { completedAt: true },
     });

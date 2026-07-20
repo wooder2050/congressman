@@ -42,6 +42,7 @@ interface DigestSendResult {
   suppressed: number;
   failed: number;
   skippedByCap: number;
+  deferred: number; // 이메일 조회 일시 오류로 이번 run에서 미처리(다음 run 재시도) — 부분 실패로 취급
 }
 
 /**
@@ -71,6 +72,7 @@ export class DigestSendService {
       suppressed: 0,
       failed: 0,
       skippedByCap: 0,
+      deferred: 0,
     };
 
     // DRY_RUN 발송기는 조회·상태변경을 전혀 하지 않는다(원장 소비 방지). 미리보기는 빌드에서 함.
@@ -86,8 +88,12 @@ export class DigestSendService {
       );
     }
 
+    // Resend Idempotency-Key 보존기간(24h). 이보다 오래된 미해결 FAILED는 자동 재발송하지 않는다
+    // (키 만료 후 재시도하면 중복 발송 위험 → 수동 확인 대상). 발송기는 주로 24h 내에 재실행됨.
+    const idempotencyCutoff = new Date(Date.now() - 24 * 60 * 60 * 1000);
+
     // 발송 대상: READY run의 PENDING + 재시도 가능한 FAILED. 오래된 것부터(FIFO).
-    // permanent 실패([permanent] 접두사)와 과다 시도(MAX_ATTEMPTS)는 재시도 제외(무한 재시도 금지).
+    // permanent 실패([permanent] 접두사)·과다 시도(MAX_ATTEMPTS)·멱등키 만료(24h 초과)는 제외.
     const digests = await this.prisma.digest.findMany({
       where: {
         digestRun: { status: 'READY' },
@@ -97,6 +103,8 @@ export class DigestSendService {
             status: 'FAILED',
             attemptCount: { lt: MAX_ATTEMPTS },
             NOT: { lastError: { startsWith: '[permanent]' } },
+            // 최초 시도가 24h를 넘긴 FAILED는 재발송 금지(멱등키 만료 → 중복 발송 방지).
+            lastAttemptAt: { gte: idempotencyCutoff },
           },
         ],
       },
@@ -118,7 +126,11 @@ export class DigestSendService {
 
       const lookup = await this.lookupEmail(digest.userId);
       // 일시 조회 오류: 발송 스킵, 상태 그대로 유지(다음 run 재시도). SUPPRESSED로 종결하지 않음.
-      if (lookup.kind === 'retry') continue;
+      // deferred로 집계해 부분 실패로 드러나게 한다(성공으로 오기록 방지).
+      if (lookup.kind === 'retry') {
+        result.deferred += 1;
+        continue;
+      }
       const normalized = lookup.kind === 'found' ? lookup.email.trim().toLowerCase() : null;
 
       // 수신거부 확인(UserPreference.radarEmailOptIn=false).

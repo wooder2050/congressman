@@ -50,19 +50,20 @@ async function runSend(prisma: PrismaClient, syncLog: SyncLogService): Promise<v
     console.log(
       `[Alerts:send] mode=${config.mode} sender=${sender.mode} cap=${config.maxEmailsPerRun} ` +
         `candidates=${res.candidates} sent=${res.sent} suppressed=${res.suppressed} ` +
-        `failed=${res.failed} skippedByCap=${res.skippedByCap}`,
+        `failed=${res.failed} deferred=${res.deferred} skippedByCap=${res.skippedByCap}`,
     );
-    // recordCount=실제 발송 수. 실패가 있으면 로그 상태는 completed로 두되 failed 수를 errorMsg로.
-    if (res.failed > 0) {
-      await syncLog.fail(
-        log.id,
-        `sent=${res.sent} failed=${res.failed} (부분 실패, 다음 run 재시도)`,
-      );
-    } else {
-      await syncLog.complete(log.id, res.sent);
+    // 부분 실패(발송 실패 or 조회 지연)면 SyncLog를 fail로 남기고 에러를 throw한다.
+    // → GitHub Actions가 실패 알림·즉시 재시도를 트리거해, 미해결분이 다음 '주간' run까지
+    //   방치되어 Resend 멱등키(24h) 만료 후 중복 발송되는 위험을 막는다.
+    if (res.failed > 0 || res.deferred > 0) {
+      const msg = `sent=${res.sent} failed=${res.failed} deferred=${res.deferred} (부분 실패)`;
+      await syncLog.fail(log.id, msg);
+      throw new Error(`[Alerts:send] partial failure — ${msg}`);
     }
+    await syncLog.complete(log.id, res.sent);
   } catch (e) {
-    await syncLog.fail(log.id, e instanceof Error ? e.message : String(e));
+    // 이미 fail 처리된 경우 중복 update는 무해(같은 상태). 미처리 예외만 여기서 기록.
+    await syncLog.fail(log.id, e instanceof Error ? e.message : String(e)).catch(() => {});
     throw e;
   }
 }

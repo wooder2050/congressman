@@ -7,15 +7,22 @@ name: Radar Weekly Digest
 #  1. Resend 계정 + 도메인(mail.lawmake.kr) SPF/DKIM/DMARC 인증 완료
 #  2. GitHub secrets: RESEND_API_KEY, RADAR_LINK_SECRET(≥32자), SUPABASE_URL,
 #     SUPABASE_SERVICE_ROLE_KEY, DATABASE_URL 설정
+#     ※ RADAR_LINK_SECRET은 배포된 백엔드 API의 값과 반드시 동일해야 함(다르면 이메일 링크
+#       토큰 검증 실패로 클릭·수신거부가 전부 무효). 배포 env와 이 워크플로 secret 일치 확인.
 #  3. GitHub vars: RADAR_DIGEST_ENABLED=true, RADAR_EMAIL_MODE=ALLOWLIST(먼저),
 #     RADAR_EMAIL_ALLOWLIST=<테스트 이메일>, MAX_EMAILS_PER_RUN=90, RADAR_EMAIL_FROM,
 #     RADAR_API_BASE_URL, RADAR_SITE_URL, RADAR_MANAGEMENT_URL
 #  4. 배포 후 radar_phase4_rls.sql 적용 확인(완료됨)
-#  5. workflow_dispatch로 command=weekly 수동 1회 → SyncLog(radar-digest-send)와
-#     Digest 상태로 발송 결과 확인 → 문제 없으면 ALLOWLIST 확대 → 그 다음 LIVE
-#  6. 위가 안정되면 아래 schedule 주석 해제(매주 월 09:00 KST)
+#  5. 실제 이메일 링크 동작 점검: 발송 메일의 클릭 링크(GET /api/r/c/:token) → 법안 상세 302,
+#     수신거부(GET 확인화면 → POST 실행)까지 브라우저로 1회 확인.
+#  6. workflow_dispatch로 command=weekly 수동 1회 → SyncLog(radar-digest-send)·Digest 상태로
+#     발송 결과 확인. 부분 실패(failed/deferred)면 이 잡이 실패 처리되며 아래 이슈가 자동 생성됨
+#     → 원인 조치 후 24시간 내 재실행(Resend 멱등키 24h). 문제 없으면 ALLOWLIST 확대 → LIVE.
+#  7. 위가 안정되면 아래 schedule 주석 해제(매주 월 09:00 KST).
 #
-# 긴급 중단: vars RADAR_DIGEST_ENABLED=false (즉시 no-op) 또는 schedule 재주석 처리.
+# 긴급 중단(순서대로): (a) vars RADAR_DIGEST_ENABLED=false → 다음 run부터 즉시 no-op,
+#  (b) 실행 중인 잡은 Actions 화면에서 수동 Cancel(진행 중 배치는 flag로 멈추지 않음),
+#  (c) 필요 시 schedule 재주석. RESEND_API_KEY 회수도 발송을 즉시 차단.
 on:
   # schedule:
   #   - cron: "0 0 * * 1" # UTC 00:00 Mon = KST 09:00 Mon
@@ -25,6 +32,11 @@ on:
         description: "build | send | weekly"
         required: false
         default: "weekly"
+
+# 실패 시 이슈 자동 생성에 필요한 최소 권한.
+permissions:
+  contents: read
+  issues: write
 
 # 같은 워크플로우 동시 실행 방지(중복 발송·경합 방지).
 concurrency:
