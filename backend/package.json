@@ -40,6 +40,9 @@
     "sync:nesdc-polls": "tsx src/sync/sync-runner.ts nesdc-polls",
     "sync:nesdc-poll-pdfs": "tsx src/sync/sync-runner.ts nesdc-poll-pdfs",
     "sync:poll-responses": "tsx src/sync/sync-runner.ts poll-responses",
+    "alerts:build": "tsx src/digests/alerts-runner.ts build",
+    "alerts:send": "tsx src/digests/alerts-runner.ts send",
+    "alerts:weekly": "tsx src/digests/alerts-runner.ts weekly",
     "seed:local-elections": "tsx prisma/seed-local-elections.ts",
     "seed:breaking-news": "tsx prisma/seed-breaking-news.ts",
     "seed:weekly": "tsx prisma/seed-weekly.ts"

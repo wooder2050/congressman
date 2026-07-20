@@ -33,7 +33,7 @@ export interface DigestSendConfig {
   unsubscribeTtlSeconds: number; // 수신거부 링크 만료(예: 90일)
 }
 
-export interface DigestSendResult {
+interface DigestSendResult {
   candidates: number;
   sent: number;
   suppressed: number;

@@ -1,6 +1,11 @@
 {
   "$schema": "https://unpkg.com/knip@5/schema.json",
-  "entry": ["src/main.ts", "src/sync/sync-runner.ts", "src/sync/scripts/*.ts"],
+  "entry": [
+    "src/main.ts",
+    "src/sync/sync-runner.ts",
+    "src/sync/scripts/*.ts",
+    "src/digests/alerts-runner.ts"
+  ],
   "project": ["src/**/*.ts"],
   "ignoreDependencies": ["@nestjs/schematics", "@types/express"],
   "ignore": ["src/attendance/attendance.service.ts"]

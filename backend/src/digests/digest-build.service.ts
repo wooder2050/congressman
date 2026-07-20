@@ -22,7 +22,7 @@ import {
 } from './digest-builder';
 import { renderSubject } from './digest-email';
 
-export interface DigestBuildResult {
+interface DigestBuildResult {
   periodKey: string;
   digestRunId: string;
   usersWithChanges: number;

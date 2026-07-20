@@ -13,7 +13,7 @@
 
 import { createHmac, timingSafeEqual } from 'node:crypto';
 
-export type LinkPurpose = 'click' | 'unsubscribe';
+type LinkPurpose = 'click' | 'unsubscribe';
 
 const VERSION = 'v1';
 
@@ -41,7 +41,7 @@ export function createLinkToken(
   return `${payload}.${sign(secret, payload)}`;
 }
 
-export type VerifyResult =
+type VerifyResult =
   | { ok: true; purpose: LinkPurpose; opaqueId: string }
   | { ok: false; reason: 'malformed' | 'bad_signature' | 'expired' | 'bad_purpose' };
 
