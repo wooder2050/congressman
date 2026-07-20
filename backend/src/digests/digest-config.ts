@@ -67,13 +67,25 @@ export function createSupabaseEmailLookup(): EmailLookup {
   return async (userId): Promise<EmailLookupResult> => {
     try {
       const { data, error } = await supabase.auth.admin.getUserById(userId);
-      if (error) return { kind: 'retry', reason: error.message };
+      if (error) {
+        const status = (error as { status?: number }).status;
+        // 401/403: 키·권한 문제 → 배치 전체를 멈춰야 함(모든 사용자에 동일 실패). throw.
+        if (status === 401 || status === 403) {
+          throw new Error(`Supabase auth admin unauthorized (${status}): ${error.message}`);
+        }
+        // 404/사용자 없음: 영구 → no_email(재시도해도 무의미, SUPPRESSED 종결).
+        if (status === 404) return { kind: 'no_email' };
+        // 429·5xx·기타: 일시 오류 → 재시도.
+        return { kind: 'retry', reason: `${status ?? '?'} ${error.message}` };
+      }
       const user = data?.user;
       if (!user) return { kind: 'no_email' }; // 사용자 자체가 없으면 재시도해도 무의미
       // 이메일 미확인은 발송 대상 제외(스팸·바운스 방지).
       if (!user.email || !user.email_confirmed_at) return { kind: 'no_email' };
       return { kind: 'found', email: user.email };
     } catch (e) {
+      // 401/403은 위에서 throw → 배치 실패로 전파. 그 외 네트워크 예외는 재시도.
+      if (e instanceof Error && /unauthorized \(40[13]\)/.test(e.message)) throw e;
       return { kind: 'retry', reason: e instanceof Error ? e.message : String(e) };
     }
   };

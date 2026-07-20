@@ -105,8 +105,12 @@ export class DigestSendService {
     let sentThisRun = 0;
 
     for (const digest of digests) {
+      // DRY_RUN: 어떤 조회·상태변경도 하지 않는 순수 미리보기. 반드시 다른 처리보다 먼저 가드
+      // (조회 후 SUPPRESSED 등으로 기존 LIVE 원장을 소비하는 것을 막는다).
+      if (config.mode === 'DRY_RUN') continue;
+
       // MAX_EMAILS_PER_RUN: 실제 발송 직전에만 적용. 초과분은 손대지 않고 다음 run으로.
-      if (config.mode !== 'DRY_RUN' && sentThisRun >= config.maxEmailsPerRun) {
+      if (sentThisRun >= config.maxEmailsPerRun) {
         result.skippedByCap += 1;
         continue;
       }
@@ -138,7 +142,9 @@ export class DigestSendService {
 
       // snapshot 멱등: 재시도(FAILED)이고 이미 저장된 payload가 있으면 그대로 재사용.
       // 최초면 렌더 후 발송 전에 DB에 확정 저장 → 재시도가 같은 idempotencyKey로 같은 payload 발송.
-      const hasSnapshot = !!digest.htmlSnapshot && !!digest.recipientEmail;
+      // unsubscribe URL도 저장(재서명 시 시각이 달라져 List-Unsubscribe 헤더가 바뀌는 것 방지).
+      const hasSnapshot =
+        !!digest.htmlSnapshot && !!digest.recipientEmail && !!digest.unsubUrlSnapshot;
       const subject = hasSnapshot ? digest.subjectSnapshot : renderSubject(digest.items.length);
       const html = hasSnapshot
         ? digest.htmlSnapshot
@@ -148,18 +154,20 @@ export class DigestSendService {
             config,
           );
       const recipient = hasSnapshot ? (digest.recipientEmail as string) : normalized;
-
-      if (config.mode === 'DRY_RUN') {
-        // DRY_RUN은 원장을 소비하지 않는 순수 미리보기(빌드에서 PENDING 자체가 안 만들어지지만,
-        // 방어적으로 발송·상태변경 없이 카운트만). 여기 도달 시 아무 것도 쓰지 않는다.
-        continue;
-      }
+      const unsubscribeUrl = hasSnapshot
+        ? (digest.unsubUrlSnapshot as string)
+        : this.unsubscribeUrl(digest.id, config);
 
       // 최초 시도면 발송 전에 snapshot 확정 저장(멱등 보장).
       if (!hasSnapshot) {
         await this.prisma.digest.update({
           where: { id: digest.id },
-          data: { subjectSnapshot: subject, htmlSnapshot: html, recipientEmail: recipient },
+          data: {
+            subjectSnapshot: subject,
+            htmlSnapshot: html,
+            recipientEmail: recipient,
+            unsubUrlSnapshot: unsubscribeUrl,
+          },
         });
       }
 
@@ -168,7 +176,7 @@ export class DigestSendService {
         subject,
         html,
         idempotencyKey: digest.idempotencyKey,
-        unsubscribeUrl: this.unsubscribeUrl(digest.id, config),
+        unsubscribeUrl,
       });
 
       await this.applySendResult(digest.id, sendResult);

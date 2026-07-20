@@ -881,6 +881,7 @@ model Digest {
   status            String    @default("PENDING")
   subjectSnapshot   String
   htmlSnapshot      String    @db.Text
+  unsubUrlSnapshot  String? // List-Unsubscribe 헤더용 URL 스냅샷(재시도 시 동일 payload 보장)
   idempotencyKey    String    @unique // Resend Idempotency-Key로도 사용(중복 발송 방지)
   attemptCount      Int       @default(0)
   lastAttemptAt     DateTime?
