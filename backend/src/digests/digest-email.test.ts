@@ -52,7 +52,7 @@ describe('itemChangeSummary', () => {
 
 describe('renderSubject', () => {
   it('건수를 제목에 포함', () => {
-    expect(renderSubject([item({ id: 'e1' }), item({ id: 'e2' })])).toContain('2건');
+    expect(renderSubject(2)).toContain('2건');
   });
 });
 

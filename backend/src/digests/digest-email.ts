@@ -76,9 +76,9 @@ export function itemChangeSummary(item: RenderItem): string {
   return `${label} (현재: ${statusLabel(item.billStatus)})`;
 }
 
-/** 제목: "이번 주 관심 법안 변경 N건". */
-export function renderSubject(items: RenderItem[]): string {
-  return `[Lawmake] 이번 주 관심 법안 변경 ${items.length}건`;
+/** 제목: "이번 주 관심 법안 변경 N건". 개수만 필요(빌드·발송 어디서든 호출). */
+export function renderSubject(itemCount: number): string {
+  return `[Lawmake] 이번 주 관심 법안 변경 ${itemCount}건`;
 }
 
 /** 본문 HTML. 항목별 법안명·변경요약·감지시각·상세 링크 + 관리/수신거부 + 고지. */
