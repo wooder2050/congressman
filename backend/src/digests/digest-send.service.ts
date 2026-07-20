@@ -73,9 +73,14 @@ export class DigestSendService {
       skippedByCap: 0,
     };
 
+    // DRY_RUN 발송기는 조회·상태변경을 전혀 하지 않는다(원장 소비 방지). 미리보기는 빌드에서 함.
+    if (config.mode === 'DRY_RUN') {
+      return result;
+    }
+
     // 실발송 모드인데 sender가 Noop이면 시작 실패. (Noop이 성공을 반환해 미발송을 SENT로
     // 오기록하는 것 방지. config 로딩에서 키 검증하지만 어댑터 불일치도 여기서 최종 차단.)
-    if (config.mode !== 'DRY_RUN' && this.sender.mode === 'noop') {
+    if (this.sender.mode === 'noop') {
       throw new Error(
         `refusing to send in ${config.mode} mode with noop sender (missing RESEND_API_KEY?)`,
       );
@@ -105,10 +110,6 @@ export class DigestSendService {
     let sentThisRun = 0;
 
     for (const digest of digests) {
-      // DRY_RUN: 어떤 조회·상태변경도 하지 않는 순수 미리보기. 반드시 다른 처리보다 먼저 가드
-      // (조회 후 SUPPRESSED 등으로 기존 LIVE 원장을 소비하는 것을 막는다).
-      if (config.mode === 'DRY_RUN') continue;
-
       // MAX_EMAILS_PER_RUN: 실제 발송 직전에만 적용. 초과분은 손대지 않고 다음 run으로.
       if (sentThisRun >= config.maxEmailsPerRun) {
         result.skippedByCap += 1;
@@ -145,6 +146,21 @@ export class DigestSendService {
       // unsubscribe URL도 저장(재서명 시 시각이 달라져 List-Unsubscribe 헤더가 바뀌는 것 방지).
       const hasSnapshot =
         !!digest.htmlSnapshot && !!digest.recipientEmail && !!digest.unsubUrlSnapshot;
+
+      // 이미 발송 시도한 적(attemptCount>0) 있는데 snapshot이 없으면, 재렌더 시 같은 idempotencyKey에
+      // 다른 payload를 보내게 되어 위험 → permanent FAILED로 종결(수동 확인). 실무상 신규 테이블이라
+      // 거의 발생하지 않지만, snapshot 저장 도입 이전 레코드에 대한 방어.
+      if (!hasSnapshot && digest.attemptCount > 0) {
+        await this.prisma.digest.update({
+          where: { id: digest.id },
+          data: {
+            status: 'FAILED',
+            lastError: '[permanent] missing snapshot after prior attempt',
+          },
+        });
+        result.failed += 1;
+        continue;
+      }
       const subject = hasSnapshot ? digest.subjectSnapshot : renderSubject(digest.items.length);
       const html = hasSnapshot
         ? digest.htmlSnapshot

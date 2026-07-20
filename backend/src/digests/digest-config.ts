@@ -73,10 +73,13 @@ export function createSupabaseEmailLookup(): EmailLookup {
         if (status === 401 || status === 403) {
           throw new Error(`Supabase auth admin unauthorized (${status}): ${error.message}`);
         }
-        // 404/사용자 없음: 영구 → no_email(재시도해도 무의미, SUPPRESSED 종결).
-        if (status === 404) return { kind: 'no_email' };
-        // 429·5xx·기타: 일시 오류 → 재시도.
-        return { kind: 'retry', reason: `${status ?? '?'} ${error.message}` };
+        // 429·5xx·상태 불명: 일시 오류 → 재시도.
+        if (status === 429 || status === undefined || status >= 500) {
+          return { kind: 'retry', reason: `${status ?? '?'} ${error.message}` };
+        }
+        // 그 외 4xx(404·400·409·422 등): 이 사용자에 대한 영구 오류 → no_email(SUPPRESSED 종결).
+        // 재시도해도 같은 결과라 무한 스킵을 만들지 않는다.
+        return { kind: 'no_email' };
       }
       const user = data?.user;
       if (!user) return { kind: 'no_email' }; // 사용자 자체가 없으면 재시도해도 무의미
