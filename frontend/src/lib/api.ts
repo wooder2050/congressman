@@ -242,6 +242,21 @@ export async function getBill(id: string): Promise<BillDetail | null> {
   return fetchApi(`/api/bills/${id}`, { revalidate: 86400 });
 }
 
+export interface RelatedBill {
+  id: string;
+  title: string;
+  proposerName: string;
+  status: string;
+  proposedDate: string;
+  simpleSummary: string | null;
+  topic: string | null;
+  relation: "same-law" | "same-proposer" | "same-topic";
+}
+
+export async function getRelatedBills(id: string): Promise<RelatedBill[]> {
+  return (await fetchApi(`/api/bills/${id}/related`, { revalidate: 86400 })) ?? [];
+}
+
 export async function getVoteMemberVotes(voteId: string): Promise<VoteWithMemberVotes | null> {
   return fetchApi(`/api/votes/${voteId}/member-votes`, { revalidate: 86400 });
 }

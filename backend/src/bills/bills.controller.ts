@@ -110,6 +110,16 @@ export class BillsController {
     return this.billsService.findByIds(idList);
   }
 
+  @Get(':id/related')
+  @ApiOperation({
+    summary: '관련 법안',
+    description: '같은 법률·같은 발의자·같은 분야 기준의 관련 법안을 반환합니다 (최대 6건)',
+  })
+  @ApiParam({ name: 'id', description: '법안 ID' })
+  findRelated(@Param('id') id: string) {
+    return this.billsService.findRelated(id);
+  }
+
   @Get(':id')
   @ApiOperation({ summary: '법안 상세', description: '법안 상세 정보와 발의자 목록을 반환합니다' })
   @ApiParam({ name: 'id', description: '법안 ID' })

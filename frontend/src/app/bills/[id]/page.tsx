@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { getBill } from "@/lib/api";
 import BillDetailInner from "@/components/bills/BillDetailInner";
+import RelatedBills from "@/components/bills/RelatedBills";
 import BillJsonLd from "@/components/seo/BillJsonLd";
 import BreadcrumbJsonLd from "@/components/seo/BreadcrumbJsonLd";
 import { billDisplayTitle, truncateAtWord } from "@/lib/bill-title";
@@ -91,6 +92,9 @@ export default async function BillDetailPage({ params }: BillDetailPageProps) {
         ]}
       />
       <BillDetailInner bill={bill} />
+      <div className="mx-auto mt-6 max-w-7xl">
+        <RelatedBills billId={id} />
+      </div>
     </>
   );
 }
