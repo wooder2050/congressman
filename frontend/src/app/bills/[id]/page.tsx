@@ -1,7 +1,9 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { getBill } from "@/lib/api";
+import { Suspense } from "react";
 import BillDetailInner from "@/components/bills/BillDetailInner";
+import RelatedBills from "@/components/bills/RelatedBills";
 import BillJsonLd from "@/components/seo/BillJsonLd";
 import BreadcrumbJsonLd from "@/components/seo/BreadcrumbJsonLd";
 import { billDisplayTitle, truncateAtWord } from "@/lib/bill-title";
@@ -91,6 +93,12 @@ export default async function BillDetailPage({ params }: BillDetailPageProps) {
         ]}
       />
       <BillDetailInner bill={bill} />
+      <div className="mx-auto mt-6 max-w-7xl">
+        {/* 선택 섹션 — 지연·실패가 상세 본문 렌더링을 붙잡지 않도록 Suspense로 분리 */}
+        <Suspense fallback={null}>
+          <RelatedBills billId={id} />
+        </Suspense>
+      </div>
     </>
   );
 }

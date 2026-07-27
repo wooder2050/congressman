@@ -406,6 +406,97 @@ export class BillsService {
     return result;
   }
 
+  /**
+   * 관련 법안 추천 — 같은 법률 개정안 > 같은 발의자 > 같은 분야 순으로 최대 6건.
+   * 상세 페이지(ISR 2일)에서만 호출되므로 무거운 검색이 아닌 단순 조건 3개로 구성.
+   */
+  async findRelated(id: string) {
+    const key = `bill:related:${id}`;
+    const cached = await this.redis.get(key);
+    if (cached) return cached;
+
+    const bill = await this.prisma.bill.findUnique({
+      where: { id },
+      select: { id: true, title: true, topic: true, proposerName: true, termId: true },
+    });
+    if (!bill) return [];
+
+    // "형사소송법 일부개정법률안(홍길동의원 등 10인)" → "형사소송법"
+    const baseLawName = bill.title
+      .replace(/\([^)]*\)/g, '')
+      .replace(/(일부|전부)?개정(법률|규칙)안$|폐지법률안$|법률안$/g, '')
+      .trim();
+
+    const commonSelect = {
+      id: true,
+      title: true,
+      proposerName: true,
+      status: true,
+      proposedDate: true,
+      simpleSummary: true,
+      topic: true,
+    } as const;
+    const base = {
+      termId: bill.termId,
+      id: { not: bill.id },
+      simpleSummary: { not: null },
+    };
+
+    // topic은 원본 값이 80종+로 파편화돼 있어, findAll과 동일하게 같은 canonical로
+    // 정규화되는 원본 값 전체를 in 조건으로 매칭한다 (예: 'science'와 '과학기술·ICT'가 서로 매칭).
+    const topicKeys = bill.topic
+      ? Object.entries(TOPIC_NORMALIZE)
+          .filter(([, v]) => v === normalizeTopic(bill.topic!))
+          .map(([k]) => k)
+      : [];
+
+    const [sameLaw, sameProposer, sameTopic] = await Promise.all([
+      baseLawName.length >= 3
+        ? this.prisma.bill.findMany({
+            where: { ...base, title: { startsWith: baseLawName } },
+            orderBy: { proposedDate: 'desc' },
+            take: 6,
+            select: commonSelect,
+          })
+        : Promise.resolve([]),
+      // proposerName이 비어 있으면 무관한 법안이 전부 "같은 발의자"로 묶이므로 스킵
+      bill.proposerName.trim()
+        ? this.prisma.bill.findMany({
+            where: { ...base, proposerName: bill.proposerName },
+            orderBy: { proposedDate: 'desc' },
+            take: 6,
+            select: commonSelect,
+          })
+        : Promise.resolve([]),
+      topicKeys.length
+        ? this.prisma.bill.findMany({
+            where: { ...base, topic: { in: topicKeys } },
+            orderBy: { proposedDate: 'desc' },
+            take: 6,
+            select: commonSelect,
+          })
+        : Promise.resolve([]),
+    ]);
+
+    const seen = new Set<string>();
+    const result: Array<
+      (typeof sameLaw)[number] & { relation: 'same-law' | 'same-proposer' | 'same-topic' }
+    > = [];
+    const push = (bills: typeof sameLaw, relation: 'same-law' | 'same-proposer' | 'same-topic') => {
+      for (const b of bills) {
+        if (result.length >= 6 || seen.has(b.id)) continue;
+        seen.add(b.id);
+        result.push({ ...b, topic: b.topic ? normalizeTopic(b.topic) : null, relation });
+      }
+    };
+    push(sameLaw, 'same-law');
+    push(sameProposer, 'same-proposer');
+    push(sameTopic, 'same-topic');
+
+    await this.redis.set(key, result, TTL_6H);
+    return result;
+  }
+
   async findByIds(ids: string[]) {
     if (!ids.length) return [];
 
