@@ -42,6 +42,8 @@ const API_BASE = process.env.NEXT_PUBLIC_API_URL;
 
 type FetchApiOptions = {
   revalidate?: number;
+  /** ms — 지정 시 초과하면 요청 중단 (선택 섹션이 페이지 렌더를 붙잡지 않도록) */
+  timeoutMs?: number;
 };
 
 async function fetchApi<T>(path: string, options?: FetchApiOptions): Promise<T> {
@@ -58,6 +60,10 @@ async function fetchApi<T>(path: string, options?: FetchApiOptions): Promise<T> 
     if (typeof window === "undefined") {
       init.cache = "force-cache";
     }
+  }
+
+  if (options?.timeoutMs) {
+    init.signal = AbortSignal.timeout(options.timeoutMs);
   }
 
   const res = await fetch(`${API_BASE}${path}`, init);
@@ -254,7 +260,13 @@ export interface RelatedBill {
 }
 
 export async function getRelatedBills(id: string): Promise<RelatedBill[]> {
-  return (await fetchApi(`/api/bills/${id}/related`, { revalidate: 86400 })) ?? [];
+  // revalidate는 상세 페이지 ISR(2일)과 동일하게, timeout으로 선택 섹션의 지연 전파 차단
+  return (
+    (await fetchApi(`/api/bills/${encodeURIComponent(id)}/related`, {
+      revalidate: 172800,
+      timeoutMs: 5000,
+    })) ?? []
+  );
 }
 
 export async function getVoteMemberVotes(voteId: string): Promise<VoteWithMemberVotes | null> {

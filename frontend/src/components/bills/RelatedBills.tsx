@@ -18,8 +18,9 @@ export default async function RelatedBills({ billId }: { billId: string }) {
   let bills: RelatedBill[] = [];
   try {
     bills = await getRelatedBills(billId);
-  } catch {
-    // 추천 실패는 상세 페이지 렌더링을 막지 않는다
+  } catch (error) {
+    // 추천 실패는 상세 페이지 렌더링을 막지 않되, 장애 관측을 위해 기록한다
+    console.error(`[RelatedBills] fetch failed for ${billId}:`, error);
     return null;
   }
   if (!bills.length) return null;

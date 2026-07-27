@@ -442,26 +442,37 @@ export class BillsService {
       simpleSummary: { not: null },
     };
 
+    // topic은 원본 값이 80종+로 파편화돼 있어, findAll과 동일하게 같은 canonical로
+    // 정규화되는 원본 값 전체를 in 조건으로 매칭한다 (예: 'science'와 '과학기술·ICT'가 서로 매칭).
+    const topicKeys = bill.topic
+      ? Object.entries(TOPIC_NORMALIZE)
+          .filter(([, v]) => v === normalizeTopic(bill.topic!))
+          .map(([k]) => k)
+      : [];
+
     const [sameLaw, sameProposer, sameTopic] = await Promise.all([
       baseLawName.length >= 3
         ? this.prisma.bill.findMany({
             where: { ...base, title: { startsWith: baseLawName } },
             orderBy: { proposedDate: 'desc' },
-            take: 4,
+            take: 6,
             select: commonSelect,
           })
         : Promise.resolve([]),
-      this.prisma.bill.findMany({
-        where: { ...base, proposerName: bill.proposerName },
-        orderBy: { proposedDate: 'desc' },
-        take: 4,
-        select: commonSelect,
-      }),
-      bill.topic
+      // proposerName이 비어 있으면 무관한 법안이 전부 "같은 발의자"로 묶이므로 스킵
+      bill.proposerName.trim()
         ? this.prisma.bill.findMany({
-            where: { ...base, topic: bill.topic },
+            where: { ...base, proposerName: bill.proposerName },
             orderBy: { proposedDate: 'desc' },
-            take: 4,
+            take: 6,
+            select: commonSelect,
+          })
+        : Promise.resolve([]),
+      topicKeys.length
+        ? this.prisma.bill.findMany({
+            where: { ...base, topic: { in: topicKeys } },
+            orderBy: { proposedDate: 'desc' },
+            take: 6,
             select: commonSelect,
           })
         : Promise.resolve([]),
