@@ -4,6 +4,7 @@ import { useState, useEffect, useRef, useCallback, useMemo } from "react";
 import Link from "next/link";
 import type { WeeklyArticle } from "@/data/weekly/types";
 import { SkeletonWeeklyItem } from "@/components/skeletons/WeeklyListSkeleton";
+import { trackEvent } from "@/lib/analytics";
 
 const PAGE_SIZE = 6;
 
@@ -92,10 +93,13 @@ export default function WeeklyList({ articles }: WeeklyListProps) {
 
       {/* 아티클 목록 */}
       <section className="space-y-4">
-        {visible.map((article) => (
+        {visible.map((article, i) => (
           <Link
             key={article.id}
             href={`/weekly/${article.id}`}
+            onClick={() =>
+              trackEvent("weekly_article_click", { article_id: article.id, position: i })
+            }
             className="block rounded-xl border border-(--color-border-primary) bg-(--color-bg-primary) p-5 no-underline transition-colors hover:bg-(--color-bg-hover)"
           >
             <div className="flex items-start justify-between gap-3">
