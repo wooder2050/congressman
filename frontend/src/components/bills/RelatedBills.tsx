@@ -1,4 +1,4 @@
-import Link from "next/link";
+import TrackedLink from "@/components/analytics/TrackedLink";
 import ColorBadge from "@/components/ui/color-badge";
 import { getRelatedBills, type RelatedBill } from "@/lib/api";
 import { BILL_STATUS_MAP } from "@/lib/constants";
@@ -29,12 +29,14 @@ export default async function RelatedBills({ billId }: { billId: string }) {
     <section className="space-y-3 rounded-xl border border-(--color-border-primary) bg-(--color-bg-primary) p-5">
       <h2 className="text-lg font-bold text-(--color-text-primary)">관련 법안</h2>
       <ul className="grid gap-3 sm:grid-cols-2">
-        {bills.map((b) => {
+        {bills.map((b, i) => {
           const statusInfo = BILL_STATUS_MAP[b.status as keyof typeof BILL_STATUS_MAP];
           return (
             <li key={b.id}>
-              <Link
+              <TrackedLink
                 href={`/bills/${b.id}`}
+                eventName="related_bill_click"
+                eventParams={{ relation: b.relation, position: i }}
                 className="block h-full space-y-1.5 rounded-lg border border-(--color-border-primary) p-4 no-underline transition-colors hover:bg-(--color-bg-hover)"
               >
                 <div className="flex items-center gap-2 text-xs">
@@ -61,7 +63,7 @@ export default async function RelatedBills({ billId }: { billId: string }) {
                 <p className="text-xs text-(--color-text-tertiary)">
                   {b.proposerName} · {b.proposedDate}
                 </p>
-              </Link>
+              </TrackedLink>
             </li>
           );
         })}
