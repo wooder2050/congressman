@@ -12,12 +12,14 @@ export class StatsService {
   ) {}
 
   async getPropertyStats() {
-    const key = `stats:property:22`;
+    const TERM_ID = 22;
+    // 공개연도 기준. 2026 공개분 = 2025-12-31 기준 재산.
+    const ASSET_YEAR = 2026;
+
+    // 캐시 키에 연도를 포함해야 ASSET_YEAR 변경 시 구 캐시가 자동 무효화된다.
+    const key = `stats:property:${TERM_ID}:${ASSET_YEAR}`;
     const cached = await this.redis.get(key);
     if (cached) return cached;
-
-    const TERM_ID = 22;
-    const ASSET_YEAR = 2024;
 
     const [members, assets] = await Promise.all([
       this.prisma.$queryRaw<
