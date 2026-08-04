@@ -164,6 +164,10 @@ export default async function WeeklyArticlePage({ params }: Props) {
         <p className="mt-3 text-base leading-relaxed text-(--color-text-secondary)">
           {bill.description}
         </p>
+        <p className="mt-3 text-xs text-(--color-text-tertiary)">
+          lawmake 편집팀 작성 · {weeklyArticle.publishedDate} 발행 — 국회 회의록·공공데이터와 하단
+          출처 보도를 교차 확인해 작성했습니다.
+        </p>
 
         {/* 표결 결과 */}
         {bill.voteResult && (

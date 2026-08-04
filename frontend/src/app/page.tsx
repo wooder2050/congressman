@@ -10,6 +10,7 @@ import RecentActivity from "@/components/home/RecentActivity";
 import AttendanceRanking from "@/components/home/AttendanceRanking";
 import ActivityHighlights from "@/components/home/ActivityHighlights";
 import LatestWeeklyNews from "@/components/home/LatestWeeklyNews";
+import EditorsPicks from "@/components/home/EditorsPicks";
 import PropertyHighlight from "@/components/home/PropertyHighlight";
 import ScorecardHighlight from "@/components/home/ScorecardHighlight";
 import BreakingNewsBanner from "@/components/home/BreakingNewsBanner";
@@ -126,6 +127,9 @@ export default async function HomePage({ searchParams }: HomePageProps) {
 
         {/* 속보 배너 */}
         <BreakingNewsBanner />
+
+        {/* 편집자가 고른 국회 분석 — 자체 편집 콘텐츠를 첫 화면에서 발견 가능하게 */}
+        <EditorsPicks />
 
         {/* 내 관심 이슈 레이더 */}
         <PersonalizedFeed termId={termId} />
