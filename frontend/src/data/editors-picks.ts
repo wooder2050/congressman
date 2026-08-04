@@ -9,7 +9,7 @@
  * href는 /weekly/[호수id]/[기사slug] 상세 페이지. slug가 실제 호수 파일에
  * 존재하는지 확인 후 추가할 것 (없으면 404).
  */
-export interface EditorsPick {
+interface EditorsPick {
   /** 기사 상세 경로 (/weekly/{id}/{slug}) */
   href: string;
   /** 카테고리 라벨 */
@@ -97,7 +97,7 @@ export const EDITORS_PICKS: EditorsPick[] = [
 ];
 
 /** 홈 화면 노출 개수 */
-export const HOME_PICKS_COUNT = 6;
+const HOME_PICKS_COUNT = 6;
 
 export function getHomePicks(): EditorsPick[] {
   return EDITORS_PICKS.slice(0, HOME_PICKS_COUNT);
