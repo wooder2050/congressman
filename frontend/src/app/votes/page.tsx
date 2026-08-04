@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import JsonLd from "@/components/seo/JsonLd";
 import CongressWrapper from "@/common/CongressWrapper";
 import PageIntro from "@/components/ui/page-intro";
+import RelatedEditorial from "@/components/ui/related-editorial";
 import VoteListInner from "@/components/votes/VoteListInner";
 import VoteListSkeleton from "@/components/skeletons/VoteListSkeleton";
 
@@ -56,6 +57,21 @@ export default async function VotesPage({ searchParams }: VotesPageProps) {
             "원안가결(수정 없이 통과), 수정가결(일부 수정 후 통과), 부결(반대 다수로 미통과) 등 결과를 확인하세요.",
             "각 표결을 클릭하면 의원별 찬성·반대·기권·불참 내역을 투명하게 확인할 수 있습니다.",
             "표결 참여율과 정당별 투표 성향을 통해 국회의 의사결정 과정을 살펴보세요.",
+          ]}
+        />
+        <RelatedEditorial
+          links={[
+            {
+              kind: "분석",
+              label: "검사 보완수사권 폐지 — 형소법 개정안 통과의 의미",
+              href: "/weekly/2026-07-w4/보완수사권-폐지-형소법-통과",
+            },
+            {
+              kind: "용어",
+              label: "의결정족수 — 과반이면 다 되는 게 아닙니다",
+              href: "/glossary/의결정족수",
+            },
+            { kind: "용어", label: "가결과 시행은 다릅니다 — 가결 뜻", href: "/glossary/가결" },
           ]}
         />
       </div>

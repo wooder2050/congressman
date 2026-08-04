@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import CongressWrapper from "@/common/CongressWrapper";
 import CommitteeDetailInner from "@/components/committees/CommitteeDetailInner";
+import RelatedEditorial from "@/components/ui/related-editorial";
 
 interface CommitteeDetailPageProps {
   params: Promise<{ name: string }>;
@@ -35,10 +36,30 @@ export default async function CommitteeDetailPage({
   const termId = Number(sp.term) || 22;
 
   return (
-    <div className="mx-auto max-w-7xl">
+    <div className="mx-auto max-w-7xl space-y-4">
       <CongressWrapper key={`${committeeName}-${termId}`} fallback={<CommitteeDetailSkeleton />}>
         <CommitteeDetailInner name={committeeName} termId={termId} />
       </CongressWrapper>
+      <RelatedEditorial
+        title="위원회 제도를 이해하는 해설"
+        links={[
+          {
+            kind: "분석",
+            label: "두 달 멈춘 국회 — 원 구성 협상은 왜 늦어졌나",
+            href: "/weekly/2026-07-w2/원-구성-제헌절-시한-도과",
+          },
+          {
+            kind: "용어",
+            label: "체계자구심사 — 법사위가 '제2의 관문'인 이유",
+            href: "/glossary/체계자구심사",
+          },
+          {
+            kind: "용어",
+            label: "안건조정위원회 — 위원회 단계의 지연 카드",
+            href: "/glossary/안건조정위원회",
+          },
+        ]}
+      />
     </div>
   );
 }

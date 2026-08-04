@@ -1,8 +1,10 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import JsonLd from "@/components/seo/JsonLd";
 import PageIntro from "@/components/ui/page-intro";
 import WeeklyList from "@/components/weekly/WeeklyList";
 import { getAllWeeklyArticles } from "@/data/weekly";
+import { EDITORS_PICKS } from "@/data/editors-picks";
 
 export const metadata: Metadata = {
   title: "주간 국회 뉴스 - 이번 주 국회에서 무슨 일이?",
@@ -75,7 +77,43 @@ export default function WeeklyPage() {
         ]}
       />
 
-      <WeeklyList articles={articles} />
+      {/* 처음 읽을 10편 — 편집 선별 큐레이션 */}
+      <section className="space-y-3">
+        <h2 className="text-xl font-bold">처음 읽는다면 이 10편부터</h2>
+        <p className="text-sm text-(--color-text-tertiary)">
+          지금 정국을 이해하는 데 필요한 기사를 편집팀이 순서대로 골랐습니다.
+        </p>
+        <ol className="space-y-2">
+          {EDITORS_PICKS.map((pick, i) => (
+            <li key={pick.href}>
+              <Link
+                href={pick.href}
+                className="flex items-start gap-3 rounded-lg border border-(--color-border-primary) p-3 no-underline transition-colors hover:bg-(--color-bg-hover)"
+              >
+                <span className="mt-0.5 w-6 shrink-0 text-center text-sm font-bold text-(--color-primary)">
+                  {i + 1}
+                </span>
+                <span className="min-w-0">
+                  <span className="block leading-snug font-semibold text-(--color-text-primary)">
+                    {pick.title}
+                  </span>
+                  <span className="mt-0.5 block text-sm leading-relaxed text-(--color-text-secondary)">
+                    {pick.why}
+                  </span>
+                  <span className="mt-0.5 block text-xs text-(--color-text-tertiary)">
+                    {pick.category} · {pick.date}
+                  </span>
+                </span>
+              </Link>
+            </li>
+          ))}
+        </ol>
+      </section>
+
+      <section className="space-y-3">
+        <h2 className="text-xl font-bold">전체 주간호</h2>
+        <WeeklyList articles={articles} />
+      </section>
     </div>
   );
 }

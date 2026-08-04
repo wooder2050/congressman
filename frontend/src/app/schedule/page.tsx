@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import CongressWrapper from "@/common/CongressWrapper";
 import PageIntro from "@/components/ui/page-intro";
+import RelatedEditorial from "@/components/ui/related-editorial";
 import ScheduleListInner from "@/components/schedules/ScheduleListInner";
 import { ScheduleListSkeleton } from "@/components/skeletons/ScheduleSkeleton";
 
@@ -35,6 +36,21 @@ export default async function SchedulePage({ searchParams }: SchedulePageProps) 
             "본회의 일정: 국회의원 전체가 모여 법안을 최종 의결하는 회의 일정을 확인하세요.",
             "위원회 일정: 각 상임위원회의 법안 심사, 현안 보고 등 회의 일정을 확인할 수 있습니다.",
             "지난 회의와 다가오는 회의를 시간순으로 확인하고, 관심 있는 안건의 심사 일정을 추적하세요.",
+          ]}
+        />
+        <RelatedEditorial
+          links={[
+            {
+              kind: "분석",
+              label: "패스트트랙 330일 → 90일, 국회 룰이 바뀐다 — 8월 국회 최대 쟁점",
+              href: "/weekly/2026-07-w4/패스트트랙-단축-국회법-8월-국회로",
+            },
+            {
+              kind: "용어",
+              label: "임시국회와 정기국회는 뭐가 다른가요?",
+              href: "/glossary/임시국회",
+            },
+            { kind: "용어", label: "필리버스터는 언제 끝나나요?", href: "/glossary/필리버스터" },
           ]}
         />
       </div>
