@@ -4,7 +4,7 @@ import LocalElectionBreadcrumb from "@/components/local-elections/LocalElectionB
 import RegionGrid from "@/components/local-elections/RegionGrid";
 import JsonLd from "@/components/seo/JsonLd";
 
-export const revalidate = 86400; // 1d — 개표 종료(6/4)로 데이터 확정, 봇 재크롤링 ISR Write 절감
+export const revalidate = 2592000; // 30d — 개표 종료(6/4) 후 DB 무변경(최종 2026-06-06). 봇 재크롤링마다 재생성돼 ISR Write가 과다해 상향
 export const dynamicParams = true;
 
 export function generateStaticParams() {

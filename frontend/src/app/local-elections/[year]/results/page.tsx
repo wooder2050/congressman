@@ -6,7 +6,7 @@ import LocalResultsHub from "@/components/local-elections/LocalResultsHub";
 import JsonLd from "@/components/seo/JsonLd";
 
 // 개표 갱신 유지 + Vercel 정적 박제 방지(누락 시 옛 결과 박제 — PR #446 이력). 다른 개표 라우트와 동일.
-export const revalidate = 86400; // 1d — 개표 종료(6/4)로 데이터 확정, 봇 재크롤링 ISR Write 절감
+export const revalidate = 2592000; // 30d — 개표 종료(6/4) 후 DB 무변경(최종 2026-06-06). 봇 재크롤링마다 재생성돼 ISR Write가 과다해 상향
 export const dynamicParams = true;
 
 export function generateStaticParams() {
