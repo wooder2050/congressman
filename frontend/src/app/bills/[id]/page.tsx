@@ -10,7 +10,13 @@ import { billDisplayTitle, truncateAtWord } from "@/lib/bill-title";
 import { normalizeTopic } from "@/lib/constants";
 import type { BillStructuredSummary } from "@/types";
 
-export const revalidate = 172800; // 2d — 법안은 발의 후 거의 불변, 크롤링 재생성 절감 (AI 요약 반영 지연 최대 2일)
+// 14d — 법안은 발의 후 내용이 거의 바뀌지 않는다.
+// 2d일 때 Observability상 읽기 44회 대비 쓰기 1.5K(12시간 기준)로 재생성이 압도적이었다.
+// 봇이 크롤링 → 페이지 생성(ISR Write + Origin Transfer) → 아무도 읽지 않고 만료 → 재크롤링이
+// 반복되며 비용 대부분을 차지했다.
+// 주의: daily sync의 캐시 무효화는 Upstash(백엔드 API 캐시)만 지운다. Next ISR 캐시는
+// 여기 주기를 따르므로, 새로 생성한 AI 요약이 상세 페이지에 뜨기까지 최대 14일이 걸린다.
+export const revalidate = 1209600;
 export const dynamicParams = true;
 
 // 빈 배열을 반환해 첫 방문 시 ISR로 정적 생성되도록 한다.

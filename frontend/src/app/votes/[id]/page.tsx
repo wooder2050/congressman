@@ -5,7 +5,9 @@ import VoteDetailInner from "@/components/votes/VoteDetailInner";
 import VoteJsonLd from "@/components/seo/VoteJsonLd";
 import BreadcrumbJsonLd from "@/components/seo/BreadcrumbJsonLd";
 
-export const revalidate = 172800; // 2d — 표결은 종료 후 불변, 크롤링 재생성 절감
+// 30d — 표결 결과는 종료 후 확정되어 바뀌지 않는다(법안과 달리 나중에 채워지는 필드도 없다).
+// 봇 재크롤링마다 재생성되던 ISR Write를 줄이려고 2d에서 상향했다.
+export const revalidate = 2592000;
 export const dynamicParams = true;
 
 export function generateStaticParams() {
