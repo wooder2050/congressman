@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import Script from "next/script";
+import { Analytics } from "@vercel/analytics/next";
 import "./globals.css";
 import Providers from "@/lib/providers";
 import Header from "@/components/layout/Header";
@@ -131,6 +132,13 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
           <Footer />
           <BottomNav />
         </Providers>
+        {/*
+          Vercel Web Analytics — 라우트별 실제 트래픽·전송량을 보기 위해 둔다.
+          GA4/GSC로는 Vercel 과금(Origin Transfer·ISR)과 페이지를 연결할 수 없어
+          비용 판단이 추정에 머물렀다. 쿠키를 쓰지 않아 동의 배너가 필요 없다.
+          Hobby 기준 월 5만 이벤트 무료 — 현재 페이지뷰는 월 1.7만 수준.
+        */}
+        <Analytics />
       </body>
     </html>
   );
