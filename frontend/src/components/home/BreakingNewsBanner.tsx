@@ -39,7 +39,7 @@ export default async function BreakingNewsBanner() {
           position="compact"
           className="text-sm font-semibold text-(--color-primary) no-underline"
         >
-          전체 보기 →
+          상세·출처 보기 →
         </BreakingNewsLink>
       </div>
 
