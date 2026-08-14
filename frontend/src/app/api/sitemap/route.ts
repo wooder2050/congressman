@@ -15,20 +15,19 @@ export function xmlResponse(xml: string) {
   });
 }
 
-/** 빌드 시점 ISO 날짜 (YYYY-MM-DD) — lastmod 명시 누락 시 기본값 */
-function buildDate(): string {
-  return new Date().toISOString().slice(0, 10);
-}
-
 export function urlEntry(
   url: string,
   opts?: { lastmod?: string; changefreq?: string; priority?: number },
 ) {
-  // lastmod가 명시되지 않으면 빌드 시점 날짜를 채워 GSC가 변경을 추적할 수 있게 함.
-  // sitemap은 revalidate=86400(1일)이라 매일 새 lastmod로 회전됨.
-  const lastmod = opts?.lastmod || buildDate();
+  // lastmod는 실제 변경일을 아는 경우에만 넣는다.
+  //
+  // 예전에는 명시가 없으면 오늘 날짜를 채웠는데, sitemap이 revalidate=86400이라
+  // 내용이 그대로인 URL도 매일 lastmod가 새 날짜로 회전했다. 검색엔진에는 "매일 바뀐다"는
+  // 잘못된 신호가 되어 불필요한 재크롤을 유발하고(ISR Write·Origin Transfer 비용),
+  // 정작 진짜 변경 시점은 구분할 수 없게 된다.
+  // 값이 없으면 lastmod를 생략하는 편이 낫다 — 사이트맵 규격상 선택 항목이다.
   let entry = `  <url>\n    <loc>${url}</loc>`;
-  entry += `\n    <lastmod>${lastmod}</lastmod>`;
+  if (opts?.lastmod) entry += `\n    <lastmod>${opts.lastmod}</lastmod>`;
   if (opts?.changefreq) entry += `\n    <changefreq>${opts.changefreq}</changefreq>`;
   if (opts?.priority !== undefined) entry += `\n    <priority>${opts.priority}</priority>`;
   entry += `\n  </url>`;

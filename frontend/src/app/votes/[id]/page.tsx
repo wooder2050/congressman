@@ -28,17 +28,25 @@ export async function generateMetadata({ params }: VoteDetailPageProps): Promise
     vote.resultCode === "passed" || vote.resultCode === "amended" ? "가결" : "부결";
   const description = `${vote.billName} 본회의 표결 결과: ${resultText} (찬성 ${vote.yesCount}, 반대 ${vote.noCount}, 기권 ${vote.abstainCount}). 의원별 투표 내역을 확인하세요.`;
 
+  // 같은 법안이 여러 차례 표결되면 billName만으로는 제목이 완전히 겹친다.
+  // (예: 「초·중등교육법 일부개정법률안(대안)(교육위원장)」은 22대에서만 7회 표결)
+  // 네이버 서치어드바이저가 title 중복 616건을 경고했고, 그중 다수가 이 라우트였다.
+  // 표결일과 결과를 붙여 페이지마다 고유한 제목이 되게 한다.
+  const title = vote.procDate
+    ? `${vote.billName} 표결 결과 (${vote.procDate} ${resultText})`
+    : `${vote.billName} 표결 결과 (${resultText})`;
+
   return {
-    title: `${vote.billName} - 표결 결과`,
+    title,
     description,
     alternates: { canonical: `https://www.lawmake.kr/votes/${id}` },
     openGraph: {
-      title: `${vote.billName} | 국회 본회의 표결`,
+      title: `${title} | 국회 본회의`,
       description,
       url: `https://www.lawmake.kr/votes/${id}`,
       images: [`https://www.lawmake.kr/api/share/vote-card?voteId=${id}`],
     },
-    twitter: { card: "summary", title: `${vote.billName} 표결 결과`, description },
+    twitter: { card: "summary", title, description },
   };
 }
 
