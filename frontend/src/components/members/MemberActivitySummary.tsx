@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useCongressSuspenseQuery } from "@/hooks/useCongressQuery";
 import { getAttendance, getMemberVotes, getBills } from "@/lib/api";
 import { formatPercent, withJosa } from "@/lib/utils";
@@ -107,8 +108,11 @@ export default function MemberActivitySummary({
         )}
       </p>
       <p className="mt-2 text-xs text-(--color-text-tertiary)">
-        위 요약은 열린국회정보 공공데이터를 기반으로 자동 생성된 분석입니다. 아래 탭에서 상세
-        데이터를 확인하세요.
+        출처: 열린국회정보 공공데이터 · 출석률 등 지표의 산출 공식은{" "}
+        <Link href="/about/methodology" className="underline hover:text-(--color-text-secondary)">
+          데이터 방법론
+        </Link>
+        에서 공개합니다. 아래 탭에서 상세 데이터를 확인하세요.
       </p>
     </div>
   );
