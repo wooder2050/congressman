@@ -30,6 +30,12 @@ export default function Footer() {
             >
               서비스 소개
             </Link>
+            <Link
+              href="/about/methodology"
+              className="underline hover:text-(--color-text-secondary)"
+            >
+              데이터 방법론
+            </Link>
             <Link href="/glossary" className="underline hover:text-(--color-text-secondary)">
               용어 사전
             </Link>
