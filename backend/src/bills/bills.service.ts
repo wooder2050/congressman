@@ -273,6 +273,7 @@ export class BillsService {
    * 색인 가치가 높은 법안 ID만 반환. AdSense thin-content 대응 sitemap용.
    *
    * 기준(AND): simpleSummary(AI 요약) 보유 + 본회의 결과(lawResultCode) 도달
+   *           + 표결 레코드(Vote) 실존
    *
    * v2(위원회 결과 포함, 6,115건)까지는 "처리단계 도달"을 기준으로 삼았지만
    * 5회 연속 "가치가 별로 없는 콘텐츠" 반려로 불충분함이 확인됐다(2026-08).
@@ -280,28 +281,33 @@ export class BillsService {
    * "원본(열린국회정보)에 없는 정보가 페이지에 있는가"였다.
    * 본회의 표결에 도달한 법안 페이지에는 의원별 찬반·정당별 집계 등 원본
    * 사이트에서 조립된 형태로 제공되지 않는 데이터가 붙으므로 이 선에서 자른다.
-   * 위원회 결과만 있는 법안은 필드 나열 + 자동 요약뿐이라 제외(~1,456건 잔존).
+   * 위원회 결과만 있는 법안은 필드 나열 + 자동 요약뿐이라 제외.
+   *
+   * v3.1: lawResultCode만으론 표결 데이터 존재가 보장되지 않는다는 codex 지적
+   * 반영 — 무기명 재표결 등 117건은 Vote 레코드가 없어 "고유 데이터" 논리가
+   * 성립하지 않으므로 Vote 실존까지 요구(1,456 → 1,339건). Vote는 Bill과
+   * 동일 id 관행이라 FK 관계가 없어 id 교집합으로 거른다.
    */
   async findIndexableIds() {
     if (indexableIdsMemoryCache && indexableIdsMemoryCache.expiresAt > Date.now()) {
       return indexableIdsMemoryCache.data;
     }
 
-    const key = 'bills:indexable-ids:v3';
+    const key = 'bills:indexable-ids:v3.1';
     const cached = await this.redis.get<{ id: string; proposedDate: string }[]>(key);
     if (cached) {
       indexableIdsMemoryCache = { data: cached, expiresAt: Date.now() + ALL_IDS_MEMORY_TTL_MS };
       return cached;
     }
 
-    const bills = await this.prisma.bill.findMany({
-      where: {
-        simpleSummary: { not: null },
-        lawResultCode: { not: null },
-      },
-      select: { id: true, proposedDate: true },
-      orderBy: { proposedDate: 'desc' },
-    });
+    const bills = await this.prisma.$queryRaw<{ id: string; proposedDate: string }[]>`
+      SELECT b.id, b."proposedDate"
+      FROM "Bill" b
+      JOIN "Vote" v ON v.id = b.id
+      WHERE b."simpleSummary" IS NOT NULL
+        AND b."lawResultCode" IS NOT NULL
+      ORDER BY b."proposedDate" DESC
+    `;
 
     const result = bills.map((b) => ({ id: b.id, proposedDate: b.proposedDate }));
     await this.redis.set(key, result, TTL_DAY);
