@@ -48,9 +48,9 @@ export default function MethodologyPage() {
       <section>
         <h1 className="text-3xl font-extrabold tracking-tight">데이터 수집·산출 방법론</h1>
         <p className="mt-4 text-base leading-relaxed text-(--color-text-secondary)">
-          lawmake.kr의 모든 숫자에는 근거가 있습니다. 이 페이지는 데이터를 어디서 어떻게
-          가져오는지, 사이트가 직접 계산하는 지표는 어떤 공식으로 산출되는지, 오류를 발견했을 때
-          어떻게 정정을 요청할 수 있는지를 공개합니다.
+          lawmake.kr의 모든 숫자에는 근거가 있습니다. 이 페이지는 데이터를 어디서 어떻게 가져오는지,
+          사이트가 직접 계산하는 지표는 어떤 공식으로 산출되는지, 오류를 발견했을 때 어떻게 정정을
+          요청할 수 있는지를 공개합니다.
         </p>
       </section>
 
@@ -84,9 +84,8 @@ export default function MethodologyPage() {
             ))}
           </div>
           <p className="text-sm leading-relaxed text-(--color-text-secondary)">
-            수집 과정에서 데이터를 임의로 수정하지 않습니다. 다만 API 응답의 형식 오류(타입
-            불일치, 표기 불일치 등)는 교정하며, 원본과 다른 값이 의심되는 경우 원본 시스템을
-            우선합니다.
+            수집 과정에서 데이터를 임의로 수정하지 않습니다. 다만 API 응답의 형식 오류(타입 불일치,
+            표기 불일치 등)는 교정하며, 원본과 다른 값이 의심되는 경우 원본 시스템을 우선합니다.
           </p>
         </div>
       </section>
@@ -214,7 +213,10 @@ export default function MethodologyPage() {
           </p>
           <ul className="list-inside list-disc space-y-1.5 text-sm text-(--color-text-secondary)">
             <li>AI가 생성한 영역에는 &lsquo;AI 요약&rsquo; 표시를 명확히 붙입니다.</li>
-            <li>요약과 원문이 다르게 읽힌다면 원문이 우선입니다 — 원문을 같은 페이지에 함께 제공합니다.</li>
+            <li>
+              요약과 원문이 다르게 읽힌다면 원문이 우선입니다 — 원문을 같은 페이지에 함께
+              제공합니다.
+            </li>
             <li>오류 제보가 접수되면 확인 후 해당 요약을 수정하거나 내립니다.</li>
           </ul>
         </div>
@@ -225,9 +227,7 @@ export default function MethodologyPage() {
         <h2 className="text-2xl font-bold">4. 데이터의 한계</h2>
         <div className="space-y-3 rounded-xl border border-(--color-border-primary) bg-(--color-bg-primary) p-5">
           <ul className="list-inside list-disc space-y-1.5 text-sm text-(--color-text-secondary)">
-            <li>
-              원천 API의 반영 지연에 따라 실제 국회 상황보다 하루 안팎 늦을 수 있습니다.
-            </li>
+            <li>원천 API의 반영 지연에 따라 실제 국회 상황보다 하루 안팎 늦을 수 있습니다.</li>
             <li>
               출석률은 표결 기록 기반 추정치로, 국회사무처의 출석부 기준 통계와 다를 수 있습니다.
             </li>
@@ -248,8 +248,8 @@ export default function MethodologyPage() {
         <h2 className="text-2xl font-bold">5. 오류 제보와 정정</h2>
         <div className="space-y-3 rounded-xl border border-(--color-border-primary) bg-(--color-bg-primary) p-5">
           <p className="text-sm leading-relaxed text-(--color-text-secondary)">
-            사실과 다른 데이터, 잘못된 요약, 산출 오류를 발견하셨다면 알려주세요. 접수된 제보는
-            원본 데이터와 대조해 확인하고, 오류로 확인되면 정정합니다.
+            사실과 다른 데이터, 잘못된 요약, 산출 오류를 발견하셨다면 알려주세요. 접수된 제보는 원본
+            데이터와 대조해 확인하고, 오류로 확인되면 정정합니다.
           </p>
           <ul className="list-inside list-disc space-y-1.5 text-sm text-(--color-text-secondary)">
             <li>
