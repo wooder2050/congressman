@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import JsonLd from "@/components/seo/JsonLd";
+import AdSlot from "@/components/ads/AdSlot";
 
 export const metadata: Metadata = {
   title: "주제별 법안 가이드 — 22대 국회 주요 분야별 입법 동향 분석",
@@ -378,6 +379,8 @@ export default function TopicsGuidePage() {
           </Link>
         </div>
       </section>
+
+      <AdSlot />
     </div>
   );
 }

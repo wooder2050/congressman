@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import JsonLd from "@/components/seo/JsonLd";
+import AdSlot from "@/components/ads/AdSlot";
 
 export const metadata: Metadata = {
   title: "세금은 어떻게 쓰이나요? — 국가 예산과 국회의 역할 쉽게 알아보기",
@@ -251,6 +252,8 @@ export default function BudgetGuidePage() {
           </Link>
         </div>
       </section>
+
+      <AdSlot />
     </div>
   );
 }
