@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import JsonLd from "@/components/seo/JsonLd";
+import AdSlot from "@/components/ads/AdSlot";
 
 export const metadata: Metadata = {
   title: "국회의원은 무슨 일을 할까? — 입법·예산·감시 3대 역할 완벽 해설",
@@ -277,6 +278,8 @@ export default function RolesPage() {
           </Link>
         </div>
       </section>
+
+      <AdSlot />
     </div>
   );
 }

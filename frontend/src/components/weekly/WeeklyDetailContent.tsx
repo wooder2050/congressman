@@ -1,5 +1,6 @@
 import Link from "next/link";
 import type { WeeklyArticle, FeaturedBill, WeeklyHighlight } from "@/data/weekly/types";
+import AdSlot from "@/components/ads/AdSlot";
 
 const STATUS_MAP: Record<string, { label: string; color: string; textColor: string }> = {
   passed: { label: "가결", color: "#0F766E", textColor: "#FFFFFF" },
@@ -330,6 +331,8 @@ export default function WeeklyDetailContent({ article }: WeeklyDetailContentProp
           </Link>
         </div>
       </section>
+
+      <AdSlot className="mt-8" />
     </div>
   );
 }

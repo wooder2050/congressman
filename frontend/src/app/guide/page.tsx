@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import JsonLd from "@/components/seo/JsonLd";
+import AdSlot from "@/components/ads/AdSlot";
 
 export const metadata: Metadata = {
   title: "국회 법안 통과 절차 — 발의부터 본회의 의결까지 입법 과정 총정리",
@@ -394,6 +395,8 @@ export default function GuidePage() {
           </Link>
         </div>
       </section>
+
+      <AdSlot />
     </div>
   );
 }
