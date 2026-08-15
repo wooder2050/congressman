@@ -62,12 +62,14 @@ export async function generateMetadata({ params }: BillDetailPageProps): Promise
   ];
   const description = truncateAtWord(descParts.filter(Boolean).join(" "), 160);
 
-  // 색인 기준 = sitemap(getIndexableBillIds v3)과 동일:
-  // AI 요약(simpleSummary) 보유 + 본회의 처리 결과 도달.
+  // 색인 기준 = sitemap(getIndexableBillIds v3.1)과 동일:
+  // AI 요약(simpleSummary) 보유 + 본회의 처리 결과 도달 + 표결 레코드 실존.
   // 본회의 표결 도달 법안에는 의원별 찬반·정당별 집계 등 원본(열린국회정보)에
   // 조립된 형태로 없는 데이터가 붙는다. 위원회 단계까지의 법안은 필드 나열 +
   // 자동 요약뿐이라 색인 제외(2026-08, AdSense "고유 콘텐츠" 기준 대응).
-  const isIndexable = !!bill.simpleSummary && !!bill.progress?.lawResult;
+  // hasVote까지 요구하는 이유: 무기명 재표결 등은 lawResult가 있어도 의원별
+  // 표결 데이터가 없어 "고유 데이터" 논리가 성립하지 않는다(codex 리뷰 반영).
+  const isIndexable = !!bill.simpleSummary && !!bill.progress?.lawResult && !!bill.hasVote;
 
   return {
     title,
