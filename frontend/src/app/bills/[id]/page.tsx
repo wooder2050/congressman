@@ -62,11 +62,12 @@ export async function generateMetadata({ params }: BillDetailPageProps): Promise
   ];
   const description = truncateAtWord(descParts.filter(Boolean).join(" "), 160);
 
-  // 색인 기준 = sitemap(getIndexableBillIds)과 동일:
-  // AI 요약(simpleSummary) 보유 + 실제 입법 과정(위원회 또는 본회의 처리 결과) 도달.
-  // 제출만 된 계류·단순 발의 법안은 thin content이므로 색인 제외(2026-06 AdSense 대응).
-  const reachedProcess = !!(bill.progress?.committeeResult || bill.progress?.lawResult);
-  const isIndexable = !!bill.simpleSummary && reachedProcess;
+  // 색인 기준 = sitemap(getIndexableBillIds v3)과 동일:
+  // AI 요약(simpleSummary) 보유 + 본회의 처리 결과 도달.
+  // 본회의 표결 도달 법안에는 의원별 찬반·정당별 집계 등 원본(열린국회정보)에
+  // 조립된 형태로 없는 데이터가 붙는다. 위원회 단계까지의 법안은 필드 나열 +
+  // 자동 요약뿐이라 색인 제외(2026-08, AdSense "고유 콘텐츠" 기준 대응).
+  const isIndexable = !!bill.simpleSummary && !!bill.progress?.lawResult;
 
   return {
     title,
