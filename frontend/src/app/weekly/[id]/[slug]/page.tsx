@@ -3,6 +3,7 @@ import Link from "next/link";
 import type { Metadata } from "next";
 import { getWeeklyArticle, getWeeklyArticleIds } from "@/data/weekly";
 import JsonLd from "@/components/seo/JsonLd";
+import AdSlot from "@/components/ads/AdSlot";
 
 const STATUS_LABEL: Record<string, { text: string; className: string }> = {
   passed: {
@@ -212,6 +213,8 @@ export default async function WeeklyArticlePage({ params }: Props) {
           </section>
         ))}
       </article>
+
+      <AdSlot className="mt-10" />
 
       {/* 출처 */}
       {(youtubeSources.length > 0 || articleSources.length > 0) && (

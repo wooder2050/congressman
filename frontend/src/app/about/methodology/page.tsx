@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import JsonLd from "@/components/seo/JsonLd";
+import AdSlot from "@/components/ads/AdSlot";
 
 export const metadata: Metadata = {
   title: "데이터 수집·산출 방법론",
@@ -279,6 +280,8 @@ export default function MethodologyPage() {
           </p>
         </div>
       </section>
+
+      <AdSlot />
 
       {/* CTA */}
       <section className="rounded-xl border border-(--color-border-primary) bg-(--color-bg-secondary) p-6">
