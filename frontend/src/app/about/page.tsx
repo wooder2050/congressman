@@ -157,6 +157,17 @@ export default function AboutPage() {
             데이터는 매일 자동으로 갱신되며, 마지막 갱신 시각은 페이지 하단에서 확인할 수 있습니다.
             원본 데이터 확인이 필요한 경우 열린국회정보 공식 사이트를 이용하시기 바랍니다.
           </p>
+          <p className="text-sm leading-relaxed text-(--color-text-secondary)">
+            출석률·의정활동 점수 등 자체 지표의 산출 공식과 AI 요약의 생성·검수 절차, 오류 정정
+            절차는{" "}
+            <Link
+              href="/about/methodology"
+              className="font-semibold text-(--color-primary) underline"
+            >
+              데이터 수집·산출 방법론
+            </Link>
+            에서 상세히 공개합니다.
+          </p>
         </div>
       </section>
 
