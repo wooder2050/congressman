@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import AdSlot from "@/components/ads/AdSlot";
 import JsonLd from "@/components/seo/JsonLd";
 import BreadcrumbJsonLd from "@/components/seo/BreadcrumbJsonLd";
 import { getTermBySlug, getAllTermSlugs, getTermsByCategory } from "@/lib/glossary";
@@ -255,6 +256,8 @@ export default async function GlossaryTermPage({ params }: GlossaryTermPageProps
           )}
         </footer>
       )}
+      {/* 광고: 편집형 페이지(수작업 콘텐츠)라 광고 표면에 포함 */}
+      <AdSlot />
     </div>
   );
 }

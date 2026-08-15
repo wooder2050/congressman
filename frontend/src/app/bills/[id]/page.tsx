@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { getBill } from "@/lib/api";
 import { Suspense } from "react";
+import AdSlot from "@/components/ads/AdSlot";
 import BillDetailInner from "@/components/bills/BillDetailInner";
 import BillVoteBreakdown from "@/components/bills/BillVoteBreakdown";
 import RelatedBills from "@/components/bills/RelatedBills";
@@ -116,6 +117,9 @@ export default async function BillDetailPage({ params }: BillDetailPageProps) {
         <Suspense fallback={null}>
           <RelatedBills billId={id} />
         </Suspense>
+        {/* 광고: 색인 기준(고유 데이터 보유)과 동일 판정을 통과한 페이지에만 —
+            저가치 페이지는 광고 표면에서 제외(fail-closed) */}
+        {!!bill.simpleSummary && !!bill.progress?.lawResult && !!bill.hasVote && <AdSlot />}
       </div>
     </>
   );
