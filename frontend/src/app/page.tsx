@@ -120,22 +120,23 @@ export default async function HomePage({ searchParams }: HomePageProps) {
         {/* 헤더: 검색·탐색 게이트 */}
         <HeroSearch />
 
-        {/* 통계 요약 — 사이트 정체성을 첫 화면에 노출 */}
-        <CongressWrapper key={`stats-${termId}`} fallback={<HomeStatsSkeleton />}>
-          <HomeStats termId={termId} />
-        </CongressWrapper>
-
-        {/* 속보 배너 */}
+        {/* 속보 배너 — 편집 콘텐츠를 첫 화면 최상단에 (사이트 성격이 '자동 집계'가
+            아니라 '편집 매체'로 먼저 읽히도록. AdSense 대응 2순위, 2026-08) */}
         <BreakingNewsBanner />
 
         {/* 편집자가 고른 국회 분석 — 자체 편집 콘텐츠를 첫 화면에서 발견 가능하게 */}
         <EditorsPicks />
 
-        {/* 내 관심 이슈 레이더 */}
-        <PersonalizedFeed termId={termId} />
-
         {/* 주간 국회 뉴스 */}
         <LatestWeeklyNews />
+
+        {/* 통계 요약 — 데이터 위젯은 편집 콘텐츠 아래로 */}
+        <CongressWrapper key={`stats-${termId}`} fallback={<HomeStatsSkeleton />}>
+          <HomeStats termId={termId} />
+        </CongressWrapper>
+
+        {/* 내 관심 이슈 레이더 */}
+        <PersonalizedFeed termId={termId} />
 
         {/* 최근 활동 */}
         <section className="space-y-3">
