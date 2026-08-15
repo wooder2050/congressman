@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useCongressSuspenseQuery } from "@/hooks/useCongressQuery";
 import { getMemberScorecard } from "@/lib/api";
 import { withJosa } from "@/lib/utils";
@@ -315,6 +316,11 @@ export default function ScorecardTab({ memberId, termId }: ScorecardTabProps) {
         성적표는 출석률(30점), 표결 참여율(25점), 법안 발의(25점, 백분위 기준), 법안 통과율(20점,
         백분위 기준)을 합산하여 100점 만점으로 산출합니다. 등급 기준: S(90+), A(80+), B(70+),
         C(60+), D(60미만). 데이터는 열린국회정보 공공데이터 기반이며, 매일 자동 갱신됩니다.
+        재보궐·승계 의원의 재직기간 보정, 통과율 소표본 보정 등 상세 산출 공식은{" "}
+        <Link href="/about/methodology" className="underline hover:text-(--color-text-secondary)">
+          데이터 방법론
+        </Link>
+        에서 공개합니다.
       </p>
     </div>
   );

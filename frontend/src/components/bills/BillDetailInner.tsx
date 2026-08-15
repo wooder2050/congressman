@@ -142,6 +142,16 @@ export default function BillDetailInner({ bill }: BillDetailInnerProps) {
                 </div>
               );
             })()}
+          <p className="text-xs text-(--color-text-tertiary)">
+            국회 제출 원문(제안이유 및 주요내용)을 바탕으로 AI가 작성하고 검수를 거친 요약입니다.
+            원문과 다르게 읽힌다면 아래 원문이 우선합니다 ·{" "}
+            <Link
+              href="/about/methodology"
+              className="underline hover:text-(--color-text-secondary)"
+            >
+              생성·검수 절차
+            </Link>
+          </p>
         </div>
       )}
 
@@ -291,7 +301,11 @@ export default function BillDetailInner({ bill }: BillDetailInnerProps) {
           )}
         </p>
         <p className="mt-2 text-xs text-(--color-text-tertiary)">
-          위 해설은 열린국회정보 공공데이터를 기반으로 자동 생성되었습니다.
+          출처: 열린국회정보 공공데이터 · 해설 작성 방식과 오류 정정 절차는{" "}
+          <Link href="/about/methodology" className="underline hover:text-(--color-text-secondary)">
+            데이터 방법론
+          </Link>
+          에서 공개합니다.
         </p>
       </div>
 
