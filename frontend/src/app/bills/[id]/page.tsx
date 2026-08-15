@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { getBill } from "@/lib/api";
 import { Suspense } from "react";
 import BillDetailInner from "@/components/bills/BillDetailInner";
+import BillVoteBreakdown from "@/components/bills/BillVoteBreakdown";
 import RelatedBills from "@/components/bills/RelatedBills";
 import BillJsonLd from "@/components/seo/BillJsonLd";
 import BreadcrumbJsonLd from "@/components/seo/BreadcrumbJsonLd";
@@ -102,7 +103,15 @@ export default async function BillDetailPage({ params }: BillDetailPageProps) {
         ]}
       />
       <BillDetailInner bill={bill} />
-      <div className="mx-auto mt-6 max-w-7xl">
+      <div className="mx-auto mt-6 max-w-7xl space-y-6">
+        {/* 본회의 표결 정당별 집계 — 원본에 조립돼 있지 않은 고유 데이터를 페이지에
+            직접 노출(AdSense 고유 콘텐츠 대응 1순위). 지연·실패가 본문을 붙잡지
+            않도록 Suspense 분리, 표결 없는 법안은 컴포넌트가 null 반환 */}
+        {bill.hasVote && (
+          <Suspense fallback={null}>
+            <BillVoteBreakdown billId={id} />
+          </Suspense>
+        )}
         {/* 선택 섹션 — 지연·실패가 상세 본문 렌더링을 붙잡지 않도록 Suspense로 분리 */}
         <Suspense fallback={null}>
           <RelatedBills billId={id} />
