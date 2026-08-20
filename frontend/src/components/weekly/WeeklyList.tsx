@@ -5,6 +5,7 @@ import Link from "next/link";
 import type { WeeklyArticle } from "@/data/weekly/types";
 import { SkeletonWeeklyItem } from "@/components/skeletons/WeeklyListSkeleton";
 import { trackEvent } from "@/lib/analytics";
+import { useImpression } from "@/lib/use-impression";
 
 const PAGE_SIZE = 6;
 
@@ -94,58 +95,7 @@ export default function WeeklyList({ articles }: WeeklyListProps) {
       {/* 아티클 목록 */}
       <section className="space-y-4">
         {visible.map((article, i) => (
-          <Link
-            key={article.id}
-            href={`/weekly/${article.id}`}
-            onClick={() =>
-              trackEvent("weekly_article_click", { article_id: article.id, position: i })
-            }
-            className="block rounded-xl border border-(--color-border-primary) bg-(--color-bg-primary) p-5 no-underline transition-colors hover:bg-(--color-bg-hover)"
-          >
-            <div className="flex items-start justify-between gap-3">
-              <div className="min-w-0 flex-1">
-                <div className="flex items-center gap-2">
-                  <h2 className="text-lg font-bold text-(--color-text-primary)">{article.title}</h2>
-                  <span className="shrink-0 text-xs text-(--color-text-tertiary)">
-                    {article.period}
-                  </span>
-                </div>
-                <p className="mt-2 line-clamp-2 text-sm leading-relaxed text-(--color-text-secondary)">
-                  {article.summary}
-                </p>
-                <div className="mt-3 flex flex-wrap gap-1.5">
-                  {article.tags.slice(0, 4).map((tag) => (
-                    <span
-                      key={tag}
-                      className="rounded-full bg-(--color-bg-secondary) px-2.5 py-0.5 text-xs text-(--color-text-secondary)"
-                    >
-                      {tag}
-                    </span>
-                  ))}
-                </div>
-              </div>
-              {article.stats && (
-                <div className="hidden shrink-0 text-right sm:block">
-                  {article.stats.billsPassed != null && (
-                    <p className="text-sm text-(--color-text-tertiary)">
-                      법안 통과{" "}
-                      <span className="font-bold text-(--color-text-primary)">
-                        {article.stats.billsPassed}건
-                      </span>
-                    </p>
-                  )}
-                  {article.stats.votesHeld != null && (
-                    <p className="mt-1 text-sm text-(--color-text-tertiary)">
-                      표결{" "}
-                      <span className="font-bold text-(--color-text-primary)">
-                        {article.stats.votesHeld}건
-                      </span>
-                    </p>
-                  )}
-                </div>
-              )}
-            </div>
-          </Link>
+          <WeeklyCard key={article.id} article={article} position={i} />
         ))}
 
         {filtered.length === 0 && (
@@ -164,5 +114,71 @@ export default function WeeklyList({ articles }: WeeklyListProps) {
         )}
       </section>
     </>
+  );
+}
+
+/** 주간뉴스 목록 카드 — 노출(component_impression)·클릭(weekly_article_click)을 함께 측정 */
+function WeeklyCard({ article, position }: { article: WeeklyArticle; position: number }) {
+  const impressionRef = useImpression({
+    component: "weekly_list",
+    article_id: article.id,
+    position,
+  });
+
+  return (
+    <Link
+      ref={impressionRef}
+      href={`/weekly/${article.id}`}
+      onClick={() =>
+        trackEvent("weekly_article_click", {
+          component: "weekly_list",
+          article_id: article.id,
+          position,
+        })
+      }
+      className="block rounded-xl border border-(--color-border-primary) bg-(--color-bg-primary) p-5 no-underline transition-colors hover:bg-(--color-bg-hover)"
+    >
+      <div className="flex items-start justify-between gap-3">
+        <div className="min-w-0 flex-1">
+          <div className="flex items-center gap-2">
+            <h2 className="text-lg font-bold text-(--color-text-primary)">{article.title}</h2>
+            <span className="shrink-0 text-xs text-(--color-text-tertiary)">{article.period}</span>
+          </div>
+          <p className="mt-2 line-clamp-2 text-sm leading-relaxed text-(--color-text-secondary)">
+            {article.summary}
+          </p>
+          <div className="mt-3 flex flex-wrap gap-1.5">
+            {article.tags.slice(0, 4).map((tag) => (
+              <span
+                key={tag}
+                className="rounded-full bg-(--color-bg-secondary) px-2.5 py-0.5 text-xs text-(--color-text-secondary)"
+              >
+                {tag}
+              </span>
+            ))}
+          </div>
+        </div>
+        {article.stats && (
+          <div className="hidden shrink-0 text-right sm:block">
+            {article.stats.billsPassed != null && (
+              <p className="text-sm text-(--color-text-tertiary)">
+                법안 통과{" "}
+                <span className="font-bold text-(--color-text-primary)">
+                  {article.stats.billsPassed}건
+                </span>
+              </p>
+            )}
+            {article.stats.votesHeld != null && (
+              <p className="mt-1 text-sm text-(--color-text-tertiary)">
+                표결{" "}
+                <span className="font-bold text-(--color-text-primary)">
+                  {article.stats.votesHeld}건
+                </span>
+              </p>
+            )}
+          </div>
+        )}
+      </div>
+    </Link>
   );
 }
