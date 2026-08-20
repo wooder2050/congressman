@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import JsonLd from "@/components/seo/JsonLd";
 import PageIntro from "@/components/ui/page-intro";
+import TrackedLink from "@/components/analytics/TrackedLink";
 import WeeklyList from "@/components/weekly/WeeklyList";
 import { getAllWeeklyArticles } from "@/data/weekly";
 import { EDITORS_PICKS } from "@/data/editors-picks";
@@ -86,8 +86,15 @@ export default function WeeklyPage() {
         <ol className="space-y-2">
           {EDITORS_PICKS.map((pick, i) => (
             <li key={pick.href}>
-              <Link
+              <TrackedLink
                 href={pick.href}
+                eventName="editors_pick_click"
+                eventParams={{ component: "weekly_hub_picks", article_id: pick.href, position: i }}
+                impressionParams={{
+                  component: "weekly_hub_picks",
+                  article_id: pick.href,
+                  position: i,
+                }}
                 className="flex items-start gap-3 rounded-lg border border-(--color-border-primary) p-3 no-underline transition-colors hover:bg-(--color-bg-hover)"
               >
                 <span className="mt-0.5 w-6 shrink-0 text-center text-sm font-bold text-(--color-primary)">
@@ -104,7 +111,7 @@ export default function WeeklyPage() {
                     {pick.category} · {pick.date}
                   </span>
                 </span>
-              </Link>
+              </TrackedLink>
             </li>
           ))}
         </ol>

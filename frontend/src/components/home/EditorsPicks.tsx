@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { getHomePicks } from "@/data/editors-picks";
+import TrackedLink from "@/components/analytics/TrackedLink";
 
 const CATEGORY_STYLE: Record<string, string> = {
   입법: "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300",
@@ -31,10 +32,17 @@ export default function EditorsPicks() {
       </p>
 
       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-        {picks.map((pick) => (
-          <Link
+        {picks.map((pick, i) => (
+          <TrackedLink
             key={pick.href}
             href={pick.href}
+            eventName="editors_pick_click"
+            eventParams={{ component: "home_editors_picks", article_id: pick.href, position: i }}
+            impressionParams={{
+              component: "home_editors_picks",
+              article_id: pick.href,
+              position: i,
+            }}
             className="flex flex-col rounded-xl border border-(--color-border-primary) bg-(--color-bg-primary) p-4 no-underline transition-colors hover:border-(--color-primary)"
           >
             <div className="flex items-center gap-2">
@@ -49,7 +57,7 @@ export default function EditorsPicks() {
             <p className="mt-1.5 line-clamp-3 text-sm leading-relaxed text-(--color-text-secondary)">
               {pick.why}
             </p>
-          </Link>
+          </TrackedLink>
         ))}
       </div>
     </section>
