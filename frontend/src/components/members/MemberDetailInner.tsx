@@ -1,7 +1,8 @@
 "use client";
 
-import { useState, Suspense } from "react";
+import { useState, useEffect, Suspense } from "react";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import dynamic from "next/dynamic";
 import MemberProfile from "./MemberProfile";
@@ -22,10 +23,31 @@ const ActivityHeatmap = dynamic(() => import("./ActivityHeatmap"), {
 
 interface MemberDetailInnerProps {
   id: string;
-  termId: number;
-  defaultTab: string;
   member: Member;
   memberTerms: MemberTerm[];
+  /** 22대 활동 요약 — 페이지 서버 컴포넌트가 SSR한 노드 (네이버 등 비JS 크롤러 대응) */
+  summarySlot?: React.ReactNode;
+}
+
+/**
+ * ?term / ?tab 쿼리를 클라이언트에서 상태로 반영하는 브리지.
+ * 페이지를 ISR(정적)로 유지하기 위해 서버에서 searchParams를 읽지 않는다 —
+ * useSearchParams는 Suspense 경계 안에서만 프리렌더가 허용되므로 별도 컴포넌트로 분리.
+ */
+function SearchParamsBridge({
+  onParams,
+}: {
+  onParams: (term: number | null, tab: string | null) => void;
+}) {
+  const searchParams = useSearchParams();
+  const term = searchParams.get("term");
+  const tab = searchParams.get("tab");
+  useEffect(() => {
+    onParams(term ? Number(term) : null, tab);
+    // onParams는 렌더마다 새로 만들어지는 콜백 — term/tab 변화에만 반응한다.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [term, tab]);
+  return null;
 }
 
 const TAB_OPTIONS = [
@@ -40,21 +62,33 @@ const TAB_OPTIONS = [
 
 export default function MemberDetailInner({
   id,
-  termId,
-  defaultTab,
   member,
   memberTerms,
+  summarySlot,
 }: MemberDetailInnerProps) {
-  const [activeTab, setActiveTab] = useState(defaultTab);
+  const [termId, setTermId] = useState(22);
+  const [activeTab, setActiveTab] = useState("attendance");
 
   const currentMemberTerm = memberTerms.find((mt) => mt.termId === termId);
   const allTermIds = memberTerms.map((mt) => mt.termId);
+
+  const bridge = (
+    <Suspense fallback={null}>
+      <SearchParamsBridge
+        onParams={(term, tab) => {
+          if (term !== null && !Number.isNaN(term)) setTermId(term);
+          if (tab) setActiveTab(tab);
+        }}
+      />
+    </Suspense>
+  );
 
   if (!currentMemberTerm) {
     const availableTerms = memberTerms.map((mt) => mt.termId).sort((a, b) => b - a);
 
     return (
       <div className="mx-auto max-w-7xl space-y-6">
+        {bridge}
         <Link
           href={`/members?term=${termId}`}
           className="inline-flex items-center gap-1 text-sm text-(--color-text-tertiary) no-underline hover:text-(--color-text-secondary)"
@@ -86,6 +120,7 @@ export default function MemberDetailInner({
       className="mx-auto max-w-7xl space-y-6"
       style={{ "--color-member-accent": currentMemberTerm.party.color } as React.CSSProperties}
     >
+      {bridge}
       <Link
         href={`/members?term=${termId}`}
         className="inline-flex items-center gap-1 text-sm text-(--color-text-tertiary) no-underline hover:text-(--color-text-secondary)"
@@ -97,13 +132,19 @@ export default function MemberDetailInner({
 
       <MemberRecentActivityCard memberId={id} termId={termId} />
 
-      <Suspense fallback={null}>
-        <MemberActivitySummary
-          memberId={id}
-          memberName={member.name}
-          memberTerm={currentMemberTerm}
-        />
-      </Suspense>
+      {/* 22대는 서버가 SSR한 요약을 그대로 사용 (네이버 크롤러가 본문을 읽도록),
+          과거 대수 전환 시에만 클라이언트 쿼리 경로로 대체 */}
+      {termId === 22 && summarySlot ? (
+        summarySlot
+      ) : (
+        <Suspense fallback={null}>
+          <MemberActivitySummary
+            memberId={id}
+            memberName={member.name}
+            memberTerm={currentMemberTerm}
+          />
+        </Suspense>
+      )}
 
       <Suspense fallback={null}>
         <MemberRecentBills memberId={id} memberName={member.name} termId={termId} />
