@@ -100,10 +100,15 @@ async function main() {
     'vote:',
     'member:votes:',
     'member:history:',
+    // 개별 성적표(member:scorecard:{id}:{term})는 scorecard:(집계·랭킹)와 프리픽스가
+    // 달라 별도 항목 필요 — 누락 시 출석·표결 갱신 후에도 성적표가 TTL까지 구버전.
+    'member:scorecard:',
     'attendance:',
     'schedules:',
     'committees:',
     'scorecard:',
+    // stats:home·stats:attendance-ranking·stats:today가 bills/votes/attendance에 의존
+    'stats:',
   ]);
 
   const totalMs = Date.now() - start;
