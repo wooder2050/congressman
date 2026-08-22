@@ -256,7 +256,8 @@ export const breakingNews: BreakingNewsItem[] = [
         url: "https://weekly.khan.co.kr/article/202608161252001/",
       },
     ],
-    active: true,
+    // 8/17 전당대회 최종 결과 속보로 대체된 중간 집계형 항목 — 비활성화
+    active: false,
   },
   {
     id: "2026-08-15-dp-primary-honam",
