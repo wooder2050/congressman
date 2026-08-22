@@ -74,7 +74,9 @@ async function main() {
     }
   }
 
-  await invalidateCache(['terms:', 'members:', 'member:', 'committees:', 'scorecard:']);
+  // member:는 member:scorecard: 등 하위 프리픽스를 모두 포함.
+  // stats:는 attendance-ranking 등이 member-votes-full에 의존하므로 필요.
+  await invalidateCache(['terms:', 'members:', 'member:', 'committees:', 'scorecard:', 'stats:']);
 
   const totalMs = Date.now() - start;
   const failed = results.filter((r) => !r.ok);
