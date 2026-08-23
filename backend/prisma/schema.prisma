@@ -139,10 +139,12 @@ model Bill {
   pdfBookId            String? // 의안원문 PDF bookId
   detailLink           String? // 의안정보시스템 상세 URL
 
-  term         Term           @relation(fields: [termId], references: [id])
-  proposers    BillProposer[]
-  watches      Watch[]
-  policyEvents PolicyEvent[]
+  term           Term                @relation(fields: [termId], references: [id])
+  proposers      BillProposer[]
+  watches        Watch[]
+  policyEvents   PolicyEvent[]
+  discussions    BillDiscussion[]
+  discussionNote BillDiscussionNote?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -150,6 +152,49 @@ model Bill {
   @@index([termId, status])
   @@index([termId])
   @@index([status])
+}
+
+// 위원회 회의록 발언 인용 (편집 검수 후 공개 — approved만 API 반환)
+model BillDiscussion {
+  id            Int    @id @default(autoincrement())
+  billId        String
+  billNo        String // 매칭에 사용한 의안번호
+  meetingId     String // MeetingMinutes.id (CONF_ID)
+  conferNum     String // 회의록 뷰어 URL 파라미터
+  confDate      String // 회의일 (YYYY-MM-DD)
+  meetingTitle  String
+  committeeName String
+  speaker       String // 발언자명
+  speakerPos    String // 직책 (위원장·소위원장·수석전문위원 등)
+  speechOrd     Int // 회의 내 발언 순번 (원문 추적용)
+  quote         String // 발언 인용 (원문 그대로)
+  sourceUrl     String // 회의록 원문 뷰어 URL
+  matchMethod   String @default("billNo-agenda") // 의안번호-안건 매칭
+  reviewStatus  String @default("pending") // pending / approved / rejected
+  displayOrder  Int    @default(0)
+
+  bill Bill @relation(fields: [billId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([billId, conferNum, speechOrd])
+  @@index([billId, reviewStatus])
+}
+
+// 법안 논의 편집자 해설 (쟁점·의미·다음 절차)
+model BillDiscussionNote {
+  id         Int    @id @default(autoincrement())
+  billId     String @unique
+  issue      String // 쟁점
+  why        String // 왜 중요한가
+  next       String // 다음 절차·경과
+  reviewedAt String // 검토일 (YYYY-MM-DD, 페이지 표기용)
+
+  bill Bill @relation(fields: [billId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model BillProposer {

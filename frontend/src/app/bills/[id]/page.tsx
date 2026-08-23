@@ -4,6 +4,7 @@ import { getBill } from "@/lib/api";
 import { Suspense } from "react";
 import AdSlot from "@/components/ads/AdSlot";
 import BillDetailInner from "@/components/bills/BillDetailInner";
+import BillDiscussionSection from "@/components/bills/BillDiscussionSection";
 import BillVoteBreakdown from "@/components/bills/BillVoteBreakdown";
 import RelatedBills from "@/components/bills/RelatedBills";
 import BillJsonLd from "@/components/seo/BillJsonLd";
@@ -113,6 +114,9 @@ export default async function BillDetailPage({ params }: BillDetailPageProps) {
             <BillVoteBreakdown billId={id} />
           </Suspense>
         )}
+        {/* 위원회 회의록 발언 인용 + 편집자 해설 — 검수 승인분이 있는 법안만.
+            회의록 원문에서 편집 선별한 콘텐츠로, 페이지 고유성(원본성)의 핵심 */}
+        {bill.discussion && <BillDiscussionSection discussion={bill.discussion} />}
         {/* 선택 섹션 — 지연·실패가 상세 본문 렌더링을 붙잡지 않도록 Suspense로 분리 */}
         <Suspense fallback={null}>
           <RelatedBills billId={id} />
