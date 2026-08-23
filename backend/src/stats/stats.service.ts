@@ -48,7 +48,7 @@ export class StatsService {
         FROM "MemberTerm" mt
         JOIN "Member" m ON mt."memberId" = m.id
         JOIN "Party" p ON mt."partyId" = p.id
-        WHERE mt."termId" = ${TERM_ID}
+        WHERE mt."termId" = ${TERM_ID} AND mt."isActive" = true
         ORDER BY m.name
       `,
       this.prisma.$queryRaw<
@@ -68,6 +68,7 @@ export class StatsService {
           a.relation
         FROM "Asset" a
         JOIN "MemberTerm" mt ON a."memberId" = mt."memberId" AND mt."termId" = ${TERM_ID}
+          AND mt."isActive" = true
         WHERE a.year = ${ASSET_YEAR}
           AND a.category IN ('건물', '토지')
           AND a.relation IN ('본인', '배우자')
@@ -110,6 +111,8 @@ export class StatsService {
                a.rate, a.attended, a."totalSessions"
         FROM "Attendance" a
         JOIN "Member" m ON a."memberId" = m.id
+        JOIN "MemberTerm" mt ON mt."memberId" = a."memberId" AND mt."termId" = ${termId}
+          AND mt."isActive" = true
         WHERE a."termId" = ${termId} AND a."totalSessions" > 0
         ORDER BY a.rate DESC, a.attended DESC
         LIMIT ${limit}
@@ -128,6 +131,8 @@ export class StatsService {
                a.rate, a.attended, a."totalSessions"
         FROM "Attendance" a
         JOIN "Member" m ON a."memberId" = m.id
+        JOIN "MemberTerm" mt ON mt."memberId" = a."memberId" AND mt."termId" = ${termId}
+          AND mt."isActive" = true
         WHERE a."termId" = ${termId} AND a."totalSessions" > 0
         ORDER BY a.rate ASC, a.absent DESC
         LIMIT ${limit}
@@ -199,10 +204,13 @@ export class StatsService {
       this.prisma.memberTerm.count({ where: { termId, isActive: true } }),
       this.prisma.bill.count({ where: { termId } }),
       this.prisma.vote.count({ where: { termId } }),
-      this.prisma.attendance.aggregate({
-        where: { termId },
-        _avg: { rate: true },
-      }),
+      this.prisma.$queryRaw<{ avg: number | null }[]>`
+        SELECT AVG(a.rate)::float AS avg
+        FROM "Attendance" a
+        JOIN "MemberTerm" mt ON mt."memberId" = a."memberId" AND mt."termId" = ${termId}
+          AND mt."isActive" = true
+        WHERE a."termId" = ${termId}
+      `,
       this.prisma.vote.findMany({
         where: { termId },
         orderBy: { procDate: 'desc' },
@@ -260,7 +268,8 @@ export class StatsService {
         FROM "BillProposer" bp
         JOIN "Bill" b ON bp."billId" = b.id
         JOIN "Member" m ON bp."memberId" = m.id
-        LEFT JOIN "MemberTerm" mt ON mt."memberId" = bp."memberId" AND mt."termId" = ${termId}
+        JOIN "MemberTerm" mt ON mt."memberId" = bp."memberId" AND mt."termId" = ${termId}
+          AND mt."isActive" = true
         LEFT JOIN "Party" p ON p.id = mt."partyId"
         WHERE b."termId" = ${termId} AND bp."role" = 'representative'
         GROUP BY bp."memberId", m.name, m."photoUrl", p.id, p.name, p."shortName", p.color
@@ -296,7 +305,7 @@ export class StatsService {
       memberCount,
       billCount,
       voteCount,
-      avgAttendanceRate: Math.round((avgAttendance._avg.rate ?? 0) * 10) / 10,
+      avgAttendanceRate: Math.round((avgAttendance[0]?.avg ?? 0) * 10) / 10,
       recentVotes: recentVotesRaw.map(mapVote),
       recentBills: recentBillsRaw.map((b) => ({
         id: b.id,
