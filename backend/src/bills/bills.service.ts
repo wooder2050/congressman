@@ -346,9 +346,15 @@ export class BillsService {
     const cached = await this.redis.get(key);
     if (cached) return cached;
 
-    const [bill, voteExists] = await Promise.all([
+    const [bill, voteExists, discussions, discussionNote] = await Promise.all([
       this.prisma.bill.findUnique({ where: { id } }),
       this.prisma.vote.findUnique({ where: { id }, select: { id: true } }),
+      // 검수 승인(approved)된 인용만 공개 — 오매칭 방지를 위한 편집 검수 원칙
+      this.prisma.billDiscussion.findMany({
+        where: { billId: id, reviewStatus: 'approved' },
+        orderBy: [{ confDate: 'asc' }, { displayOrder: 'asc' }],
+      }),
+      this.prisma.billDiscussionNote.findUnique({ where: { billId: id } }),
     ]);
     if (!bill) return null;
 
@@ -410,6 +416,28 @@ export class BillsService {
           district: term?.district ?? '',
         };
       }),
+      discussion:
+        discussions.length > 0
+          ? {
+              quotes: discussions.map((d) => ({
+                confDate: d.confDate,
+                meetingTitle: d.meetingTitle,
+                committeeName: d.committeeName,
+                speaker: d.speaker,
+                speakerPos: d.speakerPos,
+                quote: d.quote,
+                sourceUrl: d.sourceUrl,
+              })),
+              note: discussionNote
+                ? {
+                    issue: discussionNote.issue,
+                    why: discussionNote.why,
+                    next: discussionNote.next,
+                    reviewedAt: discussionNote.reviewedAt,
+                  }
+                : null,
+            }
+          : null,
     };
 
     await this.redis.set(key, result, TTL_HOUR);

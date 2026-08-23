@@ -248,6 +248,30 @@ export interface BillDetail extends Omit<Bill, "proposerIds"> {
   pdfUrl?: string | null;
   detailLink?: string | null;
   progress?: BillProgress | null;
+  discussion?: BillDiscussionData | null;
+}
+
+// ====== 위원회 회의록 발언 인용 (편집 검수 승인분만 내려옴) ======
+export interface BillDiscussionQuote {
+  confDate: string;
+  meetingTitle: string;
+  committeeName: string;
+  speaker: string;
+  speakerPos: string;
+  quote: string;
+  sourceUrl: string;
+}
+
+export interface BillDiscussionNote {
+  issue: string;
+  why: string;
+  next: string;
+  reviewedAt: string;
+}
+
+export interface BillDiscussionData {
+  quotes: BillDiscussionQuote[];
+  note: BillDiscussionNote | null;
 }
 
 // ====== 위원회 통계 ======
