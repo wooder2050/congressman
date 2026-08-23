@@ -287,13 +287,18 @@ export class BillsService {
    * 반영 — 무기명 재표결 등 117건은 Vote 레코드가 없어 "고유 데이터" 논리가
    * 성립하지 않으므로 Vote 실존까지 요구(1,456 → 1,339건). Vote는 Bill과
    * 동일 id 관행이라 FK 관계가 없어 id 교집합으로 거른다.
+   *
+   * v3.2: 법사위 소관 법안(법원조직법·헌재법 등)은 체계자구심사 단계가 따로
+   * 없어 lawResultCode가 구조적으로 NULL — 본회의 표결까지 마친 법안인데도
+   * noindex로 배제되던 맹점 수정. plenaryDate 보유도 "본회의 도달"로 인정
+   * (1,406 → 1,529건, 추가분 전부 표결+AI요약 보유).
    */
   async findIndexableIds() {
     if (indexableIdsMemoryCache && indexableIdsMemoryCache.expiresAt > Date.now()) {
       return indexableIdsMemoryCache.data;
     }
 
-    const key = 'bills:indexable-ids:v3.1';
+    const key = 'bills:indexable-ids:v3.2';
     const cached = await this.redis.get<{ id: string; proposedDate: string }[]>(key);
     if (cached) {
       indexableIdsMemoryCache = { data: cached, expiresAt: Date.now() + ALL_IDS_MEMORY_TTL_MS };
@@ -305,7 +310,7 @@ export class BillsService {
       FROM "Bill" b
       JOIN "Vote" v ON v.id = b.id
       WHERE b."simpleSummary" IS NOT NULL
-        AND b."lawResultCode" IS NOT NULL
+        AND (b."lawResultCode" IS NOT NULL OR b."plenaryDate" IS NOT NULL)
       ORDER BY b."proposedDate" DESC
     `;
 
