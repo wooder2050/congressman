@@ -12,13 +12,15 @@ export default function BillDiscussionSection({ discussion }: { discussion: Bill
   const { quotes, note } = discussion;
   if (quotes.length === 0) return null;
 
+  const meetingCount = new Set(quotes.map((q) => `${q.confDate}|${q.meetingTitle}`)).size;
+
   return (
     <section className="space-y-4 rounded-xl border border-(--color-border-primary) bg-(--color-bg-primary) p-5">
       <div>
         <h2 className="text-lg font-bold">위원회 논의 — 회의록에서</h2>
         <p className="mt-1 text-sm text-(--color-text-tertiary)">
-          국회 회의록 원문에서 이 법안 심사의 핵심 발언을 선별했습니다. 인용은 회의록 표현
-          그대로입니다.
+          국회 회의록 {meetingCount}건에서 이 법안 심사의 핵심 발언 {quotes.length}건을
+          선별했습니다. 인용은 회의록 표현 그대로입니다.
         </p>
       </div>
 
