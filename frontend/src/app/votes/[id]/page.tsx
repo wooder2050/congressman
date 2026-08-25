@@ -4,6 +4,7 @@ import { getVoteMemberVotes } from "@/lib/api";
 import VoteDetailInner from "@/components/votes/VoteDetailInner";
 import VoteJsonLd from "@/components/seo/VoteJsonLd";
 import BreadcrumbJsonLd from "@/components/seo/BreadcrumbJsonLd";
+import { CURATION_MODE } from "@/lib/curation-mode";
 
 // 30d — 표결 결과는 종료 후 확정되어 바뀌지 않는다(법안과 달리 나중에 채워지는 필드도 없다).
 // 봇 재크롤링마다 재생성되던 ISR Write를 줄이려고 2d에서 상향했다.
@@ -39,6 +40,9 @@ export async function generateMetadata({ params }: VoteDetailPageProps): Promise
   return {
     title,
     description,
+    // 큐레이션 모드(AdSense 심사 기간)에는 표결 상세를 색인에서 뺀다 —
+    // 자동 집계 페이지라 sitemap에서도 제외하므로 신호를 맞춘다.
+    robots: CURATION_MODE ? { index: false, follow: true } : undefined,
     alternates: { canonical: `https://www.lawmake.kr/votes/${id}` },
     openGraph: {
       title: `${title} | 국회 본회의`,

@@ -223,9 +223,58 @@ export default function MethodologyPage() {
         </div>
       </section>
 
-      {/* 4. 한계 */}
+      {/* 4. 회의록 인용 */}
       <section className="space-y-4">
-        <h2 className="text-2xl font-bold">4. 데이터의 한계</h2>
+        <h2 className="text-2xl font-bold">4. 회의록 발언 인용의 선별 기준</h2>
+        <div className="space-y-3 rounded-xl border border-(--color-border-primary) bg-(--color-bg-primary) p-5">
+          <p className="text-sm leading-relaxed text-(--color-text-secondary)">
+            일부 법안 상세 페이지에는 &lsquo;위원회 논의&rsquo; 섹션이 있습니다. 국회사무처가
+            공개하는 위원회 회의록 원문에서 해당 법안 심사의 핵심 발언을 골라 인용하고, 쟁점과
+            경과에 대한 해설을 덧붙인 것입니다. 다음 절차를 거칩니다.
+          </p>
+          <ol className="list-inside list-decimal space-y-1.5 text-sm text-(--color-text-secondary)">
+            <li>
+              <strong>후보 수집</strong> — 회의록의 안건 목록에 실린 의안번호로 해당 법안을 심사한
+              회의와 발언 구간을 특정합니다. 법안명이 비슷한 다른 개정안과 섞이지 않도록 의안번호를
+              기준으로 삼습니다.
+            </li>
+            <li>
+              <strong>선별</strong> — 법안당 3~5개를 고릅니다. 법안 내용을 설명하는 발언(전문위원·
+              발의자)과 함께, 찬성과 반대·우려 논거가 모두 회의록에 있으면 양쪽을 함께 싣는 것을
+              원칙으로 합니다. 의사진행 발언과 다른 안건 논의는 제외합니다.
+            </li>
+            <li>
+              <strong>원문 대조</strong> — 게시 전 모든 인용문이 회의록 원문의 연속된 구절과 정확히
+              일치하는지 기계적으로 대조합니다. 요약하거나 표현을 바꾼 인용은 게시되지 않습니다.
+            </li>
+            <li>
+              <strong>사람의 최종 검토</strong> — 인용이 해당 법안의 것이 맞는지, 맥락이 왜곡되지
+              않았는지 사람이 확인한 뒤에만 공개합니다. 검토를 통과하지 못한 법안은 섹션 자체를 싣지
+              않습니다.
+            </li>
+          </ol>
+          <ul className="list-inside list-disc space-y-1.5 text-sm text-(--color-text-secondary)">
+            <li>
+              인용은 발언 전체가 아닌 일부일 수 있습니다. 발언자·직책·회의명·회의일과 함께 회의록
+              원문 링크를 제공하니 전체 맥락은 원문에서 확인하실 수 있습니다.
+            </li>
+            <li>
+              해설의 초안 작성에는 AI를 활용하되, 사람이 검토·수정한 뒤 검토일과 함께 게시합니다.
+            </li>
+            <li>
+              해설은 인용된 발언과 표결 기록에 근거해 작성하며, 발언자의 의도나 동기를 단정하지
+              않습니다.
+            </li>
+            <li>
+              인용이 부정확하거나 맥락을 오도한다는 지적이 접수되면 확인 후 수정하거나 내립니다.
+            </li>
+          </ul>
+        </div>
+      </section>
+
+      {/* 5. 한계 */}
+      <section className="space-y-4">
+        <h2 className="text-2xl font-bold">5. 데이터의 한계</h2>
         <div className="space-y-3 rounded-xl border border-(--color-border-primary) bg-(--color-bg-primary) p-5">
           <ul className="list-inside list-disc space-y-1.5 text-sm text-(--color-text-secondary)">
             <li>원천 API의 반영 지연에 따라 실제 국회 상황보다 하루 안팎 늦을 수 있습니다.</li>
@@ -244,9 +293,9 @@ export default function MethodologyPage() {
         </div>
       </section>
 
-      {/* 5. 정정 절차 */}
+      {/* 6. 정정 절차 */}
       <section className="space-y-4">
-        <h2 className="text-2xl font-bold">5. 오류 제보와 정정</h2>
+        <h2 className="text-2xl font-bold">6. 오류 제보와 정정</h2>
         <div className="space-y-3 rounded-xl border border-(--color-border-primary) bg-(--color-bg-primary) p-5">
           <p className="text-sm leading-relaxed text-(--color-text-secondary)">
             사실과 다른 데이터, 잘못된 요약, 산출 오류를 발견하셨다면 알려주세요. 접수된 제보는 원본
