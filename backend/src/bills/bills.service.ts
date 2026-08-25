@@ -320,6 +320,31 @@ export class BillsService {
     return result;
   }
 
+  /**
+   * 회의록 발언 인용(approved)이 있는 법안 ID만 반환.
+   *
+   * AdSense 7차 심사 대응(2026-08, codex 리뷰) — 심사자는 신청 URL이 아니라 사이트 전체를
+   * 보므로, 색인·광고 대상 중 자동 가공 페이지 비중이 높으면 "공공데이터 자동 가공 사이트"
+   * 판정을 벗어나기 어렵다. 승인 심사 기간 동안 색인·광고 표면을 편집 검수를 거친
+   * 페이지로 좁히기 위한 목록이다. 승인 후에는 프론트 플래그만 꺼서 원복한다.
+   */
+  async findCuratedIds() {
+    const key = 'bills:curated-ids:v1';
+    const cached = await this.redis.get<{ id: string; proposedDate: string }[]>(key);
+    if (cached) return cached;
+
+    const rows = await this.prisma.$queryRaw<{ id: string; proposedDate: string }[]>`
+      SELECT DISTINCT b.id, b."proposedDate"
+      FROM "Bill" b
+      JOIN "BillDiscussion" d ON d."billId" = b.id AND d."reviewStatus" = 'approved'
+      ORDER BY b."proposedDate" DESC
+    `;
+
+    const result = rows.map((b) => ({ id: b.id, proposedDate: b.proposedDate }));
+    await this.redis.set(key, result, TTL_DAY);
+    return result;
+  }
+
   async getTopicCounts(termId: number) {
     const key = `bills:topics:${termId}`;
     const cached = await this.redis.get(key);

@@ -11,6 +11,7 @@ import BillJsonLd from "@/components/seo/BillJsonLd";
 import BreadcrumbJsonLd from "@/components/seo/BreadcrumbJsonLd";
 import { billDisplayTitle, truncateAtWord } from "@/lib/bill-title";
 import { normalizeTopic } from "@/lib/constants";
+import { CURATION_MODE } from "@/lib/curation-mode";
 import type { BillStructuredSummary } from "@/types";
 
 // 14d — 법안은 발의 후 내용이 거의 바뀌지 않는다.
@@ -75,10 +76,14 @@ export async function generateMetadata({ params }: BillDetailPageProps): Promise
   // 표결 데이터가 없어 "고유 데이터" 논리가 성립하지 않는다(codex 리뷰 반영).
   // plenaryDate 병행 인정: 법사위 소관 법안은 체계자구심사가 따로 없어
   // lawResult가 구조적으로 NULL이라 이것만 요구하면 부당 배제된다(v3.2).
-  const isIndexable =
-    !!bill.simpleSummary &&
-    !!bill.hasVote &&
-    (!!bill.progress?.lawResult || !!bill.progress?.plenaryDate);
+  //
+  // 큐레이션 모드(AdSense 심사 기간)에는 여기서 한 단계 더 좁혀, 회의록 발언 인용과
+  // 편집자 해설이 붙은 법안만 색인한다. sitemap(curated-ids)과 동일 기준이다.
+  const isIndexable = CURATION_MODE
+    ? !!bill.discussion && bill.discussion.quotes.length > 0
+    : !!bill.simpleSummary &&
+      !!bill.hasVote &&
+      (!!bill.progress?.lawResult || !!bill.progress?.plenaryDate);
 
   return {
     title,
@@ -127,11 +132,14 @@ export default async function BillDetailPage({ params }: BillDetailPageProps) {
         <Suspense fallback={null}>
           <RelatedBills billId={id} />
         </Suspense>
-        {/* 광고: 색인 기준(고유 데이터 보유)과 동일 판정을 통과한 페이지에만 —
-            저가치 페이지는 광고 표면에서 제외(fail-closed) */}
-        {!!bill.simpleSummary &&
-          !!bill.hasVote &&
-          (!!bill.progress?.lawResult || !!bill.progress?.plenaryDate) && <AdSlot />}
+        {/* 광고: 색인 기준과 동일 판정을 통과한 페이지에만 — 저가치 페이지는
+            광고 표면에서 제외(fail-closed). 큐레이션 모드에서는 회의록 인용
+            보유 법안만 해당된다. */}
+        {(CURATION_MODE
+          ? !!bill.discussion && bill.discussion.quotes.length > 0
+          : !!bill.simpleSummary &&
+            !!bill.hasVote &&
+            (!!bill.progress?.lawResult || !!bill.progress?.plenaryDate)) && <AdSlot />}
       </div>
     </>
   );

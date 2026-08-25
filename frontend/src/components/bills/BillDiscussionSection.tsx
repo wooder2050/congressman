@@ -1,3 +1,4 @@
+import Link from "next/link";
 import type { BillDiscussionData } from "@/types";
 
 /**
@@ -75,7 +76,13 @@ export default function BillDiscussionSection({ discussion }: { discussion: Bill
       <p className="text-xs text-(--color-text-tertiary)">
         출처: 국회사무처 회의록 (열람: 국회회의록시스템)
         {note ? ` · 편집자 검토일 ${note.reviewedAt}` : ""} · 인용은 발언 원문이며 발언의 일부일 수
-        있습니다.
+        있습니다.{" "}
+        <Link
+          href="/about/methodology"
+          className="underline underline-offset-2 hover:text-(--color-text-primary)"
+        >
+          선별·검수 기준 보기
+        </Link>
       </p>
     </section>
   );
