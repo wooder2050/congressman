@@ -6,7 +6,7 @@ import AdSlot from "@/components/ads/AdSlot";
 export const metadata: Metadata = {
   title: "데이터 수집·산출 방법론",
   description:
-    "lawmake.kr이 국회 의정활동 데이터를 수집하는 방법, 출석률·의정활동 점수 등 자체 지표의 산출 공식, AI 요약 생성·검수 절차, 오류 정정 절차를 공개합니다.",
+    "lawmake.kr이 국회 의정활동 데이터를 수집하는 방법, 출석률·의정활동 점수 등 자체 지표의 산출 공식, 회의록 발언 인용의 선별·검수 기준, AI 요약 생성 절차, 오류 정정 절차를 공개합니다.",
   alternates: { canonical: "https://www.lawmake.kr/about/methodology" },
 };
 
