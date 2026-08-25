@@ -1,6 +1,7 @@
 import { NextRequest } from "next/server";
 import {
   getIndexableBillIds,
+  getCuratedBillIds,
   getVoteIds,
   getElections,
   getElection,
@@ -9,6 +10,7 @@ import {
 } from "@/lib/api";
 import { getAllWeeklyArticles } from "@/data/weekly";
 import { getAllTermSlugs } from "@/lib/glossary";
+import { CURATION_MODE } from "@/lib/curation-mode";
 import { BASE, BILLS_PER_SITEMAP, xmlResponse, urlEntry, urlset } from "../route";
 
 export const revalidate = 86400;
@@ -200,8 +202,13 @@ async function buildSitemap(id: number) {
   if (!API_BASE) return urlset([]);
 
   try {
-    const [billIds, voteIds] = await Promise.all([getIndexableBillIds(), getVoteIds()]);
-    const billSitemapCount = Math.ceil(billIds.length / BILLS_PER_SITEMAP);
+    // 큐레이션 모드에서는 법안은 회의록 인용 보유분만, 표결 상세는 통째로 제외한다
+    // (자동 집계 성격이라 심사 표면에서 빼는 것이 목적).
+    const [billIds, voteIds] = await Promise.all([
+      CURATION_MODE ? getCuratedBillIds() : getIndexableBillIds(),
+      CURATION_MODE ? Promise.resolve([]) : getVoteIds(),
+    ]);
+    const billSitemapCount = Math.max(1, Math.ceil(billIds.length / BILLS_PER_SITEMAP));
 
     // Bill sitemaps: id 1 ~ billSitemapCount
     if (id >= 1 && id <= billSitemapCount) {

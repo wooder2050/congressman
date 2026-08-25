@@ -240,6 +240,11 @@ export async function getIndexableBillIds(): Promise<{ id: string; proposedDate:
   return fetchApi("/api/bills/indexable-ids");
 }
 
+/** 회의록 발언 인용(approved)이 있는 법안 ID만 — 편집 검수 코호트 */
+export async function getCuratedBillIds(): Promise<{ id: string; proposedDate: string }[]> {
+  return fetchApi("/api/bills/curated-ids");
+}
+
 export async function getVoteIds(): Promise<{ id: string; procDate: string }[]> {
   return fetchApi("/api/votes/ids");
 }

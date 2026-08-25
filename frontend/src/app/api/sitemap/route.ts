@@ -1,4 +1,5 @@
-import { getIndexableBillIds, getVoteIds } from "@/lib/api";
+import { getIndexableBillIds, getCuratedBillIds, getVoteIds } from "@/lib/api";
+import { CURATION_MODE } from "@/lib/curation-mode";
 
 export const revalidate = 86400;
 
@@ -44,9 +45,13 @@ ${entries.join("\n")}
 async function getSitemapCount() {
   if (!API_BASE) return { billSitemapCount: 0, hasVotes: false };
   try {
-    const [billIds, voteIds] = await Promise.all([getIndexableBillIds(), getVoteIds()]);
+    // 큐레이션 모드: 법안은 편집 검수분만, 표결 sitemap은 제외
+    const [billIds, voteIds] = await Promise.all([
+      CURATION_MODE ? getCuratedBillIds() : getIndexableBillIds(),
+      CURATION_MODE ? Promise.resolve([]) : getVoteIds(),
+    ]);
     return {
-      billSitemapCount: Math.ceil(billIds.length / BILLS_PER_SITEMAP),
+      billSitemapCount: Math.max(1, Math.ceil(billIds.length / BILLS_PER_SITEMAP)),
       hasVotes: voteIds.length > 0,
     };
   } catch {

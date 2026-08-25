@@ -1,3 +1,4 @@
+import Link from "next/link";
 import type { BillDiscussionData } from "@/types";
 
 /**
@@ -12,13 +13,15 @@ export default function BillDiscussionSection({ discussion }: { discussion: Bill
   const { quotes, note } = discussion;
   if (quotes.length === 0) return null;
 
+  const meetingCount = new Set(quotes.map((q) => `${q.confDate}|${q.meetingTitle}`)).size;
+
   return (
     <section className="space-y-4 rounded-xl border border-(--color-border-primary) bg-(--color-bg-primary) p-5">
       <div>
         <h2 className="text-lg font-bold">위원회 논의 — 회의록에서</h2>
         <p className="mt-1 text-sm text-(--color-text-tertiary)">
-          국회 회의록 원문에서 이 법안 심사의 핵심 발언을 선별했습니다. 인용은 회의록 표현
-          그대로입니다.
+          국회 회의록 {meetingCount}건에서 이 법안 심사의 핵심 발언 {quotes.length}건을
+          선별했습니다. 인용은 회의록 표현 그대로입니다.
         </p>
       </div>
 
@@ -73,7 +76,13 @@ export default function BillDiscussionSection({ discussion }: { discussion: Bill
       <p className="text-xs text-(--color-text-tertiary)">
         출처: 국회사무처 회의록 (열람: 국회회의록시스템)
         {note ? ` · 편집자 검토일 ${note.reviewedAt}` : ""} · 인용은 발언 원문이며 발언의 일부일 수
-        있습니다.
+        있습니다.{" "}
+        <Link
+          href="/about/methodology"
+          className="underline underline-offset-2 hover:text-(--color-text-primary)"
+        >
+          선별·검수 기준 보기
+        </Link>
       </p>
     </section>
   );

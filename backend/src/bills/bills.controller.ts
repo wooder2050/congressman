@@ -75,6 +75,16 @@ export class BillsController {
     return this.billsService.findIndexableIds();
   }
 
+  @Get('curated-ids')
+  @ApiOperation({
+    summary: '편집 검수 법안 ID 목록',
+    description:
+      '회의록 발언 인용(approved)이 있는 법안 ID + 발의일 목록. AdSense 심사 대응으로 색인·광고 대상을 편집 콘텐츠 보유 페이지로 좁힐 때 사용',
+  })
+  findCuratedIds() {
+    return this.billsService.findCuratedIds();
+  }
+
   @Get('committees')
   @ApiOperation({
     summary: '위원회 목록',
