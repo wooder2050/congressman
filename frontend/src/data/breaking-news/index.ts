@@ -58,6 +58,7 @@ export const breakingNews: BreakingNewsItem[] = [
         url: "https://www.cbci.co.kr/news/articleView.html?idxno=602247",
       },
     ],
+    linkUrl: "/issues/cabinet-2026-08",
     active: true,
   },
   {
