@@ -11,6 +11,7 @@ import {
 import { getAllWeeklyArticles } from "@/data/weekly";
 import { getAllTermSlugs } from "@/lib/glossary";
 import { CURATION_MODE } from "@/lib/curation-mode";
+import { CABINET_2026_08 } from "@/data/cabinet-nominees";
 import { BASE, BILLS_PER_SITEMAP, xmlResponse, urlEntry, urlset } from "../route";
 
 export const revalidate = 86400;
@@ -52,6 +53,12 @@ async function buildSitemap(id: number) {
       urlEntry(`${BASE}/members/property`, { changefreq: "weekly", priority: 0.7 }),
       urlEntry(`${BASE}/members/scorecard`, { changefreq: "daily", priority: 0.7 }),
       urlEntry(`${BASE}/weekly`, { changefreq: "weekly", priority: 0.8 }),
+      // 이슈 아카이브(편집 페이지) — 결과 확정 후에도 유지
+      urlEntry(`${BASE}${CABINET_2026_08.path}`, {
+        lastmod: CABINET_2026_08.updatedAt,
+        changefreq: "weekly",
+        priority: 0.7,
+      }),
     ];
 
     // 주간뉴스 + 기사 상세 페이지

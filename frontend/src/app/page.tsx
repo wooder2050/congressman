@@ -11,6 +11,7 @@ import AttendanceRanking from "@/components/home/AttendanceRanking";
 import ActivityHighlights from "@/components/home/ActivityHighlights";
 import LatestWeeklyNews from "@/components/home/LatestWeeklyNews";
 import EditorsPicks from "@/components/home/EditorsPicks";
+import CabinetNomineeSpotlight from "@/components/home/CabinetNomineeSpotlight";
 import PropertyHighlight from "@/components/home/PropertyHighlight";
 import ScorecardHighlight from "@/components/home/ScorecardHighlight";
 import BreakingNewsBanner from "@/components/home/BreakingNewsBanner";
@@ -123,6 +124,9 @@ export default async function HomePage({ searchParams }: HomePageProps) {
         {/* 속보 배너 — 편집 콘텐츠를 첫 화면 최상단에 (사이트 성격이 '자동 집계'가
             아니라 '편집 매체'로 먼저 읽히도록. AdSense 대응 2순위, 2026-08) */}
         <BreakingNewsBanner />
+
+        {/* 2기 개각 후보자 진입 카드 — 편집 데이터 showOnHome=false면 렌더 안 함 (임명 결과 확정 후 내림) */}
+        <CabinetNomineeSpotlight />
 
         {/* 편집자가 고른 국회 분석 — 자체 편집 콘텐츠를 첫 화면에서 발견 가능하게 */}
         <EditorsPicks />
