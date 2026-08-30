@@ -43,7 +43,7 @@ export default function CabinetNomineeSpotlight() {
               className="flex min-h-12 items-center justify-between gap-2 rounded-lg bg-(--color-bg-secondary) px-3 py-2 no-underline transition-colors hover:bg-(--color-bg-tertiary)"
             >
               <span className="min-w-0">
-                <span className="block truncate text-xs text-(--color-text-tertiary)">
+                <span className="block text-xs leading-tight text-(--color-text-tertiary)">
                   {m.ministry}
                 </span>
                 <span className="block truncate text-sm font-bold text-(--color-text-primary)">
