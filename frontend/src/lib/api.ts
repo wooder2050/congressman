@@ -290,8 +290,9 @@ export async function getHomeStats(termId: number): Promise<HomeStats> {
   });
 }
 
-export async function getUpcomingSchedules(termId: number): Promise<Schedule[]> {
-  return fetchApi(`/api/schedules/upcoming?termId=${termId}`, {
+export async function getUpcomingSchedules(termId: number, limit?: number): Promise<Schedule[]> {
+  const q = limit ? `&limit=${limit}` : "";
+  return fetchApi(`/api/schedules/upcoming?termId=${termId}${q}`, {
     revalidate: 60,
   });
 }
