@@ -46,27 +46,57 @@ type FetchApiOptions = {
   timeoutMs?: number;
 };
 
+/** 백엔드 재시작·순단으로 나는 일시 오류만 재시도 대상 (그 외 4xx/5xx는 즉시 실패) */
+const RETRYABLE_STATUS = new Set([502, 503, 504]);
+const RETRY_DELAY_MS = 300;
+
+function sleep(ms: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+function isAbortLike(err: unknown): boolean {
+  const name = (err as { name?: string } | null)?.name;
+  return name === "TimeoutError" || name === "AbortError";
+}
+
 async function fetchApi<T>(path: string, options?: FetchApiOptions): Promise<T> {
   if (!API_BASE) {
     throw new Error("NEXT_PUBLIC_API_URL 환경변수가 설정되지 않았습니다.");
   }
 
-  const init: RequestInit & { next?: { revalidate?: number } } = {};
-  if (options?.revalidate !== undefined) {
-    init.next = { revalidate: options.revalidate };
-    // Next.js 16 defaults fetch to no-store; force-cache is required to actually
-    // hit the data cache. Only apply server-side — client React Query manages
-    // its own cache and we don't want to interfere with browser cache semantics.
-    if (typeof window === "undefined") {
-      init.cache = "force-cache";
+  const doFetch = (): Promise<Response> => {
+    const init: RequestInit & { next?: { revalidate?: number } } = {};
+    if (options?.revalidate !== undefined) {
+      init.next = { revalidate: options.revalidate };
+      // Next.js 16 defaults fetch to no-store; force-cache is required to actually
+      // hit the data cache. Only apply server-side — client React Query manages
+      // its own cache and we don't want to interfere with browser cache semantics.
+      if (typeof window === "undefined") {
+        init.cache = "force-cache";
+      }
     }
+    // 재시도 시 새 signal이 필요하므로 시도마다 생성
+    if (options?.timeoutMs) {
+      init.signal = AbortSignal.timeout(options.timeoutMs);
+    }
+    return fetch(`${API_BASE}${path}`, init);
+  };
+
+  // 소켓 끊김(fetch failed)·백엔드 재시작(502/503/504)은 1회 재시도.
+  // timeoutMs에 의한 중단은 렌더 보호용 의도적 실패이므로 재시도하지 않는다.
+  let res: Response;
+  try {
+    res = await doFetch();
+    if (RETRYABLE_STATUS.has(res.status)) {
+      await sleep(RETRY_DELAY_MS);
+      res = await doFetch();
+    }
+  } catch (err) {
+    if (isAbortLike(err)) throw err;
+    await sleep(RETRY_DELAY_MS);
+    res = await doFetch();
   }
 
-  if (options?.timeoutMs) {
-    init.signal = AbortSignal.timeout(options.timeoutMs);
-  }
-
-  const res = await fetch(`${API_BASE}${path}`, init);
   if (res.status === 404) return null as T;
   if (!res.ok) throw new Error(`API error: ${res.status}`);
   const text = await res.text();
