@@ -63,13 +63,23 @@ function sleep(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
-/** 버리는 응답의 body를 취소해 커넥션이 정상 반환되도록 한다 (Undici 권장) */
+/**
+ * 버리는 응답의 body를 끝까지 읽어(drain) 커넥션이 정상 반환되도록 한다.
+ * cancel()은 쓰지 않는다 — Next request memoization이 응답을 tee()로 복제하는데,
+ * 스트림 명세상 한쪽 branch의 cancel()은 다른 branch가 끝날 때까지 완료되지
+ * 않아 요청이 무기한 멈출 수 있다. 오류 body는 작으므로 전부 읽는 쪽이 안전하다.
+ */
 async function discardBody(res: Response): Promise<void> {
   try {
-    await res.body?.cancel();
+    await res.arrayBuffer();
   } catch {
-    // body 정리 실패는 무시
+    // body 소비 실패는 무시 (이미 오류 경로)
   }
+}
+
+/** 내부 재시도 마커(RetryableStatusError)가 호출부로 새지 않게 일반 Error로 정규화 */
+function normalizeError(err: unknown): unknown {
+  return err instanceof RetryableStatusError ? new Error(err.message) : err;
 }
 
 /**
@@ -141,11 +151,15 @@ async function fetchApi<T>(path: string, options?: FetchApiOptions): Promise<T> 
   } catch (err) {
     // 서버(SSR/ISR)에서만, 일시 오류(소켓 끊김·502/503/504)만 정확히 1회 재시도.
     // 클라이언트는 React Query가 자체 재시도를 하므로 중첩하지 않는다.
-    if (!isServer || !isRetryableError(err)) throw err;
+    if (!isServer || !isRetryableError(err)) throw normalizeError(err);
     const delay = RETRY_BASE_DELAY_MS + Math.floor(Math.random() * RETRY_JITTER_MS);
-    if (deadline !== null && Date.now() + delay >= deadline) throw err;
+    if (deadline !== null && Date.now() + delay >= deadline) throw normalizeError(err);
     await sleep(delay);
-    return await attemptOnce(true);
+    try {
+      return await attemptOnce(true);
+    } catch (retryErr) {
+      throw normalizeError(retryErr);
+    }
   }
 }
 
