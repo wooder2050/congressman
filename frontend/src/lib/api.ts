@@ -48,15 +48,37 @@ type FetchApiOptions = {
 
 /** 백엔드 재시작·순단으로 나는 일시 오류만 재시도 대상 (그 외 4xx/5xx는 즉시 실패) */
 const RETRYABLE_STATUS = new Set([502, 503, 504]);
-const RETRY_DELAY_MS = 300;
+const RETRY_BASE_DELAY_MS = 300;
+/** 동시 ISR 재생성의 재시도가 같은 시점에 몰리지 않도록 지연에 더하는 무작위 폭 */
+const RETRY_JITTER_MS = 200;
+
+class RetryableStatusError extends Error {
+  constructor(status: number) {
+    super(`API error: ${status}`);
+    this.name = "RetryableStatusError";
+  }
+}
 
 function sleep(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
-function isAbortLike(err: unknown): boolean {
-  const name = (err as { name?: string } | null)?.name;
-  return name === "TimeoutError" || name === "AbortError";
+/** 버리는 응답의 body를 취소해 커넥션이 정상 반환되도록 한다 (Undici 권장) */
+async function discardBody(res: Response): Promise<void> {
+  try {
+    await res.body?.cancel();
+  } catch {
+    // body 정리 실패는 무시
+  }
+}
+
+/**
+ * 재시도 대상 오류 판별. undici의 네트워크 계층 오류(소켓 끊김 등)는
+ * TypeError("fetch failed")로 전파된다. Abort/Timeout은 DOMException,
+ * 200 응답의 잘못된 JSON은 SyntaxError라 자연히 제외된다.
+ */
+function isRetryableError(err: unknown): boolean {
+  return err instanceof RetryableStatusError || err instanceof TypeError;
 }
 
 async function fetchApi<T>(path: string, options?: FetchApiOptions): Promise<T> {
@@ -64,44 +86,67 @@ async function fetchApi<T>(path: string, options?: FetchApiOptions): Promise<T> 
     throw new Error("NEXT_PUBLIC_API_URL 환경변수가 설정되지 않았습니다.");
   }
 
-  const doFetch = (): Promise<Response> => {
+  const isServer = typeof window === "undefined";
+  const timeoutMs = options?.timeoutMs;
+  // timeoutMs는 재시도까지 포함한 전체 deadline로 해석한다 (렌더 보호 의미 유지)
+  const deadline = timeoutMs !== undefined && timeoutMs > 0 ? Date.now() + timeoutMs : null;
+
+  const doFetch = (bypassMemoization: boolean): Promise<Response> => {
     const init: RequestInit & { next?: { revalidate?: number } } = {};
     if (options?.revalidate !== undefined) {
       init.next = { revalidate: options.revalidate };
       // Next.js 16 defaults fetch to no-store; force-cache is required to actually
       // hit the data cache. Only apply server-side — client React Query manages
       // its own cache and we don't want to interfere with browser cache semantics.
-      if (typeof window === "undefined") {
+      if (isServer) {
         init.cache = "force-cache";
       }
     }
-    // 재시도 시 새 signal이 필요하므로 시도마다 생성
-    if (options?.timeoutMs) {
-      init.signal = AbortSignal.timeout(options.timeoutMs);
+    if (deadline !== null) {
+      // 시도마다 "남은 시간"으로 signal을 새로 만든다 (signal은 재사용 불가)
+      init.signal = AbortSignal.timeout(Math.max(deadline - Date.now(), 1));
+    } else if (bypassMemoization) {
+      // Next는 같은 렌더 패스의 동일 GET fetch를 memoize하므로, signal 없이
+      // 다시 부르면 첫 실패의 Promise/Response 복제본을 돌려받을 수 있다.
+      // signal이 있으면 memoization을 우회하므로 재시도에만 붙여
+      // 실제 origin 재요청을 보장한다 (첫 시도의 dedupe 이점은 유지).
+      init.signal = new AbortController().signal;
     }
     return fetch(`${API_BASE}${path}`, init);
   };
 
-  // 소켓 끊김(fetch failed)·백엔드 재시작(502/503/504)은 1회 재시도.
-  // timeoutMs에 의한 중단은 렌더 보호용 의도적 실패이므로 재시도하지 않는다.
-  let res: Response;
-  try {
-    res = await doFetch();
+  // 한 번의 시도 = fetch + body 수신까지. body 수신 중 소켓이 끊겨도
+  // (res.text()의 TypeError) 재시도 범위에 들어가도록 함께 묶는다.
+  const attemptOnce = async (bypassMemoization: boolean): Promise<T> => {
+    const res = await doFetch(bypassMemoization);
     if (RETRYABLE_STATUS.has(res.status)) {
-      await sleep(RETRY_DELAY_MS);
-      res = await doFetch();
+      await discardBody(res);
+      throw new RetryableStatusError(res.status);
     }
-  } catch (err) {
-    if (isAbortLike(err)) throw err;
-    await sleep(RETRY_DELAY_MS);
-    res = await doFetch();
-  }
+    if (res.status === 404) {
+      await discardBody(res);
+      return null as T;
+    }
+    if (!res.ok) {
+      await discardBody(res);
+      throw new Error(`API error: ${res.status}`);
+    }
+    const text = await res.text();
+    if (!text) return null as T;
+    return JSON.parse(text);
+  };
 
-  if (res.status === 404) return null as T;
-  if (!res.ok) throw new Error(`API error: ${res.status}`);
-  const text = await res.text();
-  if (!text) return null as T;
-  return JSON.parse(text);
+  try {
+    return await attemptOnce(false);
+  } catch (err) {
+    // 서버(SSR/ISR)에서만, 일시 오류(소켓 끊김·502/503/504)만 정확히 1회 재시도.
+    // 클라이언트는 React Query가 자체 재시도를 하므로 중첩하지 않는다.
+    if (!isServer || !isRetryableError(err)) throw err;
+    const delay = RETRY_BASE_DELAY_MS + Math.floor(Math.random() * RETRY_JITTER_MS);
+    if (deadline !== null && Date.now() + delay >= deadline) throw err;
+    await sleep(delay);
+    return await attemptOnce(true);
+  }
 }
 
 export async function getTerms(): Promise<AssemblyTerm[]> {
