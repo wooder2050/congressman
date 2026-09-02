@@ -79,7 +79,7 @@ export const CABINET_2026_08 = {
   announcedAt: "2026-08-30",
   announcedAtLabel: "8월 30일",
   publishedAt: "2026-08-30",
-  updatedAt: "2026-08-30",
+  updatedAt: "2026-09-02",
   /** 홈 진입 카드 노출 여부 — 임명·결과 확정 후 false로 내리고 페이지는 아카이브로 유지 */
   showOnHome: true,
   /** 페이지 상단 리드 — 두 문장 */
@@ -97,8 +97,15 @@ export const CABINET_2026_08 = {
       bio: "재정·거시경제 정책 실무를 총괄해 온 정통 경제관료입니다. 1차관에서 부총리로 곧장 올라가는 내부 승진 인선으로, 조직 개편 직후의 재정경제부를 안정적으로 이어받는 데 무게를 둔 선택으로 읽힙니다.",
       incumbent: null,
       hearingCommittee: "재정경제기획위원회",
-      status: "nominated",
-      statusLog: [{ date: "2026-08-30", status: "nominated", note: "청와대 브리핑에서 지명 발표" }],
+      status: "hearing_scheduled",
+      statusLog: [
+        { date: "2026-08-30", status: "nominated", note: "청와대 브리핑에서 지명 발표" },
+        {
+          date: "2026-09-02",
+          status: "hearing_scheduled",
+          note: "인사청문회 9월 15일로 확정(언론 보도 기준)",
+        },
+      ],
     },
     {
       slug: "hong-ji-sun",
@@ -114,8 +121,15 @@ export const CABINET_2026_08 = {
         note: "현역 의원 · 이임 후 국회 복귀",
       },
       hearingCommittee: "국토교통위원회",
-      status: "nominated",
-      statusLog: [{ date: "2026-08-30", status: "nominated", note: "청와대 브리핑에서 지명 발표" }],
+      status: "hearing_scheduled",
+      statusLog: [
+        { date: "2026-08-30", status: "nominated", note: "청와대 브리핑에서 지명 발표" },
+        {
+          date: "2026-09-02",
+          status: "hearing_scheduled",
+          note: "인사청문회 9월 16일로 확정(언론 보도 기준)",
+        },
+      ],
     },
     {
       slug: "kang-shin-chul",
@@ -149,7 +163,14 @@ export const CABINET_2026_08 = {
       },
       hearingCommittee: "법제사법위원회",
       status: "nominated",
-      statusLog: [{ date: "2026-08-30", status: "nominated", note: "청와대 브리핑에서 지명 발표" }],
+      statusLog: [
+        { date: "2026-08-30", status: "nominated", note: "청와대 브리핑에서 지명 발표" },
+        {
+          date: "2026-09-02",
+          status: "nominated",
+          note: "청문회 9월 18일로 조율 중(언론 보도 기준)",
+        },
+      ],
     },
     {
       slug: "yong-hye-in",
@@ -174,8 +195,15 @@ export const CABINET_2026_08 = {
       bio: "환경 전문 변호사 출신 재선 의원으로 기후·에너지 입법을 주로 다뤄 왔습니다. 한성숙 전 장관의 국무총리 발탁으로 비어 있던 자리를 채우는 인선이며, 중소기업·벤처 정책 경험이 청문회 검증 포인트로 꼽힙니다.",
       incumbent: null,
       hearingCommittee: "산업통상자원중소벤처기업위원회",
-      status: "nominated",
-      statusLog: [{ date: "2026-08-30", status: "nominated", note: "청와대 브리핑에서 지명 발표" }],
+      status: "hearing_scheduled",
+      statusLog: [
+        { date: "2026-08-30", status: "nominated", note: "청와대 브리핑에서 지명 발표" },
+        {
+          date: "2026-09-02",
+          status: "hearing_scheduled",
+          note: "인사청문회 9월 15일로 확정(언론 보도 기준)",
+        },
+      ],
     },
   ] as MinisterNominee[],
   presidentialOffice: [
