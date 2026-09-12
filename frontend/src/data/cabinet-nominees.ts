@@ -79,7 +79,7 @@ export const CABINET_2026_08 = {
   announcedAt: "2026-08-30",
   announcedAtLabel: "8월 30일",
   publishedAt: "2026-08-30",
-  updatedAt: "2026-09-02",
+  updatedAt: "2026-09-12",
   /** 홈 진입 카드 노출 여부 — 임명·결과 확정 후 false로 내리고 페이지는 아카이브로 유지 */
   showOnHome: true,
   /** 페이지 상단 리드 — 두 문장 */
@@ -145,8 +145,15 @@ export const CABINET_2026_08 = {
         note: "현역 의원 · 이임 후 국회 복귀",
       },
       hearingCommittee: "국방위원회",
-      status: "nominated",
-      statusLog: [{ date: "2026-08-30", status: "nominated", note: "청와대 브리핑에서 지명 발표" }],
+      status: "hearing_scheduled",
+      statusLog: [
+        { date: "2026-08-30", status: "nominated", note: "청와대 브리핑에서 지명 발표" },
+        {
+          date: "2026-09-10",
+          status: "hearing_scheduled",
+          note: "국방위 인사청문계획서 의결 · 청문회 9월 16일(증인 채택은 미합의)",
+        },
+      ],
     },
     {
       slug: "kim-seung-won",
@@ -162,13 +169,18 @@ export const CABINET_2026_08 = {
         note: "현역 의원 · 이임 후 국회 복귀",
       },
       hearingCommittee: "법제사법위원회",
-      status: "nominated",
+      status: "hearing_scheduled",
       statusLog: [
         { date: "2026-08-30", status: "nominated", note: "청와대 브리핑에서 지명 발표" },
         {
           date: "2026-09-02",
           status: "nominated",
           note: "청문회 9월 18일로 조율 중(언론 보도 기준)",
+        },
+        {
+          date: "2026-09-09",
+          status: "hearing_scheduled",
+          note: "법사위 인사청문계획서 여야 합의 의결 · 청문회 9월 15일로 확정(야당 증인 44명 요구는 미채택)",
         },
       ],
     },
@@ -183,7 +195,14 @@ export const CABINET_2026_08 = {
       incumbent: { name: "원민경", memberId: null },
       hearingCommittee: "성평등가족위원회",
       status: "nominated",
-      statusLog: [{ date: "2026-08-30", status: "nominated", note: "청와대 브리핑에서 지명 발표" }],
+      statusLog: [
+        { date: "2026-08-30", status: "nominated", note: "청와대 브리핑에서 지명 발표" },
+        {
+          date: "2026-09-12",
+          status: "nominated",
+          note: "청문회 일정 여야 협의 중 — 여당 9월 18일·야당 21일 주장(언론 보도 기준)",
+        },
+      ],
     },
     {
       slug: "lee-so-young",
