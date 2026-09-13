@@ -13,6 +13,17 @@ export default function CabinetNomineeSpotlight() {
   if (!d.showOnHome) return null;
 
   const memberCount = d.ministers.filter((m) => m.memberId).length;
+  // 진행 중이 아닌 후보자(사퇴·지명 철회)는 칩과 요약 문구에 상태를 드러낸다 — 페이지와 동일 기준
+  const ended = d.ministers.filter(
+    (m) => m.status === "withdrawn" || m.status === "nomination_withdrawn",
+  );
+  const appointed = d.ministers.filter((m) => m.status === "appointed");
+  const statusBadge = (status: string): { label: string; tone: "warn" | "done" } | null => {
+    if (status === "withdrawn") return { label: "사퇴", tone: "warn" };
+    if (status === "nomination_withdrawn") return { label: "지명 철회", tone: "warn" };
+    if (status === "appointed") return { label: "임명", tone: "done" };
+    return null;
+  };
 
   return (
     <section aria-labelledby="cabinet-spotlight-title" className="space-y-3">
@@ -31,33 +42,65 @@ export default function CabinetNomineeSpotlight() {
         </TrackedLink>
       </div>
       <p className="text-sm text-(--color-text-tertiary)">
-        {d.announcedAtLabel} 지명 · 6개 부처 후보자 중 현역 의원 {memberCount}명 · 인사청문회는
-        정기국회 초반 소관 상임위에서 열릴 예정입니다.
+        {d.announcedAtLabel} 지명 · 6개 부처 후보자 중 현역 의원 {memberCount}명
+        {ended.length > 0 && (
+          <>
+            {" "}
+            · {ended.map((m) => m.name).join("·")} 후보자{" "}
+            {ended.length === 1 && ended[0].status === "nomination_withdrawn"
+              ? "지명 철회"
+              : "사퇴"}
+          </>
+        )}
+        {appointed.length > 0 && <> · 임명 {appointed.length}명</>} · 인사청문회는 9월 14~18일 소관
+        상임위에서 열립니다.
       </p>
 
       <ul className="grid grid-cols-2 gap-2 rounded-xl border border-(--color-border-primary) bg-(--color-bg-primary) p-3 sm:grid-cols-3">
-        {d.ministers.map((m) => (
-          <li key={m.slug}>
-            <Link
-              href={`${d.path}#nominee-${m.slug}`}
-              className="flex min-h-12 items-center justify-between gap-2 rounded-lg bg-(--color-bg-secondary) px-3 py-2 no-underline transition-colors hover:bg-(--color-bg-tertiary)"
-            >
-              <span className="min-w-0">
-                <span className="block text-xs leading-tight text-(--color-text-tertiary)">
-                  {m.ministry}
+        {d.ministers.map((m) => {
+          const badge = statusBadge(m.status);
+          const isEnded = badge?.tone === "warn";
+          return (
+            <li key={m.slug}>
+              <Link
+                href={`${d.path}#nominee-${m.slug}`}
+                className={`flex min-h-12 items-center justify-between gap-2 rounded-lg bg-(--color-bg-secondary) px-3 py-2 no-underline transition-colors hover:bg-(--color-bg-tertiary) ${
+                  isEnded ? "opacity-70" : ""
+                }`}
+              >
+                <span className="min-w-0">
+                  <span className="block text-xs leading-tight text-(--color-text-tertiary)">
+                    {m.ministry}
+                  </span>
+                  <span
+                    className={`block truncate text-sm font-bold text-(--color-text-primary) ${
+                      isEnded ? "line-through decoration-(--color-text-tertiary)" : ""
+                    }`}
+                  >
+                    {m.name}
+                  </span>
                 </span>
-                <span className="block truncate text-sm font-bold text-(--color-text-primary)">
-                  {m.name}
-                </span>
-              </span>
-              {m.memberId && (
-                <span className="shrink-0 rounded-full bg-(--color-bg-tertiary) px-2 py-0.5 text-xs font-medium text-(--color-text-secondary)">
-                  현역 의원
-                </span>
-              )}
-            </Link>
-          </li>
-        ))}
+                {badge ? (
+                  <span
+                    className={`shrink-0 rounded-full px-2 py-0.5 text-xs font-medium ${
+                      badge.tone === "warn"
+                        ? "border border-(--color-status-absent) bg-(--color-bg-primary) text-(--color-status-absent)"
+                        : "border border-(--color-status-present) bg-(--color-bg-primary) text-(--color-status-present)"
+                    }`}
+                  >
+                    {badge.label}
+                  </span>
+                ) : (
+                  m.memberId && (
+                    <span className="shrink-0 rounded-full bg-(--color-bg-tertiary) px-2 py-0.5 text-xs font-medium text-(--color-text-secondary)">
+                      현역 의원
+                    </span>
+                  )
+                )}
+              </Link>
+            </li>
+          );
+        })}
       </ul>
     </section>
   );

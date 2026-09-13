@@ -79,7 +79,7 @@ export const CABINET_2026_08 = {
   announcedAt: "2026-08-30",
   announcedAtLabel: "8월 30일",
   publishedAt: "2026-08-30",
-  updatedAt: "2026-09-12",
+  updatedAt: "2026-09-13",
   /** 홈 진입 카드 노출 여부 — 임명·결과 확정 후 false로 내리고 페이지는 아카이브로 유지 */
   showOnHome: true,
   /** 페이지 상단 리드 — 두 문장 */
@@ -194,13 +194,18 @@ export const CABINET_2026_08 = {
       bio: "21·22대 비례대표로 기본소득당을 이끌어 온 원내 소수정당 대표입니다. 여당 밖 정당의 현직 대표가 입각하는 드문 사례로, 연립 성격의 인사라는 해석과 함께 당대표직 유지 여부가 청문 전 쟁점이 될 수 있습니다.",
       incumbent: { name: "원민경", memberId: null },
       hearingCommittee: "성평등가족위원회",
-      status: "nominated",
+      status: "withdrawn",
       statusLog: [
         { date: "2026-08-30", status: "nominated", note: "청와대 브리핑에서 지명 발표" },
         {
           date: "2026-09-12",
           status: "nominated",
           note: "청문회 일정 여야 협의 중 — 여당 9월 18일·야당 21일 주장(언론 보도 기준)",
+        },
+        {
+          date: "2026-09-13",
+          status: "withdrawn",
+          note: '국회 소통관 기자회견에서 자진 사퇴(지명 14일 만). 비례대표 의원직·기본소득당 대표직 겸직 논란과 여당의 결단 요청이 배경. 의원직은 유지. 청와대 "결정 존중"',
         },
       ],
     },
