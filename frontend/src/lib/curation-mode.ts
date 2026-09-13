@@ -12,6 +12,8 @@
  * - AdSlot도 동일 기준으로 게이팅(fail-closed)
  * - 편집 콘텐츠(주간뉴스·용어사전·가이드·방법론)와 의원·위원회 페이지는 영향 없음
  *
- * 승인 후 원복: 환경변수만 "false"로 바꾸고 재배포 → 색인 기준이 v3.2(1,725건)로 돌아온다.
+ * 승인(2026-09-13) 후에도 2026-09-27까지 유지하기로 결정(승인 직후 정책 재검토 리스크 회피).
+ * 원복은 환경변수만 "false"로 바꾸고 재배포 → 색인 기준이 v3.2(1,725건)로 돌아온다.
+ * 광고 게이팅은 lib/ad-eligibility.ts(색인 판정 공유), 배치는 lib/ad-placements.ts.
  */
 export const CURATION_MODE = process.env.NEXT_PUBLIC_CURATION_MODE === "true";

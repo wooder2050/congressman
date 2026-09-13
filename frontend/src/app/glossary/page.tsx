@@ -1,4 +1,6 @@
 import type { Metadata } from "next";
+import { Fragment } from "react";
+import AdSlot from "@/components/ads/AdSlot";
 import Link from "next/link";
 import { getTermsByCategory, getAllTerms } from "@/lib/glossary";
 import JsonLd from "@/components/seo/JsonLd";
@@ -52,7 +54,7 @@ export default function GlossaryPage() {
       </section>
 
       {/* 카테고리별 용어 */}
-      {categories.map((category) => {
+      {categories.map((category, catIndex) => {
         const terms = getTermsByCategory(category.id);
         if (terms.length === 0) return null;
 
@@ -64,17 +66,22 @@ export default function GlossaryPage() {
             </h2>
 
             <div className="space-y-3">
-              {terms.map((term) => (
-                <Link
-                  key={term.term}
-                  href={`/glossary/${encodeURIComponent(term.term)}`}
-                  className="block rounded-xl border border-(--color-border-primary) bg-(--color-bg-primary) p-4 no-underline transition-colors hover:bg-(--color-bg-hover)"
-                >
-                  <h3 className="text-lg font-bold text-(--color-text-primary)">{term.term}</h3>
-                  <p className="mt-2 text-sm leading-relaxed text-(--color-text-secondary)">
-                    {term.fullDesc || term.shortDesc}
-                  </p>
-                </Link>
+              {terms.map((term, idx) => (
+                <Fragment key={term.term}>
+                  <Link
+                    href={`/glossary/${encodeURIComponent(term.term)}`}
+                    className="block rounded-xl border border-(--color-border-primary) bg-(--color-bg-primary) p-4 no-underline transition-colors hover:bg-(--color-bg-hover)"
+                  >
+                    <h3 className="text-lg font-bold text-(--color-text-primary)">{term.term}</h3>
+                    <p className="mt-2 text-sm leading-relaxed text-(--color-text-secondary)">
+                      {term.fullDesc || term.shortDesc}
+                    </p>
+                  </Link>
+                  {/* 광고 — 첫 카테고리의 4번째 설명 카드 뒤 1개(카드 8개 이상일 때만), 링크 바깥 독립 블록 */}
+                  {catIndex === 0 && idx === 3 && terms.length >= 8 && (
+                    <AdSlot placement="glossary-list" />
+                  )}
+                </Fragment>
               ))}
             </div>
           </section>

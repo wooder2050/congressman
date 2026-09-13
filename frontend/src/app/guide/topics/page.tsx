@@ -380,7 +380,7 @@ export default function TopicsGuidePage() {
         </div>
       </section>
 
-      <AdSlot />
+      <AdSlot placement="guide-inline" />
     </div>
   );
 }

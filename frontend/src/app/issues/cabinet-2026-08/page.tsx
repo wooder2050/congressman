@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import AdSlot from "@/components/ads/AdSlot";
 import Link from "next/link";
 import JsonLd from "@/components/seo/JsonLd";
 import CabinetNomineeCard from "@/components/issues/CabinetNomineeCard";
@@ -225,6 +226,9 @@ export default async function CabinetIssuePage() {
           </table>
         </div>
       </section>
+
+      {/* 광고 — 부처 전환표(편집 정리) 뒤, 청문 일정·후보자 카드 앞 1개. 모바일 목록·데스크톱 표의 공통 바깥 */}
+      <AdSlot placement="cabinet-after-ministries" />
 
       {/* 인사청문회 일정 — 국회 일정에 등록된 것이 있을 때만 */}
       {hearings.length > 0 && (

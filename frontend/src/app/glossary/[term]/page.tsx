@@ -169,6 +169,9 @@ export default async function GlossaryTermPage({ params }: GlossaryTermPageProps
         </section>
       )}
 
+      {/* 광고 — 실제 사례(자체 설명 끝) 뒤, 혼동 용어·관련 용어 링크 앞 1개 */}
+      <AdSlot placement="glossary-term-inline" />
+
       {term.confusedWith && term.confusedWith.length > 0 && (
         <section>
           <h2 className="text-lg font-bold">혼동하기 쉬운 용어</h2>
@@ -256,8 +259,6 @@ export default async function GlossaryTermPage({ params }: GlossaryTermPageProps
           )}
         </footer>
       )}
-      {/* 광고: 편집형 페이지(수작업 콘텐츠)라 광고 표면에 포함 */}
-      <AdSlot />
     </div>
   );
 }
