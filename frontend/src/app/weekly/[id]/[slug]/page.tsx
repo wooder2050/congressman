@@ -4,6 +4,7 @@ import type { Metadata } from "next";
 import { getWeeklyArticle, getWeeklyArticleIds } from "@/data/weekly";
 import JsonLd from "@/components/seo/JsonLd";
 import AdSlot from "@/components/ads/AdSlot";
+import { planArticleAds } from "@/lib/article-ad-plan";
 
 const STATUS_LABEL: Record<string, { text: string; className: string }> = {
   passed: {
@@ -115,6 +116,9 @@ export default async function WeeklyArticlePage({ params }: Props) {
 
   const articleUrl = `https://www.lawmake.kr/weekly/${id}/${decodedSlug}`;
 
+  // 본문 문단·글자 수 기준으로 광고 위치 결정(짧은 글은 중간 삽입 없음, 장문만 하단 추가)
+  const adPlan = planArticleAds(bill.article);
+
   return (
     <div className="mx-auto max-w-2xl px-4 py-8">
       <JsonLd
@@ -210,11 +214,15 @@ export default async function WeeklyArticlePage({ params }: Props) {
                 {para}
               </p>
             ))}
+            {/* 본문 중간 광고 — 이 섹션의 마지막 문단 뒤(앞뒤 2문단·200자 이상 보장) */}
+            {adPlan.inlineAfterSection === i && (
+              <AdSlot placement="article-inline" className="mt-6" />
+            )}
           </section>
         ))}
       </article>
 
-      <AdSlot className="mt-10" />
+      {adPlan.bottom && <AdSlot placement="article-bottom" className="mt-10" />}
 
       {/* 출처 */}
       {(youtubeSources.length > 0 || articleSources.length > 0) && (

@@ -283,6 +283,11 @@ export default function WeeklyDetailContent({ article }: WeeklyDetailContentProp
         </section>
       )}
 
+      {/* 광고 — 주목 법안(편집 설명)과 하이라이트 사이 1개. 둘 다 있을 때만 */}
+      {article.featuredBills.length > 0 && article.highlights.length > 0 && (
+        <AdSlot placement="weekly-issue-inline" />
+      )}
+
       {/* 주간 하이라이트 */}
       {article.highlights.length > 0 && (
         <section className="space-y-4">
@@ -332,7 +337,10 @@ export default function WeeklyDetailContent({ article }: WeeklyDetailContentProp
         </div>
       </section>
 
-      <AdSlot className="mt-8" />
+      {/* 주목 법안·하이라이트 중 하나가 비면 중간 자리가 없으므로 하단에 1개 */}
+      {!(article.featuredBills.length > 0 && article.highlights.length > 0) && (
+        <AdSlot placement="weekly-issue-inline" className="mt-8" />
+      )}
     </div>
   );
 }

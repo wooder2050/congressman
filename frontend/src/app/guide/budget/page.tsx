@@ -194,6 +194,9 @@ export default function BudgetGuidePage() {
         </div>
       </section>
 
+      {/* 광고 — 완결된 주요 설명 섹션 뒤 1개(하단에서 이동) */}
+      <AdSlot placement="guide-inline" />
+
       {/* 추경이란 */}
       <section className="space-y-4">
         <h2 className="text-2xl font-bold">추가경정예산(추경)이란 무엇인가요?</h2>
@@ -252,8 +255,6 @@ export default function BudgetGuidePage() {
           </Link>
         </div>
       </section>
-
-      <AdSlot />
     </div>
   );
 }

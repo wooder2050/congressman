@@ -5,6 +5,7 @@ import MemberAvatar from "@/components/members/MemberAvatar";
 import { formatDate, formatDistrict } from "@/lib/utils";
 import { BILL_STATUS_MAP, TOPIC_EXPLANATIONS, normalizeTopic } from "@/lib/constants";
 import { billDisplayTitle } from "@/lib/bill-title";
+import type { ReactNode } from "react";
 import BillProgressTimeline from "@/components/bills/BillProgressTimeline";
 import BillWatchCTA from "@/components/bills/BillWatchCTA";
 import BookmarkButton from "@/components/ui/BookmarkButton";
@@ -13,9 +14,11 @@ import type { BillDetail, BillStructuredSummary } from "@/types";
 
 interface BillDetailInnerProps {
   bill: BillDetail;
+  /** 서버에서 조립한 편집 콘텐츠(회의록 인용·광고) — AI 요약과 진행 타임라인 사이에 놓인다 */
+  editorialSlot?: ReactNode;
 }
 
-export default function BillDetailInner({ bill }: BillDetailInnerProps) {
+export default function BillDetailInner({ bill, editorialSlot }: BillDetailInnerProps) {
   const statusInfo = BILL_STATUS_MAP[bill.status];
 
   // 제목 중복 해소: 요약 핵심구로 고유 H1을 만들고, 원 의안명은 부제로 유지.
@@ -154,6 +157,8 @@ export default function BillDetailInner({ bill }: BillDetailInnerProps) {
           </p>
         </div>
       )}
+
+      {editorialSlot}
 
       {bill.progress && (
         <BillProgressTimeline

@@ -11,7 +11,7 @@ import BillJsonLd from "@/components/seo/BillJsonLd";
 import BreadcrumbJsonLd from "@/components/seo/BreadcrumbJsonLd";
 import { billDisplayTitle, truncateAtWord } from "@/lib/bill-title";
 import { normalizeTopic } from "@/lib/constants";
-import { CURATION_MODE } from "@/lib/curation-mode";
+import { isBillAdEligible, isBillIndexable } from "@/lib/ad-eligibility";
 import type { BillStructuredSummary } from "@/types";
 
 // 14d — 법안은 발의 후 내용이 거의 바뀌지 않는다.
@@ -66,24 +66,8 @@ export async function generateMetadata({ params }: BillDetailPageProps): Promise
   ];
   const description = truncateAtWord(descParts.filter(Boolean).join(" "), 160);
 
-  // 색인 기준 = sitemap(getIndexableBillIds v3.2)과 동일:
-  // AI 요약(simpleSummary) 보유 + 본회의 처리 도달(lawResult 또는 plenaryDate)
-  // + 표결 레코드 실존.
-  // 본회의 표결 도달 법안에는 의원별 찬반·정당별 집계 등 원본(열린국회정보)에
-  // 조립된 형태로 없는 데이터가 붙는다. 위원회 단계까지의 법안은 필드 나열 +
-  // 자동 요약뿐이라 색인 제외(2026-08, AdSense "고유 콘텐츠" 기준 대응).
-  // hasVote까지 요구하는 이유: 무기명 재표결 등은 lawResult가 있어도 의원별
-  // 표결 데이터가 없어 "고유 데이터" 논리가 성립하지 않는다(codex 리뷰 반영).
-  // plenaryDate 병행 인정: 법사위 소관 법안은 체계자구심사가 따로 없어
-  // lawResult가 구조적으로 NULL이라 이것만 요구하면 부당 배제된다(v3.2).
-  //
-  // 큐레이션 모드(AdSense 심사 기간)에는 여기서 한 단계 더 좁혀, 회의록 발언 인용과
-  // 편집자 해설이 붙은 법안만 색인한다. sitemap(curated-ids)과 동일 기준이다.
-  const isIndexable = CURATION_MODE
-    ? !!bill.discussion && bill.discussion.quotes.length > 0
-    : !!bill.simpleSummary &&
-      !!bill.hasVote &&
-      (!!bill.progress?.lawResult || !!bill.progress?.plenaryDate);
+  // 색인 판정은 sitemap·광고와 공통(lib/ad-eligibility.ts 주석 참고)
+  const isIndexable = isBillIndexable(bill);
 
   return {
     title,
@@ -115,7 +99,20 @@ export default async function BillDetailPage({ params }: BillDetailPageProps) {
           { name: "법안 상세", href: `/bills/${id}` },
         ]}
       />
-      <BillDetailInner bill={bill} />
+      <BillDetailInner
+        bill={bill}
+        editorialSlot={
+          <>
+            {/* 위원회 회의록 발언 인용 + 편집자 해설 — 검수 승인분이 있는 법안만.
+                회의록 원문에서 편집 선별한 콘텐츠로, 페이지 고유성(원본성)의 핵심.
+                AI 요약 바로 아래(진행 타임라인 앞)에 둬 발의자·원문 때문에 밀리지 않게 한다 */}
+            {bill.discussion && <BillDiscussionSection discussion={bill.discussion} />}
+            {/* 광고: 색인 기준과 동일 판정(isBillAdEligible)을 통과한 페이지에만 — 저가치
+                페이지는 광고 표면에서 제외(fail-closed). 편집 콘텐츠 뒤, 타임라인 앞 1개 */}
+            {isBillAdEligible(bill) && <AdSlot placement="bill-after-discussion" />}
+          </>
+        }
+      />
       <div className="mx-auto mt-6 max-w-7xl space-y-6">
         {/* 본회의 표결 정당별 집계 — 원본에 조립돼 있지 않은 고유 데이터를 페이지에
             직접 노출(AdSense 고유 콘텐츠 대응 1순위). 지연·실패가 본문을 붙잡지
@@ -125,21 +122,10 @@ export default async function BillDetailPage({ params }: BillDetailPageProps) {
             <BillVoteBreakdown billId={id} />
           </Suspense>
         )}
-        {/* 위원회 회의록 발언 인용 + 편집자 해설 — 검수 승인분이 있는 법안만.
-            회의록 원문에서 편집 선별한 콘텐츠로, 페이지 고유성(원본성)의 핵심 */}
-        {bill.discussion && <BillDiscussionSection discussion={bill.discussion} />}
         {/* 선택 섹션 — 지연·실패가 상세 본문 렌더링을 붙잡지 않도록 Suspense로 분리 */}
         <Suspense fallback={null}>
           <RelatedBills billId={id} />
         </Suspense>
-        {/* 광고: 색인 기준과 동일 판정을 통과한 페이지에만 — 저가치 페이지는
-            광고 표면에서 제외(fail-closed). 큐레이션 모드에서는 회의록 인용
-            보유 법안만 해당된다. */}
-        {(CURATION_MODE
-          ? !!bill.discussion && bill.discussion.quotes.length > 0
-          : !!bill.simpleSummary &&
-            !!bill.hasVote &&
-            (!!bill.progress?.lawResult || !!bill.progress?.plenaryDate)) && <AdSlot />}
       </div>
     </>
   );

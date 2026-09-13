@@ -1,4 +1,6 @@
+import { Fragment } from "react";
 import Link from "next/link";
+import AdSlot from "@/components/ads/AdSlot";
 import { getBreakingNews } from "@/lib/api";
 
 const CATEGORY_STYLE: Record<string, { label: string; className: string }> = {
@@ -35,73 +37,74 @@ export default async function BreakingNewsFeed() {
       </p>
 
       <div className="space-y-4">
-        {detailed.map((item) => {
+        {detailed.map((item, idx) => {
           const cat = CATEGORY_STYLE[item.category] ?? CATEGORY_STYLE.politics;
           return (
-            <article
-              key={item.id}
-              className="rounded-xl border border-(--color-border-primary) bg-(--color-bg-primary) p-4 sm:p-5"
-            >
-              <div className="flex items-center gap-2">
-                <span
-                  className={`shrink-0 rounded-md px-2 py-0.5 text-xs font-bold ${cat.className}`}
-                >
-                  {cat.label}
-                </span>
-                <time className="text-xs text-(--color-text-tertiary)">{item.date}</time>
-              </div>
-
-              <h3 className="mt-2 leading-snug font-bold text-(--color-text-primary)">
-                {item.title}
-              </h3>
-              <p className="mt-2 text-sm leading-relaxed text-(--color-text-secondary)">
-                {item.description}
-              </p>
-
-              {item.items && item.items.length > 0 && (
-                <dl className="mt-4 space-y-2 rounded-lg bg-(--color-bg-secondary) p-3">
-                  {item.items.map((d) => (
-                    <div key={d.label} className="sm:flex sm:gap-3">
-                      <dt className="shrink-0 text-xs font-bold text-(--color-text-primary) sm:w-28">
-                        {d.memberId ? (
-                          <Link
-                            href={`/members/${d.memberId}?term=22`}
-                            className="text-(--color-primary) no-underline hover:underline"
-                          >
-                            {d.label}
-                          </Link>
-                        ) : (
-                          d.label
-                        )}
-                      </dt>
-                      <dd className="mt-0.5 text-sm leading-relaxed text-(--color-text-secondary) sm:mt-0 sm:flex-1">
-                        {d.value}
-                      </dd>
-                    </div>
-                  ))}
-                </dl>
-              )}
-
-              {item.sources && item.sources.length > 0 && (
-                <div className="mt-3 border-t border-(--color-border-primary) pt-3">
-                  <p className="text-xs font-semibold text-(--color-text-tertiary)">관련 보도</p>
-                  <ul className="mt-1.5 space-y-1">
-                    {item.sources.map((s) => (
-                      <li key={s.url}>
-                        <a
-                          href={s.url}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-sm text-(--color-primary) no-underline hover:underline"
-                        >
-                          {s.title} →
-                        </a>
-                      </li>
-                    ))}
-                  </ul>
+            <Fragment key={item.id}>
+              <article className="rounded-xl border border-(--color-border-primary) bg-(--color-bg-primary) p-4 sm:p-5">
+                <div className="flex items-center gap-2">
+                  <span
+                    className={`shrink-0 rounded-md px-2 py-0.5 text-xs font-bold ${cat.className}`}
+                  >
+                    {cat.label}
+                  </span>
+                  <time className="text-xs text-(--color-text-tertiary)">{item.date}</time>
                 </div>
-              )}
-            </article>
+
+                <h3 className="mt-2 leading-snug font-bold text-(--color-text-primary)">
+                  {item.title}
+                </h3>
+                <p className="mt-2 text-sm leading-relaxed text-(--color-text-secondary)">
+                  {item.description}
+                </p>
+
+                {item.items && item.items.length > 0 && (
+                  <dl className="mt-4 space-y-2 rounded-lg bg-(--color-bg-secondary) p-3">
+                    {item.items.map((d) => (
+                      <div key={d.label} className="sm:flex sm:gap-3">
+                        <dt className="shrink-0 text-xs font-bold text-(--color-text-primary) sm:w-28">
+                          {d.memberId ? (
+                            <Link
+                              href={`/members/${d.memberId}?term=22`}
+                              className="text-(--color-primary) no-underline hover:underline"
+                            >
+                              {d.label}
+                            </Link>
+                          ) : (
+                            d.label
+                          )}
+                        </dt>
+                        <dd className="mt-0.5 text-sm leading-relaxed text-(--color-text-secondary) sm:mt-0 sm:flex-1">
+                          {d.value}
+                        </dd>
+                      </div>
+                    ))}
+                  </dl>
+                )}
+
+                {item.sources && item.sources.length > 0 && (
+                  <div className="mt-3 border-t border-(--color-border-primary) pt-3">
+                    <p className="text-xs font-semibold text-(--color-text-tertiary)">관련 보도</p>
+                    <ul className="mt-1.5 space-y-1">
+                      {item.sources.map((s) => (
+                        <li key={s.url}>
+                          <a
+                            href={s.url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-sm text-(--color-primary) no-underline hover:underline"
+                          >
+                            {s.title} →
+                          </a>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+              </article>
+              {/* 광고 — 두 번째 속보 뒤 1개. 상세 카드가 3개 이상일 때만(짧은 피드는 생략) */}
+              {idx === 1 && detailed.length >= 3 && <AdSlot placement="today-feed" />}
+            </Fragment>
           );
         })}
       </div>

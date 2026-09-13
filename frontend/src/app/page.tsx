@@ -11,6 +11,8 @@ import AttendanceRanking from "@/components/home/AttendanceRanking";
 import ActivityHighlights from "@/components/home/ActivityHighlights";
 import LatestWeeklyNews from "@/components/home/LatestWeeklyNews";
 import EditorsPicks from "@/components/home/EditorsPicks";
+import AdSlot from "@/components/ads/AdSlot";
+import { getHomePicks } from "@/data/editors-picks";
 import CabinetNomineeSpotlight from "@/components/home/CabinetNomineeSpotlight";
 import PropertyHighlight from "@/components/home/PropertyHighlight";
 import ScorecardHighlight from "@/components/home/ScorecardHighlight";
@@ -130,6 +132,9 @@ export default async function HomePage({ searchParams }: HomePageProps) {
 
         {/* 편집자가 고른 국회 분석 — 자체 편집 콘텐츠를 첫 화면에서 발견 가능하게 */}
         <EditorsPicks />
+
+        {/* 광고 — 편집 추천 6편을 읽은 뒤 나오는 첫 광고. 검색창·속보보다 위에는 두지 않는다 */}
+        {getHomePicks().length > 0 && <AdSlot placement="home-after-picks" />}
 
         {/* 주간 국회 뉴스 */}
         <LatestWeeklyNews />

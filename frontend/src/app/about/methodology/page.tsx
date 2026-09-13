@@ -203,6 +203,9 @@ export default function MethodologyPage() {
         </div>
       </section>
 
+      {/* 광고 — 완결된 주요 설명 섹션 뒤 1개(하단에서 이동) */}
+      <AdSlot placement="guide-inline" />
+
       {/* 3. AI 요약 */}
       <section className="space-y-4">
         <h2 className="text-2xl font-bold">3. AI 요약의 생성과 검수</h2>
@@ -329,8 +332,6 @@ export default function MethodologyPage() {
           </p>
         </div>
       </section>
-
-      <AdSlot />
 
       {/* CTA */}
       <section className="rounded-xl border border-(--color-border-primary) bg-(--color-bg-secondary) p-6">
