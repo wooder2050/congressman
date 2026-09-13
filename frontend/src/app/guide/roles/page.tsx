@@ -188,6 +188,9 @@ export default function RolesPage() {
         ))}
       </section>
 
+      {/* 광고 — 완결된 주요 설명 섹션 뒤 1개(하단에서 이동) */}
+      <AdSlot placement="guide-inline" />
+
       {/* 의정활동 평가 지표 */}
       <section className="space-y-4">
         <h2 className="text-2xl font-bold">의정활동 평가 지표</h2>
@@ -278,8 +281,6 @@ export default function RolesPage() {
           </Link>
         </div>
       </section>
-
-      <AdSlot />
     </div>
   );
 }

@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import AdSlot from "@/components/ads/AdSlot";
 import JsonLd from "@/components/seo/JsonLd";
 import PageIntro from "@/components/ui/page-intro";
 import TrackedLink from "@/components/analytics/TrackedLink";
@@ -15,6 +16,38 @@ export const metadata: Metadata = {
 
 export default function WeeklyPage() {
   const articles = getAllWeeklyArticles();
+
+  // 추천 목록은 광고를 사이에 두기 위해 두 <ol>로 나누되 전체 순번(position)은 유지한다
+  const renderPick = (pick: (typeof EDITORS_PICKS)[number], i: number) => (
+    <li key={pick.href}>
+      <TrackedLink
+        href={pick.href}
+        eventName="editors_pick_click"
+        eventParams={{ component: "weekly_hub_picks", article_id: pick.href, position: i }}
+        impressionParams={{
+          component: "weekly_hub_picks",
+          article_id: pick.href,
+          position: i,
+        }}
+        className="flex items-start gap-3 rounded-lg border border-(--color-border-primary) p-3 no-underline transition-colors hover:bg-(--color-bg-hover)"
+      >
+        <span className="mt-0.5 w-6 shrink-0 text-center text-sm font-bold text-(--color-primary)">
+          {i + 1}
+        </span>
+        <span className="min-w-0">
+          <span className="block leading-snug font-semibold text-(--color-text-primary)">
+            {pick.title}
+          </span>
+          <span className="mt-0.5 block text-sm leading-relaxed text-(--color-text-secondary)">
+            {pick.why}
+          </span>
+          <span className="mt-0.5 block text-xs text-(--color-text-tertiary)">
+            {pick.category} · {pick.date}
+          </span>
+        </span>
+      </TrackedLink>
+    </li>
+  );
 
   return (
     <div className="mx-auto max-w-4xl space-y-8">
@@ -84,36 +117,12 @@ export default function WeeklyPage() {
           지금 정국을 이해하는 데 필요한 기사를 편집팀이 순서대로 골랐습니다.
         </p>
         <ol className="space-y-2">
-          {EDITORS_PICKS.map((pick, i) => (
-            <li key={pick.href}>
-              <TrackedLink
-                href={pick.href}
-                eventName="editors_pick_click"
-                eventParams={{ component: "weekly_hub_picks", article_id: pick.href, position: i }}
-                impressionParams={{
-                  component: "weekly_hub_picks",
-                  article_id: pick.href,
-                  position: i,
-                }}
-                className="flex items-start gap-3 rounded-lg border border-(--color-border-primary) p-3 no-underline transition-colors hover:bg-(--color-bg-hover)"
-              >
-                <span className="mt-0.5 w-6 shrink-0 text-center text-sm font-bold text-(--color-primary)">
-                  {i + 1}
-                </span>
-                <span className="min-w-0">
-                  <span className="block leading-snug font-semibold text-(--color-text-primary)">
-                    {pick.title}
-                  </span>
-                  <span className="mt-0.5 block text-sm leading-relaxed text-(--color-text-secondary)">
-                    {pick.why}
-                  </span>
-                  <span className="mt-0.5 block text-xs text-(--color-text-tertiary)">
-                    {pick.category} · {pick.date}
-                  </span>
-                </span>
-              </TrackedLink>
-            </li>
-          ))}
+          {EDITORS_PICKS.slice(0, 5).map((pick, i) => renderPick(pick, i))}
+        </ol>
+        {/* 광고 — 추천 5편 뒤, 6편부터 앞. 추천이 8편 이상일 때만(목록이 짧으면 생략) */}
+        {EDITORS_PICKS.length >= 8 && <AdSlot placement="weekly-hub-picks" />}
+        <ol className="space-y-2" start={6}>
+          {EDITORS_PICKS.slice(5).map((pick, i) => renderPick(pick, i + 5))}
         </ol>
       </section>
 

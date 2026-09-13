@@ -226,6 +226,9 @@ export default function GuidePage() {
         ))}
       </section>
 
+      {/* 광고 — 완결된 주요 설명 섹션 뒤 1개(하단에서 이동) */}
+      <AdSlot placement="guide-inline" />
+
       {/* 위원회 역할 안내 */}
       <section className="space-y-6">
         <h2 className="text-2xl font-bold">국회 위원회의 역할</h2>
@@ -395,8 +398,6 @@ export default function GuidePage() {
           </Link>
         </div>
       </section>
-
-      <AdSlot />
     </div>
   );
 }
