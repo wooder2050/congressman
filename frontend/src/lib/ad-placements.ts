@@ -12,16 +12,16 @@
  * SPA에서 상태가 잔존해 noindex 법안 페이지에도 광고가 붙기 때문(components/ads/AdSlot.tsx 주석).
  */
 
-export const AD_UNITS = {
+const AD_UNITS = {
   /** 기존 단위(2026-08-15 생성) — 기사·법안·용어·가이드의 본문 쪽 슬롯 */
   articleInline: "9599985939",
   /** 섹션 사이(홈·주간뉴스 허브·용어 목록·개각·오늘의 국회) — 콘솔 단위 lawmake-section(2026-09-13 생성) */
   section: "1538618342",
 } as const;
 
-export type AdSizing = "content-250";
+type AdSizing = "content-250";
 
-export interface AdPlacementConfig {
+interface AdPlacementConfig {
   slot: string;
   sizing: AdSizing;
 }

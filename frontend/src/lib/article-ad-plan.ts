@@ -18,7 +18,7 @@ const TARGET_RATIO = 0.4;
 const SECOND_SLOT_MIN_CHARS = 1200;
 const SECOND_SLOT_MIN_PARAS = 6;
 
-export interface ArticleAdPlan {
+interface ArticleAdPlan {
   /** 이 인덱스의 섹션 뒤에 본문 중간 광고를 넣는다. null이면 중간 광고 없음 */
   inlineAfterSection: number | null;
   /** 기사 끝 광고 허용 여부 */
@@ -68,9 +68,12 @@ export function planArticleAds(sections: ArticleSection[]): ArticleAdPlan {
 
   const inlineAfterSection = best ? best.index : null;
   // 중간 광고가 없으면 기존처럼 하단 1개만. 중간 광고가 있으면 장문일 때만 하단을 함께 둔다.
+  // 본문이 비어 있으면(빈 배열·공백) 광고를 두지 않는다 — 빈 화면 광고 정책 회피
+  const hasBody = totalParas > 0 && totalChars >= MIN_CHARS_AROUND;
   const bottom =
-    inlineAfterSection === null ||
-    (totalChars >= SECOND_SLOT_MIN_CHARS && totalParas >= SECOND_SLOT_MIN_PARAS);
+    hasBody &&
+    (inlineAfterSection === null ||
+      (totalChars >= SECOND_SLOT_MIN_CHARS && totalParas >= SECOND_SLOT_MIN_PARAS));
 
   return { inlineAfterSection, bottom, totalChars, totalParas };
 }

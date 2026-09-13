@@ -63,6 +63,7 @@ export default function AdSlot({
       data-ad-placement={placement}
       className={`my-2 ${className ?? ""}`}
       style={{ minHeight: reserved }}
+      role="group"
       aria-label="광고"
     >
       <p className="mb-1 text-[11px] leading-none text-(--color-text-tertiary)">광고</p>
