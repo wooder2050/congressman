@@ -38,6 +38,10 @@ export const AD_PLACEMENTS = {
   "weekly-issue-inline": { slot: AD_UNITS.articleInline, sizing: "content-250" },
   "glossary-term-inline": { slot: AD_UNITS.articleInline, sizing: "content-250" },
   "guide-inline": { slot: AD_UNITS.articleInline, sizing: "content-250" },
+  // PR 2(2026-09-15) — 검색 유입·조회수 상위 데이터 페이지. 데이터가 충실한 화면에만 렌더한다
+  "member-detail": { slot: AD_UNITS.section, sizing: "content-250" },
+  "committee-detail": { slot: AD_UNITS.section, sizing: "content-250" },
+  "schedule-list": { slot: AD_UNITS.section, sizing: "content-250" },
 } as const satisfies Record<string, AdPlacementConfig>;
 
 export type AdPlacementKey = keyof typeof AD_PLACEMENTS;

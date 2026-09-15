@@ -8,6 +8,7 @@ import { getCommitteeDetail, getCommitteeMinutes } from "@/lib/api";
 import { formatDate } from "@/lib/utils";
 import { proxyPhotoUrl } from "@/lib/photo";
 import Pagination from "@/components/ui/pagination";
+import AdSlot from "@/components/ads/AdSlot";
 import type { CommitteeMemberInfo, MeetingMinutesSummary, CommitteeNextSchedule } from "@/types";
 
 interface CommitteeDetailInnerProps {
@@ -80,6 +81,11 @@ export default function CommitteeDetailInner({ name, termId }: CommitteeDetailIn
           ))}
         </div>
       </section>
+
+      {/* 광고 — 소속 위원 그리드 뒤, 회의록 앞. 이름과 0건 통계만 있는 화면은 제외한다 */}
+      {(data.members?.length ?? 0) >= 10 && (data.billTotal ?? 0) > 0 && (
+        <AdSlot placement="committee-detail" />
+      )}
 
       {/* 회의록 */}
       <MinutesSection name={name} termId={termId} />
