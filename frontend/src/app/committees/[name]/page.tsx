@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import CongressWrapper from "@/common/CongressWrapper";
 import CommitteeDetailInner from "@/components/committees/CommitteeDetailInner";
 import RelatedEditorial from "@/components/ui/related-editorial";
+import { committeeAliasLabel } from "@/lib/committee-aliases";
 
 interface CommitteeDetailPageProps {
   params: Promise<{ name: string }>;
@@ -11,9 +12,13 @@ interface CommitteeDetailPageProps {
 export async function generateMetadata({ params }: CommitteeDetailPageProps): Promise<Metadata> {
   const { name } = await params;
   const committeeName = decodeURIComponent(name);
-  const description = `22대 국회 ${committeeName} 소속 위원 명단, 법안 심사·처리 현황, 회의록을 확인하세요. ${committeeName}의 최근 활동과 안건 정보를 제공합니다.`;
+  // 약칭 검색(예: "외통위")은 노출만 쌓이고 클릭이 안 나와, 제목·설명에 약칭을 함께 노출한다.
+  const alias = committeeAliasLabel(committeeName);
+  const aliasTitle = alias ? `(${alias}) ` : "";
+  const aliasDesc = alias ? `${alias}로도 불립니다. ` : "";
+  const description = `22대 국회 ${committeeName} 소속 위원 명단, 법안 심사·처리 현황, 회의록을 확인하세요. ${aliasDesc}최근 회의 일정과 안건 정보를 함께 제공합니다.`;
   return {
-    title: `${committeeName} - 소속 위원·법안·회의록`,
+    title: `${committeeName} ${aliasTitle}— 소속 위원·법안·회의록`,
     description,
     alternates: {
       canonical: `https://www.lawmake.kr/committees/${encodeURIComponent(committeeName)}`,
