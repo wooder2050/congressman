@@ -52,6 +52,10 @@ export default function AdSlot({
   const pushed = useRef(false);
   const impressionFired = useRef(false);
   const [mounted, setMounted] = useState(false);
+  // 광고가 채워지지 않으면 AdSense가 컨테이너 인라인 스타일을 min-height:0·height:auto로
+  // 덮어써 자리를 접는다(실측 2026-09-15). 그때 "광고" 라벨만 남으면 광고가 아닌 것을
+  // 광고라고 표시하는 꼴이 되므로 라벨도 함께 감춘다.
+  const [unfilled, setUnfilled] = useState(false);
 
   // 1) 뷰포트 근처에 들어오면 <ins> 마운트
   useEffect(() => {
@@ -109,7 +113,22 @@ export default function AdSlot({
     return () => ro.disconnect();
   }, [mounted]);
 
-  // 3) 광고 자리 노출 이벤트 — 50% 이상이 1초 연속 보일 때 1회
+  // 3) 채움 실패 감지 — data-ad-status가 unfilled면 라벨을 감춘다
+  useEffect(() => {
+    if (!mounted) return;
+    const node = insRef.current;
+    if (!node || typeof MutationObserver === "undefined") return;
+    const read = () => {
+      const status = node.getAttribute("data-ad-status");
+      if (status) setUnfilled(status !== "filled");
+    };
+    read();
+    const mo = new MutationObserver(read);
+    mo.observe(node, { attributes: true, attributeFilter: ["data-ad-status"] });
+    return () => mo.disconnect();
+  }, [mounted]);
+
+  // 4) 광고 자리 노출 이벤트 — 50% 이상이 1초 연속 보일 때 1회
   useEffect(() => {
     if (!config?.slot) return;
     const node = boxRef.current;
@@ -189,7 +208,9 @@ export default function AdSlot({
       role="group"
       aria-label="광고"
     >
-      <p className="mb-1 text-[11px] leading-none text-(--color-text-tertiary)">광고</p>
+      {!unfilled && (
+        <p className="mb-1 text-[11px] leading-none text-(--color-text-tertiary)">광고</p>
+      )}
       {mounted && (
         <ins
           ref={insRef}
