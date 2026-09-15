@@ -71,6 +71,9 @@ export default function MemberDetailInner({
 }: MemberDetailInnerProps) {
   const [termId, setTermId] = useState(22);
   const [activeTab, setActiveTab] = useState("attendance");
+  // ?term 확인 전에는 광고를 렌더하지 않는다 — 초기값 22 때문에 ?term=21 진입에서
+  // 잠깐 22대 기준 광고 자리가 떴다 사라지는 것을 막는다(codex PR2 리뷰 P2).
+  const [termResolved, setTermResolved] = useState(false);
 
   const currentMemberTerm = memberTerms.find((mt) => mt.termId === termId);
   const allTermIds = memberTerms.map((mt) => mt.termId);
@@ -79,8 +82,10 @@ export default function MemberDetailInner({
     <Suspense fallback={null}>
       <SearchParamsBridge
         onParams={(term, tab) => {
-          if (term !== null && !Number.isNaN(term)) setTermId(term);
+          // term이 빠진 URL로 되돌아오면 기본값 22로 복귀시킨다(이전 선택이 남지 않도록).
+          setTermId(term !== null && !Number.isNaN(term) ? term : 22);
           if (tab) setActiveTab(tab);
+          setTermResolved(true);
         }}
       />
     </Suspense>
@@ -151,7 +156,7 @@ export default function MemberDetailInner({
 
       {/* 광고 — 활동 요약(편집·집계 콘텐츠) 뒤, 최근 대표발의 앞.
           22대에서 서버 조회가 성공하고 활동 기록이 있는 의원만 (과거 대수 전환 시 제외) */}
-      {termId === 22 && adSlot}
+      {termResolved && termId === 22 && adSlot}
 
       <Suspense fallback={null}>
         <MemberRecentBills memberId={id} memberName={member.name} termId={termId} />

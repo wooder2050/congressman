@@ -76,20 +76,37 @@ export default function AdSlot({
     return () => io.disconnect();
   }, [config?.slot, mounted]);
 
-  // 2) 마운트된 <ins>에 1회만 초기화 — StrictMode 이중 실행·재방문 중복 push 방지
+  // 2) 마운트된 <ins>에 1회만 초기화 — StrictMode 이중 실행·재방문 중복 push 방지.
+  //    폭 0(숨김·미연결)에서는 요청하지 않고, 폭이 생기면 재시도한다(availableWidth=0 오류 방지).
   useEffect(() => {
     if (!mounted || pushed.current) return;
     const node = insRef.current;
     if (!node) return;
-    if (node.getAttribute("data-adsbygoogle-status")) return;
-    // 폭 0(숨김·미연결)에서는 요청하지 않는다 — availableWidth=0 오류 방지
-    if (node.getBoundingClientRect().width === 0) return;
-    try {
-      (window.adsbygoogle = window.adsbygoogle || []).push({});
-      pushed.current = true;
-    } catch {
-      // 차단기·로더 오류 환경 — 광고 없이 조용히 지나간다
-    }
+
+    const tryPush = () => {
+      if (pushed.current) return true;
+      if (node.getAttribute("data-adsbygoogle-status")) {
+        pushed.current = true;
+        return true;
+      }
+      if (node.getBoundingClientRect().width === 0) return false;
+      try {
+        (window.adsbygoogle = window.adsbygoogle || []).push({});
+        pushed.current = true;
+      } catch {
+        // 차단기·로더 오류 환경 — 광고 없이 조용히 지나간다. 재시도하지 않는다.
+        pushed.current = true;
+      }
+      return true;
+    };
+
+    if (tryPush()) return;
+    if (typeof ResizeObserver === "undefined") return;
+    const ro = new ResizeObserver(() => {
+      if (tryPush()) ro.disconnect();
+    });
+    ro.observe(node);
+    return () => ro.disconnect();
   }, [mounted]);
 
   // 3) 광고 자리 노출 이벤트 — 50% 이상이 1초 연속 보일 때 1회
@@ -99,6 +116,10 @@ export default function AdSlot({
     if (!node || typeof IntersectionObserver === "undefined") return;
 
     let timer: ReturnType<typeof setTimeout> | null = null;
+    // 한 콜백에 진입·이탈이 함께 실려 올 수 있으므로 마지막(가장 최근) 기록만 현재 상태로 본다.
+    // some()으로 합치면 이미 화면을 벗어난 자리도 노출로 기록될 수 있다.
+    let lastVisible = false;
+
     const clear = () => {
       if (timer) {
         clearTimeout(timer);
@@ -106,39 +127,52 @@ export default function AdSlot({
       }
     };
 
-    const io = new IntersectionObserver(
-      (entries) => {
-        if (impressionFired.current) return;
-        const visible = entries.some(
-          (e) => e.isIntersecting && e.intersectionRatio >= VIEWABLE_RATIO,
-        );
-        if (visible && document.visibilityState === "visible") {
-          if (!timer) {
-            timer = setTimeout(() => {
-              impressionFired.current = true;
-              trackEvent("component_impression", { component: "ad_placement", placement });
-              io.disconnect();
-              clear();
-            }, VIEWABLE_MS);
-          }
-        } else {
-          clear();
-        }
-      },
-      { threshold: [VIEWABLE_RATIO] },
-    );
-    io.observe(node);
-
-    const onVisibility = () => {
-      if (document.visibilityState !== "visible") clear();
-    };
-    document.addEventListener("visibilitychange", onVisibility);
-
-    return () => {
+    const stop = () => {
       io.disconnect();
       clear();
       document.removeEventListener("visibilitychange", onVisibility);
     };
+
+    // 조건이 유지되는 동안에만 새 연속 1초를 측정한다. 탭이 숨겨지면 취소하고,
+    // 돌아왔을 때 여전히 보이면 다시 처음부터 잰다.
+    const sync = () => {
+      if (impressionFired.current) return;
+      const canCount = lastVisible && document.visibilityState === "visible";
+      if (!canCount) {
+        clear();
+        return;
+      }
+      if (timer) return;
+      timer = setTimeout(() => {
+        timer = null;
+        // 타이머가 끝난 시점에도 조건이 유지되는지 재확인한다.
+        if (impressionFired.current) return;
+        if (!lastVisible || document.visibilityState !== "visible") return;
+        impressionFired.current = true;
+        trackEvent("component_impression", { component: "ad_placement", placement });
+        stop();
+      }, VIEWABLE_MS);
+    };
+
+    const io = new IntersectionObserver(
+      (entries) => {
+        if (impressionFired.current) return;
+        const latest = entries[entries.length - 1];
+        if (!latest) return;
+        lastVisible = latest.isIntersecting && latest.intersectionRatio >= VIEWABLE_RATIO;
+        sync();
+      },
+      { threshold: [VIEWABLE_RATIO] },
+    );
+
+    function onVisibility() {
+      sync();
+    }
+
+    io.observe(node);
+    document.addEventListener("visibilitychange", onVisibility);
+
+    return stop;
   }, [config?.slot, placement]);
 
   // 단위 ID가 설정되지 않은 배치는 렌더링하지 않는다(기존 ID로 대체하지 않음)
