@@ -27,6 +27,8 @@ interface MemberDetailInnerProps {
   memberTerms: MemberTerm[];
   /** 22대 활동 요약 — 페이지 서버 컴포넌트가 SSR한 노드 (네이버 등 비JS 크롤러 대응) */
   summarySlot?: React.ReactNode;
+  /** 광고 — 서버가 활동 데이터 충실도를 판정해 넘긴다. 없으면 렌더하지 않는다(fail-closed) */
+  adSlot?: React.ReactNode;
 }
 
 /**
@@ -65,6 +67,7 @@ export default function MemberDetailInner({
   member,
   memberTerms,
   summarySlot,
+  adSlot,
 }: MemberDetailInnerProps) {
   const [termId, setTermId] = useState(22);
   const [activeTab, setActiveTab] = useState("attendance");
@@ -145,6 +148,10 @@ export default function MemberDetailInner({
           />
         </Suspense>
       )}
+
+      {/* 광고 — 활동 요약(편집·집계 콘텐츠) 뒤, 최근 대표발의 앞.
+          22대에서 서버 조회가 성공하고 활동 기록이 있는 의원만 (과거 대수 전환 시 제외) */}
+      {termId === 22 && adSlot}
 
       <Suspense fallback={null}>
         <MemberRecentBills memberId={id} memberName={member.name} termId={termId} />
