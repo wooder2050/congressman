@@ -9,6 +9,11 @@ import Pagination from "@/components/ui/pagination";
 import { formatDate } from "@/lib/utils";
 import type { Schedule } from "@/types";
 import { ScheduleListSkeleton } from "@/components/skeletons/ScheduleSkeleton";
+import AdSlot from "@/components/ads/AdSlot";
+
+/** 광고를 이 순번 뒤에 넣는다(0-based). 뒤에 최소 3건이 남을 때만 */
+const AD_AFTER_INDEX = 3;
+const AD_MIN_REMAINING = 3;
 
 interface ScheduleListInnerProps {
   termId: number;
@@ -156,18 +161,31 @@ export default function ScheduleListInner({ termId }: ScheduleListInnerProps) {
       ) : (
         <>
           <div className="space-y-6">
-            {grouped.map(([date, items]) => (
-              <div key={date}>
-                <h3 className="mb-2 text-sm font-bold text-(--color-text-secondary)">
-                  {formatDate(date)}
-                </h3>
-                <div className="space-y-3">
-                  {items.map((schedule) => (
-                    <ScheduleItem key={schedule.id} schedule={schedule} />
-                  ))}
+            {(() => {
+              // 날짜 그룹을 가로질러 누적 순번을 세고, 4번째 일정 뒤에 광고 1개를 넣는다.
+              // 필터 아래·총 건수 아래·페이지네이션 옆은 피한다(조작 요소와 붙지 않도록).
+              let seen = 0;
+              const canShowAd = schedules.length >= AD_AFTER_INDEX + 1 + AD_MIN_REMAINING;
+              return grouped.map(([date, items]) => (
+                <div key={date}>
+                  <h3 className="mb-2 text-sm font-bold text-(--color-text-secondary)">
+                    {formatDate(date)}
+                  </h3>
+                  <div className="space-y-3">
+                    {items.map((schedule) => {
+                      const showAdAfter = canShowAd && seen === AD_AFTER_INDEX;
+                      seen += 1;
+                      return (
+                        <div key={schedule.id}>
+                          <ScheduleItem schedule={schedule} />
+                          {showAdAfter && <AdSlot placement="schedule-list" className="mt-3" />}
+                        </div>
+                      );
+                    })}
+                  </div>
                 </div>
-              </div>
-            ))}
+              ));
+            })()}
           </div>
           <Pagination currentPage={page} totalPages={totalPages} onPageChange={setPage} />
         </>
