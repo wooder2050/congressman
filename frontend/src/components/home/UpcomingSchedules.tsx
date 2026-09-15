@@ -27,28 +27,9 @@ export default function UpcomingSchedules({ termId }: UpcomingSchedulesProps) {
       </div>
 
       {schedules.length === 0 ? (
-        // TODO(2026-06-07): 후반기 원 구성(상임위원장 배분)이 타결되고 daily sync로 국회
-        // 일정이 다시 채워지면 이 임시 안내 카드를 제거하고 원래 빈 메시지로 되돌릴 것.
-        // 현재 의장단은 선출됐으나(6/5) 원 구성 협상 중이라 국회 API에 후반기 일정 미등록 상태.
-        <div className="rounded-xl border border-(--color-primary) bg-blue-50 p-4 sm:p-5 dark:bg-blue-950/30">
-          <div className="flex flex-wrap items-center gap-2">
-            <span className="rounded-md bg-(--color-primary) px-2 py-0.5 text-xs font-bold text-white">
-              원 구성 협상 중
-            </span>
-            <span className="text-xs font-semibold text-(--color-text-secondary)">
-              22대 후반기 국회 출범(6/5) · 상임위 구성 대기
-            </span>
-          </div>
-          <h3 className="mt-2.5 text-base font-bold text-(--color-text-primary) sm:text-lg">
-            🏛️ 후반기 원 구성 협상 진행 중 — 상임위 구성 후 일정 재개
-          </h3>
-          <p className="mt-1.5 text-sm leading-relaxed text-(--color-text-secondary)">
-            6월 5일 조정식 신임 국회의장(민주, 6선)과 부의장 남인순(민주, 4선)·박덕흠(국힘, 4선)이
-            선출되며 22대 후반기 국회가 출범했습니다. 현재 18개 상임위원장 배분을 둘러싼 원 구성
-            협상이 진행 중이며, 법제사법위원장 등 쟁점이 정리돼 상임위가 구성되면 본회의·위원회
-            일정이 등록되는 대로 자동으로 표시됩니다.
-          </p>
-        </div>
+        <p className="flex min-h-30 items-center justify-center text-center text-sm text-(--color-text-tertiary)">
+          예정된 일정이 없습니다.
+        </p>
       ) : (
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
           {schedules.map((schedule) => (
