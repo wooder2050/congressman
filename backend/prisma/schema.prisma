@@ -138,6 +138,7 @@ model Bill {
   topic                String? // 주제 카테고리
   pdfBookId            String? // 의안원문 PDF bookId
   detailLink           String? // 의안정보시스템 상세 URL
+  summaryLastTriedAt   DateTime? // 제안이유 크롤링을 마지막으로 시도한 시각 (재시도 간격 판단용)
 
   term           Term                @relation(fields: [termId], references: [id])
   proposers      BillProposer[]
