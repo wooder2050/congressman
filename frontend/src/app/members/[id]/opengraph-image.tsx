@@ -190,7 +190,9 @@ export default async function OgImage({ params }: { params: Promise<{ id: string
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
-            backgroundColor: photo ? undefined : partyColor,
+            // satori는 스타일 값이 명시적 undefined면 파싱에서 터진다
+            // (Cannot read properties of undefined (reading 'trim')). 키 자체를 빼야 한다.
+            ...(photo ? {} : { backgroundColor: partyColor }),
             flexShrink: 0,
           }}
         >
