@@ -7,75 +7,27 @@ export const alt = "의원 프로필";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
-const SITE_ORIGIN = "https://www.lawmake.kr";
 /**
- * 사진 요청 폭. 카드의 원형 사진은 240px이라 그보다 큰 값을 쓴다.
- * next.config.ts에 imageSizes·deviceSizes를 따로 두지 않아 Next 기본 목록만 허용되는데,
- * 480은 그 목록에 없어 최적화기가 400을 준다(실측). 기본 목록에 있는 384를 쓴다.
+ * assembly.go.kr은 User-Agent가 없는 요청에 400을 준다(실측 2026-09-17).
+ * Referer는 필요 없다 — lib/photo.ts 주석은 이 점이 부정확하다.
  */
-const PHOTO_REQUEST_WIDTH = 384;
+const PHOTO_USER_AGENT =
+  "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36";
+/** 해상도만 알면 되므로 앞부분만 받는다. SOF/IHDR 마커는 보통 이 안에 있다 */
+const PHOTO_HEADER_BYTES = 64 * 1024;
 /**
- * 사진을 받을 때의 다운로드 상한. 384px로 리사이즈된 결과는 보통 10~40KB다.
- * 스트림을 읽으며 이 값을 넘으면 즉시 끊는다(16MB 원본을 다 받고 버리지 않기 위해).
- */
-const MAX_PHOTO_BYTES = 512 * 1024;
-/**
- * 디코딩을 허용할 픽셀 상한. 384px 리사이즈 결과는 0.5MP 미만이라 넉넉한 값이다.
+ * satori에 넘겨도 되는 픽셀 상한.
  *
- * 국회 사이트 사진에는 10384x14999(155MP, 김현 의원) 같은 것이 섞여 있는데,
- * Next 이미지 최적화기가 이런 초대형 이미지는 리사이즈를 포기하고 원본을 그대로
- * 반환한다. 그 원본을 satori에 넘기면 디코딩에서 터져 OG 라우트 전체가 500이 됐다
- * (2026-09-17 GSC 색인 보고서에서 발견).
+ * 국회 사이트 사진에는 10384x14999(155MP, 김현 의원) 같은 것이 섞여 있는데, 이를 satori가
+ * 디코딩하다 터지면 OG 라우트 전체가 500이 된다(2026-09-17 GSC 색인 보고서에서 발견).
+ * 파일 크기와는 무관하다 — 실측상 16MB·37MP(강선우)는 정상 렌더되고 4.8MB·155MP가 실패했다.
  *
- * 바이트 수만으로는 이 경우를 가릴 수 없다 — 실측상 16MB(강선우, 37MP)는 정상 렌더되고
- * 4.8MB(김현, 155MP)가 터졌다. 압축률 높은 대형 PNG도 작은 파일로 많은 픽셀을 담을 수
- * 있으므로 헤더에서 실제 해상도를 읽어 판정한다.
+ * 67MP(이춘석)까지는 정상 확인됐고 155MP가 실패했으므로 그 사이에서 보수적으로 잡는다.
+ * 22대 현직 299명 중 이 값을 넘는 사람은 김현 의원 1명뿐이다.
  */
-const MAX_PHOTO_PIXELS = 2_000_000;
-const PHOTO_TIMEOUT_MS = 5000;
+const MAX_PHOTO_PIXELS = 80_000_000;
+const PHOTO_TIMEOUT_MS = 4000;
 const FONT_TIMEOUT_MS = 3000;
-
-function toBase64(bytes: Uint8Array): string {
-  let binary = "";
-  // 한 번에 spread하면 인자 수 제한에 걸리므로 나눠서 변환한다
-  for (let i = 0; i < bytes.length; i += 0x8000) {
-    binary += String.fromCharCode(...bytes.subarray(i, i + 0x8000));
-  }
-  return btoa(binary);
-}
-
-/** 응답 본문을 최대 max바이트까지만 읽는다. 넘으면 연결을 끊고 null */
-async function readCapped(res: Response, max: number): Promise<Uint8Array | null> {
-  const declared = Number(res.headers.get("content-length"));
-  // Content-Length는 없을 수도 있으므로 조기 거절용으로만 쓴다
-  if (Number.isFinite(declared) && declared > max) {
-    await res.body?.cancel();
-    return null;
-  }
-  const reader = res.body?.getReader();
-  if (!reader) return null;
-
-  const chunks: Uint8Array[] = [];
-  let total = 0;
-  for (;;) {
-    const { done, value } = await reader.read();
-    if (done) break;
-    total += value.byteLength;
-    if (total > max) {
-      await reader.cancel();
-      return null;
-    }
-    chunks.push(value);
-  }
-
-  const out = new Uint8Array(total);
-  let offset = 0;
-  for (const chunk of chunks) {
-    out.set(chunk, offset);
-    offset += chunk.byteLength;
-  }
-  return out;
-}
 
 const JPEG_SOF_MARKERS = new Set([0xc0, 0xc1, 0xc2, 0xc3, 0xc5, 0xc6, 0xc7, 0xc9, 0xca, 0xcb]);
 
@@ -122,39 +74,35 @@ function imagePixels(bytes: Uint8Array): number | null {
 }
 
 /**
- * 의원 사진을 data URI로 읽어온다. 실패하면 null — 호출부는 사진 없는 카드를 그린다.
+ * 사진을 satori에 넘겨도 되는지 헤더만 읽어 판정한다.
  *
- * satori가 직접 원격 이미지를 가져가게 두지 않는 이유는 두 가지다.
- * 1) assembly.go.kr은 Referer 없는 요청에 400을 준다(lib/photo.ts 참고)
- * 2) 가져오기·디코딩이 실패하면 ImageResponse 스트림에서 터지는데, 생성자 주변
- *    try/catch로는 그 시점의 오류를 잡을 수 없다
+ * 사진 자체는 예전처럼 satori가 원격 URL에서 직접 가져간다. 우리가 미리 받아
+ * data URI로 넘기는 방식을 썼다가 프로덕션에서 모든 사진이 빠지는 회귀가 있었다
+ * (2026-09-17). 원격 로드는 299명 중 298명에게 이미 검증된 경로이므로 건드리지 않고,
+ * 터지는 것으로 확인된 초대형 사진만 제외한다.
+ *
+ * 판정에 실패하면 true — 기존 동작을 유지한다(fail-open). 잘못 제외해 전원의 사진을
+ * 잃는 쪽이, 드물게 렌더가 실패하는 쪽보다 나쁘다. 렌더 실패는 호출부에서 사진 없는
+ * 카드로 재시도해 500을 막는다.
  */
-async function loadPhotoDataUri(photoUrl: string | undefined): Promise<string | null> {
-  if (!photoUrl) return null;
-  const optimized = `${SITE_ORIGIN}/_next/image?url=${encodeURIComponent(photoUrl)}&w=${PHOTO_REQUEST_WIDTH}&q=75`;
+async function isPhotoRenderable(photoUrl: string | undefined): Promise<boolean> {
+  if (!photoUrl) return false;
   try {
-    const res = await fetch(optimized, {
-      // 헤더를 파싱할 수 있는 형식으로 받는다(webp·avif로 협상되지 않도록)
-      headers: { Accept: "image/jpeg,image/png" },
+    const res = await fetch(photoUrl, {
+      headers: {
+        "User-Agent": PHOTO_USER_AGENT,
+        Range: `bytes=0-${PHOTO_HEADER_BYTES - 1}`,
+      },
       signal: AbortSignal.timeout(PHOTO_TIMEOUT_MS),
     });
-    if (!res.ok) return null;
-    const type = res.headers.get("content-type") ?? "";
-    if (type !== "image/jpeg" && type !== "image/png") {
-      await res.body?.cancel();
-      return null;
-    }
+    // 416(파일이 Range보다 작음) 포함 — 판정 불가는 기존 동작 유지
+    if (!res.ok && res.status !== 206) return true;
 
-    const bytes = await readCapped(res, MAX_PHOTO_BYTES);
-    if (!bytes) return null;
-
-    const pixels = imagePixels(bytes);
-    // 해상도를 못 읽으면 넣지 않는다(fail-closed) — 최적화가 원본을 흘려보낸 경우일 수 있다
-    if (pixels === null || pixels > MAX_PHOTO_PIXELS) return null;
-
-    return `data:${type};base64,${toBase64(bytes)}`;
+    const pixels = imagePixels(new Uint8Array(await res.arrayBuffer()));
+    if (pixels === null) return true;
+    return pixels <= MAX_PHOTO_PIXELS;
   } catch {
-    return null;
+    return true;
   }
 }
 
@@ -203,10 +151,11 @@ export default async function OgImage({ params }: { params: Promise<{ id: string
     }
   }
 
-  const [photoDataUri, fontData] = await Promise.all([
-    loadPhotoDataUri(member.photoUrl),
+  const [photoRenderable, fontData] = await Promise.all([
+    isPhotoRenderable(member.photoUrl),
     loadFont(),
   ]);
+  const photoUrl = photoRenderable ? member.photoUrl : null;
 
   const renderCard = (photo: string | null) => (
     <div
@@ -316,7 +265,7 @@ export default async function OgImage({ params }: { params: Promise<{ id: string
 
   let png: ArrayBuffer;
   try {
-    png = await toPng(photoDataUri);
+    png = await toPng(photoUrl);
   } catch {
     png = await toPng(null);
   }
