@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { notFound } from "next/navigation";
 import Link from "next/link";
 import BreadcrumbJsonLd from "@/components/seo/BreadcrumbJsonLd";
 import JsonLd from "@/components/seo/JsonLd";
@@ -46,6 +47,7 @@ export default async function ByElectionCandidatePage({ params }: Props) {
   const { id, candidateId } = await params;
   const numericId = Number(candidateId);
   const candidate = await getElectionCandidate({ id, candidateId: numericId });
+  if (!candidate) notFound();
 
   return (
     <div className="mx-auto max-w-3xl space-y-6">

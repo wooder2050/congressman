@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { notFound } from "next/navigation";
 import { getMember } from "@/lib/api";
 import CongressWrapper from "@/common/CongressWrapper";
 import AttendanceDetailInner from "@/components/members/AttendanceDetailInner";
@@ -22,6 +23,8 @@ export async function generateMetadata({ params }: AttendancePageProps): Promise
 
 export default async function AttendancePage({ params, searchParams }: AttendancePageProps) {
   const { id } = await params;
+  const member = await getMember(id);
+  if (!member) notFound();
   const { term } = await searchParams;
   const termId = Number(term) || 22;
 
