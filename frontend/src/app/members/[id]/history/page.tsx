@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { notFound } from "next/navigation";
 import { getMember } from "@/lib/api";
 import CongressWrapper from "@/common/CongressWrapper";
 import HistoryInner from "@/components/members/HistoryInner";
@@ -22,6 +23,8 @@ export async function generateMetadata({ params }: HistoryPageProps): Promise<Me
 
 export default async function HistoryPage({ params, searchParams }: HistoryPageProps) {
   const { id } = await params;
+  const member = await getMember(id);
+  if (!member) notFound();
   const { term } = await searchParams;
   const termId = Number(term) || 22;
 

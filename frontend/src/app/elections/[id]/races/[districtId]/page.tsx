@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { notFound } from "next/navigation";
 import Link from "next/link";
 import BreadcrumbJsonLd from "@/components/seo/BreadcrumbJsonLd";
 import CongressWrapper from "@/common/CongressWrapper";
@@ -35,6 +36,8 @@ export async function generateMetadata({ params }: RacePageProps): Promise<Metad
 
 export default async function RacePage({ params }: RacePageProps) {
   const { id, districtId } = await params;
+  const election = await getElection(id);
+  if (!election?.districts.some((d) => d.id === Number(districtId))) notFound();
 
   return (
     <div className="mx-auto max-w-5xl space-y-8">
