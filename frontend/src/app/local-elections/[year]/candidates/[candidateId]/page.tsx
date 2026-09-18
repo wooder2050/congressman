@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { notFound } from "next/navigation";
 import { getLocalElectionCandidate } from "@/lib/api";
 import CongressWrapper from "@/common/CongressWrapper";
 import LocalElectionSkeleton from "@/components/local-elections/LocalElectionSkeleton";
@@ -47,6 +48,7 @@ export default async function LocalCandidateDetailPage({ params }: Props) {
     id: `local-${year}`,
     candidateId: numericId,
   });
+  if (!candidate) notFound();
 
   const breadcrumbItems: { name: string; item: string }[] = [
     { name: "홈", item: "https://www.lawmake.kr" },

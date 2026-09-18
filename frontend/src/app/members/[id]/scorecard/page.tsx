@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { notFound } from "next/navigation";
 import Link from "next/link";
 import { getMember } from "@/lib/api";
 import CongressWrapper from "@/common/CongressWrapper";
@@ -23,6 +24,8 @@ export async function generateMetadata({ params }: ScorecardPageProps): Promise<
 
 export default async function ScorecardPage({ params, searchParams }: ScorecardPageProps) {
   const { id } = await params;
+  const member = await getMember(id);
+  if (!member) notFound();
   const { term } = await searchParams;
   const termId = Number(term) || 22;
 

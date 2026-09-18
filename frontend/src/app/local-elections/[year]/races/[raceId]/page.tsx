@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { notFound } from "next/navigation";
 import { getLocalElectionRace } from "@/lib/api";
 import CongressWrapper from "@/common/CongressWrapper";
 import LocalElectionSkeleton from "@/components/local-elections/LocalElectionSkeleton";
@@ -48,6 +49,9 @@ export default async function RaceDetailPage({ params }: Props) {
     id: `local-${year}`,
     raceId: parseInt(raceId, 10),
   });
+  // 없는 선거구 ID가 200으로 "선거구 정보 없음"을 내면 검색엔진이 그 페이지를 색인한다
+  // (네이버 서치어드바이저 진단 2026-09-16: /races/1·9·13·15 등 11건). 404를 돌려준다.
+  if (!race) notFound();
 
   // BreadcrumbList: 홈 → 지방선거 → 시도(있으면) → 선거구
   const breadcrumbItems: { name: string; item: string }[] = [
