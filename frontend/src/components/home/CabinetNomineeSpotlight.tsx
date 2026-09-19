@@ -11,6 +11,10 @@ import { CABINET_2026_08 } from "@/data/cabinet-nominees";
 export default function CabinetNomineeSpotlight() {
   const d = CABINET_2026_08;
   if (!d.showOnHome) return null;
+  // 지명·일정 확정 단계인 후보자가 하나라도 남아 있으면 청문회는 아직 '예정'이다
+  const hearingsPending = d.ministers.some(
+    (m) => m.status === "nominated" || m.status === "hearing_scheduled",
+  );
 
   const memberCount = d.ministers.filter((m) => m.memberId).length;
   // 진행 중이 아닌 후보자(사퇴·지명 철회)는 칩과 요약 문구에 상태를 드러낸다 — 페이지와 동일 기준
@@ -52,8 +56,10 @@ export default function CabinetNomineeSpotlight() {
               : "사퇴"}
           </>
         )}
-        {appointed.length > 0 && <> · 임명 {appointed.length}명</>} · 인사청문회는 9월 14~18일 소관
-        상임위에서 열립니다.
+        {appointed.length > 0 && <> · 임명 {appointed.length}명</>} ·{" "}
+        {hearingsPending
+          ? "인사청문회는 9월 14~18일 소관 상임위에서 열립니다."
+          : "인사청문회는 9월 14~18일 소관 상임위에서 마쳤고, 임명·보고서 채택 결과를 추적합니다."}
       </p>
 
       <ul className="grid grid-cols-2 gap-2 rounded-xl border border-(--color-border-primary) bg-(--color-bg-primary) p-3 sm:grid-cols-3">

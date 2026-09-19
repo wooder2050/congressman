@@ -158,7 +158,8 @@ export default async function CabinetIssuePage() {
                 {m.memberId && <MemberBadge />}
               </p>
               <p className="mt-0.5 text-xs text-(--color-text-tertiary)">
-                {m.currentRole} · 청문 {m.hearingCommittee}(예상)
+                {m.currentRole} · 청문 {m.hearingCommittee}
+                {(m.status === "nominated" || m.status === "hearing_scheduled") && "(예상)"}
               </p>
             </li>
           ))}
@@ -181,7 +182,7 @@ export default async function CabinetIssuePage() {
                   현직
                 </th>
                 <th scope="col" className="px-3 py-2 font-medium">
-                  청문 상임위(예상)
+                  청문 상임위
                 </th>
               </tr>
             </thead>
