@@ -79,7 +79,7 @@ export const CABINET_2026_08 = {
   announcedAt: "2026-08-30",
   announcedAtLabel: "8월 30일",
   publishedAt: "2026-08-30",
-  updatedAt: "2026-09-13",
+  updatedAt: "2026-09-19",
   /** 홈 진입 카드 노출 여부 — 임명·결과 확정 후 false로 내리고 페이지는 아카이브로 유지 */
   showOnHome: true,
   /** 페이지 상단 리드 — 두 문장 */
@@ -97,13 +97,23 @@ export const CABINET_2026_08 = {
       bio: "재정·거시경제 정책 실무를 총괄해 온 정통 경제관료입니다. 1차관에서 부총리로 곧장 올라가는 내부 승진 인선으로, 조직 개편 직후의 재정경제부를 안정적으로 이어받는 데 무게를 둔 선택으로 읽힙니다.",
       incumbent: null,
       hearingCommittee: "재정경제기획위원회",
-      status: "hearing_scheduled",
+      status: "report_adopted",
       statusLog: [
         { date: "2026-08-30", status: "nominated", note: "청와대 브리핑에서 지명 발표" },
         {
           date: "2026-09-02",
           status: "hearing_scheduled",
           note: "인사청문회 9월 15일로 확정(언론 보도 기준)",
+        },
+        {
+          date: "2026-09-15",
+          status: "hearing_completed",
+          note: '재정경제기획위 청문회. 대미투자 "연 200억 달러·총 2,000억 달러 범위", 금투세 "시장 안정 후 검토"',
+        },
+        {
+          date: "2026-09-17",
+          status: "report_adopted",
+          note: '여야 합의로 인사청문경과보고서 채택. 국민의힘 배준영 "우려가 매듭지어지진 않았지만 경제 컨트롤타워 필요"',
         },
       ],
     },
@@ -121,13 +131,23 @@ export const CABINET_2026_08 = {
         note: "현역 의원 · 이임 후 국회 복귀",
       },
       hearingCommittee: "국토교통위원회",
-      status: "hearing_scheduled",
+      status: "hearing_completed",
       statusLog: [
         { date: "2026-08-30", status: "nominated", note: "청와대 브리핑에서 지명 발표" },
         {
           date: "2026-09-02",
           status: "hearing_scheduled",
           note: "인사청문회 9월 16일로 확정(언론 보도 기준)",
+        },
+        {
+          date: "2026-09-16",
+          status: "hearing_completed",
+          note: "국토교통위 청문회. \"공급 속도전 최우선\", 용산공원 부수 공간 주택 검토 · 신도림 아파트 '영끌 매입' 공방",
+        },
+        {
+          date: "2026-09-17",
+          status: "hearing_completed",
+          note: "국민의힘 소속 위원장이 국토교통위 전체회의를 취소해 보고서 채택 보류",
         },
       ],
     },
@@ -145,13 +165,23 @@ export const CABINET_2026_08 = {
         note: "현역 의원 · 이임 후 국회 복귀",
       },
       hearingCommittee: "국방위원회",
-      status: "hearing_scheduled",
+      status: "report_adopted",
       statusLog: [
         { date: "2026-08-30", status: "nominated", note: "청와대 브리핑에서 지명 발표" },
         {
           date: "2026-09-10",
           status: "hearing_scheduled",
           note: "국방위 인사청문계획서 의결 · 청문회 9월 16일(증인 채택은 미합의)",
+        },
+        {
+          date: "2026-09-16",
+          status: "hearing_completed",
+          note: '국방위 청문회. 아들 상가 매입·철거민 특별공급 의혹에 "국민 눈높이에 미치지 못해 송구"',
+        },
+        {
+          date: "2026-09-17",
+          status: "report_adopted",
+          note: "민주당 주도로 보고서 채택, 국민의힘 전체회의 불참",
         },
       ],
     },
@@ -169,7 +199,7 @@ export const CABINET_2026_08 = {
         note: "현역 의원 · 이임 후 국회 복귀",
       },
       hearingCommittee: "법제사법위원회",
-      status: "hearing_scheduled",
+      status: "withdrawn",
       statusLog: [
         { date: "2026-08-30", status: "nominated", note: "청와대 브리핑에서 지명 발표" },
         {
@@ -181,6 +211,21 @@ export const CABINET_2026_08 = {
           date: "2026-09-09",
           status: "hearing_scheduled",
           note: "법사위 인사청문계획서 여야 합의 의결 · 청문회 9월 15일로 확정(야당 증인 44명 요구는 미채택)",
+        },
+        {
+          date: "2026-09-15",
+          status: "hearing_completed",
+          note: '법사위 청문회. 신약 임상승인 청탁 전면 부인 "저는 문과" · 여야 고성 난타전',
+        },
+        {
+          date: "2026-09-17",
+          status: "report_adopted",
+          note: "국민의힘 항의 퇴장 속 민주당 단독으로 보고서 채택",
+        },
+        {
+          date: "2026-09-19",
+          status: "withdrawn",
+          note: '국회 긴급 기자회견에서 자진 사퇴(지명 20일 만). "어제 대통령 기자회견을 보며 결심 굳혀, 정부에 부담 더해선 안 돼". 청와대 "결정 존중". 2기 개각 두 번째 낙마, 의원직은 유지',
         },
       ],
     },
@@ -219,13 +264,23 @@ export const CABINET_2026_08 = {
       bio: "환경 전문 변호사 출신 재선 의원으로 기후·에너지 입법을 주로 다뤄 왔습니다. 한성숙 전 장관의 국무총리 발탁으로 비어 있던 자리를 채우는 인선이며, 중소기업·벤처 정책 경험이 청문회 검증 포인트로 꼽힙니다.",
       incumbent: null,
       hearingCommittee: "산업통상자원중소벤처기업위원회",
-      status: "hearing_scheduled",
+      status: "hearing_completed",
       statusLog: [
         { date: "2026-08-30", status: "nominated", note: "청와대 브리핑에서 지명 발표" },
         {
           date: "2026-09-02",
           status: "hearing_scheduled",
           note: "인사청문회 9월 15일로 확정(언론 보도 기준)",
+        },
+        {
+          date: "2026-09-15",
+          status: "hearing_completed",
+          note: "산업통상자원중소벤처기업위 청문회. 의정활동 용역비·부동산 평가차익 검증, 지역화폐 예산 삭감 반대",
+        },
+        {
+          date: "2026-09-17",
+          status: "hearing_completed",
+          note: "국민의힘 소속 위원장이 산자중기위 전체회의를 취소해 보고서 채택 보류",
         },
       ],
     },
