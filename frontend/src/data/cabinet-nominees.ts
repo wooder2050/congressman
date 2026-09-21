@@ -79,7 +79,7 @@ export const CABINET_2026_08 = {
   announcedAt: "2026-08-30",
   announcedAtLabel: "8월 30일",
   publishedAt: "2026-08-30",
-  updatedAt: "2026-09-19",
+  updatedAt: "2026-09-21",
   /** 홈 진입 카드 노출 여부 — 임명·결과 확정 후 false로 내리고 페이지는 아카이브로 유지 */
   showOnHome: true,
   /** 페이지 상단 리드 — 두 문장 */
@@ -131,7 +131,7 @@ export const CABINET_2026_08 = {
         note: "현역 의원 · 이임 후 국회 복귀",
       },
       hearingCommittee: "국토교통위원회",
-      status: "hearing_completed",
+      status: "report_adopted",
       statusLog: [
         { date: "2026-08-30", status: "nominated", note: "청와대 브리핑에서 지명 발표" },
         {
@@ -148,6 +148,11 @@ export const CABINET_2026_08 = {
           date: "2026-09-17",
           status: "hearing_completed",
           note: "국민의힘 소속 위원장이 국토교통위 전체회의를 취소해 보고서 채택 보류",
+        },
+        {
+          date: "2026-09-21",
+          status: "report_adopted",
+          note: '국토교통위 전체회의에서 여야 이견 없이 인사청문경과보고서 가결. 민주당 적격 의견과 국민의힘 부적격 의견 병기 — 유의동 위원장 "자료 제출이 부실하고 대통령과의 인연을 통한 초고속 승진 인사"(부적격), "국토부 제2차관 경험·높은 이해도와 전문성"(적격)',
         },
       ],
     },
@@ -281,6 +286,11 @@ export const CABINET_2026_08 = {
           date: "2026-09-17",
           status: "hearing_completed",
           note: "국민의힘 소속 위원장이 산자중기위 전체회의를 취소해 보고서 채택 보류",
+        },
+        {
+          date: "2026-09-21",
+          status: "hearing_completed",
+          note: "산자중기위가 국정감사 증인·참고인 채택 이견으로 전체회의를 다시 취소해 보고서 채택 두 번째 불발. 국민의힘은 최태원 SK 회장·이재용 삼성전자 회장·강훈식 대통령 비서실장 등의 출석을 요구, 민주당은 반대. 3,500억 달러 대미투자 정부 보고 일정도 함께 연기",
         },
       ],
     },
