@@ -79,7 +79,7 @@ export const CABINET_2026_08 = {
   announcedAt: "2026-08-30",
   announcedAtLabel: "8월 30일",
   publishedAt: "2026-08-30",
-  updatedAt: "2026-09-21",
+  updatedAt: "2026-09-22",
   /** 홈 진입 카드 노출 여부 — 임명·결과 확정 후 false로 내리고 페이지는 아카이브로 유지 */
   showOnHome: true,
   /** 페이지 상단 리드 — 두 문장 */
@@ -97,7 +97,7 @@ export const CABINET_2026_08 = {
       bio: "재정·거시경제 정책 실무를 총괄해 온 정통 경제관료입니다. 1차관에서 부총리로 곧장 올라가는 내부 승진 인선으로, 조직 개편 직후의 재정경제부를 안정적으로 이어받는 데 무게를 둔 선택으로 읽힙니다.",
       incumbent: null,
       hearingCommittee: "재정경제기획위원회",
-      status: "report_adopted",
+      status: "appointed",
       statusLog: [
         { date: "2026-08-30", status: "nominated", note: "청와대 브리핑에서 지명 발표" },
         {
@@ -115,6 +115,11 @@ export const CABINET_2026_08 = {
           status: "report_adopted",
           note: '여야 합의로 인사청문경과보고서 채택. 국민의힘 배준영 "우려가 매듭지어지진 않았지만 경제 컨트롤타워 필요"',
         },
+        {
+          date: "2026-09-22",
+          status: "appointed",
+          note: "부총리 겸 재정경제부 장관 임명. 이재명 대통령이 유엔총회 참석차 방문한 미국 뉴욕에서 임명안 재가(오전 8시 35분). 8월 30일 지명 23일 만 — 강유정 청와대 수석대변인 발표",
+        },
       ],
     },
     {
@@ -131,7 +136,7 @@ export const CABINET_2026_08 = {
         note: "현역 의원 · 이임 후 국회 복귀",
       },
       hearingCommittee: "국토교통위원회",
-      status: "report_adopted",
+      status: "appointed",
       statusLog: [
         { date: "2026-08-30", status: "nominated", note: "청와대 브리핑에서 지명 발표" },
         {
@@ -154,6 +159,11 @@ export const CABINET_2026_08 = {
           status: "report_adopted",
           note: '국토교통위 전체회의에서 여야 이견 없이 인사청문경과보고서 가결. 민주당 적격 의견과 국민의힘 부적격 의견 병기 — 유의동 위원장 "자료 제출이 부실하고 대통령과의 인연을 통한 초고속 승진 인사"(부적격), "국토부 제2차관 경험·높은 이해도와 전문성"(적격)',
         },
+        {
+          date: "2026-09-22",
+          status: "appointed",
+          note: "국토교통부 장관 임명. 이재명 대통령이 유엔총회 참석차 방문한 미국 뉴욕에서 임명안 재가(오전 8시 35분). 8월 30일 지명 23일 만 — 강유정 청와대 수석대변인 발표 — 국토부 제2차관 발탁 8개월 만의 승진",
+        },
       ],
     },
     {
@@ -170,7 +180,7 @@ export const CABINET_2026_08 = {
         note: "현역 의원 · 이임 후 국회 복귀",
       },
       hearingCommittee: "국방위원회",
-      status: "report_adopted",
+      status: "appointed",
       statusLog: [
         { date: "2026-08-30", status: "nominated", note: "청와대 브리핑에서 지명 발표" },
         {
@@ -187,6 +197,11 @@ export const CABINET_2026_08 = {
           date: "2026-09-17",
           status: "report_adopted",
           note: "민주당 주도로 보고서 채택, 국민의힘 전체회의 불참",
+        },
+        {
+          date: "2026-09-22",
+          status: "appointed",
+          note: "국방부 장관 임명. 이재명 대통령이 유엔총회 참석차 방문한 미국 뉴욕에서 임명안 재가(오전 8시 35분). 8월 30일 지명 23일 만 — 강유정 청와대 수석대변인 발표",
         },
       ],
     },
@@ -269,7 +284,7 @@ export const CABINET_2026_08 = {
       bio: "환경 전문 변호사 출신 재선 의원으로 기후·에너지 입법을 주로 다뤄 왔습니다. 한성숙 전 장관의 국무총리 발탁으로 비어 있던 자리를 채우는 인선이며, 중소기업·벤처 정책 경험이 청문회 검증 포인트로 꼽힙니다.",
       incumbent: null,
       hearingCommittee: "산업통상자원중소벤처기업위원회",
-      status: "hearing_completed",
+      status: "report_adopted",
       statusLog: [
         { date: "2026-08-30", status: "nominated", note: "청와대 브리핑에서 지명 발표" },
         {
@@ -291,6 +306,11 @@ export const CABINET_2026_08 = {
           date: "2026-09-21",
           status: "hearing_completed",
           note: "산자중기위가 국정감사 증인·참고인 채택 이견으로 전체회의를 다시 취소해 보고서 채택 두 번째 불발. 국민의힘은 최태원 SK 회장·이재용 삼성전자 회장·강훈식 대통령 비서실장 등의 출석을 요구, 민주당은 반대. 3,500억 달러 대미투자 정부 보고 일정도 함께 연기",
+        },
+        {
+          date: "2026-09-22",
+          status: "report_adopted",
+          note: '산자중기위가 하루 만에 전체회의를 열어 여야 합의로 인사청문경과보고서 채택(청문요청안 제출 19일 만). 국민의힘은 "용역비 지급, 증여세 미납, 부동산 보유·거주 관련 의문"과 중소기업·소상공인 정책 경험 부족을 지적했으나, 종합의견은 "직무수행에 필요한 기본적 자질과 정책적 역량을 갖춘 것으로 판단"',
         },
       ],
     },
