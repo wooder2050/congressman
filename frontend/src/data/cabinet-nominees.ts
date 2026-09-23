@@ -79,7 +79,7 @@ export const CABINET_2026_08 = {
   announcedAt: "2026-08-30",
   announcedAtLabel: "8월 30일",
   publishedAt: "2026-08-30",
-  updatedAt: "2026-09-22",
+  updatedAt: "2026-09-23",
   /** 홈 진입 카드 노출 여부 — 임명·결과 확정 후 false로 내리고 페이지는 아카이브로 유지 */
   showOnHome: true,
   /** 페이지 상단 리드 — 두 문장 */
@@ -284,7 +284,7 @@ export const CABINET_2026_08 = {
       bio: "환경 전문 변호사 출신 재선 의원으로 기후·에너지 입법을 주로 다뤄 왔습니다. 한성숙 전 장관의 국무총리 발탁으로 비어 있던 자리를 채우는 인선이며, 중소기업·벤처 정책 경험이 청문회 검증 포인트로 꼽힙니다.",
       incumbent: null,
       hearingCommittee: "산업통상자원중소벤처기업위원회",
-      status: "report_adopted",
+      status: "appointed",
       statusLog: [
         { date: "2026-08-30", status: "nominated", note: "청와대 브리핑에서 지명 발표" },
         {
@@ -311,6 +311,11 @@ export const CABINET_2026_08 = {
           date: "2026-09-22",
           status: "report_adopted",
           note: '산자중기위가 하루 만에 전체회의를 열어 여야 합의로 인사청문경과보고서 채택(청문요청안 제출 19일 만). 국민의힘은 "용역비 지급, 증여세 미납, 부동산 보유·거주 관련 의문"과 중소기업·소상공인 정책 경험 부족을 지적했으나, 종합의견은 "직무수행에 필요한 기본적 자질과 정책적 역량을 갖춘 것으로 판단"',
+        },
+        {
+          date: "2026-09-22",
+          status: "appointed",
+          note: "중소벤처기업부 장관 임명. 이재명 대통령이 유엔총회 참석차 방문한 뉴욕에서 보고서 채택 당일 밤 임명안 재가(강유정 청와대 수석대변인 공지) — 현역 의원 겸직",
         },
       ],
     },
