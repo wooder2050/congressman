@@ -15,8 +15,18 @@
 const AD_UNITS = {
   /** 기존 단위(2026-08-15 생성) — 기사·법안·용어·가이드의 본문 쪽 슬롯 */
   articleInline: "9599985939",
-  /** 섹션 사이(홈·주간뉴스 허브·용어 목록·개각·오늘의 국회) — 콘솔 단위 lawmake-section(2026-09-13 생성) */
+  /** 섹션 사이(주간뉴스 허브·용어 목록·개각·오늘의 국회) — 콘솔 단위 lawmake-section(2026-09-13 생성). 홈은 9/23 전용 단위로 분리 */
   section: "1538618342",
+  // 측정 전용 단위(2026-09-23 생성) — 유입이 큰 네 자리의 수익·노출을 보고서에서 따로 보기 위해 분리했다.
+  // 형식은 기존과 같은 반응형 디스플레이라 분리 전후 성과를 그대로 비교할 수 있다.
+  /** 의원 상세 — 콘솔 단위 lawmake-member */
+  member: "7742549131",
+  /** 일정 목록 — 콘솔 단위 lawmake-schedule */
+  schedule: "4852661914",
+  /** 위원회 상세 — 콘솔 단위 lawmake-committee */
+  committee: "1951166409",
+  /** 홈 — 콘솔 단위 lawmake-home */
+  home: "9638084739",
 } as const;
 
 type AdSizing = "content-250";
@@ -27,7 +37,7 @@ interface AdPlacementConfig {
 }
 
 export const AD_PLACEMENTS = {
-  "home-after-picks": { slot: AD_UNITS.section, sizing: "content-250" },
+  "home-after-picks": { slot: AD_UNITS.home, sizing: "content-250" },
   "weekly-hub-picks": { slot: AD_UNITS.section, sizing: "content-250" },
   "glossary-list": { slot: AD_UNITS.section, sizing: "content-250" },
   "cabinet-after-ministries": { slot: AD_UNITS.section, sizing: "content-250" },
@@ -39,9 +49,9 @@ export const AD_PLACEMENTS = {
   "glossary-term-inline": { slot: AD_UNITS.articleInline, sizing: "content-250" },
   "guide-inline": { slot: AD_UNITS.articleInline, sizing: "content-250" },
   // PR 2(2026-09-15) — 검색 유입·조회수 상위 데이터 페이지. 데이터가 충실한 화면에만 렌더한다
-  "member-detail": { slot: AD_UNITS.section, sizing: "content-250" },
-  "committee-detail": { slot: AD_UNITS.section, sizing: "content-250" },
-  "schedule-list": { slot: AD_UNITS.section, sizing: "content-250" },
+  "member-detail": { slot: AD_UNITS.member, sizing: "content-250" },
+  "committee-detail": { slot: AD_UNITS.committee, sizing: "content-250" },
+  "schedule-list": { slot: AD_UNITS.schedule, sizing: "content-250" },
 } as const satisfies Record<string, AdPlacementConfig>;
 
 export type AdPlacementKey = keyof typeof AD_PLACEMENTS;
