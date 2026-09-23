@@ -18,7 +18,8 @@
  * 겸직에서 물러나도 항목을 지우지 말고 endDate만 채운다(이력 보존).
  * member sync가 이를 DB의 cabinetPosition(현재)+cabinetHistory(과거)로 투영한다.
  *
- * 최종 확인: 2026-07-19 (이재명 정부, 위키백과 국무위원 명단 × DB 22대 의원 교차 검증)
+ * 최종 확인: 2026-09-23 (2기 개각 9/22 임명 반영 — 이소영 신규, 안규백·김윤덕 복귀. 정성호는
+ * 후임 김승원 후보자 사퇴로 유임)
  */
 interface CabinetTenure {
   position: string;
@@ -30,13 +31,14 @@ export const CABINET_TENURES: Record<string, CabinetTenure[]> = {
   // ── 현재 겸직 중(endDate=null) ──
   V429892C: [{ position: '법무부 장관', startDate: '2025-07-18', endDate: null }], // 정성호
   M0A1658U: [{ position: '행정안전부 장관', startDate: '2025-07-19', endDate: null }], // 윤호중
-  TST4507I: [{ position: '국방부 장관', startDate: '2025-07-25', endDate: null }], // 안규백
   ARP89147: [{ position: '통일부 장관', startDate: '2025-07-25', endDate: null }], // 정동영
   XSP20229: [{ position: '기후에너지환경부 장관', startDate: '2025-10-01', endDate: null }], // 김성환
-  JZY9937U: [{ position: '국토교통부 장관', startDate: '2025-07-31', endDate: null }], // 김윤덕
   S824682L: [{ position: '기획예산처 장관', startDate: '2026-03-25', endDate: null }], // 박홍근
+  WTR5885Y: [{ position: '중소벤처기업부 장관', startDate: '2026-09-22', endDate: null }], // 이소영(2기 개각)
   // ── 종료된 과거 이력(endDate 있음) ──
   MLH1404S: [{ position: '국무총리', startDate: '2025-07-04', endDate: '2026-06-30' }], // 김민석(제49대 국무총리 후 평의원 복귀)
+  TST4507I: [{ position: '국방부 장관', startDate: '2025-07-25', endDate: '2026-09-21' }], // 안규백(후임 강신철 9/22 임명)
+  JZY9937U: [{ position: '국토교통부 장관', startDate: '2025-07-31', endDate: '2026-09-21' }], // 김윤덕(후임 홍지선 9/22 임명)
 };
 
 /** 현재 겸직(endDate=null) 직책만 매핑. 기존 코드 하위호환 + 랭킹 제외 판정에 사용. */
