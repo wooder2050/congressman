@@ -922,7 +922,10 @@ export const GLOSSARY: Record<string, GlossaryTerm> = {
         note: "국정감사는 매년 국정 전반을 보는 정례 절차, 국정조사는 특정 사안을 요구가 있을 때만 조사하는 절차입니다.",
       },
     ],
-    relatedLinks: [{ label: "위원회 현황", href: "/committees" }],
+    relatedLinks: [
+      { label: "2026 국정감사 일정·쟁점", href: "/issues/audit-2026" },
+      { label: "위원회 현황", href: "/committees" },
+    ],
     sources: [
       {
         label: "국정감사 및 조사에 관한 법률",
