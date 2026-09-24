@@ -50,7 +50,7 @@ export const AUDIT_2026 = {
   path: "/issues/audit-2026",
   title: "2026 국정감사 일정 — 상임위별 감사 기간·피감기관·주요 쟁점",
   description:
-    "2026년 국정감사는 10월 6일부터 27일까지 3주간 열립니다(정보위·성평등가족위는 30일까지). 상임위원회별 감사 일정과 피감기관, 증인 채택 공방과 주요 쟁점을 한곳에 정리했습니다.",
+    "2026년 국정감사는 10월 6일부터 27일까지 3주간 열립니다(정보위·성평등가족위·운영위 대통령비서실 감사는 30일까지). 상임위원회별 감사 일정과 피감기관, 증인 채택 공방과 주요 쟁점을 한곳에 정리했습니다.",
   publishedAt: "2026-09-24",
   updatedAt: "2026-09-24",
   start: "2026-10-06",
@@ -274,6 +274,41 @@ export const AUDIT_2026 = {
       ],
     },
     {
+      name: "국방위원회",
+      short: "국방위",
+      status: "confirmed",
+      period: "10월 7일~26일",
+      days: [
+        { date: "10-13", target: "방위사업청" },
+        { date: "10-26", target: "종합감사" },
+      ],
+      note: "10월 7일 시작. 일반증인 11명·참고인 2명 신청 — 김동관 한화 부회장(KAI 인수 추진 배경, 민주 황명선·개혁 천하람 신청), IBK기업은행장(나라사랑카드 사업자 선정, 국힘 유용원 신청) 등.",
+      sources: [
+        {
+          title: "국회 국방위, 한화 김동관 국감 증인으로 신청 / 한국경제",
+          url: "https://www.hankyung.com/article/202609170946i",
+        },
+      ],
+    },
+    {
+      name: "국회운영위원회",
+      short: "운영위",
+      status: "confirmed",
+      period: "10월 30일(대통령비서실 등)",
+      days: [{ date: "10-30", target: "대통령비서실·국가안보실·대통령경호처" }],
+      note: "9월 16일 계획서 의결. 국민의힘은 김현지·정진상 등 청와대 인사검증 관련 증인을 신청해 채택 갈등이 예상된다.",
+      sources: [
+        {
+          title: "운영위, 다음 달 30일 대통령비서실 등 국정감사…증인 채택 갈등 불가피 / 네이트뉴스",
+          url: "https://m.news.nate.com/view/20260916n29530",
+        },
+        {
+          title: "野, 김승원·김현지부터 김용범까지... 국정감사서 '의혹 총공세' / 한국일보",
+          url: "https://www.hankookilbo.com/news/article/A2026092116060003400",
+        },
+      ],
+    },
+    {
       name: "정무위원회",
       short: "정무위",
       status: "pending",
@@ -287,21 +322,9 @@ export const AUDIT_2026 = {
       ],
     },
     { name: "교육위원회", short: "교육위", status: "pending", days: [], sources: [] },
-    { name: "국방위원회", short: "국방위", status: "pending", days: [], sources: [] },
+
     { name: "문화체육관광위원회", short: "문체위", status: "pending", days: [], sources: [] },
-    {
-      name: "국회운영위원회",
-      short: "운영위",
-      status: "pending",
-      days: [],
-      note: "국민의힘이 김현지·정진상 등 청와대 인사검증 관련 증인을 신청.",
-      sources: [
-        {
-          title: "野, 김승원·김현지부터 김용범까지... 국정감사서 '의혹 총공세' / 한국일보",
-          url: "https://www.hankookilbo.com/news/article/A2026092116060003400",
-        },
-      ],
-    },
+
     {
       name: "정보위원회",
       short: "정보위",
