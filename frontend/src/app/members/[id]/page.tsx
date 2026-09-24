@@ -9,6 +9,7 @@ import {
   getBills,
 } from "@/lib/api";
 import { getElectedLabel } from "@/lib/utils";
+import { isMemberTitleVariant } from "@/lib/member-title-experiment";
 import MemberDetailInner from "@/components/members/MemberDetailInner";
 import MemberActivitySummaryView from "@/components/members/MemberActivitySummaryView";
 import MemberJsonLd from "@/components/seo/MemberJsonLd";
@@ -58,7 +59,10 @@ export async function generateMetadata({ params }: MemberDetailPageProps): Promi
   }
   const statsText = statsSnippets.length > 0 ? ` ${statsSnippets.join(", ")}.` : "";
 
-  const title = `${member.name} 의원 — ${partyName} ${location} · ${electedLabel} | 22대 국회`;
+  // 검색 제목 실험: 절반은 수식어(의정활동·재산·표결)를 제목 앞쪽에 둔다 — lib/member-title-experiment.ts
+  const title = isMemberTitleVariant(id)
+    ? `${member.name} 의원 의정활동·재산·표결 — ${partyName} ${location} · ${electedLabel}`
+    : `${member.name} 의원 — ${partyName} ${location} · ${electedLabel} | 22대 국회`;
   const description = `${partyName} ${member.name} 의원 (${location}, ${electedLabel}).${statsText} 본회의 표결 기록, 재산 신고 내역까지 확인하세요.`;
 
   // 본회의 표결 참여·대표발의 모두 0건이면 thin-content로 판정해 noindex.
