@@ -4,6 +4,7 @@ import { getLocalElectionRace } from "@/lib/api";
 import CongressWrapper from "@/common/CongressWrapper";
 import LocalElectionSkeleton from "@/components/local-elections/LocalElectionSkeleton";
 import RaceDetailInner from "@/components/local-elections/RaceDetailInner";
+import RaceDistrictMembers from "@/components/local-elections/RaceDistrictMembers";
 import JsonLd from "@/components/seo/JsonLd";
 
 export const revalidate = 2592000; // 30d — 개표 종료(6/4) 후 DB 무변경(최종 2026-06-06). 봇 재크롤링마다 재생성돼 ISR Write가 과다해 상향
@@ -87,6 +88,9 @@ export default async function RaceDetailPage({ params }: Props) {
       <CongressWrapper fallback={<LocalElectionSkeleton />}>
         <RaceDetailInner electionId={`local-${year}`} raceId={parseInt(raceId, 10)} />
       </CongressWrapper>
+
+      {/* 선거 아카이브 → 그 지역 국회의원 의정활동으로 이어지는 동선 (서버 렌더, 광고 없음) */}
+      <RaceDistrictMembers race={race} />
     </div>
   );
 }
