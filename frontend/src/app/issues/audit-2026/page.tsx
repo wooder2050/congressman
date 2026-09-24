@@ -145,9 +145,9 @@ export default async function Audit2026Page() {
         <p className="text-base leading-relaxed text-(--color-text-secondary)">
           여야는 8월 25일 정기국회 의사일정에 합의하며 올해 국정감사를{" "}
           <strong className="text-(--color-text-primary)">10월 6일부터 27일까지 3주간</strong>{" "}
-          열기로 했습니다. 정보위원회와 성평등가족위원회는 10월 30일까지 이어집니다. 각 상임위원회가
-          소관 부처·공공기관을 나눠 감사하며, 기관별 실제 감사일은 위원회가 채택한 국정감사계획서를
-          따릅니다.
+          열기로 했습니다. 정보위원회와 성평등가족위원회는 10월 30일까지 이어지고, 운영위원회의
+          대통령비서실 감사도 30일에 열립니다. 각 상임위원회가 소관 부처·공공기관을 나눠 감사하며,
+          기관별 실제 감사일은 위원회가 채택한 국정감사계획서를 따릅니다.
         </p>
         <div className="rounded-xl border border-(--color-border-primary) bg-(--color-bg-secondary) px-4 py-3 text-xs leading-relaxed text-(--color-text-secondary)">
           <span className="font-semibold text-(--color-text-primary)">편집 원칙 </span>
@@ -170,7 +170,7 @@ export default async function Audit2026Page() {
           상임위원회별 감사 일정
         </h2>
         <p className="text-sm text-(--color-text-secondary)">
-          17개 상임위원회 중 {confirmed.length}곳의 계획서를 확인했습니다. 나머지는 확인되는 대로
+          17개 상임위원회 중 {confirmed.length}곳의 일정을 확인했습니다. 나머지는 확인되는 대로
           추가합니다.
         </p>
         <div className="grid gap-4">
