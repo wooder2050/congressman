@@ -7,14 +7,15 @@ import {
   getAttendance,
   getMemberVotes,
   getBills,
+  getAssets,
 } from "@/lib/api";
 import { getElectedLabel } from "@/lib/utils";
 import { isMemberTitleVariant } from "@/lib/member-title-experiment";
 import MemberDetailInner from "@/components/members/MemberDetailInner";
 import MemberActivitySummaryView from "@/components/members/MemberActivitySummaryView";
+import MemberGlanceCard from "@/components/members/MemberGlanceCard";
 import MemberJsonLd from "@/components/seo/MemberJsonLd";
 import AdSlot from "@/components/ads/AdSlot";
-import AuditCommitteeLinks from "@/components/issues/AuditCommitteeLinks";
 import BreadcrumbJsonLd from "@/components/seo/BreadcrumbJsonLd";
 
 // ISR 24h — daily sync 주기와 일치. searchParams(term/tab)는 MemberDetailInner가
@@ -109,18 +110,31 @@ export default async function MemberDetailPage({ params }: MemberDetailPageProps
 
   const summarySlot =
     term22 && summaryData && summaryData[0] ? (
-      <>
-        {/* 광고(활동 요약 뒤)와 떨어뜨리려고 요약 앞에 둔다 */}
-        <AuditCommitteeLinks committees={term22.committees} heading="소속 상임위 2026 국정감사" />
-        <MemberActivitySummaryView
-          memberName={member.name}
-          memberTerm={term22}
-          attendance={summaryData[0]}
-          voteSummary={summaryData[1].summary}
-          billTotal={summaryData[2].total}
-        />
-      </>
+      <MemberActivitySummaryView
+        memberName={member.name}
+        memberTerm={term22}
+        attendance={summaryData[0]}
+        voteSummary={summaryData[1].summary}
+        billTotal={summaryData[2].total}
+      />
     ) : null;
+
+  // 첫 화면 "한눈에 보기" — 재산·평가 조회가 실패해도 카드는 뜬다(타일별로 "자료 없음")
+  const [assets, scorecard] = term22
+    ? await Promise.all([
+        getAssets(id).catch(() => null),
+        getMemberScorecard({ memberId: id, termId: 22 }).catch(() => null),
+      ])
+    : [null, null];
+  const glanceSlot = term22 ? (
+    <MemberGlanceCard
+      memberId={id}
+      memberName={member.name}
+      memberTerm={term22}
+      assets={assets}
+      scorecard={scorecard}
+    />
+  ) : null;
 
   // 광고: 22대 서버 조회가 성공하고 실제 활동 기록이 있는 의원만 (generateMetadata의
   // noindex 판정과 같은 취지 — 표결·대표발의가 모두 0인 페이지는 광고 표면에서 제외).
@@ -143,6 +157,7 @@ export default async function MemberDetailPage({ params }: MemberDetailPageProps
         id={id}
         member={member}
         memberTerms={memberTerms}
+        glanceSlot={glanceSlot}
         summarySlot={summarySlot}
         adSlot={adSlot}
       />
