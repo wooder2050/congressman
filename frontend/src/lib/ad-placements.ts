@@ -42,6 +42,8 @@ export const AD_PLACEMENTS = {
   "glossary-list": { slot: AD_UNITS.section, sizing: "content-250" },
   "cabinet-after-ministries": { slot: AD_UNITS.section, sizing: "content-250" },
   "today-feed": { slot: AD_UNITS.section, sizing: "content-250" },
+  // 2026 국정감사 이슈 페이지(편집) — 상임위별 일정 뒤
+  "audit-hub": { slot: AD_UNITS.section, sizing: "content-250" },
   "article-inline": { slot: AD_UNITS.articleInline, sizing: "content-250" },
   "article-bottom": { slot: AD_UNITS.articleInline, sizing: "content-250" },
   "bill-after-discussion": { slot: AD_UNITS.articleInline, sizing: "content-250" },
