@@ -11,7 +11,7 @@ import {
 import { getAllWeeklyArticles } from "@/data/weekly";
 import { getAllTermSlugs } from "@/lib/glossary";
 import { CURATION_MODE } from "@/lib/curation-mode";
-import { AUDIT_2026 } from "@/data/audit-2026";
+import { AUDIT_2026, auditCommitteePath, isAuditCommitteePageReady } from "@/data/audit-2026";
 import { CABINET_2026_08 } from "@/data/cabinet-nominees";
 import { BASE, BILLS_PER_SITEMAP, xmlResponse, urlEntry, urlset } from "../route";
 
@@ -65,6 +65,13 @@ async function buildSitemap(id: number) {
         changefreq: "daily",
         priority: 0.8,
       }),
+      ...AUDIT_2026.committees.filter(isAuditCommitteePageReady).map((c) =>
+        urlEntry(`${BASE}${auditCommitteePath(c.name)}`, {
+          lastmod: AUDIT_2026.updatedAt,
+          changefreq: "daily",
+          priority: 0.7,
+        }),
+      ),
     ];
 
     // 주간뉴스 + 기사 상세 페이지
