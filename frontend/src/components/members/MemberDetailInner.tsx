@@ -26,6 +26,8 @@ interface MemberDetailInnerProps {
   member: Member;
   memberTerms: MemberTerm[];
   /** 22대 활동 요약 — 페이지 서버 컴포넌트가 SSR한 노드 (네이버 등 비JS 크롤러 대응) */
+  /** 22대 첫 화면 "한눈에 보기" 카드(서버 렌더) */
+  glanceSlot?: React.ReactNode;
   summarySlot?: React.ReactNode;
   /** 광고 — 서버가 활동 데이터 충실도를 판정해 넘긴다. 없으면 렌더하지 않는다(fail-closed) */
   adSlot?: React.ReactNode;
@@ -66,6 +68,7 @@ export default function MemberDetailInner({
   id,
   member,
   memberTerms,
+  glanceSlot,
   summarySlot,
   adSlot,
 }: MemberDetailInnerProps) {
@@ -138,6 +141,8 @@ export default function MemberDetailInner({
 
       <MemberProfile member={member} memberTerm={currentMemberTerm} allTermIds={allTermIds} />
 
+      {termId === 22 && glanceSlot}
+
       <MemberRecentActivityCard memberId={id} termId={termId} />
 
       {/* 22대는 서버가 SSR한 요약을 그대로 사용 (네이버 크롤러가 본문을 읽도록),
@@ -169,7 +174,8 @@ export default function MemberDetailInner({
         partyColor={currentMemberTerm.party.color}
       />
 
-      {/* 탭 헤더 — 항상 즉시 렌더 */}
+      {/* 탭 헤더 — 항상 즉시 렌더. "한눈에 보기" 타일이 ?tab=…#member-tabs로 이곳에 연결된다 */}
+      <div id="member-tabs" className="scroll-mt-20" />
       <Tabs value={activeTab} onValueChange={setActiveTab}>
         <TabsList variant="line" className="w-full">
           {TAB_OPTIONS.map((tab) => (

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import CongressWrapper from "@/common/CongressWrapper";
 import CommitteeDetailInner from "@/components/committees/CommitteeDetailInner";
+import AuditCommitteeLinks from "@/components/issues/AuditCommitteeLinks";
 import RelatedEditorial from "@/components/ui/related-editorial";
 import { committeeAliasLabel } from "@/lib/committee-aliases";
 
@@ -42,6 +43,7 @@ export default async function CommitteeDetailPage({
 
   return (
     <div className="mx-auto max-w-7xl space-y-4">
+      <AuditCommitteeLinks committees={[committeeName]} />
       <CongressWrapper key={`${committeeName}-${termId}`} fallback={<CommitteeDetailSkeleton />}>
         <CommitteeDetailInner name={committeeName} termId={termId} />
       </CongressWrapper>

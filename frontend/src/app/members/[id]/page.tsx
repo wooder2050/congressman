@@ -7,11 +7,13 @@ import {
   getAttendance,
   getMemberVotes,
   getBills,
+  getAssets,
 } from "@/lib/api";
 import { getElectedLabel } from "@/lib/utils";
 import { isMemberTitleVariant } from "@/lib/member-title-experiment";
 import MemberDetailInner from "@/components/members/MemberDetailInner";
 import MemberActivitySummaryView from "@/components/members/MemberActivitySummaryView";
+import MemberGlanceCard from "@/components/members/MemberGlanceCard";
 import MemberJsonLd from "@/components/seo/MemberJsonLd";
 import AdSlot from "@/components/ads/AdSlot";
 import BreadcrumbJsonLd from "@/components/seo/BreadcrumbJsonLd";
@@ -117,6 +119,23 @@ export default async function MemberDetailPage({ params }: MemberDetailPageProps
       />
     ) : null;
 
+  // 첫 화면 "한눈에 보기" — 재산·평가 조회가 실패해도 카드는 뜬다(타일별로 "자료 없음")
+  const [assets, scorecard] = term22
+    ? await Promise.all([
+        getAssets(id).catch(() => null),
+        getMemberScorecard({ memberId: id, termId: 22 }).catch(() => null),
+      ])
+    : [null, null];
+  const glanceSlot = term22 ? (
+    <MemberGlanceCard
+      memberId={id}
+      memberName={member.name}
+      memberTerm={term22}
+      assets={assets}
+      scorecard={scorecard}
+    />
+  ) : null;
+
   // 광고: 22대 서버 조회가 성공하고 실제 활동 기록이 있는 의원만 (generateMetadata의
   // noindex 판정과 같은 취지 — 표결·대표발의가 모두 0인 페이지는 광고 표면에서 제외).
   const billTotal = summaryData?.[2]?.total ?? 0;
@@ -138,6 +157,7 @@ export default async function MemberDetailPage({ params }: MemberDetailPageProps
         id={id}
         member={member}
         memberTerms={memberTerms}
+        glanceSlot={glanceSlot}
         summarySlot={summarySlot}
         adSlot={adSlot}
       />

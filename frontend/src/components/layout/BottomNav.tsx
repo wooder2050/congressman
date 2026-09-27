@@ -154,6 +154,23 @@ const CommitteesIcon = () => (
     <path d="M16 3h-8l-2 4h12z" />
   </svg>
 );
+const AuditIcon = () => (
+  <svg
+    width="24"
+    height="24"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
+    <circle cx="11" cy="11" r="7" />
+    <line x1="21" y1="21" x2="16.65" y2="16.65" />
+    <line x1="8" y1="11" x2="14" y2="11" />
+  </svg>
+);
+
 const GuideIcon = () => (
   <svg
     width="24"
@@ -246,6 +263,8 @@ const ElectionIcon = () => (
 
 /* ── 더보기 메뉴 항목 ── */
 const moreItems = [
+  // 시즌 진입점 — 국감 기간엔 국정감사 허브, 이후엔 그 시기 허브로 교체한다
+  { href: "/issues/audit-2026", label: "국감", icon: <AuditIcon /> },
   { href: "/today", label: "오늘", icon: <TodayIcon /> },
   { href: "/local-elections/2026", label: "지방선거", icon: <ElectionIcon /> },
   { href: "/my-district", label: "내 지역구", icon: <DistrictIcon /> },

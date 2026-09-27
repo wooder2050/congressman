@@ -1,4 +1,4 @@
-import { CURATION_MODE } from "@/lib/curation-mode";
+import { BILL_INDEX_CURATED, CURATION_MODE } from "@/lib/curation-mode";
 import type { BillDetail } from "@/types";
 
 /**
@@ -14,16 +14,14 @@ import type { BillDetail } from "@/types";
  * - plenaryDate 병행 인정: 법사위 소관 법안은 체계자구심사가 따로 없어 lawResult가 구조적으로
  *   NULL이라 이것만 요구하면 부당 배제된다(v3.2).
  *
- * 큐레이션 모드(AdSense 승인 전략, 2026-09-27까지 유지)에는 한 단계 더 좁혀 회의록 발언 인용과
- * 편집자 해설이 붙은 법안만 색인·광고한다. sitemap(curated-ids)과 동일 기준이다.
- *
- * 광고는 색인과 같은 판정을 쓴다(fail-closed) — 저가치 페이지를 광고 표면에서 확실히 제외하기 위해
- * 두 곳에서 조건을 따로 적지 않고 이 함수 하나를 공유한다.
+ * 2026-09-27 단계적 해제: 색인은 위 기준(BILL_INDEX_CURATED=false), 광고는 큐레이션 모드가 켜져 있는 동안
+ * 회의록 발언 인용·편집자 해설이 붙은 법안만(isBillAdEligible). 광고는 색인 기준 안에서만 허용한다(fail-closed).
  */
-export function isBillIndexable(bill: BillDetail): boolean {
-  if (CURATION_MODE) {
-    return !!bill.discussion && bill.discussion.quotes.length > 0;
-  }
+function hasCuratedDiscussion(bill: BillDetail): boolean {
+  return !!bill.discussion && bill.discussion.quotes.length > 0;
+}
+
+function meetsIndexBaseline(bill: BillDetail): boolean {
   return (
     !!bill.simpleSummary &&
     !!bill.hasVote &&
@@ -31,5 +29,15 @@ export function isBillIndexable(bill: BillDetail): boolean {
   );
 }
 
-/** 광고 허용 여부 — 색인 판정과 동일. 의미를 호출부에서 구분해 읽도록 이름만 분리한다. */
-export const isBillAdEligible = isBillIndexable;
+export function isBillIndexable(bill: BillDetail): boolean {
+  return BILL_INDEX_CURATED ? hasCuratedDiscussion(bill) : meetsIndexBaseline(bill);
+}
+
+/**
+ * 광고 허용 여부 — 2026-09-27부터 색인과 분리. 큐레이션 모드(환경변수)에서는 회의록 인용 법안만,
+ * 해제되면 색인 기준과 같다. 광고는 색인보다 넓어지지 않는다(색인 기준도 함께 요구).
+ */
+export function isBillAdEligible(bill: BillDetail): boolean {
+  if (!isBillIndexable(bill)) return false;
+  return CURATION_MODE ? hasCuratedDiscussion(bill) : true;
+}
