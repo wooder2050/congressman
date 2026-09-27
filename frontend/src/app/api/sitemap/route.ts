@@ -1,5 +1,5 @@
 import { getIndexableBillIds, getCuratedBillIds, getVoteIds } from "@/lib/api";
-import { CURATION_MODE } from "@/lib/curation-mode";
+import { BILL_INDEX_CURATED, VOTE_INDEXING } from "@/lib/curation-mode";
 
 export const revalidate = 86400;
 
@@ -47,8 +47,8 @@ async function getSitemapCount() {
   try {
     // 큐레이션 모드: 법안은 편집 검수분만, 표결 sitemap은 제외
     const [billIds, voteIds] = await Promise.all([
-      CURATION_MODE ? getCuratedBillIds() : getIndexableBillIds(),
-      CURATION_MODE ? Promise.resolve([]) : getVoteIds(),
+      BILL_INDEX_CURATED ? getCuratedBillIds() : getIndexableBillIds(),
+      VOTE_INDEXING ? getVoteIds() : Promise.resolve([]),
     ]);
     return {
       billSitemapCount: Math.max(1, Math.ceil(billIds.length / BILLS_PER_SITEMAP)),

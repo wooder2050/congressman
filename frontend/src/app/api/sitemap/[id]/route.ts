@@ -10,7 +10,7 @@ import {
 } from "@/lib/api";
 import { getAllWeeklyArticles } from "@/data/weekly";
 import { getAllTermSlugs } from "@/lib/glossary";
-import { CURATION_MODE } from "@/lib/curation-mode";
+import { BILL_INDEX_CURATED, VOTE_INDEXING } from "@/lib/curation-mode";
 import { AUDIT_2026, auditCommitteePath, isAuditCommitteePageReady } from "@/data/audit-2026";
 import { CABINET_2026_08 } from "@/data/cabinet-nominees";
 import { BASE, BILLS_PER_SITEMAP, xmlResponse, urlEntry, urlset } from "../route";
@@ -225,8 +225,8 @@ async function buildSitemap(id: number) {
     // 큐레이션 모드에서는 법안은 회의록 인용 보유분만, 표결 상세는 통째로 제외한다
     // (자동 집계 성격이라 심사 표면에서 빼는 것이 목적).
     const [billIds, voteIds] = await Promise.all([
-      CURATION_MODE ? getCuratedBillIds() : getIndexableBillIds(),
-      CURATION_MODE ? Promise.resolve([]) : getVoteIds(),
+      BILL_INDEX_CURATED ? getCuratedBillIds() : getIndexableBillIds(),
+      VOTE_INDEXING ? getVoteIds() : Promise.resolve([]),
     ]);
     const billSitemapCount = Math.max(1, Math.ceil(billIds.length / BILLS_PER_SITEMAP));
 
