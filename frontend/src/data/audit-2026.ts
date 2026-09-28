@@ -58,6 +58,11 @@ export interface AuditCommittee {
   days: AuditDay[];
   /** 증인·참고인 등 보충 메모 */
   note?: string;
+  /**
+   * 상임위별 페이지 검색 제목에 넣을 주요 피감기관 — 검색어가 "2026 국정감사 일정 국방부"처럼
+   * 부처명으로 들어온다(9/28 네이버·GSC). 검색에서 쓰는 약칭 위주로 2~3개.
+   */
+  titleAgencies?: string;
   /** 상임위별 페이지(/issues/audit-2026/[위원회명]) 첫 문단 — 이 위원회 감사를 한 단락으로 요약한 편집 해설 */
   summary?: string;
   witnesses?: AuditWitness[];
@@ -98,6 +103,7 @@ export const AUDIT_2026 = {
   committees: [
     {
       name: "국회운영위원회",
+      titleAgencies: "대통령실·국가인권위원회",
       short: "운영위",
       status: "confirmed",
       resolvedOn: "2026-09-16",
@@ -202,6 +208,7 @@ export const AUDIT_2026 = {
     },
     {
       name: "법제사법위원회",
+      titleAgencies: "대법원·법무부·대검찰청",
       short: "법사위",
       status: "confirmed",
       resolvedOn: "2026-09-21",
@@ -483,6 +490,7 @@ export const AUDIT_2026 = {
     },
     {
       name: "재정경제기획위원회",
+      titleAgencies: "재정경제부·국세청·한국은행",
       short: "재경위",
       status: "confirmed",
       resolvedOn: "2026-09-17",
@@ -632,6 +640,7 @@ export const AUDIT_2026 = {
     },
     {
       name: "과학기술정보방송통신위원회",
+      titleAgencies: "과기정통부·방미통위·KBS",
       short: "과방위",
       status: "confirmed",
       resolvedOn: "2026-09-15",
@@ -1099,6 +1108,7 @@ export const AUDIT_2026 = {
     },
     {
       name: "외교통일위원회",
+      titleAgencies: "외교부·통일부",
       short: "외통위",
       status: "confirmed",
       resolvedOn: "2026-09-17",
@@ -1214,6 +1224,7 @@ export const AUDIT_2026 = {
     },
     {
       name: "국방위원회",
+      titleAgencies: "국방부·합참·방사청",
       short: "국방위",
       status: "confirmed",
       resolvedOn: "2026-09-10",
@@ -1403,6 +1414,7 @@ export const AUDIT_2026 = {
     },
     {
       name: "행정안전위원회",
+      titleAgencies: "행안부·경찰청·선관위",
       short: "행안위",
       status: "confirmed",
       resolvedOn: "2026-09-16",
@@ -1494,6 +1506,7 @@ export const AUDIT_2026 = {
     },
     {
       name: "문화체육관광위원회",
+      titleAgencies: "문체부·국가유산청",
       short: "문체위",
       status: "confirmed",
       resolvedOn: "2026-09-16",
@@ -1568,6 +1581,7 @@ export const AUDIT_2026 = {
     },
     {
       name: "농림축산식품해양수산위원회",
+      titleAgencies: "농식품부·해수부·농협",
       short: "농해수위",
       status: "confirmed",
       resolvedOn: "2026-09-17",
@@ -1852,6 +1866,7 @@ export const AUDIT_2026 = {
     },
     {
       name: "산업통상자원중소벤처기업위원회",
+      titleAgencies: "산업부·중기부·한전",
       short: "산자중기위",
       status: "confirmed",
       resolvedOn: "2026-09-22",
