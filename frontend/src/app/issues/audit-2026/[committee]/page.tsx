@@ -44,7 +44,8 @@ function findCommittee(param: string): AuditCommittee | undefined {
 
 function pageTitle(c: AuditCommittee): string {
   const alias = committeeAliasLabel(c.name);
-  return `2026 국정감사 ${c.name}${alias ? `(${alias})` : ""} 일정 — 날짜별 피감기관·증인·쟁점`;
+  const agencies = c.titleAgencies ? `${c.titleAgencies} 등 ` : "날짜별 ";
+  return `2026 국정감사 ${c.name}${alias ? `(${alias})` : ""} 일정 — ${agencies}피감기관·증인·쟁점`;
 }
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
