@@ -5,4 +5,4 @@
 export const AUDIT_AGENCIES_VERIFIED_AT = "2026-09-28";
 
 /** 중복을 뺀 기관 수 */
-export const AUDIT_AGENCY_COUNT = 597;
+export const AUDIT_AGENCY_COUNT = 740;
