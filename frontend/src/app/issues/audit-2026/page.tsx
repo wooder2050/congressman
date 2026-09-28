@@ -2,13 +2,16 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import AdSlot from "@/components/ads/AdSlot";
 import JsonLd from "@/components/seo/JsonLd";
+import AuditAgencySearch from "@/components/issues/AuditAgencySearch";
 import AuditSources from "@/components/issues/AuditSources";
+import AuditTodayBoard from "@/components/issues/AuditTodayBoard";
 import {
   AUDIT_2026,
   auditCommitteePath,
   isAuditCommitteePageReady,
   type AuditCommittee,
 } from "@/data/audit-2026";
+import { AUDIT_AGENCIES_VERIFIED_AT, AUDIT_AGENCY_COUNT } from "@/data/audit-2026-agency-meta";
 import { getUpcomingSchedules } from "@/lib/api";
 import {
   auditDayKey,
@@ -25,8 +28,9 @@ const BASE = "https://www.lawmake.kr";
 const d = AUDIT_2026;
 const CANONICAL = `${BASE}${d.path}`;
 
-// 편집 데이터는 배포로 바뀌고, 진행 상태 배지와 국회 공개 일정만 시간에 따라 달라진다.
-export const revalidate = 3600;
+// 편집 데이터는 배포로 바뀌고, 진행 상태 배지·오늘의 국감 보드·국회 공개 일정이 시간에 따라 달라진다.
+// 오늘 보드의 날짜 경계(자정) 지연을 줄이려고 허브만 15분 — 상임위 상세는 1시간 유지(ISR 비용).
+export const revalidate = 900;
 
 export const metadata: Metadata = {
   title: d.title,
@@ -124,6 +128,21 @@ export default async function Audit2026Page() {
         </div>
         <AuditSources sources={d.periodSources} />
       </header>
+
+      {/* 검색 방문자(피감기관 담당자 추정)가 가장 먼저 찾는 것: 우리 기관 감사일, 오늘·내일 일정 */}
+      <AuditAgencySearch
+        agencyCount={AUDIT_AGENCY_COUNT}
+        pageCommittees={d.committees.filter(isAuditCommitteePageReady).map((c) => c.name)}
+        pendingCommittees={d.committees
+          .filter((c) => c.status !== "confirmed")
+          .map((c) => ({
+            name: c.name,
+            short: c.short,
+            status: c.status as "reported" | "pending",
+          }))}
+        verifiedAt={AUDIT_AGENCIES_VERIFIED_AT}
+      />
+      <AuditTodayBoard now={new Date()} />
 
       <section aria-labelledby="committees-title" className="space-y-4">
         <h2 id="committees-title" className="text-2xl font-bold">

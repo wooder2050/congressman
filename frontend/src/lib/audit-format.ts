@@ -53,3 +53,19 @@ export function auditAgendaText(agenda: string | null | undefined, fallback: str
     .filter((l) => l.includes("국정감사"));
   return lines.length > 0 ? lines.join(" · ") : fallback;
 }
+
+/** 한국 시간(KST) 기준 "YYYY-MM-DD" — 서버 시간대(UTC)와 무관하게 계산한다 */
+export function kstDateKey(now: Date, addDays = 0): string {
+  return new Date(now.getTime() + 9 * 3600 * 1000 + addDays * 86400000).toISOString().slice(0, 10);
+}
+
+/** "10-11~10-22" 같은 기간형 일정을 날짜 키 목록으로 펼친다 */
+export function expandAuditDate(date: string): string[] {
+  const [first, last] = date.split("~");
+  if (!last) return [auditDayKey(first)];
+  const out: string[] = [];
+  const start = new Date(`${auditDayKey(first)}T00:00:00Z`).getTime();
+  const end = new Date(`${auditDayKey(last)}T00:00:00Z`).getTime();
+  for (let t = start; t <= end; t += 86400000) out.push(new Date(t).toISOString().slice(0, 10));
+  return out;
+}
