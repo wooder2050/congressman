@@ -13249,4 +13249,82 @@ export const AUDIT_AGENCIES: AuditAgencyRecord[] = [
     note: "그 밖의 종합감사 출석기관은 위원장이 간사와 협의해 정함(계획서)",
     sourceUrl: "https://edu.na.go.kr/cmmit/bbs/BCMT2002/view.do?nttId=3078729&menuNo=2000030",
   },
+  {
+    agency: "국방정보본부",
+    aliases: ["정보본부"],
+    committee: "정보위원회",
+    date: "10-28",
+    time: "10:00",
+    place: "국회 정보위원회 전체회의장(본관 647호)",
+    type: "기관감사",
+    sourceUrl:
+      "https://intelligence.na.go.kr/cmmit/bbs/BCMT2002/view.do?nttId=3078738&menuNo=2000030",
+  },
+  {
+    agency: "정보사령부",
+    aliases: ["국군정보사령부", "정보사"],
+    committee: "정보위원회",
+    date: "10-28",
+    time: "10:00",
+    place: "국회 정보위원회 전체회의장(본관 647호)",
+    type: "기관감사",
+    note: "국방정보본부 감사에 포함",
+    sourceUrl:
+      "https://intelligence.na.go.kr/cmmit/bbs/BCMT2002/view.do?nttId=3078738&menuNo=2000030",
+  },
+  {
+    agency: "777사령부",
+    aliases: ["국군777사령부"],
+    committee: "정보위원회",
+    date: "10-28",
+    time: "10:00",
+    place: "국회 정보위원회 전체회의장(본관 647호)",
+    type: "기관감사",
+    note: "국방정보본부 감사에 포함",
+    sourceUrl:
+      "https://intelligence.na.go.kr/cmmit/bbs/BCMT2002/view.do?nttId=3078738&menuNo=2000030",
+  },
+  {
+    agency: "경찰청",
+    committee: "정보위원회",
+    date: "10-28",
+    time: "14:00",
+    place: "국회 정보위원회 전체회의장(본관 647호)",
+    type: "기관감사",
+    sourceUrl:
+      "https://intelligence.na.go.kr/cmmit/bbs/BCMT2002/view.do?nttId=3078738&menuNo=2000030",
+  },
+  {
+    agency: "국가정보원",
+    aliases: ["국정원"],
+    committee: "정보위원회",
+    date: "10-29",
+    time: "10:00",
+    place: "국가정보원 국정감사장",
+    type: "기관감사",
+    sourceUrl:
+      "https://intelligence.na.go.kr/cmmit/bbs/BCMT2002/view.do?nttId=3078738&menuNo=2000030",
+  },
+  {
+    agency: "국방방첩본부",
+    aliases: ["방첩본부"],
+    committee: "정보위원회",
+    date: "10-30",
+    time: "10:00",
+    place: "국방방첩본부 국정감사장",
+    type: "기관감사",
+    sourceUrl:
+      "https://intelligence.na.go.kr/cmmit/bbs/BCMT2002/view.do?nttId=3078738&menuNo=2000030",
+  },
+  {
+    agency: "사이버작전사령부",
+    aliases: ["사이버사", "사이버작전사"],
+    committee: "정보위원회",
+    date: "10-30",
+    time: "국방방첩본부 감사 종료 후",
+    place: "국방방첩본부 국정감사장",
+    type: "기관감사",
+    sourceUrl:
+      "https://intelligence.na.go.kr/cmmit/bbs/BCMT2002/view.do?nttId=3078738&menuNo=2000030",
+  },
 ];
