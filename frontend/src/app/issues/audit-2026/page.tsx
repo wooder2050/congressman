@@ -150,7 +150,7 @@ export default async function Audit2026Page() {
         </h2>
         <p className="text-sm text-(--color-text-secondary)">
           17개 상임위원회 중 {confirmed.length}곳은 국정감사계획서로 일정을 확인했고,{" "}
-          {reported.length}곳은 계획서 의결 전 보도된 예정 일정입니다. 나머지는 확인되는 대로
+          {reported.length}곳은 계획서 원문 확인 전 보도된 예정 일정입니다. 나머지는 확인되는 대로
           추가합니다.
         </p>
         <div className="grid gap-4">
@@ -174,7 +174,7 @@ export default async function Audit2026Page() {
                   </Link>
                 </h3>
                 <span className="text-sm text-(--color-text-tertiary)">
-                  {c.status === "reported" ? "계획서 의결 전 · 보도된 예정 일정" : c.period}
+                  {c.status === "reported" ? "계획서 원문 확인 전 · 보도된 예정 일정" : c.period}
                 </span>
               </div>
               <ul className="mt-3 divide-y divide-(--color-border-primary) text-sm">
