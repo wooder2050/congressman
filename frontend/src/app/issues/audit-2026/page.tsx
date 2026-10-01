@@ -149,9 +149,10 @@ export default async function Audit2026Page() {
           상임위원회별 감사 일정
         </h2>
         <p className="text-sm text-(--color-text-secondary)">
-          17개 상임위원회 중 {confirmed.length}곳은 국정감사계획서로 일정을 확인했고,{" "}
-          {reported.length}곳은 계획서 원문 확인 전 보도된 예정 일정입니다. 나머지는 확인되는 대로
-          추가합니다.
+          17개 상임위원회 중 {confirmed.length}곳은 국정감사계획서로 일정을 확인했습니다.
+          {reported.length > 0 &&
+            ` ${reported.length}곳은 계획서 원문 확인 전 보도된 예정 일정입니다.`}{" "}
+          나머지는 확인되는 대로 추가합니다.
         </p>
         <div className="grid gap-4">
           {scheduled.map((c) => (
