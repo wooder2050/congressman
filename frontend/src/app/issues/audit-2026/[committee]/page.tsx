@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import AdSlot from "@/components/ads/AdSlot";
+import AuditChangeList from "@/components/issues/AuditChangeList";
 import AuditSources from "@/components/issues/AuditSources";
 import JsonLd from "@/components/seo/JsonLd";
 import {
@@ -10,11 +11,12 @@ import {
   isAuditCommitteePageReady,
   type AuditCommittee,
 } from "@/data/audit-2026";
-import { getCommitteeDetail, getUpcomingSchedules } from "@/lib/api";
+import { getCommitteeDetail, getUpcomingSchedulesByKeyword } from "@/lib/api";
 import {
   auditStatus,
   auditStatusClass,
   formatAuditDate,
+  formatAuditMd,
   auditAgendaText,
 } from "@/lib/audit-format";
 import { committeeAliasLabel } from "@/lib/committee-aliases";
@@ -99,7 +101,7 @@ export default async function AuditCommitteePage({ params }: PageProps) {
   const status = auditStatus(new Date());
   const [detail, upcoming] = await Promise.all([
     getCommitteeDetail({ name: c.name, termId: TERM_ID }).catch(() => null),
-    getUpcomingSchedules(TERM_ID, 100).catch(() => [] as Schedule[]),
+    getUpcomingSchedulesByKeyword(TERM_ID, "국정감사").catch(() => [] as Schedule[]),
   ]);
   const members = detail ? sortMembers(detail.members) : [];
   const liveSchedules = pickCommitteeAuditSchedules(upcoming, c.name);
@@ -144,6 +146,9 @@ export default async function AuditCommitteePage({ params }: PageProps) {
           </span>
           {c.period && <span>{c.period}</span>}
           {c.resolvedOn && <span className="tabular-nums">계획서 의결 {c.resolvedOn}</span>}
+          {c.checkedAt && (
+            <span className="tabular-nums">원문 확인 {formatAuditMd(c.checkedAt.slice(5))}</span>
+          )}
           <span className="tabular-nums">최종 갱신 {d.updatedAt}</span>
         </div>
         <p className="text-base leading-relaxed text-(--color-text-secondary)">{c.summary}</p>
@@ -176,6 +181,22 @@ export default async function AuditCommitteePage({ params }: PageProps) {
         </ul>
         {c.note && <p className="text-sm text-(--color-text-secondary)">{c.note}</p>}
         <AuditSources sources={c.sources} />
+      </section>
+
+      <section aria-labelledby="changes-title" id="changes" className="scroll-mt-20 space-y-3">
+        <h2 id="changes-title" className="text-xl font-bold">
+          일정·명단 변경 이력
+        </h2>
+        <AuditChangeList
+          items={(c.changes ?? []).map((change) => ({ change }))}
+          emptyText={`10월 3일 기록을 시작한 뒤 ${c.short} 게시판에서 확인된 변경이 없습니다.`}
+        />
+        <p className="text-xs text-(--color-text-tertiary)">
+          {c.checkedAt
+            ? `위원회 게시판(계획서·참고자료)을 ${formatAuditMd(c.checkedAt.slice(5))}에 마지막으로 확인했습니다. `
+            : ""}
+          확인 이후에도 일정은 바뀔 수 있으니 감사 전날 위원회 공지를 함께 확인하세요.
+        </p>
       </section>
 
       <AdSlot placement="audit-hub" />
@@ -298,7 +319,7 @@ export default async function AuditCommitteePage({ params }: PageProps) {
             {liveSchedules.map((s) => (
               <li key={s.id} className="flex flex-wrap gap-x-3 py-2">
                 <span className="text-(--color-text-tertiary) tabular-nums">
-                  {s.meetingDate} {s.meetingTime}
+                  {formatAuditMd(s.meetingDate.slice(5))} {s.meetingTime}
                 </span>
                 <span className="text-(--color-text-secondary)">
                   {auditAgendaText(s.agenda, s.title)}

@@ -40,14 +40,22 @@ export class SchedulesService {
     return result;
   }
 
-  async getUpcomingSchedules(termId: number, limit = 5) {
-    const today = new Date().toISOString().slice(0, 10);
-    const key = `schedules:upcoming:${termId}:${limit}:${today}`;
+  async getUpcomingSchedules(termId: number, limit = 5, keyword?: string) {
+    // 회의 일자는 한국 날짜라 오늘도 KST로 계산한다(UTC로 하면 오전 9시 전엔 전날이 된다)
+    const today = new Date(Date.now() + 9 * 3600 * 1000).toISOString().slice(0, 10);
+    const key = `schedules:upcoming:${termId}:${limit}:${keyword ?? ''}:${today}`;
     const cached = await this.redis.get(key);
     if (cached) return cached;
 
     const schedules = await this.prisma.schedule.findMany({
-      where: { termId, meetingDate: { gte: today } },
+      where: {
+        termId,
+        meetingDate: { gte: today },
+        // 국정감사 회의만 받으려는 경우 — 제목이나 안건에 키워드가 있는 회의
+        ...(keyword
+          ? { OR: [{ title: { contains: keyword } }, { agenda: { contains: keyword } }] }
+          : {}),
+      },
       orderBy: [{ meetingDate: 'asc' }, { meetingTime: 'asc' }],
       take: limit,
     });
