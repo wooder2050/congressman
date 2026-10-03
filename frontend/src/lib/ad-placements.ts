@@ -27,6 +27,11 @@ const AD_UNITS = {
   committee: "1951166409",
   /** 홈 — 콘솔 단위 lawmake-home */
   home: "9638084739",
+  // 국감(2026-10-06~30) 전용 단위(2026-10-03 생성) — 국감 허브가 수입 1위 페이지라 자리별 성과를 따로 본다.
+  /** 국감 허브·상임위 페이지의 첫 슬롯 — 콘솔 단위 lawmake-audit-main */
+  auditMain: "2846096047",
+  /** 국감 허브·상임위 페이지의 아래쪽 슬롯 — 콘솔 단위 lawmake-audit-deep */
+  auditDeep: "7922328753",
 } as const;
 
 type AdSizing = "content-250";
@@ -42,8 +47,16 @@ export const AD_PLACEMENTS = {
   "glossary-list": { slot: AD_UNITS.section, sizing: "content-250" },
   "cabinet-after-ministries": { slot: AD_UNITS.section, sizing: "content-250" },
   "today-feed": { slot: AD_UNITS.section, sizing: "content-250" },
-  // 2026 국정감사 이슈 페이지(편집) — 상임위별 일정 뒤
-  "audit-hub": { slot: AD_UNITS.section, sizing: "content-250" },
+  // 2026 국정감사 이슈 페이지(편집). 2026-10-03 codex(gpt-6.1-sol) 검토: 기관 검색 결과·복사 버튼
+  // 근처(오클릭 위험)는 피하고, 허브는 오늘·내일 보드 뒤를 첫 슬롯으로 둔다.
+  /** 허브 — 오늘·내일 보드 뒤 */
+  "audit-hub-main": { slot: AD_UNITS.auditMain, sizing: "content-250" },
+  /** 허브 — 상임위원회별 일정 뒤(기존 자리) */
+  "audit-hub-deep": { slot: AD_UNITS.auditDeep, sizing: "content-250" },
+  /** 상임위 페이지 — 날짜별 일정·변경 이력 뒤, 증인 앞(기존 자리) */
+  "audit-committee-main": { slot: AD_UNITS.auditMain, sizing: "content-250" },
+  /** 상임위 페이지 — 주요 쟁점 뒤. 쟁점이 충분히 긴 페이지에만(상임위 page.tsx의 hasLongIssues) */
+  "audit-committee-deep": { slot: AD_UNITS.auditDeep, sizing: "content-250" },
   "article-inline": { slot: AD_UNITS.articleInline, sizing: "content-250" },
   "article-bottom": { slot: AD_UNITS.articleInline, sizing: "content-250" },
   "bill-after-discussion": { slot: AD_UNITS.articleInline, sizing: "content-250" },
