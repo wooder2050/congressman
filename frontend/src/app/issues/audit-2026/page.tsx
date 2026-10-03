@@ -3,16 +3,18 @@ import Link from "next/link";
 import AdSlot from "@/components/ads/AdSlot";
 import JsonLd from "@/components/seo/JsonLd";
 import AuditAgencySearch from "@/components/issues/AuditAgencySearch";
+import AuditChangeList from "@/components/issues/AuditChangeList";
 import AuditSources from "@/components/issues/AuditSources";
 import AuditTodayBoard from "@/components/issues/AuditTodayBoard";
 import {
   AUDIT_2026,
   auditCommitteePath,
   isAuditCommitteePageReady,
+  recentAuditChanges,
   type AuditCommittee,
 } from "@/data/audit-2026";
 import { AUDIT_AGENCIES_VERIFIED_AT, AUDIT_AGENCY_COUNT } from "@/data/audit-2026-agency-meta";
-import { getUpcomingSchedules } from "@/lib/api";
+import { getUpcomingSchedulesByKeyword } from "@/lib/api";
 import {
   auditDayKey,
   auditStatus,
@@ -20,6 +22,7 @@ import {
   formatAuditDate,
   formatAuditMd,
   auditAgendaText,
+  kstDateKey,
 } from "@/lib/audit-format";
 import type { Schedule } from "@/types";
 
@@ -73,9 +76,19 @@ export default async function Audit2026Page() {
   const scheduled = [...confirmed, ...reported];
   const pending = d.committees.filter((c) => c.status === "pending");
   const dates = byDate(scheduled);
-  const liveSchedules = pickAuditSchedules(
-    await getUpcomingSchedules(TERM_ID, 100).catch(() => [] as Schedule[]),
+  const now = new Date();
+  const upcomingAudit = pickAuditSchedules(
+    await getUpcomingSchedulesByKeyword(TERM_ID, "국정감사").catch(() => [] as Schedule[]),
   );
+  // 허브에는 일주일 치만 — 국감 기간엔 하루 회의가 수십 건이라 전체는 상임위 페이지에서 본다
+  const weekEnd = kstDateKey(now, 7);
+  const liveSchedules = upcomingAudit.filter((s) => s.meetingDate <= weekEnd);
+  const laterCount = upcomingAudit.length - liveSchedules.length;
+  const changes = recentAuditChanges(5);
+  const lastChecked = d.committees
+    .map((c) => c.checkedAt ?? "")
+    .sort()
+    .at(-1);
 
   const toneClass = auditStatusClass(status.tone);
 
@@ -142,7 +155,37 @@ export default async function Audit2026Page() {
           }))}
         verifiedAt={AUDIT_AGENCIES_VERIFIED_AT}
       />
-      <AuditTodayBoard now={new Date()} />
+      <AuditTodayBoard now={now} />
+
+      <section aria-labelledby="changes-title" className="space-y-3">
+        <div className="flex flex-wrap items-baseline justify-between gap-2">
+          <h2 id="changes-title" className="text-xl font-bold">
+            최근 바뀐 일정·명단
+          </h2>
+          {lastChecked && (
+            <span className="text-xs text-(--color-text-tertiary)">
+              위원회 게시판 확인 {formatAuditMd(lastChecked.slice(5))} 기준
+            </span>
+          )}
+        </div>
+        <AuditChangeList
+          items={changes.map(({ committee, change }) => ({
+            change,
+            committee: {
+              name: committee.name,
+              short: committee.short,
+              href: isAuditCommitteePageReady(committee)
+                ? `${auditCommitteePath(committee.name)}#changes`
+                : undefined,
+            },
+          }))}
+          emptyText="10월 3일 기록을 시작한 뒤 확인된 변경이 없습니다."
+        />
+        <p className="text-xs text-(--color-text-tertiary)">
+          위원회 게시판에 계획서 수정본이나 명단 변경이 올라오면 확인한 날짜와 함께 기록합니다(10월
+          3일부터). 확인 이후에도 일정은 바뀔 수 있으니 감사 전날 위원회 공지를 함께 확인하세요.
+        </p>
+      </section>
 
       <section aria-labelledby="committees-title" className="space-y-4">
         <h2 id="committees-title" className="text-2xl font-bold">
@@ -178,6 +221,24 @@ export default async function Audit2026Page() {
                   {c.status === "reported" ? "계획서 원문 확인 전 · 보도된 예정 일정" : c.period}
                 </span>
               </div>
+              {c.status === "confirmed" && c.checkedAt && (
+                <p className="mt-1 text-xs text-(--color-text-tertiary)">
+                  원문 확인 {formatAuditMd(c.checkedAt.slice(5))}
+                  {c.changes?.length ? (
+                    <>
+                      {" · "}
+                      <Link
+                        href={`${auditCommitteePath(c.name)}#changes`}
+                        className="font-semibold text-(--color-primary) hover:underline"
+                      >
+                        변경 {c.changes.length}건
+                      </Link>
+                    </>
+                  ) : (
+                    " · 변경 없음"
+                  )}
+                </p>
+              )}
               <ul className="mt-3 divide-y divide-(--color-border-primary) text-sm">
                 {/* 상세 페이지가 있는 위원회는 앞 3일만 — 전체 일정은 상세 페이지에서 본다 */}
                 {(isAuditCommitteePageReady(c) ? c.days.slice(0, 3) : c.days).map((day, i) => (
@@ -270,12 +331,15 @@ export default async function Audit2026Page() {
         <h2 id="live-title" className="text-2xl font-bold">
           국회가 공개한 국정감사 회의
         </h2>
+        <p className="text-xs text-(--color-text-tertiary)">
+          국회 의사일정에 등록된 회의를 매일 자동으로 가져옵니다. 앞으로 일주일 치만 보여 줍니다.
+        </p>
         {liveSchedules.length > 0 ? (
           <ul className="divide-y divide-(--color-border-primary) text-sm">
             {liveSchedules.map((s) => (
               <li key={s.id} className="flex flex-wrap gap-x-3 py-2">
                 <span className="text-(--color-text-tertiary) tabular-nums">
-                  {s.meetingDate} {s.meetingTime}
+                  {formatAuditMd(s.meetingDate.slice(5))} {s.meetingTime}
                 </span>
                 <span className="font-medium">{s.committeeName || s.title}</span>
                 <span className="text-(--color-text-secondary)">
@@ -284,7 +348,14 @@ export default async function Audit2026Page() {
               </li>
             ))}
           </ul>
-        ) : (
+        ) : null}
+        {laterCount > 0 && (
+          <p className="text-xs text-(--color-text-tertiary)">
+            {liveSchedules.length === 0 ? "앞으로 일주일 안에는 등록된 회의가 없습니다. " : ""}그
+            뒤로 등록된 회의 {laterCount}건은 상임위원회별 페이지에서 볼 수 있습니다.
+          </p>
+        )}
+        {upcomingAudit.length === 0 && (
           <p className="text-sm text-(--color-text-secondary)">
             국회가 회의 일정을 공개하면 이곳에 자동으로 표시됩니다(보통 감사 며칠 전 등록). 전체
             국회 일정은{" "}

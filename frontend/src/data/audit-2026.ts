@@ -39,6 +39,22 @@ interface AuditWitness {
   status: "adopted" | "requested";
 }
 
+/**
+ * 일정·명단 변경 기록 — 2026-10-03부터 기록한다(과거 변경을 추측해 채우지 않는다).
+ * 위원회 게시판에 수정본이 올라오거나 국회 공개 일정·보도로 바뀐 것이 확인되면 추가한다.
+ */
+export interface AuditChange {
+  /** 변경을 확인한 날 "2026-10-02" */
+  on: string;
+  kind: "일정" | "장소" | "증인" | "기관";
+  /** 한 줄 요약 */
+  summary: string;
+  /** 바뀌기 전 → 후 (해당하면) */
+  before?: string;
+  after?: string;
+  source?: AuditSource;
+}
+
 export interface AuditCommittee {
   /** /committees/[name] 경로와 같은 정식 명칭 */
   name: string;
@@ -51,6 +67,13 @@ export interface AuditCommittee {
   status: "confirmed" | "reported" | "pending";
   /** 계획서 의결일 "2026-09-21" */
   resolvedOn?: string;
+  /**
+   * 위원회 게시판(계획서·참고자료)을 마지막으로 확인한 날 "2026-10-03".
+   * 이날까지 원문과 다른 점이 없었다는 뜻이지, 이후 바뀌지 않는다는 보장은 아니다.
+   */
+  checkedAt?: string;
+  /** 확인된 변경 이력(최근 것이 앞) */
+  changes?: AuditChange[];
   /** 위원회 감사 기간(표시용) */
   period?: string;
   /** 대상 기관 규모 등 한 줄 요약 */
@@ -87,7 +110,7 @@ export const AUDIT_2026 = {
   description:
     "2026년 국정감사는 10월 6일부터 27일까지 3주간 열립니다(정보위·성평등가족위·운영위 대통령비서실 감사는 30일까지). 상임위원회별 감사 일정과 피감기관, 증인 채택 공방과 주요 쟁점을 한곳에 정리했습니다.",
   publishedAt: "2026-09-24",
-  updatedAt: "2026-10-02",
+  updatedAt: "2026-10-03",
   start: "2026-10-06",
   end: "2026-10-27",
   extendedEnd: "2026-10-30",
@@ -105,6 +128,7 @@ export const AUDIT_2026 = {
       name: "국회운영위원회",
       titleAgencies: "대통령실·국가인권위원회",
       short: "운영위",
+      checkedAt: "2026-10-03",
       status: "confirmed",
       resolvedOn: "2026-09-16",
       period: "10월 29일(목)~30일(금), 2일간",
@@ -210,6 +234,7 @@ export const AUDIT_2026 = {
       name: "법제사법위원회",
       titleAgencies: "대법원·법무부·대검찰청",
       short: "법사위",
+      checkedAt: "2026-10-03",
       status: "confirmed",
       resolvedOn: "2026-09-21",
       period: "10월 6일~27일(22일)",
@@ -363,6 +388,7 @@ export const AUDIT_2026 = {
       name: "정무위원회",
       titleAgencies: "금융위·금감원·공정위",
       short: "정무위",
+      checkedAt: "2026-10-03",
       status: "confirmed",
       resolvedOn: "2026-09-28",
       period: "10월 6일(화)~22일(목)",
@@ -817,6 +843,7 @@ export const AUDIT_2026 = {
       name: "재정경제기획위원회",
       titleAgencies: "재정경제부·국세청·한국은행",
       short: "재경위",
+      checkedAt: "2026-10-03",
       status: "confirmed",
       resolvedOn: "2026-09-17",
       period: "10월 6일~23일(18일)",
@@ -993,6 +1020,7 @@ export const AUDIT_2026 = {
       name: "교육위원회",
       titleAgencies: "교육부·시도교육청·서울대",
       short: "교육위",
+      checkedAt: "2026-10-03",
       status: "confirmed",
       resolvedOn: "2026-09-29",
       period: "10월 7일(수)~23일(금), 17일간",
@@ -1240,6 +1268,7 @@ export const AUDIT_2026 = {
       name: "과학기술정보방송통신위원회",
       titleAgencies: "과기정통부·방미통위·KBS",
       short: "과방위",
+      checkedAt: "2026-10-03",
       status: "confirmed",
       resolvedOn: "2026-09-15",
       period: "10월 6일~23일(18일)",
@@ -1708,6 +1737,7 @@ export const AUDIT_2026 = {
       name: "외교통일위원회",
       titleAgencies: "외교부·통일부",
       short: "외통위",
+      checkedAt: "2026-10-03",
       status: "confirmed",
       resolvedOn: "2026-09-17",
       period: "10월 6일~27일(22일)",
@@ -1824,6 +1854,7 @@ export const AUDIT_2026 = {
       name: "국방위원회",
       titleAgencies: "국방부·합참·방사청",
       short: "국방위",
+      checkedAt: "2026-10-03",
       status: "confirmed",
       resolvedOn: "2026-09-10",
       period: "10월 7일(수)~26일(월), 20일간",
@@ -2014,6 +2045,7 @@ export const AUDIT_2026 = {
       name: "행정안전위원회",
       titleAgencies: "행안부·경찰청·선관위",
       short: "행안위",
+      checkedAt: "2026-10-03",
       status: "confirmed",
       resolvedOn: "2026-09-16",
       period: "10월 6일(화)~26일(월), 21일간",
@@ -2106,6 +2138,7 @@ export const AUDIT_2026 = {
       name: "문화체육관광위원회",
       titleAgencies: "문체부·국가유산청",
       short: "문체위",
+      checkedAt: "2026-10-03",
       status: "confirmed",
       resolvedOn: "2026-09-16",
       period: "10월 7일(수)~23일(금), 17일간(실제 감사 7일)",
@@ -2275,6 +2308,22 @@ export const AUDIT_2026 = {
       name: "농림축산식품해양수산위원회",
       titleAgencies: "농식품부·해수부·농협",
       short: "농해수위",
+      checkedAt: "2026-10-03",
+      changes: [
+        {
+          on: "2026-10-02",
+          kind: "증인",
+          summary:
+            "일반증인 명단 변경(위원장·간사 협의) — 박윤기(롯데칠성)·이강만(한화)·이희근(포스코) 제외, 김재기(농민신문사) 출석일 변경",
+          before: "김재기 10월 7일",
+          after: "김재기 10월 16일",
+          source: {
+            title:
+              "2026년도 국정감사 일반증인·참고인 명단(10.2. 변경) / 국회 농림축산식품해양수산위원회",
+            url: "https://agri.na.go.kr/cmmit/bbs/BCMT2002/view.do?nttId=3078763&menuNo=2000030",
+          },
+        },
+      ],
       status: "confirmed",
       resolvedOn: "2026-09-17",
       period: "10월 7일(수)~23일(금)",
@@ -2548,6 +2597,22 @@ export const AUDIT_2026 = {
       name: "산업통상자원중소벤처기업위원회",
       titleAgencies: "산업부·중기부·한전",
       short: "산자중기위",
+      checkedAt: "2026-10-03",
+      changes: [
+        {
+          on: "2026-10-01",
+          kind: "증인",
+          summary:
+            "기관증인 명단 수정 — 211명→212명. 중소벤처기업부 장관(공석→이소영), 산업통상부 차관(공석으로 변경) 등",
+          before: "기관증인 211명(9월 22일)",
+          after: "기관증인 212명(10월 1일 수정)",
+          source: {
+            title:
+              "2026년도 국정감사 기관증인 명단 수정(10.1) / 국회 산업통상자원중소벤처기업위원회",
+            url: "https://industry.na.go.kr/cmmit/bbs/BCMT2004/view.do?nttId=3078759&menuNo=2000030",
+          },
+        },
+      ],
       status: "confirmed",
       resolvedOn: "2026-09-22",
       period: "10월 6일(화)~23일(금), 18일간",
@@ -2762,6 +2827,7 @@ export const AUDIT_2026 = {
       name: "보건복지위원회",
       titleAgencies: "복지부·질병청·식약처·국민연금",
       short: "복지위",
+      checkedAt: "2026-10-03",
       status: "confirmed",
       resolvedOn: "2026-09-29",
       period: "10월 6일(화)~27일(화), 22일간(첫 감사 7일)",
@@ -2998,6 +3064,7 @@ export const AUDIT_2026 = {
       name: "기후에너지환경노동위원회",
       titleAgencies: "기후부·노동부·기상청·한전",
       short: "기후환노위",
+      checkedAt: "2026-10-03",
       status: "confirmed",
       resolvedOn: "2026-09-28",
       period: "10월 6일(화)~27일(화), 22일간",
@@ -3158,6 +3225,7 @@ export const AUDIT_2026 = {
       name: "국토교통위원회",
       titleAgencies: "국토부·LH·코레일·인천공항",
       short: "국토위",
+      checkedAt: "2026-10-03",
       status: "confirmed",
       resolvedOn: "2026-09-30",
       period: "10월 7일(수)~23일(금) — 중앙감사 7일·지방감사 1일·현장시찰 1일",
@@ -3382,6 +3450,7 @@ export const AUDIT_2026 = {
       name: "정보위원회",
       titleAgencies: "국정원·국방정보본부·경찰청",
       short: "정보위",
+      checkedAt: "2026-10-03",
       status: "confirmed",
       resolvedOn: "2026-09-30",
       period: "10월 28일(수)~30일(금), 3일간",
@@ -3462,6 +3531,7 @@ export const AUDIT_2026 = {
     {
       name: "성평등가족위원회",
       short: "성평등가족위",
+      checkedAt: "2026-10-03",
       status: "pending",
       period: "10월 30일까지(국감 기간 연장 상임위)",
       days: [],
@@ -3642,4 +3712,14 @@ export function auditCommitteePath(name: string): string {
  */
 export function isAuditCommitteePageReady(c: AuditCommittee): boolean {
   return c.status === "confirmed" && !!c.summary && c.days.length >= 3;
+}
+
+/** 위원회별 변경 이력을 최근 것부터 모은다(허브 "최근 변경"용) */
+export function recentAuditChanges(
+  limit = 5,
+): { committee: AuditCommittee; change: AuditChange }[] {
+  return AUDIT_2026.committees
+    .flatMap((committee) => (committee.changes ?? []).map((change) => ({ committee, change })))
+    .sort((a, b) => b.change.on.localeCompare(a.change.on))
+    .slice(0, limit);
 }
