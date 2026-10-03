@@ -93,7 +93,9 @@ export default async function Audit2026Page() {
   const toneClass = auditStatusClass(status.tone);
 
   return (
-    <div className="mx-auto max-w-4xl space-y-10">
+    // google-anno-skip: 자동 광고 '의도 기반 형식'이 일정·쟁점 본문에 링크·칩("정치(좌익)" 등)을
+    // 끼워 넣지 못하게 막는다. 콘솔에서도 링크·칩은 껐고(2026-10-03) 이 클래스는 이중 장치다.
+    <div className="google-anno-skip mx-auto max-w-4xl space-y-10">
       <JsonLd
         data={{
           "@context": "https://schema.org",
@@ -156,6 +158,9 @@ export default async function Audit2026Page() {
         verifiedAt={AUDIT_AGENCIES_VERIFIED_AT}
       />
       <AuditTodayBoard now={now} />
+
+      {/* 검색 결과·복사 버튼과 떨어진 자리(오클릭 방지). 보드 바깥에 둔다 */}
+      <AdSlot placement="audit-hub-main" />
 
       <section aria-labelledby="changes-title" className="space-y-3">
         <div className="flex flex-wrap items-baseline justify-between gap-2">
@@ -287,7 +292,7 @@ export default async function Audit2026Page() {
         </div>
       </section>
 
-      <AdSlot placement="audit-hub" />
+      <AdSlot placement="audit-hub-deep" />
 
       <section aria-labelledby="dates-title" className="space-y-3">
         <h2 id="dates-title" className="text-2xl font-bold">
