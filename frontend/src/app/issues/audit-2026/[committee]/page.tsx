@@ -109,13 +109,22 @@ export default async function AuditCommitteePage({ params }: PageProps) {
   const issues = c.issues?.length
     ? c.issues
     : d.issues.filter((i) => i.committees.includes(c.name));
+  // 두 번째 광고는 쟁점이 2건 이상이고 본문·인용이 700자 이상인 페이지에만 — 짧은 페이지에서
+  // 광고가 콘텐츠보다 커 보이지 않게 한다(10/3 기준 정무·재경·복지·국토위)
+  const hasLongIssues =
+    issues.length >= 2 &&
+    issues.reduce(
+      (sum, i) => sum + i.body.length + (i.quotes ?? []).reduce((q, x) => q + x.text.length, 0),
+      0,
+    ) >= 700;
   const adopted = (c.witnesses ?? []).filter((w) => w.status === "adopted");
   const requested = (c.witnesses ?? []).filter((w) => w.status === "requested");
   const others = d.committees.filter((o) => o.name !== c.name && isAuditCommitteePageReady(o));
   const url = `${BASE}${auditCommitteePath(c.name)}`;
 
   return (
-    <div className="mx-auto max-w-4xl space-y-10">
+    // google-anno-skip: 허브와 같은 이유(의도 기반 형식 링크·칩 차단 — 허브 page.tsx 주석)
+    <div className="google-anno-skip mx-auto max-w-4xl space-y-10">
       <JsonLd
         data={{
           "@context": "https://schema.org",
@@ -199,7 +208,7 @@ export default async function AuditCommitteePage({ params }: PageProps) {
         </p>
       </section>
 
-      <AdSlot placement="audit-hub" />
+      <AdSlot placement="audit-committee-main" />
 
       {(adopted.length > 0 || requested.length > 0) && (
         <section aria-labelledby="witness-title" className="space-y-3">
@@ -285,6 +294,8 @@ export default async function AuditCommitteePage({ params }: PageProps) {
           ))}
         </section>
       )}
+
+      {hasLongIssues && <AdSlot placement="audit-committee-deep" />}
 
       {members.length > 0 && (
         <section aria-labelledby="members-title" className="space-y-3">
