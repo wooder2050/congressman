@@ -32,6 +32,51 @@ function readQuery(): string {
   return new URLSearchParams(window.location.search).get("q") ?? "";
 }
 
+const HUB_URL = "https://www.lawmake.kr/issues/audit-2026";
+
+/** 공유용 주소 — s=1이 붙은 주소로 들어오면 공유 링크 방문으로 한 번 측정한다 */
+function shareUrl(agency: string): string {
+  return `${HUB_URL}?q=${encodeURIComponent(agency)}&s=1`;
+}
+
+function scheduleLine(r: AuditAgencyRecord): string {
+  const when = `${formatAuditMd(r.date)}${r.dateEnd ? `~${formatAuditMd(r.dateEnd)} 중` : ""}${
+    r.time ? ` ${r.time}` : ""
+  }`;
+  return `- ${when} ${r.type}${r.place ? ` · ${r.place}` : ""}${r.note ? ` · ${r.note}` : ""}`;
+}
+
+/** 사내 메신저·메일에 붙여 넣을 일정 텍스트 — 확인 기준일과 최신 주소를 반드시 넣는다 */
+function scheduleText(agency: string, rows: AuditAgencyRecord[], verifiedAt: string): string {
+  const committees = [...new Set(rows.map((r) => r.committee))].join("·");
+  return [
+    `[2026 국정감사] ${agency}`,
+    `소관: ${committees}`,
+    ...rows.map(scheduleLine),
+    `기준: 국회 위원회 국정감사계획서 원문 대조(${verifiedAt}). 위원회 사정에 따라 바뀔 수 있습니다.`,
+    `최신 일정: ${shareUrl(agency)}`,
+  ].join("\n");
+}
+
+async function copyText(text: string): Promise<boolean> {
+  try {
+    await navigator.clipboard.writeText(text);
+    return true;
+  } catch {
+    // 일부 사내망 브라우저는 clipboard API를 막는다 — 선택 영역 복사로 대신한다
+    const el = document.createElement("textarea");
+    el.value = text;
+    el.setAttribute("readonly", "");
+    el.style.position = "fixed";
+    el.style.opacity = "0";
+    document.body.appendChild(el);
+    el.select();
+    const ok = document.execCommand("copy");
+    document.body.removeChild(el);
+    return ok;
+  }
+}
+
 // 주소의 ?q=는 처음 한 번만 읽는다 — 이후 변경은 입력값(typed)이 맡는다
 const noopSubscribe = () => () => {};
 
@@ -51,6 +96,26 @@ export default function AuditAgencySearch({
   const [typed, setTyped] = useState<string | null>(null);
   const query = typed ?? urlQuery;
   const tracked = useRef("");
+  const [copied, setCopied] = useState("");
+
+  // 공유 링크(s=1)로 들어온 방문을 한 번만 측정하고, 새로고침에 다시 세지 않도록 주소에서 뺀다
+  useEffect(() => {
+    const url = new URL(window.location.href);
+    if (url.searchParams.get("s") !== "1") return;
+    trackEvent("audit_shared_result_open", { share_type: "link" });
+    url.searchParams.delete("s");
+    window.history.replaceState(null, "", url);
+  }, []);
+
+  const onCopy = async (kind: "link" | "text", agency: string, rows: AuditAgencyRecord[]) => {
+    const ok = await copyText(
+      kind === "link" ? shareUrl(agency) : scheduleText(agency, rows, verifiedAt),
+    );
+    if (!ok) return;
+    setCopied(`${kind}:${agency}`);
+    setTimeout(() => setCopied((c) => (c === `${kind}:${agency}` ? "" : c)), 2000);
+    trackEvent("audit_share_copy", { share_type: kind, committee: rows[0]?.committee ?? "" });
+  };
 
   // 기관 색인(약 1,000건)은 허브 HTML에 싣지 않고 검색할 때만 별도 청크로 받는다
   const [records, setRecords] = useState<AuditAgencyRecord[] | null>(null);
@@ -95,13 +160,14 @@ export default function AuditAgencySearch({
       else url.searchParams.delete("q");
       window.history.replaceState(null, "", url);
     }
-    if (q.length < 2 || tracked.current === q) return;
+    // 색인을 다 받기 전의 "결과 0건"은 검색 실패가 아니다 — 받은 뒤에만 측정한다
+    if (q.length < 2 || !records || tracked.current === q) return;
     const t = setTimeout(() => {
       tracked.current = q;
       trackEvent("audit_agency_search", { query: query.trim(), results: results.length });
     }, 1200);
     return () => clearTimeout(t);
-  }, [q, query, typed, results.length]);
+  }, [q, query, typed, records, results.length]);
 
   return (
     <section
@@ -127,7 +193,7 @@ export default function AuditAgencySearch({
 
       {q.length >= 2 && results.length > 0 && (
         <ul className="mt-3 divide-y divide-(--color-border-primary) text-sm">
-          {results.map((r) => (
+          {results.map((r, i) => (
             <li key={`${r.agency}-${r.committee}-${r.date}-${r.type}`} className="py-2">
               <p className="flex flex-wrap items-baseline gap-x-2">
                 <span className="font-semibold">{r.agency}</span>
@@ -155,7 +221,45 @@ export default function AuditAgencySearch({
                 )}
                 {r.place ? ` · ${r.place}` : ""}
                 {r.note ? ` · ${r.note}` : ""}
+                {r.sourceUrl && (
+                  <>
+                    {" · "}
+                    <a
+                      href={r.sourceUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-(--color-primary) hover:underline"
+                    >
+                      계획서 원문
+                    </a>
+                  </>
+                )}
               </p>
+              {/* 같은 기관의 감사일(기관감사·종합감사)은 이어서 나오므로 첫 줄에만 복사 버튼을 둔다 */}
+              {(i === 0 || results[i - 1].agency !== r.agency) && (
+                <p className="mt-1 flex flex-wrap gap-2 text-xs">
+                  {(["link", "text"] as const).map((kind) => (
+                    <button
+                      key={kind}
+                      type="button"
+                      onClick={() =>
+                        onCopy(
+                          kind,
+                          r.agency,
+                          results.filter((x) => x.agency === r.agency),
+                        )
+                      }
+                      className="rounded-md border border-(--color-border-primary) px-2 py-0.5 text-(--color-text-secondary) hover:border-(--color-primary) hover:text-(--color-primary)"
+                    >
+                      {copied === `${kind}:${r.agency}`
+                        ? "복사했습니다"
+                        : kind === "link"
+                          ? "이 결과 링크 복사"
+                          : "일정 텍스트 복사"}
+                    </button>
+                  ))}
+                </p>
+              )}
             </li>
           ))}
         </ul>

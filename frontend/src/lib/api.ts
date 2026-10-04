@@ -386,6 +386,18 @@ export async function getUpcomingSchedules(termId: number, limit?: number): Prom
   });
 }
 
+/** 제목·안건에 이 단어가 있는 다가오는 회의만(예: "국정감사") — 서버에서 걸러 상한(100)에 다른 회의가 섞이지 않게 한다 */
+export async function getUpcomingSchedulesByKeyword(
+  termId: number,
+  keyword: string,
+  limit = 100,
+): Promise<Schedule[]> {
+  return fetchApi(
+    `/api/schedules/upcoming?termId=${termId}&limit=${limit}&keyword=${encodeURIComponent(keyword)}`,
+    { revalidate: 60 },
+  );
+}
+
 export async function getSchedules(params: {
   termId: number;
   type?: string;
