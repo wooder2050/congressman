@@ -35,7 +35,8 @@ export function auditStatus(now: Date): { label: string; tone: "upcoming" | "liv
     );
     return { label: `시작 D-${days}`, tone: "upcoming" };
   }
-  if (today <= d.extendedEnd) return { label: "진행 중", tone: "live" };
+  // 전체 기간 판정이다. 개별 회의가 지금 열리고 있는지는 알 수 없으므로 "진행 중"이라 쓰지 않는다
+  if (today <= d.extendedEnd) return { label: "국감 기간 중", tone: "live" };
   return { label: "종료", tone: "done" };
 }
 
@@ -77,4 +78,15 @@ export function expandAuditDate(date: string): string[] {
   const end = new Date(`${auditDayKey(last)}T00:00:00Z`).getTime();
   for (let t = start; t <= end; t += 86400000) out.push(new Date(t).toISOString().slice(0, 10));
   return out;
+}
+
+/** 일정(단일일·기간형)이 끝나는 날짜 키 — "10-11~10-22"면 10-22 */
+function auditDayEndKey(date: string): string {
+  const [first, last] = date.split("~");
+  return auditDayKey(last ?? first);
+}
+
+/** 오늘(KST 날짜 키) 이후에 남은 일정만 — 국감 중반에 지난 첫 일정이 반복 노출되지 않게 한다 */
+export function remainingAuditDays<T extends { date: string }>(days: T[], todayKey: string): T[] {
+  return days.filter((day) => auditDayEndKey(day.date) >= todayKey);
 }

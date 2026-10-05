@@ -22,7 +22,9 @@ import {
   formatAuditDate,
   formatAuditMd,
   auditAgendaText,
+  expandAuditDate,
   kstDateKey,
+  remainingAuditDays,
 } from "@/lib/audit-format";
 import type { Schedule } from "@/types";
 
@@ -77,6 +79,8 @@ export default async function Audit2026Page() {
   const pending = d.committees.filter((c) => c.status === "pending");
   const dates = byDate(scheduled);
   const now = new Date();
+  const todayKey = kstDateKey(now);
+  const beforeStart = todayKey < d.start;
   const upcomingAudit = pickAuditSchedules(
     await getUpcomingSchedulesByKeyword(TERM_ID, "국정감사").catch(() => [] as Schedule[]),
   );
@@ -120,49 +124,74 @@ export default async function Audit2026Page() {
           </span>
           <span className="tabular-nums">최종 갱신 {d.updatedAt}</span>
         </div>
-        <p className="text-base leading-relaxed text-(--color-text-secondary)">
-          여야는 8월 25일 정기국회 의사일정에 합의하며 올해 국정감사를{" "}
-          <strong className="text-(--color-text-primary)">10월 6일부터 27일까지 3주간</strong>{" "}
-          열기로 했습니다. 정보위원회와 성평등가족위원회는 10월 30일까지 이어지고, 운영위원회의
-          대통령비서실 감사도 30일에 열립니다. 각 상임위원회가 소관 부처·공공기관을 나눠 감사하며,
-          기관별 실제 감사일은 위원회가 채택한 국정감사계획서를 따릅니다.
+        <p className="text-base text-(--color-text-secondary)">
+          10월 6일~30일 · 상임위원회 17곳 · 피감기관 846곳(국회사무처 집계) — 오늘 감사 일정과 우리
+          기관 감사일, 위원회별 증인·쟁점을 확인하세요.
         </p>
-        <div className="rounded-xl border border-(--color-border-primary) bg-(--color-bg-secondary) px-4 py-3 text-xs leading-relaxed text-(--color-text-secondary)">
-          <span className="font-semibold text-(--color-text-primary)">편집 원칙 </span>
-          상임위별 일정은 국회 홈페이지에 올라온 국정감사계획서 원문과 의결 보도로 확인한 것만
-          적습니다. 계획서 의결 전인 위원회는 보도된 예정 일정임을 밝히고, 정보가 없는 위원회는
-          날짜를 비워 둡니다. 쟁점은 발언 주체를 밝혀 인용하고 여야 입장을 함께 싣습니다. 국정감사
-          제도 설명은{" "}
-          <Link
-            href={`/glossary/${encodeURIComponent("국정감사")}`}
-            className="text-(--color-primary) underline underline-offset-2"
-          >
-            용어사전 &lsquo;국정감사&rsquo;
-          </Link>
-          를 참고하세요.
-        </div>
-        <AuditSources sources={d.periodSources} />
+        <nav aria-label="국정감사 페이지 안 바로가기" className="-mx-1 overflow-x-auto">
+          <ul className="flex w-max gap-2 px-1 text-sm">
+            {[
+              ["#today", beforeStart ? "첫 감사일" : "오늘 일정"],
+              ["#agency-search", "기관명 찾기"],
+              ["#committees", "위원회별 일정"],
+              ["#dates", "날짜별 보기"],
+              ["#changes", "변경 이력"],
+              ["#issues", "주요 쟁점"],
+            ].map(([href, label]) => (
+              <li key={href}>
+                <a
+                  href={href}
+                  className="inline-flex min-h-10 items-center rounded-full border border-(--color-border-primary) px-3 font-medium text-(--color-text-primary) no-underline hover:bg-(--color-bg-secondary)"
+                >
+                  {label}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </nav>
       </header>
 
-      {/* 검색 방문자(피감기관 담당자 추정)가 가장 먼저 찾는 것: 우리 기관 감사일, 오늘·내일 일정 */}
-      <AuditAgencySearch
-        agencyCount={AUDIT_AGENCY_COUNT}
-        pageCommittees={d.committees.filter(isAuditCommitteePageReady).map((c) => c.name)}
-        pendingCommittees={d.committees
-          .filter((c) => c.status !== "confirmed")
-          .map((c) => ({
-            name: c.name,
-            short: c.short,
-            status: c.status as "reported" | "pending",
-          }))}
-        verifiedAt={AUDIT_AGENCIES_VERIFIED_AT}
-      />
-      <AuditTodayBoard now={now} />
+      {/* 국감 전엔 '우리 기관 감사일'(검색)이, 국감 중엔 '오늘 어디가 감사하나'(보드)가 먼저다.
+          2026-10-05 codex(gpt-6.1-sol) UX 검토 — 중계 링크는 보드 제목 바로 아래 */}
+      {beforeStart ? (
+        <>
+          <div id="agency-search" className="scroll-mt-32">
+            <AuditAgencySearch
+              agencyCount={AUDIT_AGENCY_COUNT}
+              pageCommittees={d.committees.filter(isAuditCommitteePageReady).map((c) => c.name)}
+              pendingCommittees={d.committees
+                .filter((c) => c.status !== "confirmed")
+                .map((c) => ({
+                  name: c.name,
+                  short: c.short,
+                  status: c.status as "reported" | "pending",
+                }))}
+              verifiedAt={AUDIT_AGENCIES_VERIFIED_AT}
+            />
+          </div>
+          <AuditTodayBoard now={now} />
+        </>
+      ) : (
+        <>
+          <AuditTodayBoard now={now} />
+          <div id="agency-search" className="scroll-mt-32">
+            <AuditAgencySearch
+              agencyCount={AUDIT_AGENCY_COUNT}
+              pageCommittees={d.committees.filter(isAuditCommitteePageReady).map((c) => c.name)}
+              pendingCommittees={d.committees
+                .filter((c) => c.status !== "confirmed")
+                .map((c) => ({
+                  name: c.name,
+                  short: c.short,
+                  status: c.status as "reported" | "pending",
+                }))}
+              verifiedAt={AUDIT_AGENCIES_VERIFIED_AT}
+            />
+          </div>
+        </>
+      )}
 
-      {/* 검색 결과·복사 버튼과 떨어진 자리(오클릭 방지). 보드 바깥에 둔다 */}
-      <AdSlot placement="audit-hub-main" />
-
-      <section aria-labelledby="changes-title" className="space-y-3">
+      <section id="changes" aria-labelledby="changes-title" className="scroll-mt-32 space-y-3">
         <div className="flex flex-wrap items-baseline justify-between gap-2">
           <h2 id="changes-title" className="text-xl font-bold">
             최근 바뀐 일정·명단
@@ -192,7 +221,14 @@ export default async function Audit2026Page() {
         </p>
       </section>
 
-      <section aria-labelledby="committees-title" className="space-y-4">
+      {/* 검색 결과·복사 버튼과 떨어진 자리(오클릭 방지). 일정 탐색·변경 요약을 마친 뒤 위원회 목록 앞 */}
+      <AdSlot placement="audit-hub-main" />
+
+      <section
+        id="committees"
+        aria-labelledby="committees-title"
+        className="scroll-mt-32 space-y-4"
+      >
         <h2 id="committees-title" className="text-2xl font-bold">
           상임위원회별 감사 일정
         </h2>
@@ -223,12 +259,18 @@ export default async function Audit2026Page() {
                   </Link>
                 </h3>
                 <span className="text-sm text-(--color-text-tertiary)">
+                  {!beforeStart &&
+                    c.days.some((day) => expandAuditDate(day.date).includes(todayKey)) && (
+                      <span className="mr-2 rounded-full bg-(--color-text-primary) px-2 py-0.5 text-xs font-semibold text-(--color-text-inverse)">
+                        오늘 감사 예정
+                      </span>
+                    )}
                   {c.status === "reported" ? "계획서 원문 확인 전 · 보도된 예정 일정" : c.period}
                 </span>
               </div>
               {c.status === "confirmed" && c.checkedAt && (
                 <p className="mt-1 text-xs text-(--color-text-tertiary)">
-                  원문 확인 {formatAuditMd(c.checkedAt.slice(5))}
+                  위원회 게시판 확인 {formatAuditMd(c.checkedAt.slice(5))}
                   {c.changes?.length ? (
                     <>
                       {" · "}
@@ -240,13 +282,16 @@ export default async function Audit2026Page() {
                       </Link>
                     </>
                   ) : (
-                    " · 변경 없음"
+                    " · 기록된 변경 없음"
                   )}
                 </p>
               )}
               <ul className="mt-3 divide-y divide-(--color-border-primary) text-sm">
                 {/* 상세 페이지가 있는 위원회는 앞 3일만 — 전체 일정은 상세 페이지에서 본다 */}
-                {(isAuditCommitteePageReady(c) ? c.days.slice(0, 3) : c.days).map((day, i) => (
+                {(isAuditCommitteePageReady(c)
+                  ? remainingAuditDays(c.days, todayKey).slice(0, 3)
+                  : c.days
+                ).map((day, i) => (
                   <li key={`${c.short}-${i}`} className="flex gap-3 py-1.5">
                     <span className="w-28 shrink-0 text-(--color-text-tertiary) tabular-nums sm:w-36">
                       {formatAuditDate(day.date)}
@@ -261,8 +306,11 @@ export default async function Audit2026Page() {
                   href={auditCommitteePath(c.name)}
                   className="mt-3 inline-block text-sm font-semibold text-(--color-primary) hover:underline"
                 >
-                  {c.days.length > 3 ? `외 ${c.days.length - 3}일 일정과 ` : ""}
-                  {c.short} 증인·쟁점 자세히 보기 →
+                  {c.short} 전체 일정·증인·쟁점 보기
+                  {remainingAuditDays(c.days, todayKey).length > 3
+                    ? ` (남은 일정 ${remainingAuditDays(c.days, todayKey).length - 3}개 더)`
+                    : ""}{" "}
+                  →
                 </Link>
               )}
               <AuditSources sources={c.sources.slice(0, 2)} />
@@ -294,7 +342,7 @@ export default async function Audit2026Page() {
 
       <AdSlot placement="audit-hub-deep" />
 
-      <section aria-labelledby="dates-title" className="space-y-3">
+      <section id="dates" aria-labelledby="dates-title" className="scroll-mt-32 space-y-3">
         <h2 id="dates-title" className="text-2xl font-bold">
           날짜별로 보기
         </h2>
@@ -337,7 +385,8 @@ export default async function Audit2026Page() {
           국회가 공개한 국정감사 회의
         </h2>
         <p className="text-xs text-(--color-text-tertiary)">
-          국회 의사일정에 등록된 회의를 매일 자동으로 가져옵니다. 앞으로 일주일 치만 보여 줍니다.
+          국감 관련 안건이 들어간 국회 공개 회의(증인 변경 등)를 매일 자동으로 가져옵니다. 실제 감사
+          일정 전체는 아니며, 앞으로 일주일 치만 보여 줍니다.
         </p>
         {liveSchedules.length > 0 ? (
           <ul className="divide-y divide-(--color-border-primary) text-sm">
@@ -362,8 +411,7 @@ export default async function Audit2026Page() {
         )}
         {upcomingAudit.length === 0 && (
           <p className="text-sm text-(--color-text-secondary)">
-            국회가 회의 일정을 공개하면 이곳에 자동으로 표시됩니다(보통 감사 며칠 전 등록). 전체
-            국회 일정은{" "}
+            앞으로 일주일 안에 국감 관련 안건이 들어간 공개 회의가 없습니다. 전체 국회 일정은{" "}
             <Link href="/schedule" className="text-(--color-primary) underline underline-offset-2">
               국회 일정
             </Link>
@@ -372,7 +420,7 @@ export default async function Audit2026Page() {
         )}
       </section>
 
-      <section aria-labelledby="issues-title" className="space-y-4">
+      <section id="issues" aria-labelledby="issues-title" className="scroll-mt-32 space-y-4">
         <h2 id="issues-title" className="text-2xl font-bold">
           주요 쟁점
         </h2>
@@ -414,6 +462,34 @@ export default async function Audit2026Page() {
             <AuditSources sources={issue.sources} />
           </article>
         ))}
+      </section>
+
+      <section id="about" aria-labelledby="about-title" className="scroll-mt-32 space-y-3">
+        <h2 id="about-title" className="text-xl font-bold">
+          이 페이지에 대해
+        </h2>
+        <p className="text-base leading-relaxed text-(--color-text-secondary)">
+          여야는 8월 25일 정기국회 의사일정에 합의하며 올해 국정감사를{" "}
+          <strong className="text-(--color-text-primary)">10월 6일부터 27일까지 3주간</strong>{" "}
+          열기로 했습니다. 정보위원회와 성평등가족위원회는 10월 30일까지 이어지고, 운영위원회의
+          대통령비서실 감사도 30일에 열립니다. 각 상임위원회가 소관 부처·공공기관을 나눠 감사하며,
+          기관별 실제 감사일은 위원회가 채택한 국정감사계획서를 따릅니다.
+        </p>
+        <div className="rounded-xl border border-(--color-border-primary) bg-(--color-bg-secondary) px-4 py-3 text-xs leading-relaxed text-(--color-text-secondary)">
+          <span className="font-semibold text-(--color-text-primary)">편집 원칙 </span>
+          상임위별 일정은 국회 홈페이지에 올라온 국정감사계획서 원문과 의결 보도로 확인한 것만
+          적습니다. 계획서 의결 전인 위원회는 보도된 예정 일정임을 밝히고, 정보가 없는 위원회는
+          날짜를 비워 둡니다. 쟁점은 발언 주체를 밝혀 인용하고 여야 입장을 함께 싣습니다. 국정감사
+          제도 설명은{" "}
+          <Link
+            href={`/glossary/${encodeURIComponent("국정감사")}`}
+            className="text-(--color-primary) underline underline-offset-2"
+          >
+            용어사전 &lsquo;국정감사&rsquo;
+          </Link>
+          를 참고하세요.
+        </div>
+        <AuditSources sources={d.periodSources} />
       </section>
     </div>
   );
