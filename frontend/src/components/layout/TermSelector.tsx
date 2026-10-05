@@ -20,7 +20,9 @@ function TermSelectorInner() {
   const isMemberDetail = /^\/members\/[^/]+/.test(pathname) && pathname !== "/members";
   const isBillDetail = /^\/bills\/[^/]+/.test(pathname) && pathname !== "/bills";
   const isVoteDetail = /^\/votes\/[^/]+/.test(pathname) && pathname !== "/votes";
-  if (isMemberDetail || isBillDetail || isVoteDetail) return null;
+  // 2026 국정감사 페이지는 22대 고정 편집 페이지 — 대수 선택이 첫 화면 높이만 차지한다
+  const isAuditIssue = pathname.startsWith("/issues/audit-2026");
+  if (isMemberDetail || isBillDetail || isVoteDetail || isAuditIssue) return null;
 
   const terms = [
     { id: "22", label: "제22대 (현재)" },

@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import AdSlot from "@/components/ads/AdSlot";
 import AuditChangeList from "@/components/issues/AuditChangeList";
+import AuditLiveLinks from "@/components/issues/AuditLiveLinks";
 import AuditSources from "@/components/issues/AuditSources";
 import JsonLd from "@/components/seo/JsonLd";
 import {
@@ -18,7 +19,9 @@ import {
   formatAuditDate,
   formatAuditMd,
   auditAgendaText,
-  AUDIT_LIVE_LINKS,
+  expandAuditDate,
+  kstDateKey,
+  remainingAuditDays,
 } from "@/lib/audit-format";
 import { committeeAliasLabel } from "@/lib/committee-aliases";
 import type { CommitteeMemberInfo, Schedule } from "@/types";
@@ -100,6 +103,13 @@ export default async function AuditCommitteePage({ params }: PageProps) {
   if (!c) notFound();
 
   const status = auditStatus(new Date());
+  // 첫 화면 요약 — 오늘 예정 일정, 없으면 다음 일정(같은 날 여러 감사반이면 모두)
+  const todayKey = kstDateKey(new Date());
+  const todayDays = c.days.filter((day) => expandAuditDate(day.date).includes(todayKey));
+  const remaining = remainingAuditDays(c.days, todayKey);
+  const nextDays =
+    todayDays.length > 0 ? [] : remaining.filter((day) => day.date === remaining[0]?.date);
+  const lastDay = c.days.at(-1);
   const [detail, upcoming] = await Promise.all([
     getCommitteeDetail({ name: c.name, termId: TERM_ID }).catch(() => null),
     getUpcomingSchedulesByKeyword(TERM_ID, "국정감사").catch(() => [] as Schedule[]),
@@ -157,9 +167,63 @@ export default async function AuditCommitteePage({ params }: PageProps) {
           {c.period && <span>{c.period}</span>}
           {c.resolvedOn && <span className="tabular-nums">계획서 의결 {c.resolvedOn}</span>}
           {c.checkedAt && (
-            <span className="tabular-nums">원문 확인 {formatAuditMd(c.checkedAt.slice(5))}</span>
+            <span className="tabular-nums">
+              위원회 게시판 확인 {formatAuditMd(c.checkedAt.slice(5))}
+            </span>
           )}
           <span className="tabular-nums">최종 갱신 {d.updatedAt}</span>
+        </div>
+        {/* 모바일 직접 착지자가 첫 화면에서 '언제·무엇을·어디서 보나'에 답을 얻게 한다(2026-10-05 codex UX 검토) */}
+        <div className="space-y-3 rounded-xl border border-(--color-border-primary) p-4">
+          <h2 className="text-base font-bold">
+            {todayDays.length > 0
+              ? `오늘 예정 · ${formatAuditMd(todayKey.slice(5))}`
+              : nextDays.length > 0
+                ? `${todayKey < d.start ? "첫 감사 일정" : "다음 감사 일정"} · ${formatAuditDate(nextDays[0].date)}`
+                : lastDay
+                  ? `수록 일정의 마지막 날짜 · ${formatAuditDate(lastDay.date)}`
+                  : "감사 일정 확인 중"}
+          </h2>
+          {(todayDays.length > 0 ? todayDays : nextDays).length > 0 && (
+            <ul className="space-y-1 text-sm">
+              {(todayDays.length > 0 ? todayDays : nextDays).map((day, i) => (
+                <li key={`${day.date}-${i}`}>
+                  <span className="font-medium text-(--color-text-primary)">{day.target}</span>
+                  {day.note && (
+                    <span className="block text-xs text-(--color-text-secondary)">{day.note}</span>
+                  )}
+                </li>
+              ))}
+            </ul>
+          )}
+          <AuditLiveLinks component="committee_summary" committee={c.name} />
+          <nav aria-label={`${c.short} 국정감사 페이지 안 바로가기`}>
+            <ul className="flex flex-wrap gap-2 text-sm">
+              {[
+                ["#days", "날짜별 일정"],
+                ...(adopted.length > 0 || requested.length > 0 ? [["#witnesses", "증인"]] : []),
+                ...(issues.length > 0 ? [["#issues", "쟁점"]] : []),
+                ["#changes", "변경 이력"],
+              ].map(([href, label]) => (
+                <li key={href}>
+                  <a
+                    href={href}
+                    className="inline-flex min-h-10 items-center rounded-full border border-(--color-border-primary) px-3 font-medium text-(--color-text-primary) no-underline hover:bg-(--color-bg-secondary)"
+                  >
+                    {label}
+                  </a>
+                </li>
+              ))}
+              <li>
+                <Link
+                  href={d.path}
+                  className="inline-flex min-h-10 items-center rounded-full border border-(--color-border-primary) px-3 font-medium text-(--color-primary) no-underline hover:bg-(--color-bg-secondary)"
+                >
+                  전체 국감 일정
+                </Link>
+              </li>
+            </ul>
+          </nav>
         </div>
         <p className="text-base leading-relaxed text-(--color-text-secondary)">{c.summary}</p>
         {c.scope && (
@@ -170,7 +234,7 @@ export default async function AuditCommitteePage({ params }: PageProps) {
         )}
       </header>
 
-      <section aria-labelledby="days-title" className="space-y-3">
+      <section id="days" aria-labelledby="days-title" className="scroll-mt-32 space-y-3">
         <h2 id="days-title" className="text-2xl font-bold">
           날짜별 감사 일정
         </h2>
@@ -212,7 +276,7 @@ export default async function AuditCommitteePage({ params }: PageProps) {
       <AdSlot placement="audit-committee-main" />
 
       {(adopted.length > 0 || requested.length > 0) && (
-        <section aria-labelledby="witness-title" className="space-y-3">
+        <section id="witnesses" aria-labelledby="witness-title" className="scroll-mt-32 space-y-3">
           <h2 id="witness-title" className="text-2xl font-bold">
             증인·참고인
           </h2>
@@ -264,7 +328,7 @@ export default async function AuditCommitteePage({ params }: PageProps) {
       )}
 
       {issues.length > 0 && (
-        <section aria-labelledby="issues-title" className="space-y-4">
+        <section id="issues" aria-labelledby="issues-title" className="scroll-mt-32 space-y-4">
           <h2 id="issues-title" className="text-2xl font-bold">
             주요 쟁점
           </h2>
@@ -327,23 +391,11 @@ export default async function AuditCommitteePage({ params }: PageProps) {
           국회가 공개한 {c.short} 국정감사 회의
         </h2>
         <p className="text-sm">
-          <span className="font-semibold">감사 당일 생중계</span>{" "}
-          {AUDIT_LIVE_LINKS.map((l, i) => (
-            <span key={l.url}>
-              {i > 0 && " · "}
-              <a
-                href={l.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-(--color-primary) underline underline-offset-2"
-              >
-                {l.label}
-              </a>
-            </span>
-          ))}
-          <span className="text-(--color-text-tertiary)">
-            {" "}
-            — 의사중계 첫 화면의 &lsquo;오늘의 생중계&rsquo;에서 상임위 영상을 볼 수 있습니다.
+          <span className="mb-2 block font-semibold">감사 당일 생중계</span>
+          <AuditLiveLinks component="committee_live" committee={c.name} />
+          <span className="mt-2 block text-xs text-(--color-text-tertiary)">
+            의사중계 첫 화면의 &lsquo;오늘의 생중계&rsquo;에서 상임위 영상을 고를 수 있습니다. 방송
+            여부·정회 상태는 이곳에서 확인하지 않습니다.
           </span>
         </p>
         {liveSchedules.length > 0 ? (
@@ -361,8 +413,8 @@ export default async function AuditCommitteePage({ params }: PageProps) {
           </ul>
         ) : (
           <p className="text-sm text-(--color-text-secondary)">
-            국회가 회의 일정을 공개하면 이곳에 자동으로 표시됩니다(보통 감사 며칠 전 등록). 위원회의
-            법안·회의록은{" "}
+            앞으로 국감 관련 안건이 들어간 공개 회의가 없습니다(실제 감사 회의는 국회 공개 일정에
+            잡히지 않습니다). 위원회의 법안·회의록은{" "}
             <Link
               href={`/committees/${encodeURIComponent(c.name)}`}
               className="text-(--color-primary) underline underline-offset-2"
