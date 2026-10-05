@@ -13,6 +13,7 @@ import LatestWeeklyNews from "@/components/home/LatestWeeklyNews";
 import EditorsPicks from "@/components/home/EditorsPicks";
 import AdSlot from "@/components/ads/AdSlot";
 import { getHomePicks } from "@/data/editors-picks";
+import AuditHomeSpotlight from "@/components/home/AuditHomeSpotlight";
 import CabinetNomineeSpotlight from "@/components/home/CabinetNomineeSpotlight";
 import PropertyHighlight from "@/components/home/PropertyHighlight";
 import ScorecardHighlight from "@/components/home/ScorecardHighlight";
@@ -123,11 +124,15 @@ export default async function HomePage({ searchParams }: HomePageProps) {
         {/* 헤더: 검색·탐색 게이트 */}
         <HeroSearch />
 
+        {/* 2026 국정감사 진입 카드 — 국감 기간(10/30까지)만. 속보보다 먼저: 속보는 '무슨 일',
+            이 카드는 '어디서 일정을 찾나'를 맡는다(2026-10-05 codex UX 검토). 개각 카드는 이 자리에서 내림 */}
+        <AuditHomeSpotlight />
+
         {/* 속보 배너 — 편집 콘텐츠를 첫 화면 최상단에 (사이트 성격이 '자동 집계'가
             아니라 '편집 매체'로 먼저 읽히도록. AdSense 대응 2순위, 2026-08) */}
         <BreakingNewsBanner />
 
-        {/* 2기 개각 후보자 진입 카드 — 편집 데이터 showOnHome=false면 렌더 안 함 (임명 결과 확정 후 내림) */}
+        {/* 2기 개각 후보자 진입 카드 — showOnHome=false(2026-10-05)라 렌더 안 함. 다음 개각 때 재사용 */}
         <CabinetNomineeSpotlight />
 
         {/* 편집자가 고른 국회 분석 — 자체 편집 콘텐츠를 첫 화면에서 발견 가능하게 */}
