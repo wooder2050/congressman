@@ -54,6 +54,15 @@ export function auditAgendaText(agenda: string | null | undefined, fallback: str
   return lines.length > 0 ? lines.join(" · ") : fallback;
 }
 
+/**
+ * 국정감사 생중계 — 국회 공식 채널만 연결한다(2026-10-05 접속 확인).
+ * 의사중계시스템은 위원회별 실시간 영상을, 국회방송은 주요 감사 중계를 낸다.
+ */
+export const AUDIT_LIVE_LINKS = [
+  { label: "국회 인터넷의사중계", url: "https://assembly.webcast.go.kr/main/" },
+  { label: "국회방송(NATV)", url: "https://www.natv.go.kr/natv/index.do" },
+] as const;
+
 /** 한국 시간(KST) 기준 "YYYY-MM-DD" — 서버 시간대(UTC)와 무관하게 계산한다 */
 export function kstDateKey(now: Date, addDays = 0): string {
   return new Date(now.getTime() + 9 * 3600 * 1000 + addDays * 86400000).toISOString().slice(0, 10);

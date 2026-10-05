@@ -5,7 +5,7 @@ import {
   isAuditCommitteePageReady,
   type AuditCommittee,
 } from "@/data/audit-2026";
-import { expandAuditDate, formatAuditMd, kstDateKey } from "@/lib/audit-format";
+import { AUDIT_LIVE_LINKS, expandAuditDate, formatAuditMd, kstDateKey } from "@/lib/audit-format";
 
 interface BoardRow {
   committee: AuditCommittee;
@@ -102,7 +102,23 @@ export default function AuditTodayBoard({ now }: { now: Date }) {
           </>
         )}
       </div>
-      <p className="mt-3 text-xs text-(--color-text-tertiary)">
+      <p className="mt-3 text-sm">
+        <span className="font-semibold">생중계 보기</span>{" "}
+        {AUDIT_LIVE_LINKS.map((l, i) => (
+          <span key={l.url}>
+            {i > 0 && " · "}
+            <a
+              href={l.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-(--color-primary) underline underline-offset-2"
+            >
+              {l.label}
+            </a>
+          </span>
+        ))}
+      </p>
+      <p className="mt-2 text-xs text-(--color-text-tertiary)">
         &lsquo;(예정)&rsquo;은 계획서 의결 전 보도된 일정입니다. 실제 회의 시각은 국회 공개 일정에서
         확인하세요.
       </p>
