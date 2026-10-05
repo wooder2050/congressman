@@ -56,12 +56,14 @@ export function auditAgendaText(agenda: string | null | undefined, fallback: str
 }
 
 /**
- * 국정감사 생중계 — 국회 공식 채널만 연결한다(2026-10-05 접속 확인).
- * 의사중계시스템은 위원회별 실시간 영상을, 국회방송은 주요 감사 중계를 낸다.
+ * 국정감사 생중계 — 국회 공식 채널만 연결한다.
+ * 의사중계시스템은 위원회별 실시간 영상을, 국회방송은 온에어(생방송) 화면으로 연결한다.
+ * 주의: natv.go.kr/natv/index.do는 HTTP 200으로 오류 페이지("죄송합니다")를 돌려준다 —
+ * 링크를 바꿀 땐 상태 코드가 아니라 실제 브라우저 화면으로 확인할 것(2026-10-05).
  */
 export const AUDIT_LIVE_LINKS = [
   { label: "국회 인터넷의사중계", url: "https://assembly.webcast.go.kr/main/" },
-  { label: "국회방송(NATV)", url: "https://www.natv.go.kr/natv/index.do" },
+  { label: "국회방송(NATV)", url: "https://www.natv.go.kr/natv/onair.do" },
 ] as const;
 
 /** 한국 시간(KST) 기준 "YYYY-MM-DD" — 서버 시간대(UTC)와 무관하게 계산한다 */
