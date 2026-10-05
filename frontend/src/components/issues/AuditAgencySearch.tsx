@@ -178,8 +178,8 @@ export default function AuditAgencySearch({
         기관명으로 감사일 찾기
       </h2>
       <p className="mt-1 text-xs text-(--color-text-tertiary)">
-        계획서가 확인된 위원회의 피감기관 {agencyCount.toLocaleString()}곳 · 계획서 원문 대조{" "}
-        {verifiedAt}
+        계획서가 확인된 위원회의 기관명 {agencyCount.toLocaleString()}곳 수록 · 계획서 원문 대조{" "}
+        {verifiedAt} · 국회사무처 공식 집계 피감기관은 846개로, 집계 단위가 달라 수가 다릅니다
       </p>
       <input
         type="search"
