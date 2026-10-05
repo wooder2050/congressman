@@ -18,6 +18,7 @@ import {
   formatAuditDate,
   formatAuditMd,
   auditAgendaText,
+  AUDIT_LIVE_LINKS,
 } from "@/lib/audit-format";
 import { committeeAliasLabel } from "@/lib/committee-aliases";
 import type { CommitteeMemberInfo, Schedule } from "@/types";
@@ -325,6 +326,26 @@ export default async function AuditCommitteePage({ params }: PageProps) {
         <h2 id="live-title" className="text-2xl font-bold">
           국회가 공개한 {c.short} 국정감사 회의
         </h2>
+        <p className="text-sm">
+          <span className="font-semibold">감사 당일 생중계</span>{" "}
+          {AUDIT_LIVE_LINKS.map((l, i) => (
+            <span key={l.url}>
+              {i > 0 && " · "}
+              <a
+                href={l.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-(--color-primary) underline underline-offset-2"
+              >
+                {l.label}
+              </a>
+            </span>
+          ))}
+          <span className="text-(--color-text-tertiary)">
+            {" "}
+            — 의사중계 첫 화면의 &lsquo;오늘의 생중계&rsquo;에서 상임위 영상을 볼 수 있습니다.
+          </span>
+        </p>
         {liveSchedules.length > 0 ? (
           <ul className="divide-y divide-(--color-border-primary) text-sm">
             {liveSchedules.map((s) => (
