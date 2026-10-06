@@ -44,6 +44,8 @@ type FetchApiOptions = {
   revalidate?: number;
   /** ms — 지정 시 초과하면 요청 중단 (선택 섹션이 페이지 렌더를 붙잡지 않도록) */
   timeoutMs?: number;
+  /** Next data cache 태그 — 온디맨드 재검증(revalidateTag)으로 배포 없이 갱신할 때 */
+  tags?: string[];
 };
 
 /** 백엔드 재시작·순단으로 나는 일시 오류만 재시도 대상 (그 외 4xx/5xx는 즉시 실패) */
@@ -102,9 +104,12 @@ async function fetchApi<T>(path: string, options?: FetchApiOptions): Promise<T> 
   const deadline = timeoutMs !== undefined && timeoutMs > 0 ? Date.now() + timeoutMs : null;
 
   const doFetch = (bypassMemoization: boolean): Promise<Response> => {
-    const init: RequestInit & { next?: { revalidate?: number } } = {};
+    const init: RequestInit & { next?: { revalidate?: number; tags?: string[] } } = {};
     if (options?.revalidate !== undefined) {
-      init.next = { revalidate: options.revalidate };
+      init.next = {
+        revalidate: options.revalidate,
+        ...(options.tags ? { tags: options.tags } : {}),
+      };
       // Next.js 16 defaults fetch to no-store; force-cache is required to actually
       // hit the data cache. Only apply server-side — client React Query manages
       // its own cache and we don't want to interfere with browser cache semantics.
@@ -160,6 +165,49 @@ async function fetchApi<T>(path: string, options?: FetchApiOptions): Promise<T> 
     } catch (retryErr) {
       throw normalizeError(retryErr);
     }
+  }
+}
+
+export interface YouTubeShort {
+  videoId: string;
+  title: string;
+  description: string;
+  publishedAt: string;
+  durationSeconds: number | null;
+  committee: string | null;
+  sourceUrl: string | null;
+}
+
+/** 쇼츠 데이터 캐시 태그 — 등록 CLI가 /api/revalidate/shorts로 이 태그를 무효화한다 */
+export function shortsCacheTag(issueSlug: string): string {
+  return `shorts:${issueSlug}`;
+}
+
+/**
+ * 이슈 페이지에 붙는 유튜브 쇼츠 목록. 영상은 DB에 등록하면 배포 없이 노출된다.
+ * 실패는 null(섹션 숨김), 등록된 영상이 없으면 빈 배열로 구분한다.
+ */
+export async function getYouTubeShorts(params: {
+  issueSlug: string;
+  placement: "hub" | "committee" | "home";
+  committee?: string;
+  limit?: number;
+}): Promise<YouTubeShort[] | null> {
+  const sp = new URLSearchParams({
+    issueSlug: params.issueSlug,
+    placement: params.placement,
+    limit: String(params.limit ?? 3),
+  });
+  if (params.committee) sp.set("committee", params.committee);
+  try {
+    const data = await fetchApi<YouTubeShort[] | null>(`/api/youtube-shorts?${sp.toString()}`, {
+      revalidate: 3600,
+      timeoutMs: 2000,
+      tags: [shortsCacheTag(params.issueSlug)],
+    });
+    return data ?? [];
+  } catch {
+    return null;
   }
 }
 
