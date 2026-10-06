@@ -785,6 +785,29 @@ model BreakingNews {
   @@index([active, date])
 }
 
+// ====== 유튜브 쇼츠 (국감 오늘의 장면 등) ======
+// 영상을 올릴 때마다 프론트를 배포하지 않도록 DB를 원본으로 둔다(2026-10-06 codex 검토).
+// 등록·숨김은 src/youtube-shorts/shorts-cli.ts가 하고, 저장 뒤 Redis 키 삭제 + 프론트 재검증을 호출한다.
+// RLS: prisma/sql/youtube_shorts_create.sql로 생성과 RLS를 한 트랜잭션에 적용(공개 키 직접 접근 차단).
+model YouTubeShort {
+  videoId         String   @id @db.VarChar(11)
+  title           String // 사이트 표시 제목
+  description     String   @default("") // 사이트용 편집 요약
+  publishedAt     DateTime @db.Timestamptz(3)
+  durationSeconds Int?
+  issueSlug       String   @default("audit-2026")
+  committee       String? // 정식 위원회명. null이면 허브에만
+  active          Boolean  @default(false) // 검수·재생 확인을 마친 영상만 true
+  showOnHome      Boolean  @default(false)
+  sortOrder       Int      @default(0) // 기본 0 = 최신순, 음수로 고정
+  sourceUrl       String? // 원회의·회의록 등
+  editorialNote   String? // 비공개 검수 메모(공개 API에 내보내지 않음)
+  createdAt       DateTime @default(now()) @db.Timestamptz(3)
+  updatedAt       DateTime @updatedAt @db.Timestamptz(3)
+
+  @@index([issueSlug, active, publishedAt(sort: Desc)])
+}
+
 // ====== 주간 뉴스 ======
 
 model WeeklyArticle {

@@ -3,6 +3,7 @@ import Link from "next/link";
 import AdSlot from "@/components/ads/AdSlot";
 import JsonLd from "@/components/seo/JsonLd";
 import AuditAgencySearch from "@/components/issues/AuditAgencySearch";
+import AuditShortsSection from "@/components/issues/AuditShortsSection";
 import AuditChangeList from "@/components/issues/AuditChangeList";
 import AuditSources from "@/components/issues/AuditSources";
 import AuditTodayBoard from "@/components/issues/AuditTodayBoard";
@@ -190,6 +191,9 @@ export default async function Audit2026Page() {
           </div>
         </>
       )}
+
+      {/* 쇼츠는 DB 등록만으로 나타난다(배포 불필요). 영상이 없으면 섹션째 숨김 */}
+      <AuditShortsSection placement="hub" />
 
       <section id="changes" aria-labelledby="changes-title" className="scroll-mt-32 space-y-3">
         <div className="flex flex-wrap items-baseline justify-between gap-2">

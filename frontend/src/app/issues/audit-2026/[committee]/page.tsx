@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import AdSlot from "@/components/ads/AdSlot";
 import AuditChangeList from "@/components/issues/AuditChangeList";
 import AuditLiveLinks from "@/components/issues/AuditLiveLinks";
+import AuditShortsSection from "@/components/issues/AuditShortsSection";
 import AuditSources from "@/components/issues/AuditSources";
 import JsonLd from "@/components/seo/JsonLd";
 import {
@@ -359,6 +360,8 @@ export default async function AuditCommitteePage({ params }: PageProps) {
           ))}
         </section>
       )}
+
+      <AuditShortsSection placement="committee" committee={c.name} committeeShort={c.short} />
 
       {hasLongIssues && <AdSlot placement="audit-committee-deep" />}
 
