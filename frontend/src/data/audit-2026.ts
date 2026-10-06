@@ -110,7 +110,7 @@ export const AUDIT_2026 = {
   description:
     "2026년 국정감사는 10월 6일부터 27일까지 3주간 열립니다(정보위·성평등가족위·운영위 대통령비서실 감사는 30일까지). 상임위원회별 감사 일정과 피감기관, 증인 채택 공방과 주요 쟁점을 한곳에 정리했습니다.",
   publishedAt: "2026-09-24",
-  updatedAt: "2026-10-05",
+  updatedAt: "2026-10-06",
   start: "2026-10-06",
   end: "2026-10-27",
   extendedEnd: "2026-10-30",
@@ -128,7 +128,7 @@ export const AUDIT_2026 = {
       name: "국회운영위원회",
       titleAgencies: "대통령실·국가인권위원회",
       short: "운영위",
-      checkedAt: "2026-10-04",
+      checkedAt: "2026-10-06",
       status: "confirmed",
       resolvedOn: "2026-09-16",
       period: "10월 29일(목)~30일(금), 2일간",
@@ -234,7 +234,7 @@ export const AUDIT_2026 = {
       name: "법제사법위원회",
       titleAgencies: "대법원·법무부·대검찰청",
       short: "법사위",
-      checkedAt: "2026-10-04",
+      checkedAt: "2026-10-06",
       changes: [
         {
           on: "2026-10-04",
@@ -342,11 +342,48 @@ export const AUDIT_2026 = {
           affiliation: "대법원장",
           date: "10-06",
           topic:
-            "대법관 후보 재제청 거부 경위 등. 9월 28일 전체회의에서 범여권 주도로 채택(국민의힘 표결 불참·퇴장). 10월 2일 '증인으로 출석해 답변드리는 것은 어렵다'는 의견서 제출(4일 법사위원장 공개)",
+            "대법관 후보 재제청 거부 경위 등. 9월 28일 전체회의에서 범여권 주도로 채택(국민의힘 표결 불참·퇴장). 10월 2일 '증인으로 출석해 답변드리는 것은 어렵다'는 의견서 제출(4일 법사위원장 공개). 10월 6일 기관장 자격으로 출석해 인사말 후 증인 선서 거부, 오전에 일부 질의에만 답하고 오후 감기를 이유로 이석",
           status: "adopted",
         },
       ],
       issues: [
+        {
+          title: "10월 6일 대법원 감사 — 조희대 선서 거부, 오후 이석",
+          committees: ["법제사법위원회"],
+          body: "조희대 대법원장은 6일 대법원 국정감사에 기관장 자격으로 출석해 인사말을 하고 일반증인 선서는 거부했다. 인사말에서 '대법관 제청에 대한 증언 요구는 삼권분립과 사법부 독립의 원칙을 훼손할 염려가 있다'며 응하기 어렵다고 했고, 청와대의 재제청 요청 공문에 '구체적 사유와 헌법적 근거가 기재되지 않았다'고 밝혔다. 서영교 위원장(더불어민주당)이 이석을 허가하지 않아 조 대법원장은 오전 내내 자리를 지키며 일부 질의에 답했다. 국민의힘은 인사말 뒤 이석하는 관례를 들어 퇴장을 요구했고, 이 과정에서 고성이 오가 국민의힘 김태규 의원의 발언권이 정지되기도 했다. 오후 2시 44분쯤 재개된 감사에 조 대법원장은 나오지 않았고, 노경필 법원행정처장은 '감기가 많이 심해지셨다'며 '끝날 무렵 마무리 말씀을 하러 오실 것 같다'고 설명했다.",
+          quotes: [
+            {
+              who: "조희대 대법원장(인사말)",
+              text: "대법관 제청에 대해 증언 요구는 삼권분립과 사법부 독립의 원칙을 훼손할 염려가 있다",
+            },
+            {
+              who: "김의겸 의원(더불어민주당, 법사위 간사)",
+              text: "선서하고 국민들이 궁금해하는 점에 대해 답변하는 것은 대법원장으로서뿐만 아니라 공직자로서 너무나 당연한 의무",
+            },
+            {
+              who: "박형수 의원(국민의힘, 법사위 간사)",
+              text: "대법원장을 여기 강제로 앉혀 놓는 것은 다수의 힘으로 체포하고 감금하는 행위",
+            },
+            {
+              who: "서영교 법제사법위원장(더불어민주당, 오후 이석 뒤)",
+              text: "특별하게 대법원장님만 그렇지 않다는 것은 엄청난 특혜",
+            },
+          ],
+          sources: [
+            {
+              title: '조희대, 국감서 "靑 재제청 공문, 구체적 사유·헌법적 근거 없어" / 파이낸셜뉴스',
+              url: "https://www.fnnews.com/news/202610061026537362",
+            },
+            {
+              title: "'조희대 난투극' 법사위 국감, 여야 막말·고성으로 얼룩져 / 파이낸셜뉴스",
+              url: "https://www.fnnews.com/news/202610061343567474",
+            },
+            {
+              title: '[2026 국감] 조희대, 건강문제로 이석…서영교 "엄청난 특혜, 규탄" / 아이뉴스24',
+              url: "https://www.inews24.com/view/2012239",
+            },
+          ],
+        },
         {
           title: "대법원장 증인 출석 요구",
           committees: ["법제사법위원회"],
@@ -435,7 +472,7 @@ export const AUDIT_2026 = {
       name: "정무위원회",
       titleAgencies: "금융위·금감원·공정위",
       short: "정무위",
-      checkedAt: "2026-10-04",
+      checkedAt: "2026-10-06",
       status: "confirmed",
       resolvedOn: "2026-09-28",
       period: "10월 6일(화)~22일(목)",
@@ -890,7 +927,7 @@ export const AUDIT_2026 = {
       name: "재정경제기획위원회",
       titleAgencies: "재정경제부·국세청·한국은행",
       short: "재경위",
-      checkedAt: "2026-10-04",
+      checkedAt: "2026-10-06",
       status: "confirmed",
       resolvedOn: "2026-09-17",
       period: "10월 6일~23일(18일)",
@@ -1067,7 +1104,7 @@ export const AUDIT_2026 = {
       name: "교육위원회",
       titleAgencies: "교육부·시도교육청·서울대",
       short: "교육위",
-      checkedAt: "2026-10-04",
+      checkedAt: "2026-10-06",
       status: "confirmed",
       resolvedOn: "2026-09-29",
       period: "10월 7일(수)~23일(금), 17일간",
@@ -1315,7 +1352,7 @@ export const AUDIT_2026 = {
       name: "과학기술정보방송통신위원회",
       titleAgencies: "과기정통부·방미통위·KBS",
       short: "과방위",
-      checkedAt: "2026-10-04",
+      checkedAt: "2026-10-06",
       status: "confirmed",
       resolvedOn: "2026-09-15",
       period: "10월 6일~23일(18일)",
@@ -1784,7 +1821,7 @@ export const AUDIT_2026 = {
       name: "외교통일위원회",
       titleAgencies: "외교부·통일부",
       short: "외통위",
-      checkedAt: "2026-10-04",
+      checkedAt: "2026-10-06",
       status: "confirmed",
       resolvedOn: "2026-09-17",
       period: "10월 6일~27일(22일)",
@@ -1901,7 +1938,7 @@ export const AUDIT_2026 = {
       name: "국방위원회",
       titleAgencies: "국방부·합참·방사청",
       short: "국방위",
-      checkedAt: "2026-10-04",
+      checkedAt: "2026-10-06",
       status: "confirmed",
       resolvedOn: "2026-09-10",
       period: "10월 7일(수)~26일(월), 20일간",
@@ -2092,7 +2129,20 @@ export const AUDIT_2026 = {
       name: "행정안전위원회",
       titleAgencies: "행안부·경찰청·선관위",
       short: "행안위",
-      checkedAt: "2026-10-04",
+      checkedAt: "2026-10-06",
+      changes: [
+        {
+          on: "2026-10-06",
+          kind: "증인",
+          summary:
+            "국감에 나오지 않은 민병대 승강기안전기술연구원 이사장(증인)에게 출석명령 의결 — 건강상 이유 등으로 불출석",
+          source: {
+            title:
+              "행안위, 불출석 민병대 승강기안전기술연구원 이사장 출석명령 의결 [국감] / 이투데이",
+            url: "https://www.etoday.co.kr/news/view/2632721",
+          },
+        },
+      ],
       status: "confirmed",
       resolvedOn: "2026-09-16",
       period: "10월 6일(화)~26일(월), 21일간",
@@ -2185,7 +2235,7 @@ export const AUDIT_2026 = {
       name: "문화체육관광위원회",
       titleAgencies: "문체부·국가유산청",
       short: "문체위",
-      checkedAt: "2026-10-04",
+      checkedAt: "2026-10-06",
       status: "confirmed",
       resolvedOn: "2026-09-16",
       period: "10월 7일(수)~23일(금), 17일간(실제 감사 7일)",
@@ -2355,7 +2405,7 @@ export const AUDIT_2026 = {
       name: "농림축산식품해양수산위원회",
       titleAgencies: "농식품부·해수부·농협",
       short: "농해수위",
-      checkedAt: "2026-10-04",
+      checkedAt: "2026-10-06",
       changes: [
         {
           on: "2026-10-02",
@@ -2644,7 +2694,7 @@ export const AUDIT_2026 = {
       name: "산업통상자원중소벤처기업위원회",
       titleAgencies: "산업부·중기부·한전",
       short: "산자중기위",
-      checkedAt: "2026-10-04",
+      checkedAt: "2026-10-06",
       changes: [
         {
           on: "2026-10-01",
@@ -2874,7 +2924,7 @@ export const AUDIT_2026 = {
       name: "보건복지위원회",
       titleAgencies: "복지부·질병청·식약처·국민연금",
       short: "복지위",
-      checkedAt: "2026-10-04",
+      checkedAt: "2026-10-06",
       status: "confirmed",
       resolvedOn: "2026-09-29",
       period: "10월 6일(화)~27일(화), 22일간(첫 감사 7일)",
@@ -3111,7 +3161,7 @@ export const AUDIT_2026 = {
       name: "기후에너지환경노동위원회",
       titleAgencies: "기후부·노동부·기상청·한전",
       short: "기후환노위",
-      checkedAt: "2026-10-04",
+      checkedAt: "2026-10-06",
       status: "confirmed",
       resolvedOn: "2026-09-28",
       period: "10월 6일(화)~27일(화), 22일간",
@@ -3272,7 +3322,7 @@ export const AUDIT_2026 = {
       name: "국토교통위원회",
       titleAgencies: "국토부·LH·코레일·인천공항",
       short: "국토위",
-      checkedAt: "2026-10-04",
+      checkedAt: "2026-10-06",
       status: "confirmed",
       resolvedOn: "2026-09-30",
       period: "10월 7일(수)~23일(금) — 중앙감사 7일·지방감사 1일·현장시찰 1일",
@@ -3497,7 +3547,7 @@ export const AUDIT_2026 = {
       name: "정보위원회",
       titleAgencies: "국정원·국방정보본부·경찰청",
       short: "정보위",
-      checkedAt: "2026-10-04",
+      checkedAt: "2026-10-06",
       status: "confirmed",
       resolvedOn: "2026-09-30",
       period: "10월 28일(수)~30일(금), 3일간",
@@ -3578,7 +3628,7 @@ export const AUDIT_2026 = {
     {
       name: "성평등가족위원회",
       short: "성평등가족위",
-      checkedAt: "2026-10-04",
+      checkedAt: "2026-10-06",
       status: "pending",
       period: "10월 30일까지(국감 기간 연장 상임위)",
       days: [],
@@ -3658,7 +3708,7 @@ export const AUDIT_2026 = {
     {
       title: "대법원장 증인 출석 — 법사위",
       committees: ["법제사법위원회"],
-      body: "법사위는 9월 21일 계획서를 의결하며 조희대 대법원장(10월 6일)과 김상환 헌법재판소장(10월 13일)을 기관증인으로 부르기로 했습니다. 국민의힘은 회의에 불참했습니다. 9월 28일에는 범여권 주도로 조 대법원장을 일반증인으로도 채택했고(국민의힘 퇴장), 조 대법원장은 10월 2일 증인으로 출석해 답변하기 어렵다는 의견서를 냈습니다(4일 공개).",
+      body: "법사위는 9월 21일 계획서를 의결하며 조희대 대법원장(10월 6일)과 김상환 헌법재판소장(10월 13일)을 기관증인으로 부르기로 했습니다. 국민의힘은 회의에 불참했습니다. 9월 28일에는 범여권 주도로 조 대법원장을 일반증인으로도 채택했고(국민의힘 퇴장), 조 대법원장은 10월 2일 증인으로 출석해 답변하기 어렵다는 의견서를 냈습니다(4일 공개). 6일 감사에는 기관장으로 출석해 인사말을 하고 증인 선서는 거부했으며, 오전에 일부 질의에 답한 뒤 오후에는 감기를 이유로 이석했습니다.",
       quotes: [
         {
           who: "김의겸 법사위 민주당 간사",
