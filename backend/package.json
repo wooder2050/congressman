@@ -45,7 +45,13 @@
     "alerts:weekly": "tsx src/digests/alerts-runner.ts weekly",
     "seed:local-elections": "tsx prisma/seed-local-elections.ts",
     "seed:breaking-news": "tsx prisma/seed-breaking-news.ts",
-    "seed:weekly": "tsx prisma/seed-weekly.ts"
+    "seed:weekly": "tsx prisma/seed-weekly.ts",
+    "shorts:add": "tsx src/youtube-shorts/shorts-cli.ts add",
+    "shorts:update": "tsx src/youtube-shorts/shorts-cli.ts update",
+    "shorts:hide": "tsx src/youtube-shorts/shorts-cli.ts hide",
+    "shorts:show": "tsx src/youtube-shorts/shorts-cli.ts show",
+    "shorts:refresh": "tsx src/youtube-shorts/shorts-cli.ts refresh",
+    "shorts:list": "tsx src/youtube-shorts/shorts-cli.ts list"
   },
   "dependencies": {
     "@nestjs/common": "^11.0.0",

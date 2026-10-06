@@ -22,6 +22,7 @@ import { UserPreferencesModule } from './user-preferences/user-preferences.modul
 import { WatchesModule } from './watches/watches.module';
 import { DigestsModule } from './digests/digests.module';
 import { BreakingNewsModule } from './breaking-news/breaking-news.module';
+import { YouTubeShortsModule } from './youtube-shorts/youtube-shorts.module';
 import { WeeklyModule } from './weekly/weekly.module';
 
 @Module({
@@ -50,6 +51,7 @@ import { WeeklyModule } from './weekly/weekly.module';
     WatchesModule,
     DigestsModule,
     BreakingNewsModule,
+    YouTubeShortsModule,
     WeeklyModule,
   ],
   providers: [{ provide: APP_GUARD, useClass: RealIpThrottlerGuard }],
