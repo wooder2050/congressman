@@ -1,9 +1,12 @@
+import Link from "next/link";
 import JsonLd from "@/components/seo/JsonLd";
 import YouTubeShortFacade from "@/components/video/YouTubeShortFacade";
+import { AUDIT_2026 } from "@/data/audit-2026";
 import { getYouTubeShorts } from "@/lib/api";
 
 interface AuditShortsSectionProps {
-  placement: "hub" | "committee";
+  /** today = /today(오늘의 국회) 상단. 국감 기간엔 국감 쇼츠가 그날의 국회 영상 역할을 한다 */
+  placement: "hub" | "committee" | "today";
   committee?: string;
   /** 위원회 페이지에서 보여줄 위원회 약칭(제목용) */
   committeeShort?: string;
@@ -20,13 +23,17 @@ export default async function AuditShortsSection({
 }: AuditShortsSectionProps) {
   const shorts = await getYouTubeShorts({
     issueSlug: "audit-2026",
-    placement,
+    placement: placement === "today" ? "hub" : placement,
     committee,
     limit: placement === "hub" ? 6 : 3,
   });
   if (!shorts || shorts.length === 0) return null;
 
-  const component = placement === "hub" ? "audit_hub_shorts" : "audit_committee_shorts";
+  const component = {
+    hub: "audit_hub_shorts",
+    committee: "audit_committee_shorts",
+    today: "today_shorts",
+  }[placement];
 
   return (
     <section id="shorts" aria-labelledby="shorts-title" className="scroll-mt-32 space-y-3">
@@ -34,16 +41,29 @@ export default async function AuditShortsSection({
         <h2 id="shorts-title" className="text-xl font-bold">
           {committeeShort ? `${committeeShort} 국감 장면` : "국감 오늘의 장면"}
         </h2>
-        <a
-          href="https://www.youtube.com/channel/UCzvkP0-7B6H-FnXD4m7xCMw"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="text-xs text-(--color-text-tertiary)"
-        >
-          로메이크 유튜브 ↗
-        </a>
+        {placement === "today" ? (
+          <Link href={AUDIT_2026.path} className="text-xs text-(--color-text-tertiary)">
+            국감 일정 전체 보기 →
+          </Link>
+        ) : (
+          <a
+            href="https://www.youtube.com/channel/UCzvkP0-7B6H-FnXD4m7xCMw"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-xs text-(--color-text-tertiary)"
+          >
+            로메이크 유튜브 ↗
+          </a>
+        )}
       </div>
-      <ul className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
+      <ul
+        className={
+          // /today는 max-w-7xl이라 4열이면 카드가 커져 속보를 밀어낸다 — 열을 늘려 카드 폭을 허브와 맞춘다
+          placement === "today"
+            ? "grid grid-cols-2 gap-3 sm:grid-cols-4 lg:grid-cols-6"
+            : "grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4"
+        }
+      >
         {shorts.map((s, i) => (
           <li key={s.videoId}>
             <YouTubeShortFacade

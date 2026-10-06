@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import CongressWrapper from "@/common/CongressWrapper";
 import TodayBriefing from "@/components/today/TodayBriefing";
+import AuditShortsSection from "@/components/issues/AuditShortsSection";
 import BreakingNewsFeed from "@/components/today/BreakingNewsFeed";
 
 export const revalidate = 0;
@@ -28,6 +29,10 @@ export default function TodayPage() {
           속보와 오늘의 국회 상황을 3분 안에 파악하세요.
         </p>
       </div>
+
+      {/* 그날의 국회 쇼츠 자리. 국감 기간엔 국감 쇼츠를 싣고, 국감 뒤 '오늘의 국회' 시리즈로 이어 쓴다.
+          영상이 없으면 섹션째 숨김 */}
+      <AuditShortsSection placement="today" />
 
       {/* 속보 — 홈 배너에서 생략되는 항목별 상세·출처를 여기서 제공 */}
       <CongressWrapper fallback={<BreakingNewsFeedSkeleton />}>
