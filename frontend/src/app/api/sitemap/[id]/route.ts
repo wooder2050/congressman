@@ -13,6 +13,7 @@ import { getAllTermSlugs } from "@/lib/glossary";
 import { BILL_INDEX_CURATED, VOTE_INDEXING } from "@/lib/curation-mode";
 import { AUDIT_2026, auditCommitteePath, isAuditCommitteePageReady } from "@/data/audit-2026";
 import { CABINET_2026_08 } from "@/data/cabinet-nominees";
+import { BUDGET_2027 } from "@/data/budget-2027";
 import { BASE, BILLS_PER_SITEMAP, xmlResponse, urlEntry, urlset } from "../route";
 
 export const revalidate = 86400;
@@ -59,6 +60,11 @@ async function buildSitemap(id: number) {
         lastmod: CABINET_2026_08.updatedAt,
         changefreq: "weekly",
         priority: 0.7,
+      }),
+      urlEntry(`${BASE}${BUDGET_2027.path}`, {
+        lastmod: BUDGET_2027.updatedAt,
+        changefreq: "daily",
+        priority: 0.8,
       }),
       urlEntry(`${BASE}${AUDIT_2026.path}`, {
         lastmod: AUDIT_2026.updatedAt,

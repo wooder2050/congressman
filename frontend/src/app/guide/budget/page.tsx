@@ -21,49 +21,80 @@ const budgetProcess = [
     number: "1",
     title: "정부 예산안 편성 (1~8월)",
     content:
-      "각 부처가 사업 계획에 따라 예산 요구서를 기획재정부에 제출하면, 기획재정부가 이를 조정하여 정부 예산안을 만듭니다. 대통령 주재 국무회의 심의를 거쳐 확정됩니다.",
+      "각 부처가 사업 계획에 따라 예산 요구서를 기획예산처에 제출하면, 기획예산처가 이를 조정해 정부 예산안을 만듭니다. 국무회의 의결을 거쳐 정부안이 확정됩니다. 2027년도 예산안은 2026년 9월 1일 국무회의에서 의결됐습니다.",
   },
   {
     number: "2",
-    title: "국회 제출 (9월 3일까지)",
+    title: "국회 제출 (회계연도 개시 120일 전)",
     content:
-      "정부는 회계연도 개시 120일 전(9월 3일)까지 예산안을 국회에 제출해야 합니다. 예산안에는 세입(수입)과 세출(지출) 계획, 기금운용계획 등이 포함됩니다.",
+      "국가재정법에 따라 정부는 회계연도 개시 120일 전(9월 3일)까지 예산안을 국회에 제출해야 합니다. 예산안에는 세입(수입)과 세출(지출) 계획, 기금운용계획 등이 포함됩니다. 2027년도 예산안은 9월 3일 국회에 제출됐습니다.",
   },
   {
     number: "3",
-    title: "상임위원회 예비심사 (9~10월)",
+    title: "상임위원회 예비심사 (국정감사 이후)",
     content:
-      "18개 상임위원회가 소관 부처의 예산안을 심사합니다. 각 위원회는 예산의 타당성, 효율성을 검토하고 삭감 또는 조정 의견을 예산결산특별위원회에 보고합니다.",
+      "상임위원회가 소관 부처의 예산안을 심사합니다. 각 위원회는 예산의 타당성과 효율성을 검토해 증액·감액 의견을 예산결산특별위원회에 보고합니다. 해마다 국정감사가 끝난 뒤 본격적으로 진행되며, 구체적인 회의 날짜는 위원회가 정해 공지합니다.",
   },
   {
     number: "4",
-    title: "예결위 종합심사 (10~11월)",
+    title: "예결위 종합심사 (11월 30일까지)",
     content:
-      "예산결산특별위원회(예결위)가 전체 예산안을 종합 심사합니다. 종합정책질의에서 국무총리와 각 부 장관에게 예산 편성 방향을 질의하고, 부별 심사와 소위원회 계수조정을 거칩니다.",
+      "예산결산특별위원회(예결위)가 전체 예산안을 종합 심사합니다. 종합정책질의에서 국무총리와 각 부 장관에게 예산 편성 방향을 묻고, 부별 심사와 소위원회 계수조정을 거칩니다. 국회법에 따라 위원회는 11월 30일까지 심사를 마쳐야 하고, 마치지 못하면 12월 1일 본회의에 부의된 것으로 봅니다(국회의장과 교섭단체 대표가 합의하면 예외). 자동으로 통과되는 것은 아닙니다.",
   },
   {
     number: "5",
     title: "본회의 의결 (12월 2일까지)",
     content:
-      "예결위 심사를 마친 예산안은 본회의에 상정되어 재적의원 과반수 출석, 출석의원 과반수 찬성으로 확정됩니다. 헌법에 따라 회계연도 개시 30일 전(12월 2일)까지 의결해야 합니다.",
+      "예결위 심사를 마친 예산안은 본회의에 상정되어 재적의원 과반수 출석, 출석의원 과반수 찬성으로 확정됩니다. 헌법 제54조에 따라 회계연도 개시 30일 전(12월 2일)까지 의결해야 합니다. 이 날짜는 법정 기한이며, 실제 처리일은 해마다 다를 수 있습니다.",
   },
 ];
 
+// 2027년도 정부 예산안 12대 분야별 재원배분(조원). 출처: 기획예산처 「2026~2030년 국가재정운용계획」(2026.9.1)
+// 분야별 금액에는 분야 간 중복(R&D 등)이 있어 합계가 총지출(820.9조원)과 정확히 같지 않다.
 const budgetCategories = [
   {
     name: "보건·복지·고용",
-    percentage: "35%",
-    description: "기초생활보장, 건강보험, 고용보험, 연금 등",
+    amount: "289.0조",
+    share: "약 35%",
+    description: "기초생활보장, 건강보험, 고용, 연금 등",
   },
-  { name: "교육", percentage: "14%", description: "초중고 교육, 대학 지원, 평생교육 등" },
-  { name: "국방", percentage: "8%", description: "군사력 유지, 방위산업, 병력 운영 등" },
   {
-    name: "SOC(사회간접자본)",
-    percentage: "7%",
-    description: "도로, 철도, 공항, 항만 건설·유지 등",
+    name: "일반·지방행정",
+    amount: "149.0조",
+    share: "약 18%",
+    description: "지방교부세 등 지방 재원, 일반 행정 등",
   },
-  { name: "R&D(연구개발)", percentage: "5%", description: "과학기술 연구, 산업 기술 개발 등" },
-  { name: "기타", percentage: "31%", description: "외교, 문화, 환경, 농림, 산업 지원 등" },
+  {
+    name: "교육",
+    amount: "110.7조",
+    share: "약 13%",
+    description: "초중고 교육, 대학 지원, 평생교육 등",
+  },
+  {
+    name: "국방",
+    amount: "73.3조",
+    share: "약 9%",
+    description: "군사력 유지, 방위력 개선, 병력 운영 등",
+  },
+  {
+    name: "산업·중소기업·에너지",
+    amount: "41.2조",
+    share: "약 5%",
+    description: "산업 지원, 중소기업, 에너지 전환 등",
+  },
+  {
+    name: "R&D(연구개발)",
+    amount: "39.5조",
+    share: "약 5%",
+    description: "과학기술 연구, 산업 기술 개발 등",
+  },
+  {
+    name: "그 밖의 6개 분야",
+    amount: "121.7조",
+    share: "약 15%",
+    description:
+      "농림·수산·식품 30.7조, SOC 28.9조, 공공질서·안전 28.8조, 환경 14.6조, 문화·체육·관광 11.6조, 외교·통일 7.1조",
+  },
 ];
 
 export default function BudgetGuidePage() {
@@ -121,7 +152,7 @@ export default function BudgetGuidePage() {
               name: "세금은 주로 어디에 쓰이나요?",
               acceptedAnswer: {
                 "@type": "Answer",
-                text: "보건·복지·고용(약 35%), 교육(약 14%), 국방(약 8%), SOC(약 7%), R&D(약 5%) 순으로 지출됩니다. 가장 큰 비중을 차지하는 것은 국민의 건강, 복지, 고용 안정을 위한 예산입니다.",
+                text: "2027년도 정부 예산안(총지출 820조 9천억 원) 기준으로 보건·복지·고용 289조 원(약 35%), 일반·지방행정 149조 원(약 18%), 교육 110.7조 원(약 13%), 국방 73.3조 원(약 9%), 산업·중소기업·에너지 41.2조 원, R&D 39.5조 원 순입니다. 국회 심사에서 바뀔 수 있습니다.",
               },
             },
           ],
@@ -142,8 +173,9 @@ export default function BudgetGuidePage() {
       <section className="space-y-4">
         <h2 className="text-2xl font-bold">국가 예산은 어디에 쓰이나요?</h2>
         <p className="text-sm leading-relaxed text-(--color-text-secondary)">
-          2026년 본예산 약 680조 원은 다음과 같은 분야에 배분됩니다. 가장 큰 비중을 차지하는 것은
-          국민의 건강·복지·고용을 위한 예산입니다.
+          국회가 심사 중인 2027년도 정부 예산안의 총지출은 820조 9천억 원으로, 2026년 본예산(727조
+          9천억 원)보다 12.8% 늘었습니다. 분야별로는 국민의 건강·복지·고용을 위한 예산이 가장
+          큽니다(정부안 기준, 국회 심사에서 바뀔 수 있음).
         </p>
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
           {budgetCategories.map((cat) => (
@@ -154,7 +186,10 @@ export default function BudgetGuidePage() {
               <div className="flex items-baseline justify-between">
                 <h3 className="text-sm font-bold text-(--color-text-primary)">{cat.name}</h3>
                 <span className="text-lg font-extrabold text-(--color-primary)">
-                  {cat.percentage}
+                  {cat.amount}
+                  <span className="ml-1 text-xs font-medium text-(--color-text-tertiary)">
+                    {cat.share}
+                  </span>
                 </span>
               </div>
               <p className="mt-1 text-xs leading-relaxed text-(--color-text-tertiary)">
@@ -163,7 +198,28 @@ export default function BudgetGuidePage() {
             </div>
           ))}
         </div>
+        <p className="text-xs text-(--color-text-tertiary)">
+          출처:{" "}
+          <a
+            href="https://www.mpb.go.kr/web/main/bbs/b_0001/2629"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="underline"
+          >
+            기획예산처 「2027년도 예산안 및 2026~2030년 국가재정운용계획」
+          </a>{" "}
+          분야별 재원배분 계획(2026.9.1). 분야 간 중복이 있어 분야별 합계는 총지출과 정확히 같지
+          않습니다.
+        </p>
       </section>
+
+      <p className="rounded-xl border border-(--color-border-primary) bg-(--color-bg-secondary) p-4 text-sm">
+        지금 국회가 심사 중인 2027년도 예산안의 단계·기한·주요 사업은{" "}
+        <Link href="/issues/budget-2027" className="font-bold underline">
+          2027 예산안 국회 심사
+        </Link>
+        에서 볼 수 있습니다.
+      </p>
 
       {/* 예산 편성 과정 */}
       <section className="space-y-4">
@@ -210,8 +266,12 @@ export default function BudgetGuidePage() {
             국회에 제출하면, 대통령 시정연설 → 예결위 심사 → 본회의 의결 순서로 처리됩니다.
           </p>
           <p className="text-sm leading-relaxed text-(--color-text-secondary)">
-            2026년에는 중동 전쟁 장기화에 따른 고유가·고물가 대응을 위해 26.2조 원 규모의 추경이
-            편성되어 4월 국회에서 심의 중입니다.
+            2026년에는 중동 전쟁 장기화에 따른 고유가 대응을 위해 26.2조 원 규모의 제1회 추경이
+            편성돼 4월 10일 본회의를 통과했습니다(국회 표결 기록 기준 찬성 213·반대 12·기권 19,{" "}
+            <Link href="/votes/PRC_J2P6C0A3K3B1T1K9R5C4W5H4W0V6K1" className="underline">
+              표결 결과 보기
+            </Link>
+            ). 추경을 반영한 2026년 총지출은 753조 원입니다.
           </p>
         </div>
       </section>

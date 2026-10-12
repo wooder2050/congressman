@@ -57,6 +57,8 @@ export const AD_PLACEMENTS = {
   "audit-committee-main": { slot: AD_UNITS.auditMain, sizing: "content-250" },
   /** 상임위 페이지 — 주요 쟁점 뒤. 쟁점이 충분히 긴 페이지에만(상임위 page.tsx의 hasLongIssues) */
   "audit-committee-deep": { slot: AD_UNITS.auditDeep, sizing: "content-250" },
+  /** 예산 허브 — 일정·분야 표 뒤 1개. 국감 종료 뒤 수익을 보며 전용 단위 분리 검토 */
+  "budget-hub-main": { slot: AD_UNITS.section, sizing: "content-250" },
   "article-inline": { slot: AD_UNITS.articleInline, sizing: "content-250" },
   "article-bottom": { slot: AD_UNITS.articleInline, sizing: "content-250" },
   "bill-after-discussion": { slot: AD_UNITS.articleInline, sizing: "content-250" },
