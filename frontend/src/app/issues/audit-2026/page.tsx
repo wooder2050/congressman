@@ -468,6 +468,20 @@ export default async function Audit2026Page() {
         ))}
       </section>
 
+      <Link
+        href="/issues/budget-2027"
+        className="block rounded-xl border border-(--color-border-primary) p-4 no-underline hover:bg-(--color-bg-secondary)"
+      >
+        <p className="text-xs font-medium text-(--color-text-tertiary)">국감 다음 순서</p>
+        <p className="mt-1 text-base font-bold text-(--color-text-primary)">
+          2027 예산안 국회 심사 — 일정·절차·주요 사업 →
+        </p>
+        <p className="mt-1 text-sm text-(--color-text-secondary)">
+          국감이 끝나면 상임위 예비심사와 예결위 심사가 이어집니다. 11월 30일 위원회 심사 기한, 12월
+          2일 의결 기한까지 정리했습니다.
+        </p>
+      </Link>
+
       <section id="about" aria-labelledby="about-title" className="scroll-mt-32 space-y-3">
         <h2 id="about-title" className="text-xl font-bold">
           이 페이지에 대해

@@ -7,8 +7,9 @@ import AuthButton from "@/components/auth/AuthButton";
 const navItems = [
   { href: "/", label: "홈" },
   { href: "/today", label: "오늘" },
-  // 시즌 진입점 — 국감 기간(10월)엔 국정감사, 이후엔 예산 등 그 시기 허브로 교체한다
+  // 시즌 진입점 — 그 시기 허브만 둔다(국감 10월, 예산 11~12월). 끝난 허브는 모바일 더보기·푸터로 내린다
   { href: "/issues/audit-2026", label: "국감" },
+  { href: "/issues/budget-2027", label: "예산" },
   { href: "/members", label: "의원" },
   { href: "/map", label: "지도" },
   { href: "/votes", label: "표결" },
@@ -16,7 +17,6 @@ const navItems = [
   { href: "/committees", label: "위원회" },
   { href: "/compare", label: "비교" },
   { href: "/weekly", label: "주간뉴스" },
-  { href: "/local-elections/2026", label: "지방선거" },
   { href: "/guide", label: "안내" },
 ];
 
