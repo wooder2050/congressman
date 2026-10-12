@@ -42,6 +42,12 @@ export default function Footer() {
             <Link href="/guide" className="underline hover:text-(--color-text-secondary)">
               입법 과정 안내
             </Link>
+            <Link
+              href="/local-elections/2026"
+              className="underline hover:text-(--color-text-secondary)"
+            >
+              6·3 지방선거
+            </Link>
             <a
               href="https://open.assembly.go.kr"
               target="_blank"
