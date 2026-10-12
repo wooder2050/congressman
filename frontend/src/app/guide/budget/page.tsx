@@ -213,6 +213,14 @@ export default function BudgetGuidePage() {
         </p>
       </section>
 
+      <p className="rounded-xl border border-(--color-border-primary) bg-(--color-bg-secondary) p-4 text-sm">
+        지금 국회가 심사 중인 2027년도 예산안의 단계·기한·주요 사업은{" "}
+        <Link href="/issues/budget-2027" className="font-bold underline">
+          2027 예산안 국회 심사
+        </Link>
+        에서 볼 수 있습니다.
+      </p>
+
       {/* 예산 편성 과정 */}
       <section className="space-y-4">
         <h2 className="text-2xl font-bold">예산은 어떻게 만들어지나요?</h2>
