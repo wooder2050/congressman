@@ -110,7 +110,7 @@ export const AUDIT_2026 = {
   description:
     "2026년 국정감사는 10월 6일부터 27일까지 3주간 열립니다(정보위·성평등가족위·운영위 대통령비서실 감사는 30일까지). 상임위원회별 감사 일정과 피감기관, 증인 채택 공방과 주요 쟁점을 한곳에 정리했습니다.",
   publishedAt: "2026-09-24",
-  updatedAt: "2026-10-15",
+  updatedAt: "2026-10-16",
   start: "2026-10-06",
   end: "2026-10-27",
   extendedEnd: "2026-10-30",
@@ -128,7 +128,7 @@ export const AUDIT_2026 = {
       name: "국회운영위원회",
       titleAgencies: "대통령실·국가인권위원회",
       short: "운영위",
-      checkedAt: "2026-10-15",
+      checkedAt: "2026-10-16",
       status: "confirmed",
       resolvedOn: "2026-09-16",
       period: "10월 29일(목)~30일(금), 2일간",
@@ -234,7 +234,7 @@ export const AUDIT_2026 = {
       name: "법제사법위원회",
       titleAgencies: "대법원·법무부·대검찰청",
       short: "법사위",
-      checkedAt: "2026-10-15",
+      checkedAt: "2026-10-16",
       changes: [
         {
           on: "2026-10-04",
@@ -347,6 +347,37 @@ export const AUDIT_2026 = {
         },
       ],
       issues: [
+        {
+          title: "10월 16일 서울고법·서울중앙지법 감사 — 대법관 공백, 이 대통령 재판 중단 공방",
+          committees: ["법제사법위원회"],
+          body: "김대웅 서울고법원장은 청와대와 대법원의 갈등으로 대법관 인선이 지연되는 데 대해 더불어민주당 김동아 의원 질의에 '대법관 공백 상태가 계속되는 게 바람직하지 않은 건 맞다'고 답했고, 국민의힘 윤상현 의원 질의에는 '제청권과 동의권, 임명권 사이에 우열이 있다고 생각하지는 않는다'고 했습니다. 이재명 대통령 재판 중단을 두고도 공방이 이어졌습니다. 국민의힘 김태규 의원은 서울고법(공직선거법 사건)이 기일을 추정해 둔 것을 두고 '직무 유기 아니면 소송 지휘권 남용으로 평가될 수 있다'고 했고, 윤상현 의원은 신속한 재판을 받을 권리는 대통령이나 국민이나 같다고 했습니다. 민주당 김한규 의원은 헌법 84조에 따라 재판부가 중단이 맞다고 판단한 것이라며 '정치적인 주장에 휘둘리지 말라'고 했습니다.",
+          quotes: [
+            {
+              who: "김태규 의원(국민의힘)",
+              text: "우리나라에 재판 중지 제도도 없는데, 이 대통령 공직선거법 사건이 정지돼있고, 사유는 '기일 추정'으로 해놨다",
+            },
+            {
+              who: "김한규 의원(더불어민주당)",
+              text: "헌법 84조에 따라 담당 재판부가 기소된 재판도 중단하는 게 맞는다고 판단한 것",
+            },
+            {
+              who: "김대웅 서울고법원장",
+              text: "제청권과 동의권, 임명권 사이에 우열이 있다고 생각하지는 않는다",
+            },
+          ],
+          sources: [
+            {
+              title:
+                '[2026 국정감사] [종합] 서울고법원장 "대법관 공백 안 돼…제청권·동의권·임명권 우열 없어" / 아주경제',
+              url: "https://www.ajunews.com/view/20261016151645088",
+            },
+            {
+              title:
+                '野 "직무 유기"·與 "헌법적 판단"…\'李대통령 재판중단\' 공방 / 연합뉴스(서플 전재)',
+              url: "https://supple.kr/news/cmvaey748000xz85q9yv2viml",
+            },
+          ],
+        },
         {
           title: "10월 12일 감사원 감사 — '정치편향' 대 '중립성 훼손 인사'",
           committees: ["법제사법위원회"],
@@ -506,7 +537,7 @@ export const AUDIT_2026 = {
       name: "정무위원회",
       titleAgencies: "금융위·금감원·공정위",
       short: "정무위",
-      checkedAt: "2026-10-15",
+      checkedAt: "2026-10-16",
       changes: [
         {
           on: "2026-10-08",
@@ -1017,7 +1048,7 @@ export const AUDIT_2026 = {
       name: "재정경제기획위원회",
       titleAgencies: "재정경제부·국세청·한국은행",
       short: "재경위",
-      checkedAt: "2026-10-15",
+      checkedAt: "2026-10-16",
       status: "confirmed",
       resolvedOn: "2026-09-17",
       period: "10월 6일~23일(18일)",
@@ -1263,7 +1294,20 @@ export const AUDIT_2026 = {
       name: "교육위원회",
       titleAgencies: "교육부·시도교육청·서울대",
       short: "교육위",
-      checkedAt: "2026-10-15",
+      checkedAt: "2026-10-16",
+      changes: [
+        {
+          on: "2026-10-16",
+          kind: "증인",
+          summary:
+            "출석을 거부한 일반증인(경기대 총장, 제자 강제추행 혐의 1심 실형)에 대해 동행명령장 발부를 만장일치로 의결(10월 16일 전체회의)",
+          source: {
+            title:
+              "[2026 국정감사] 국회 교육위, '제자 강제추행 혐의' 경기대 총장에 국감 동행명령장 발부 / 아주경제",
+            url: "https://www.ajunews.com/view/20261016114059586",
+          },
+        },
+      ],
       status: "confirmed",
       resolvedOn: "2026-09-29",
       period: "10월 7일(수)~23일(금), 17일간",
@@ -1511,7 +1555,7 @@ export const AUDIT_2026 = {
       name: "과학기술정보방송통신위원회",
       titleAgencies: "과기정통부·방미통위·KBS",
       short: "과방위",
-      checkedAt: "2026-10-15",
+      checkedAt: "2026-10-16",
       status: "confirmed",
       resolvedOn: "2026-09-15",
       period: "10월 6일~23일(18일)",
@@ -1923,6 +1967,23 @@ export const AUDIT_2026 = {
       ],
       issues: [
         {
+          title: "10월 16일 MBC 비공개 업무보고 — 국민의힘 불참",
+          committees: ["과학기술정보방송통신위원회"],
+          body: "국회는 수신료를 받지 않는 MBC의 편집권을 존중한다는 취지로 국감 기간 MBC 본사에서 비공개 업무보고를 받아 왔습니다. 16일 오전 국민의힘 과방위원들은 이 업무보고에 불참했습니다. 국민의힘 간사 최형두 의원은 국감이 언론에 공개되지 않고 자료 제출을 요구할 수단도 없다며 '실질 감사가 아닌 MBC 방문을 되풀이해 온 참으로 기괴한 관행을 앞으로 끊겠다'고 했습니다. 국민의힘은 이번 불참이 12일 방송미디어통신위원회 감사 도중 범여권 의원들이 이해충돌 소지를 이유로 이진숙 국민의힘 의원을 제척 의결한 것과는 무관하다는 입장이며, 15일 의원 전원 명의로 헌법재판소에 제척 무효 가처분과 권한쟁의심판을 청구했습니다. 국민의힘 의원들은 오후 KBS·방송문화진흥회 등 감사에는 참석했습니다. 이날 불참에 대한 더불어민주당 입장은 확인한 기사에서 찾지 못했습니다.",
+          quotes: [
+            {
+              who: "최형두 의원(국민의힘)",
+              text: "감사 받는 쪽을 감사 하는 쪽이 찾아가 비공개 업무보고를 받는 것은 국정감사 원칙을 거꾸로 세운 잘못된 관행",
+            },
+          ],
+          sources: [
+            {
+              title: '"MBC 비공개 국감은 기괴한 관행"… 野 과방위, 보이콧 선언 / 문화일보',
+              url: "https://www.munhwa.com/article/11624067",
+            },
+          ],
+        },
+        {
           title: "통신·플랫폼 개인정보 유출",
           committees: ["과학기술정보방송통신위원회"],
           body: "9월 22일 의결된 일반증인 29명 가운데 12명이 개인정보 침해·유출 사고 관련 인사다. 통신 3사 정보보호책임자, 티빙·CJ ENM, 쿠팡·우아한형제들·토스페이먼츠·듀오·강남언니·메타코리아 관계자가 10월 6일 과기정통부 감사에 출석 요구를 받았다. 여야 개별 입장 보도는 확인하지 못했다.",
@@ -1980,7 +2041,7 @@ export const AUDIT_2026 = {
       name: "외교통일위원회",
       titleAgencies: "외교부·통일부",
       short: "외통위",
-      checkedAt: "2026-10-15",
+      checkedAt: "2026-10-16",
       status: "confirmed",
       resolvedOn: "2026-09-17",
       period: "10월 6일~27일(22일)",
@@ -2097,7 +2158,7 @@ export const AUDIT_2026 = {
       name: "국방위원회",
       titleAgencies: "국방부·합참·방사청",
       short: "국방위",
-      checkedAt: "2026-10-15",
+      checkedAt: "2026-10-16",
       changes: [
         {
           on: "2026-10-14",
@@ -2374,7 +2435,7 @@ export const AUDIT_2026 = {
       name: "행정안전위원회",
       titleAgencies: "행안부·경찰청·선관위",
       short: "행안위",
-      checkedAt: "2026-10-15",
+      checkedAt: "2026-10-16",
       changes: [
         {
           on: "2026-10-06",
@@ -2603,7 +2664,7 @@ export const AUDIT_2026 = {
       name: "문화체육관광위원회",
       titleAgencies: "문체부·국가유산청",
       short: "문체위",
-      checkedAt: "2026-10-15",
+      checkedAt: "2026-10-16",
       changes: [
         {
           on: "2026-10-14",
@@ -2806,7 +2867,7 @@ export const AUDIT_2026 = {
       name: "농림축산식품해양수산위원회",
       titleAgencies: "농식품부·해수부·농협",
       short: "농해수위",
-      checkedAt: "2026-10-15",
+      checkedAt: "2026-10-16",
       changes: [
         {
           on: "2026-10-02",
@@ -3095,7 +3156,7 @@ export const AUDIT_2026 = {
       name: "산업통상자원중소벤처기업위원회",
       titleAgencies: "산업부·중기부·한전",
       short: "산자중기위",
-      checkedAt: "2026-10-15",
+      checkedAt: "2026-10-16",
       changes: [
         {
           on: "2026-10-07",
@@ -3338,7 +3399,7 @@ export const AUDIT_2026 = {
       name: "보건복지위원회",
       titleAgencies: "복지부·질병청·식약처·국민연금",
       short: "복지위",
-      checkedAt: "2026-10-15",
+      checkedAt: "2026-10-16",
       status: "confirmed",
       resolvedOn: "2026-09-29",
       period: "10월 6일(화)~27일(화), 22일간(첫 감사 7일)",
@@ -3609,7 +3670,7 @@ export const AUDIT_2026 = {
       name: "기후에너지환경노동위원회",
       titleAgencies: "기후부·노동부·기상청·한전",
       short: "기후환노위",
-      checkedAt: "2026-10-15",
+      checkedAt: "2026-10-16",
       status: "confirmed",
       resolvedOn: "2026-09-28",
       period: "10월 6일(화)~27일(화), 22일간",
@@ -3788,7 +3849,7 @@ export const AUDIT_2026 = {
       name: "국토교통위원회",
       titleAgencies: "국토부·LH·코레일·인천공항",
       short: "국토위",
-      checkedAt: "2026-10-15",
+      checkedAt: "2026-10-16",
       status: "confirmed",
       resolvedOn: "2026-09-30",
       period: "10월 7일(수)~23일(금) — 중앙감사 7일·지방감사 1일·현장시찰 1일",
@@ -4035,7 +4096,7 @@ export const AUDIT_2026 = {
       name: "정보위원회",
       titleAgencies: "국정원·국방정보본부·경찰청",
       short: "정보위",
-      checkedAt: "2026-10-15",
+      checkedAt: "2026-10-16",
       status: "confirmed",
       resolvedOn: "2026-09-30",
       period: "10월 28일(수)~30일(금), 3일간",
@@ -4117,7 +4178,7 @@ export const AUDIT_2026 = {
       name: "성평등가족위원회",
       titleAgencies: "성평등가족부·여성인권진흥원·양육비이행관리원",
       short: "성평등가족위",
-      checkedAt: "2026-10-15",
+      checkedAt: "2026-10-16",
       changes: [
         {
           on: "2026-10-14",
