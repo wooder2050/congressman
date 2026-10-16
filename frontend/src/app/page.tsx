@@ -14,6 +14,7 @@ import EditorsPicks from "@/components/home/EditorsPicks";
 import AdSlot from "@/components/ads/AdSlot";
 import { getHomePicks } from "@/data/editors-picks";
 import AuditHomeSpotlight from "@/components/home/AuditHomeSpotlight";
+import BudgetHomeSpotlight from "@/components/home/BudgetHomeSpotlight";
 import CabinetNomineeSpotlight from "@/components/home/CabinetNomineeSpotlight";
 import PropertyHighlight from "@/components/home/PropertyHighlight";
 import ScorecardHighlight from "@/components/home/ScorecardHighlight";
@@ -127,6 +128,9 @@ export default async function HomePage({ searchParams }: HomePageProps) {
         {/* 2026 국정감사 진입 카드 — 국감 기간(10/30까지)만. 속보보다 먼저: 속보는 '무슨 일',
             이 카드는 '어디서 일정을 찾나'를 맡는다(2026-10-05 codex UX 검토). 개각 카드는 이 자리에서 내림 */}
         <AuditHomeSpotlight />
+
+        {/* 2027 예산안 심사 카드 — 국감 카드가 내려가는 10/31(KST)부터 같은 자리를 이어받는다 */}
+        <BudgetHomeSpotlight />
 
         {/* 속보 배너 — 편집 콘텐츠를 첫 화면 최상단에 (사이트 성격이 '자동 집계'가
             아니라 '편집 매체'로 먼저 읽히도록. AdSense 대응 2순위, 2026-08) */}

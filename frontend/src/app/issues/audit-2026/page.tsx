@@ -5,6 +5,7 @@ import JsonLd from "@/components/seo/JsonLd";
 import AuditAgencySearch from "@/components/issues/AuditAgencySearch";
 import AuditShortsSection from "@/components/issues/AuditShortsSection";
 import AuditChangeList from "@/components/issues/AuditChangeList";
+import AuditIssueRelatedLink from "@/components/issues/AuditIssueRelatedLink";
 import AuditSources from "@/components/issues/AuditSources";
 import AuditTodayBoard from "@/components/issues/AuditTodayBoard";
 import {
@@ -464,6 +465,9 @@ export default async function Audit2026Page() {
               </p>
             )}
             <AuditSources sources={issue.sources} />
+            {issue.relatedLink && (
+              <AuditIssueRelatedLink link={issue.relatedLink} component="audit_hub_issue" />
+            )}
           </article>
         ))}
       </section>

@@ -5,7 +5,9 @@ import AdSlot from "@/components/ads/AdSlot";
 import AuditChangeList from "@/components/issues/AuditChangeList";
 import AuditLiveLinks from "@/components/issues/AuditLiveLinks";
 import AuditShortsSection from "@/components/issues/AuditShortsSection";
+import AuditIssueRelatedLink from "@/components/issues/AuditIssueRelatedLink";
 import AuditSources from "@/components/issues/AuditSources";
+import AuditWrapUpSection from "@/components/issues/AuditWrapUpSection";
 import JsonLd from "@/components/seo/JsonLd";
 import {
   AUDIT_2026,
@@ -52,6 +54,10 @@ function findCommittee(param: string): AuditCommittee | undefined {
 function pageTitle(c: AuditCommittee): string {
   const alias = committeeAliasLabel(c.name);
   const agencies = c.titleAgencies ? `${c.titleAgencies} 등 ` : "날짜별 ";
+  // 결산이 있으면 '일정' 검색어는 지키고 '주요 쟁점·후속'을 더한다(2026-10-16 codex 검토 — 전 페이지 일괄 변경 금지)
+  if (c.wrapUp) {
+    return `2026 국정감사 ${c.name}${alias ? `(${alias})` : ""} 일정·주요 쟁점 후속 — ${agencies}피감기관·증인`;
+  }
   return `2026 국정감사 ${c.name}${alias ? `(${alias})` : ""} 일정 — ${agencies}피감기관·증인·쟁점`;
 }
 
@@ -201,6 +207,7 @@ export default async function AuditCommitteePage({ params }: PageProps) {
           <nav aria-label={`${c.short} 국정감사 페이지 안 바로가기`}>
             <ul className="flex flex-wrap gap-2 text-sm">
               {[
+                ...(c.wrapUp ? [["#wrapup", "결산"]] : []),
                 ["#days", "날짜별 일정"],
                 ...(adopted.length > 0 || requested.length > 0 ? [["#witnesses", "증인"]] : []),
                 ...(issues.length > 0 ? [["#issues", "쟁점"]] : []),
@@ -234,6 +241,8 @@ export default async function AuditCommitteePage({ params }: PageProps) {
           </p>
         )}
       </header>
+
+      {c.wrapUp && <AuditWrapUpSection wrapUp={c.wrapUp} committeeShort={c.short} />}
 
       <section id="days" aria-labelledby="days-title" className="scroll-mt-32 space-y-3">
         <h2 id="days-title" className="text-2xl font-bold">
@@ -356,6 +365,9 @@ export default async function AuditCommitteePage({ params }: PageProps) {
                 </ul>
               )}
               <AuditSources sources={issue.sources} />
+              {issue.relatedLink && (
+                <AuditIssueRelatedLink link={issue.relatedLink} component="audit_committee_issue" />
+              )}
             </article>
           ))}
         </section>
