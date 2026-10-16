@@ -91,6 +91,8 @@ export interface AuditCommittee {
   witnesses?: AuditWitness[];
   /** 이 위원회에만 해당하는 쟁점 — 상임위별 페이지에만 보인다(허브는 AUDIT_2026.issues) */
   issues?: AuditIssue[];
+  /** 감사 종료 뒤 결산(있을 때만 상임위 페이지 첫머리에 보인다) */
+  wrapUp?: AuditWrapUp;
   sources: AuditSource[];
 }
 
@@ -101,6 +103,44 @@ interface AuditIssue {
   /** 발언·입장 인용 — 주체를 밝힌다 */
   quotes?: { who: string; text: string }[];
   sources: AuditSource[];
+  /**
+   * 이 쟁점과 실제로 이어지는 다른 편집 페이지(예: 예산 허브의 해당 사업). 관련성이 분명할 때만 단다
+   * (2026-10-16 codex 검토 — 링크 수를 늘리는 것과 수요를 만드는 것은 다르다).
+   */
+  relatedLink?: { label: string; href: string };
+}
+
+/**
+ * 감사가 끝난 위원회의 결산 — "주요 질의·답변과 후속 확인"(2026-10-16 codex 검토).
+ * 국회 국정감사 결과보고서가 나오기 전의 lawmake 편집 요약이다. 위원회당 2~3쟁점만,
+ * 약속을 이행으로 쓰지 않고, 답변을 찾지 못하면 그렇게 밝힌다. 새 URL은 만들지 않는다.
+ */
+export type AuditFollowUpStatus =
+  | "답변만 확인"
+  | "검토 약속"
+  | "자료 제출 약속"
+  | "조치 확인"
+  | "답변 미확인";
+
+export interface AuditWrapUpItem {
+  title: string;
+  /** 질의·주장 — 누가(정당), 언제, 무엇을 지적했나 */
+  question: string;
+  /** 기관·답변자의 답변 요지. 없으면 비워 두고 '확인한 자료에서 답변을 찾지 못함'으로 표시 */
+  answer?: string;
+  status: AuditFollowUpStatus;
+  /** 다음에 확인할 것(예산 심사·법안·기관 발표 등) */
+  next?: string;
+  nextLink?: { label: string; href: string };
+  sources: AuditSource[];
+}
+
+export interface AuditWrapUp {
+  /** 실제 감사 종료(종합감사)를 확인한 날 "2026-10-22" */
+  closedOn: string;
+  /** 결산 내용을 원문과 마지막으로 대조한 날 */
+  checkedAt: string;
+  items: AuditWrapUpItem[];
 }
 
 export const AUDIT_2026 = {
@@ -1180,6 +1220,10 @@ export const AUDIT_2026 = {
               url: "https://www.newscj.com/news/articleView.html?idxno=3438877",
             },
           ],
+          relatedLink: {
+            label: "2027 예산안의 미래대응기금 정부안 보기",
+            href: "/issues/budget-2027#future-fund",
+          },
         },
         {
           title: "9/28 증인 의결 — 김용범·여한구 불발",
@@ -3628,6 +3672,10 @@ export const AUDIT_2026 = {
           committees: ["보건복지위원회"],
           body: "기초연금 예산은 23조1000억원에서 25조7000억원으로 늘었고, 소득 하위 30%에 지급액을 더 주는 방향이다. 다만 개편 구조 가운데 저소득층 지원 확대 부분만 내년도 예산안에 반영돼 '반쪽 개편'이라는 지적이 나온다. 지역의사제는 2027학년도에 32개 의대에서 490명을 처음 선발하며, 10년 의무복무의 실효성과 복무 뒤 수도권으로 옮겨가는 것을 막을 방안이 질의 대상이다.",
           sources: [],
+          relatedLink: {
+            label: "2027 예산안 분야별 금액(보건·복지·고용) 보기",
+            href: "/issues/budget-2027#fields",
+          },
         },
       ],
       sources: [
@@ -4289,6 +4337,7 @@ export const AUDIT_2026 = {
           url: "https://www.newspim.com/news/view/20260828000986",
         },
       ],
+      relatedLink: { label: "2027 예산안 국회 심사 일정 보기", href: "/issues/budget-2027#steps" },
     },
     {
       title: "대법원장 증인 출석 — 법사위",
@@ -4383,7 +4432,7 @@ export const AUDIT_2026 = {
         },
       ],
     },
-  ] satisfies AuditIssue[],
+  ] satisfies AuditIssue[] as AuditIssue[],
 };
 
 /** 상임위별 국감 페이지 경로 — /committees/[name]과 같은 정식 명칭을 쓴다 */
