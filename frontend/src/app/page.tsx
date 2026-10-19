@@ -19,6 +19,7 @@ import CabinetNomineeSpotlight from "@/components/home/CabinetNomineeSpotlight";
 import PropertyHighlight from "@/components/home/PropertyHighlight";
 import ScorecardHighlight from "@/components/home/ScorecardHighlight";
 import BreakingNewsBanner from "@/components/home/BreakingNewsBanner";
+import HomeVideoSpotlight from "@/components/home/HomeVideoSpotlight";
 import CivicKnowledge from "@/components/home/CivicKnowledge";
 import TopicGuide from "@/components/home/TopicGuide";
 import HomeMoreSections from "@/components/home/HomeMoreSections";
@@ -135,6 +136,9 @@ export default async function HomePage({ searchParams }: HomePageProps) {
         {/* 속보 배너 — 편집 콘텐츠를 첫 화면 최상단에 (사이트 성격이 '자동 집계'가
             아니라 '편집 매체'로 먼저 읽히도록. AdSense 대응 2순위, 2026-08) */}
         <BreakingNewsBanner />
+
+        {/* lawmake 데이터 영상(롱폼) — 자체 데이터로 만든 영상을 속보 바로 아래에 (2026-10-19 첫 편: 의원 재산 10년치) */}
+        <HomeVideoSpotlight />
 
         {/* 2기 개각 후보자 진입 카드 — showOnHome=false(2026-10-05)라 렌더 안 함. 다음 개각 때 재사용 */}
         <CabinetNomineeSpotlight />

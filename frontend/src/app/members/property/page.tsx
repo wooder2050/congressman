@@ -3,6 +3,8 @@ import Link from "next/link";
 import CongressWrapper from "@/common/CongressWrapper";
 import PageIntro from "@/components/ui/page-intro";
 import PropertyPageClient from "./PropertyPageClient";
+import HomeVideoSpotlight from "@/components/home/HomeVideoSpotlight";
+import { LONGFORM_VIDEOS } from "@/data/videos";
 
 export const dynamic = "force-dynamic";
 
@@ -36,6 +38,13 @@ export default function PropertyPage() {
           ]}
         />
       </div>
+
+      {/* 이 페이지 데이터로 만든 영상(2026-10-19) */}
+      <HomeVideoSpotlight
+        video={LONGFORM_VIDEOS.find((v) => v.videoId === "d9xsGLE3FLM")}
+        component="property_video"
+        hideRelated
+      />
 
       <CongressWrapper
         fallback={
