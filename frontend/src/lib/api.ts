@@ -709,6 +709,15 @@ export async function getLocalElectionRegion(params: {
   return fetchApi(`/api/local-elections/${params.id}/regions/${encodeURIComponent(params.sido)}`);
 }
 
+/** 메타데이터용 — 시군구 쿼리 검증. 개표 종료 후 데이터 고정이라 30일 캐시, 실패해도 렌더를 막지 않게 짧은 타임아웃 */
+export async function getLocalElectionSigunguNames(id: string, sido: string): Promise<string[]> {
+  const data = await fetchApi<LocalElectionRegionDetail>(
+    `/api/local-elections/${id}/regions/${encodeURIComponent(sido)}`,
+    { revalidate: 2592000, timeoutMs: 3000 },
+  );
+  return data.sigunguList.map((opt) => opt.name);
+}
+
 export async function getLocalElectionStats(id: string): Promise<LocalElectionStats> {
   return fetchApi(`/api/local-elections/${id}/stats`);
 }

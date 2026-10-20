@@ -179,6 +179,17 @@ export function pushRecentSigungu(sido: string, sigungu: string) {
   }
 }
 
+/** '전체 보기'를 고르면 마지막 선택을 지운다. 시군구 주소는 별도 경로로 rewrite돼(middleware)
+ *  전체 보기로 돌아올 때 화면이 다시 마운트되므로, 지우지 않으면 mount 복원이 필터를 다시 건다. */
+export function clearLastSigungu(sido: string) {
+  if (typeof window === "undefined") return;
+  try {
+    if (readLastSigungu(sido) !== null) window.localStorage.removeItem(LAST_SIGUNGU_KEY);
+  } catch {
+    // localStorage 쓰기 실패는 silent
+  }
+}
+
 export function readLastSigungu(sido: string): string | null {
   if (typeof window === "undefined") return null;
   try {

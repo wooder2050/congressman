@@ -8,6 +8,7 @@ import { BALLOT_ORDER, SIGUNGU_SCOPED_TYPES } from "@/constants/local-elections"
 import type { LocalElectionRaceSummary, LocalElectionType } from "@/types";
 import BallotCard from "./BallotCard";
 import SigunguPicker, {
+  clearLastSigungu,
   pushRecentSigungu,
   readLastSigungu,
   useRecentSigungu,
@@ -54,6 +55,7 @@ export default function RegionDetailInner({ year, electionId, sido }: Props) {
       pushRecentSigungu(sido, sigungu);
     } else {
       params.delete("sigungu");
+      clearLastSigungu(sido);
     }
     const queryString = params.toString();
     router.replace(queryString ? `?${queryString}` : "?", { scroll: false });
