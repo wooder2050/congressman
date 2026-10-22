@@ -294,8 +294,8 @@ export default async function AuditCommitteePage({ params }: PageProps) {
             <div>
               <h3 className="text-sm font-bold">위원회가 채택한 증인·참고인</h3>
               <ul className="mt-1 divide-y divide-(--color-border-primary) text-sm">
-                {adopted.map((w) => (
-                  <li key={w.name + w.affiliation} className="py-1.5">
+                {adopted.map((w, i) => (
+                  <li key={`${w.name}-${w.affiliation}-${i}`} className="py-1.5">
                     <span className="font-medium">{w.name}</span>{" "}
                     <span className="text-(--color-text-tertiary)">
                       {w.affiliation}
@@ -319,8 +319,8 @@ export default async function AuditCommitteePage({ params }: PageProps) {
             <div>
               <h3 className="text-sm font-bold">신청됐으나 채택되지 않은 증인</h3>
               <ul className="mt-1 divide-y divide-(--color-border-primary) text-sm">
-                {requested.map((w) => (
-                  <li key={w.name + w.affiliation} className="py-1.5">
+                {requested.map((w, i) => (
+                  <li key={`${w.name}-${w.affiliation}-${i}`} className="py-1.5">
                     <span className="font-medium">{w.name}</span>{" "}
                     <span className="text-(--color-text-tertiary)">
                       {w.affiliation}
@@ -353,9 +353,9 @@ export default async function AuditCommitteePage({ params }: PageProps) {
               </p>
               {issue.quotes && (
                 <ul className="mt-3 space-y-2">
-                  {issue.quotes.map((q) => (
+                  {issue.quotes.map((q, i) => (
                     <li
-                      key={q.who}
+                      key={`${q.who}-${i}`}
                       className="border-l-2 border-(--color-border-primary) pl-3 text-sm"
                     >
                       <p className="text-(--color-text-primary)">&ldquo;{q.text}&rdquo;</p>

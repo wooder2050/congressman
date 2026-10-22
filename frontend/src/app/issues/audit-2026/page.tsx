@@ -440,9 +440,9 @@ export default async function Audit2026Page() {
             </p>
             {issue.quotes && (
               <ul className="mt-3 space-y-2">
-                {issue.quotes.map((q) => (
+                {issue.quotes.map((q, i) => (
                   <li
-                    key={q.who}
+                    key={`${q.who}-${i}`}
                     className="border-l-2 border-(--color-border-primary) pl-3 text-sm"
                   >
                     <p className="text-(--color-text-primary)">&ldquo;{q.text}&rdquo;</p>
