@@ -50,8 +50,7 @@ export const breakingNews: BreakingNewsItem[] = [
         url: "https://www.globalnewsagency.kr/news/articleView.html?idxno=501524",
       },
     ],
-    linkUrl:
-      "/issues/audit-2026/%EC%84%B1%ED%8F%89%EB%93%B1%EA%B0%80%EC%A1%B1%EC%9C%84%EC%9B%90%ED%9A%8C",
+    linkUrl: "/issues/audit-2026#issues",
     active: true,
   },
   {
