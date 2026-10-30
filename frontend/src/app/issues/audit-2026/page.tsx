@@ -83,6 +83,8 @@ export default async function Audit2026Page() {
   const now = new Date();
   const todayKey = kstDateKey(now);
   const beforeStart = todayKey < d.start;
+  // 종료 뒤엔 오늘·내일 보드(#today)가 사라진다
+  const ended = todayKey > d.extendedEnd;
   const upcomingAudit = pickAuditSchedules(
     await getUpcomingSchedulesByKeyword(TERM_ID, "국정감사").catch(() => [] as Schedule[]),
   );
@@ -127,13 +129,15 @@ export default async function Audit2026Page() {
           <span className="tabular-nums">최종 갱신 {d.updatedAt}</span>
         </div>
         <p className="text-base text-(--color-text-secondary)">
-          10월 6일~30일 · 상임위원회 17곳 · 피감기관 846곳(국회사무처 집계) — 오늘 감사 일정과 우리
-          기관 감사일, 위원회별 증인·쟁점을 확인하세요.
+          10월 6일~30일 · 상임위원회 17곳 · 피감기관 846곳(국회사무처 집계) —{" "}
+          {ended
+            ? "우리 기관 감사일과 위원회별 증인·쟁점, 주요 질의·답변의 후속 확인을 정리했습니다."
+            : "오늘 감사 일정과 우리 기관 감사일, 위원회별 증인·쟁점을 확인하세요."}
         </p>
         <nav aria-label="국정감사 페이지 안 바로가기" className="-mx-1 overflow-x-auto">
           <ul className="flex w-max gap-2 px-1 text-sm">
             {[
-              ["#today", beforeStart ? "첫 감사일" : "오늘 일정"],
+              ...(ended ? [] : [["#today", beforeStart ? "첫 감사일" : "오늘 일정"]]),
               ["#agency-search", "기관명 찾기"],
               ["#committees", "위원회별 일정"],
               ["#dates", "날짜별 보기"],
