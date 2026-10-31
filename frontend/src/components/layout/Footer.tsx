@@ -48,6 +48,12 @@ export default function Footer() {
             >
               6·3 지방선거
             </Link>
+            <Link
+              href="/issues/audit-2026"
+              className="underline hover:text-(--color-text-secondary)"
+            >
+              2026 국정감사
+            </Link>
             <a
               href="https://open.assembly.go.kr"
               target="_blank"
