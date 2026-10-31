@@ -134,6 +134,14 @@ export default async function Audit2026Page() {
             ? "우리 기관 감사일과 위원회별 증인·쟁점, 주요 질의·답변의 후속 확인을 정리했습니다."
             : "오늘 감사 일정과 우리 기관 감사일, 위원회별 증인·쟁점을 확인하세요."}
         </p>
+        {ended && (
+          <Link
+            href="/issues/budget-2027"
+            className="block rounded-xl border border-(--color-border-primary) bg-(--color-bg-secondary) px-4 py-3 text-sm font-semibold text-(--color-text-primary) no-underline hover:bg-(--color-bg-tertiary)"
+          >
+            국감 뒤 이어지는 2027 예산안 심사 — 상임위 예비심사·예결위 일정 보기 →
+          </Link>
+        )}
         <nav aria-label="국정감사 페이지 안 바로가기" className="-mx-1 overflow-x-auto">
           <ul className="flex w-max gap-2 px-1 text-sm">
             {[

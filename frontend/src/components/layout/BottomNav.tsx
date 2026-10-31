@@ -280,8 +280,7 @@ const ElectionIcon = () => (
 
 /* ── 더보기 메뉴 항목 ── */
 const moreItems = [
-  // 시즌 진입점 — 국감 기간엔 국정감사 허브, 이후엔 그 시기 허브로 교체한다
-  { href: "/issues/audit-2026", label: "국감", icon: <AuditIcon /> },
+  // 시즌 진입점 — 그 시기 허브를 맨 앞에 둔다(11~12월 예산). 끝난 국감 허브는 기록으로 뒤에 남긴다
   { href: "/issues/budget-2027", label: "예산", icon: <BudgetIcon /> },
   { href: "/today", label: "오늘", icon: <TodayIcon /> },
   { href: "/local-elections/2026", label: "지방선거", icon: <ElectionIcon /> },
@@ -290,6 +289,7 @@ const moreItems = [
   { href: "/map", label: "지도", icon: <MapIcon /> },
   { href: "/compare", label: "비교", icon: <CompareIcon /> },
   { href: "/weekly", label: "주간뉴스", icon: <WeeklyIcon /> },
+  { href: "/issues/audit-2026", label: "국감", icon: <AuditIcon /> },
   { href: "/committees", label: "위원회", icon: <CommitteesIcon /> },
   { href: "/guide", label: "안내", icon: <GuideIcon /> },
 ];

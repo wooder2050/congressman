@@ -3,6 +3,7 @@ import JsonLd from "@/components/seo/JsonLd";
 import YouTubeShortFacade from "@/components/video/YouTubeShortFacade";
 import { AUDIT_2026 } from "@/data/audit-2026";
 import { getYouTubeShorts } from "@/lib/api";
+import { kstDateKey } from "@/lib/audit-format";
 
 interface AuditShortsSectionProps {
   /** today = /today(오늘의 국회) 상단. 국감 기간엔 국감 쇼츠가 그날의 국회 영상 역할을 한다 */
@@ -21,6 +22,8 @@ export default async function AuditShortsSection({
   committee,
   committeeShort,
 }: AuditShortsSectionProps) {
+  // '오늘의 국회'에 지난 국감 장면을 계속 걸어 두지 않는다 — 허브·상임위 페이지에는 기록으로 남긴다
+  if (placement === "today" && kstDateKey(new Date()) > AUDIT_2026.extendedEnd) return null;
   const shorts = await getYouTubeShorts({
     issueSlug: "audit-2026",
     placement: placement === "today" ? "hub" : placement,

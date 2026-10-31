@@ -8,7 +8,6 @@ const navItems = [
   { href: "/", label: "홈" },
   { href: "/today", label: "오늘" },
   // 시즌 진입점 — 그 시기 허브만 둔다(국감 10월, 예산 11~12월). 끝난 허브는 모바일 더보기·푸터로 내린다
-  { href: "/issues/audit-2026", label: "국감" },
   { href: "/issues/budget-2027", label: "예산" },
   { href: "/members", label: "의원" },
   { href: "/map", label: "지도" },
