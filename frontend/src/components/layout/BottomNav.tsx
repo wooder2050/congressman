@@ -424,6 +424,7 @@ export default function BottomNav() {
                   <Link
                     key={item.href}
                     href={item.href}
+                    prefetch={false}
                     onClick={() => setMoreOpen(false)}
                     className={`flex flex-col items-center gap-1.5 rounded-xl py-3 no-underline transition-colors ${
                       active
@@ -450,6 +451,7 @@ export default function BottomNav() {
               <Link
                 key={item.href}
                 href={item.href}
+                prefetch={false}
                 className={`flex flex-1 flex-col items-center justify-center py-2 no-underline transition-colors ${
                   active ? "font-bold text-(--color-text-primary)" : "text-(--color-text-tertiary)"
                 }`}

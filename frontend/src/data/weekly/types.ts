@@ -21,6 +21,12 @@ export interface WeeklyArticle {
   analysis?: string;
 }
 
+/** 목록 화면에 필요한 필드만. 본문까지 넘기면 페이지 페이로드가 1MB를 넘는다. */
+export type WeeklyListItem = Pick<
+  WeeklyArticle,
+  "id" | "title" | "period" | "summary" | "tags" | "stats"
+>;
+
 export interface FeaturedBill {
   /** 법안 제목 */
   title: string;

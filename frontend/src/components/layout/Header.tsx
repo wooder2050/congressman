@@ -32,6 +32,7 @@ export default function Header() {
       <div className="mx-auto flex h-14 max-w-7xl items-center px-4 lg:h-16">
         <Link
           href="/"
+          prefetch={false}
           className="text-lg font-bold text-(--color-text-primary) no-underline lg:text-xl"
         >
           국회의원 의정활동
@@ -45,6 +46,7 @@ export default function Header() {
               <Link
                 key={item.href}
                 href={item.href}
+                prefetch={false}
                 aria-current={active ? "page" : undefined}
                 className={`rounded-lg px-3 py-2 text-sm font-medium no-underline transition-colors ${
                   active

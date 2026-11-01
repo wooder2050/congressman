@@ -128,7 +128,16 @@ export default function WeeklyPage() {
 
       <section className="space-y-3">
         <h2 className="text-xl font-bold">전체 주간호</h2>
-        <WeeklyList articles={articles} />
+        <WeeklyList
+          articles={articles.map(({ id, title, period, summary, tags, stats }) => ({
+            id,
+            title,
+            period,
+            summary,
+            tags,
+            stats,
+          }))}
+        />
       </section>
     </div>
   );

@@ -33,8 +33,8 @@ const TERM_ID = 22;
 const BASE = "https://www.lawmake.kr";
 const d = AUDIT_2026;
 
-// 편집 데이터는 배포로 바뀌고, 진행 상태 배지·소속 위원·국회 공개 일정만 시간에 따라 달라진다.
-export const revalidate = 3600;
+// 2026 국감이 끝나 시간에 따라 바뀌는 내용이 없다. 재생성 비용만 들어 하루로 둔다.
+export const revalidate = 86400;
 // 공개 기준(isAuditCommitteePageReady)을 통과한 위원회만 만든다. 나머지 경로는 404.
 export const dynamicParams = false;
 
