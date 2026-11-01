@@ -1,4 +1,5 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
-  "regions": ["icn1"]
+  "regions": ["icn1"],
+  "ignoreCommand": "git diff --quiet HEAD^ HEAD -- . ../package.json ../pnpm-lock.yaml ../pnpm-workspace.yaml ':(exclude)src/data/breaking-news'"
 }

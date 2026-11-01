@@ -1,8 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
+import sharp from "sharp";
 
 const ALLOWED_HOST = "www.assembly.go.kr";
 const ALLOWED_PATH_PREFIX = "/static/portal/img/";
 const CACHE_SECONDS = 60 * 60 * 24 * 7; // 7일
+// 국회 원본은 평균 1MB, 최대 9MB인데 화면에는 아바타로만 쓴다. 전송량(Fast Origin Transfer)을 줄이려고 줄여서 내려준다.
+const OUTPUT_WIDTH = 320;
 
 export async function GET(request: NextRequest) {
   const url = request.nextUrl.searchParams.get("url");
@@ -40,11 +43,26 @@ export async function GET(request: NextRequest) {
   if (!contentType.startsWith("image/")) {
     return NextResponse.json({ error: "not an image" }, { status: 403 });
   }
-  const body = await res.arrayBuffer();
+  const original = Buffer.from(await res.arrayBuffer());
+
+  let body: Uint8Array<ArrayBuffer> = new Uint8Array(original);
+  let outputType = contentType;
+  try {
+    body = new Uint8Array(
+      await sharp(original)
+        .rotate()
+        .resize({ width: OUTPUT_WIDTH, withoutEnlargement: true })
+        .webp({ quality: 75 })
+        .toBuffer(),
+    );
+    outputType = "image/webp";
+  } catch {
+    // 변환에 실패하면 원본을 그대로 내려준다
+  }
 
   return new NextResponse(body, {
     headers: {
-      "Content-Type": contentType,
+      "Content-Type": outputType,
       "Cache-Control": `public, max-age=${CACHE_SECONDS}, s-maxage=${CACHE_SECONDS}, stale-while-revalidate=86400`,
     },
   });
