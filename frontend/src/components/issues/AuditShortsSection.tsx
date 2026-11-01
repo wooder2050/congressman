@@ -23,7 +23,8 @@ export default async function AuditShortsSection({
   committeeShort,
 }: AuditShortsSectionProps) {
   // '오늘의 국회'에 지난 국감 장면을 계속 걸어 두지 않는다 — 허브·상임위 페이지에는 기록으로 남긴다
-  if (placement === "today" && kstDateKey(new Date()) > AUDIT_2026.extendedEnd) return null;
+  const ended = kstDateKey(new Date()) > AUDIT_2026.extendedEnd;
+  if (placement === "today" && ended) return null;
   const shorts = await getYouTubeShorts({
     issueSlug: "audit-2026",
     placement: placement === "today" ? "hub" : placement,
@@ -42,7 +43,11 @@ export default async function AuditShortsSection({
     <section id="shorts" aria-labelledby="shorts-title" className="scroll-mt-32 space-y-3">
       <div className="flex flex-wrap items-baseline justify-between gap-2">
         <h2 id="shorts-title" className="text-xl font-bold">
-          {committeeShort ? `${committeeShort} 국감 장면` : "국감 오늘의 장면"}
+          {committeeShort
+            ? `${committeeShort} 국감 장면`
+            : ended
+              ? "국감 주요 장면"
+              : "국감 오늘의 장면"}
         </h2>
         {placement === "today" ? (
           <Link href={AUDIT_2026.path} className="text-xs text-(--color-text-tertiary)">
