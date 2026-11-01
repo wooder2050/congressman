@@ -27,6 +27,7 @@
     "react-dom": "19.2.3",
     "react-error-boundary": "^6.1.1",
     "recharts": "^3.7.0",
+    "sharp": "0.34.5",
     "tailwind-merge": "^3.4.1",
     "topojson-client": "^3.1.0"
   },

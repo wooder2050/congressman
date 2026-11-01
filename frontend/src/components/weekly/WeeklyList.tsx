@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef, useCallback, useMemo } from "react";
 import Link from "next/link";
-import type { WeeklyArticle } from "@/data/weekly/types";
+import type { WeeklyListItem } from "@/data/weekly/types";
 import { SkeletonWeeklyItem } from "@/components/skeletons/WeeklyListSkeleton";
 import { trackEvent } from "@/lib/analytics";
 import { useImpression } from "@/lib/use-impression";
@@ -10,7 +10,7 @@ import { useImpression } from "@/lib/use-impression";
 const PAGE_SIZE = 6;
 
 interface WeeklyListProps {
-  articles: WeeklyArticle[];
+  articles: WeeklyListItem[];
 }
 
 /** id("2026-03-w1") → "2026-03" */
@@ -118,7 +118,7 @@ export default function WeeklyList({ articles }: WeeklyListProps) {
 }
 
 /** 주간뉴스 목록 카드 — 노출(component_impression)·클릭(weekly_article_click)을 함께 측정 */
-function WeeklyCard({ article, position }: { article: WeeklyArticle; position: number }) {
+function WeeklyCard({ article, position }: { article: WeeklyListItem; position: number }) {
   const impressionRef = useImpression({
     component: "weekly_list",
     article_id: article.id,
