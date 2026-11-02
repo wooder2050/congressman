@@ -192,6 +192,7 @@ export async function getYouTubeShorts(params: {
   placement: "hub" | "committee" | "home";
   committee?: string;
   limit?: number;
+  revalidate?: number;
 }): Promise<YouTubeShort[] | null> {
   const sp = new URLSearchParams({
     issueSlug: params.issueSlug,
@@ -201,7 +202,7 @@ export async function getYouTubeShorts(params: {
   if (params.committee) sp.set("committee", params.committee);
   try {
     const data = await fetchApi<YouTubeShort[] | null>(`/api/youtube-shorts?${sp.toString()}`, {
-      revalidate: 3600,
+      revalidate: params.revalidate ?? 3600,
       timeoutMs: 2000,
       tags: [shortsCacheTag(params.issueSlug)],
     });
@@ -215,10 +216,8 @@ export async function getTerms(): Promise<AssemblyTerm[]> {
   return fetchApi("/api/terms", { revalidate: 3600 });
 }
 
-export async function getBreakingNews(): Promise<BreakingNewsItem[]> {
-  const data = await fetchApi<BreakingNewsItem[] | null>("/api/breaking-news", {
-    revalidate: 300,
-  });
+export async function getBreakingNews(revalidate = 300): Promise<BreakingNewsItem[]> {
+  const data = await fetchApi<BreakingNewsItem[] | null>("/api/breaking-news", { revalidate });
   return data ?? [];
 }
 
@@ -427,11 +426,13 @@ export async function getHomeStats(termId: number): Promise<HomeStats> {
   });
 }
 
-export async function getUpcomingSchedules(termId: number, limit?: number): Promise<Schedule[]> {
+export async function getUpcomingSchedules(
+  termId: number,
+  limit?: number,
+  revalidate = 60,
+): Promise<Schedule[]> {
   const q = limit ? `&limit=${limit}` : "";
-  return fetchApi(`/api/schedules/upcoming?termId=${termId}${q}`, {
-    revalidate: 60,
-  });
+  return fetchApi(`/api/schedules/upcoming?termId=${termId}${q}`, { revalidate });
 }
 
 /** 제목·안건에 이 단어가 있는 다가오는 회의만(예: "국정감사") — 서버에서 걸러 상한(100)에 다른 회의가 섞이지 않게 한다 */
@@ -439,10 +440,11 @@ export async function getUpcomingSchedulesByKeyword(
   termId: number,
   keyword: string,
   limit = 100,
+  revalidate = 60,
 ): Promise<Schedule[]> {
   return fetchApi(
     `/api/schedules/upcoming?termId=${termId}&limit=${limit}&keyword=${encodeURIComponent(keyword)}`,
-    { revalidate: 60 },
+    { revalidate },
   );
 }
 
@@ -501,9 +503,11 @@ export async function getPropertyStats(): Promise<PropertyStatsResponse> {
 export async function getMemberScorecard(params: {
   memberId: string;
   termId: number;
+  /** 서버 렌더에서 페이지 재생성 주기에 맞출 때만 넘긴다 */
+  revalidate?: number;
 }): Promise<MemberScorecard | null> {
   return fetchApi(`/api/members/${params.memberId}/scorecard?termId=${params.termId}`, {
-    revalidate: 3600,
+    revalidate: params.revalidate ?? 3600,
   });
 }
 

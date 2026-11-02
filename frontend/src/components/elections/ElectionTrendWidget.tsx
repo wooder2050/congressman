@@ -2,7 +2,8 @@ import Link from "next/link";
 import { getBreakingNews } from "@/lib/api";
 
 export default async function ElectionTrendWidget() {
-  const news = await getBreakingNews();
+  // 선거 페이지(30일 주기)가 5분마다 재생성되지 않게 하루로 둔다
+  const news = await getBreakingNews(86400);
   const electionNews = news
     .filter((n) => n.category === "election" || n.category === "politics")
     .slice(0, 3);

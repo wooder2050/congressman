@@ -85,7 +85,9 @@ export default async function Audit2026Page() {
   // 종료 뒤엔 오늘·내일 보드(#today)가 사라진다
   const ended = todayKey > d.extendedEnd;
   const upcomingAudit = pickAuditSchedules(
-    await getUpcomingSchedulesByKeyword(TERM_ID, "국정감사").catch(() => [] as Schedule[]),
+    await getUpcomingSchedulesByKeyword(TERM_ID, "국정감사", 100, revalidate).catch(
+      () => [] as Schedule[],
+    ),
   );
   // 허브에는 일주일 치만 — 국감 기간엔 하루 회의가 수십 건이라 전체는 상임위 페이지에서 본다
   const weekEnd = kstDateKey(now, 7);
