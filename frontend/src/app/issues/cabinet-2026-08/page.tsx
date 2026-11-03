@@ -53,10 +53,12 @@ export default async function CabinetIssuePage() {
   // 의원 후보자 지표·기본정보는 병렬로, 한 명이 실패해도 페이지는 살린다
   const [scorecardResults, memberResults, scheduleResult] = await Promise.all([
     Promise.allSettled(
-      memberNominees.map((m) => getMemberScorecard({ memberId: m.memberId!, termId: TERM_ID })),
+      memberNominees.map((m) =>
+        getMemberScorecard({ memberId: m.memberId!, termId: TERM_ID, revalidate }),
+      ),
     ),
     Promise.allSettled(memberNominees.map((m) => getMember(m.memberId!))),
-    getUpcomingSchedules(TERM_ID, 30).catch(() => [] as Schedule[]),
+    getUpcomingSchedules(TERM_ID, 30, revalidate).catch(() => [] as Schedule[]),
   ]);
 
   const scorecards = new Map<string, { data: MemberScorecard | null; failed: boolean }>();

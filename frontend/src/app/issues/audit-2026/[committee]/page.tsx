@@ -119,7 +119,9 @@ export default async function AuditCommitteePage({ params }: PageProps) {
   const lastDay = c.days.at(-1);
   const [detail, upcoming] = await Promise.all([
     getCommitteeDetail({ name: c.name, termId: TERM_ID }).catch(() => null),
-    getUpcomingSchedulesByKeyword(TERM_ID, "국정감사").catch(() => [] as Schedule[]),
+    getUpcomingSchedulesByKeyword(TERM_ID, "국정감사", 100, revalidate).catch(
+      () => [] as Schedule[],
+    ),
   ]);
   const members = detail ? sortMembers(detail.members) : [];
   const liveSchedules = pickCommitteeAuditSchedules(upcoming, c.name);

@@ -72,8 +72,8 @@ export default async function Budget2027Page() {
   try {
     schedules = pickBudgetReviewSchedules(
       await Promise.all([
-        getUpcomingSchedulesByKeyword(TERM_ID, "예산"),
-        getUpcomingSchedulesByKeyword(TERM_ID, "기금"),
+        getUpcomingSchedulesByKeyword(TERM_ID, "예산", 100, revalidate),
+        getUpcomingSchedulesByKeyword(TERM_ID, "기금", 100, revalidate),
       ]),
     );
   } catch {

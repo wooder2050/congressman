@@ -30,6 +30,8 @@ export default async function AuditShortsSection({
     placement: placement === "today" ? "hub" : placement,
     committee,
     limit: placement === "hub" ? 6 : 3,
+    // 허브·상임위 페이지 주기(하루)에 맞춘다. 새 영상은 등록 시 태그 재검증으로 바로 반영된다
+    revalidate: 86400,
   });
   if (!shorts || shorts.length === 0) return null;
 
