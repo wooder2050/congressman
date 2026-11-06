@@ -2,6 +2,58 @@ import type { BreakingNewsItem } from "./types";
 
 export const breakingNews: BreakingNewsItem[] = [
   {
+    id: "2026-11-06-manipulated-indictment-special-counsel-passed",
+    title:
+      "'조작수사·조작기소 의혹' 특검법 본회의 통과 — 국민의힘 표결 불참·장외투쟁 돌입, 이재명 정부 7번째 특검",
+    description:
+      "국회는 6일 본회의에서 '윤석열 정권 검찰청, 국가정보원, 감사원 등의 조작수사·조작기소 등 의혹의 진상규명을 위한 특별검사법안'(이하 조작기소 특검법)을 더불어민주당 주도로 통과시켰습니다. 5일 오후 4시께 시작된 국민의힘의 필리버스터(무제한 토론)는 24시간 뒤인 이날 오후 종결 동의 표결로 끝났고, 이어진 법안 표결에 국민의힘은 참여하지 않았습니다. 법제사법위원회 수정 과정에서 특검의 공소 취소 관련 조항과 기존 사건 이첩 요구권은 빠졌지만, 대장동·쌍방울 대북송금 등 이재명 대통령 관련 사건과 문재인 전 대통령 사위 특혜 취업, 월성원전 1호기 경제성 조작 사건 등이 수사 대상이고 수사 기간은 준비기간을 포함해 최장 200일입니다. 민주당은 윤석열 정부 검찰권 남용을 규명하는 법이라고 설명하는 반면, 국민의힘은 대통령 재판을 없애려는 '공소취소 특검법'이라고 반발하며 표결 전 국회 본청 앞에서 규탄대회를 열었습니다. 국민의힘은 7일 서울 도심 집회, 9일 청와대 인근 현장 최고위원회의, 법안이 국무회의에 오를 것으로 예상되는 10일 청와대 앞 현장 의원총회 등 장외투쟁을 예고했습니다. 이재명 정부 출범 이후 7번째 특검법입니다.",
+    date: "2026-11-06",
+    category: "legislation",
+    items: [
+      {
+        label: "한병도 (민주, 원내대표)",
+        value:
+          '"국정감사를 앞두고도 장외 투쟁, 예산안 심사 중에도 장외 투쟁. 이 정도면 의정 활동 태업이나 다름없습니다"',
+        memberId: "H5476989",
+      },
+      {
+        label: "정점식 (국민의힘, 원내대표)",
+        value:
+          '"이재명 대통령의 범죄 재판을 없애기 위한 공소 취소 특검을 조작기소 특검이라고 부르는 것이 바로 국민을 속이는 언어 조작"',
+        memberId: "LJK4960Z",
+      },
+      {
+        label: "장동혁 (국민의힘, 대표)",
+        value: '"헌법을 지킬 의지 없는 대통령에게는 탄핵만이 답이다"',
+        memberId: "KFM1081G",
+      },
+    ],
+    sources: [
+      {
+        title: "[속보]'조작기소 특검법' 與 주도로 국회 본회의 통과…국힘은 표결 불참 / 뉴시스",
+        url: "https://www.newsis.com/view/NISX20261106_0003858189",
+      },
+      {
+        title: "[속보] 조작기소 특검법, 與 주도 국회 본회의 통과 / 파이낸셜뉴스",
+        url: "https://www.fnnews.com/news/202611061620249469",
+      },
+      {
+        title: "'조작기소 특검법' 여야 대치 격화…오늘 오후 처리 전망 / KBS",
+        url: "https://news.kbs.co.kr/news/pc/view/view.do?ncd=8706014&ref=A",
+      },
+      {
+        title: "장동혁, '조작기소 특검' 반대 규탄집회…\"탄핵만이 답\" / 노컷뉴스",
+        url: "https://www.nocutnews.co.kr/news/6603388",
+      },
+      {
+        title: '계속 이어지는 필리버스터…"발목 잡기" vs "언어 조작" / SBS',
+        url: "https://news.sbs.co.kr/news/endPage.do?news_id=N1008833922",
+      },
+    ],
+    linkUrl: "/bills/PRC_B2X6B0K4J3E0L1E7V0V4X2U3Z0N1Q4",
+    active: true,
+  },
+  {
     id: "2026-11-05-manipulated-indictment-special-counsel",
     title:
       "'조작수사·조작기소 의혹' 특검법 본회의 상정 — 국민의힘 필리버스터, 민주 종결동의로 6일 오후 표결 전망 · 김태규 의원 제명 촉구 결의안 가결",
@@ -52,7 +104,7 @@ export const breakingNews: BreakingNewsItem[] = [
       },
     ],
     linkUrl: "/bills/PRC_B2X6B0K4J3E0L1E7V0V4X2U3Z0N1Q4",
-    active: true,
+    active: false,
   },
   {
     id: "2026-11-04-budget-policy-questioning",
