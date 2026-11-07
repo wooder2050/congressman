@@ -2,6 +2,51 @@ import type { BreakingNewsItem } from "./types";
 
 export const breakingNews: BreakingNewsItem[] = [
   {
+    id: "2026-11-07-ppp-rally-special-counsel",
+    title:
+      "국민의힘, 경복궁역 앞 '조작기소 특검법' 규탄 장외집회 — 민주 \"정치 공방으로 국민 호도 말라\"",
+    description:
+      "국민의힘은 7일 오후 3시 서울 종로구 경복궁역 1번 출구 인근에서 '이재명 재판취소 악법 강행처리 국민규탄대회'를 열었습니다. 장동혁 대표와 정점식 원내대표 등 지도부와 소속 의원, 당협위원장, 당원들이 참석했고, 전날 본회의를 통과한 '조작수사·조작기소 의혹' 특검법이 이재명 대통령 재판을 무력화하려는 법이라고 주장했습니다. 국민의힘이 장외집회를 연 것은 10월 3일 개천절 집회 이후 약 한 달 만입니다. 국민의힘은 9일 청와대 앞 현장 최고위원회의와 1인 시위, 법안이 국무회의에 오를 것으로 예상되는 10일 청와대 앞 현장 의원총회를 이어갈 계획입니다. 더불어민주당은 최종안에서 공소 취소 관련 조항이 빠졌다며, 이 특검은 윤석열 정부 당시 검찰과 국가기관의 수사·기소 과정에서 위법한 권한 행사가 있었는지 밝히는 법이라고 반박했습니다. 같은 날 서울 도심에서는 양대 노총의 전국노동자대회(경찰 추산 한국노총 1만 5천여 명, 민주노총 1만 8천여 명)도 열려 초광역권전략산업특구법안 철회와 65세 정년 연장 입법 등을 요구했습니다.",
+    date: "2026-11-07",
+    category: "politics",
+    items: [
+      {
+        label: "장동혁 (국민의힘, 대표)",
+        value:
+          '"2026년 11월 6일 대한민국은 죽고, 이재명만 살았다. 공소 취소 특검법은 딱 한 사람, 오로지 이재명을 위한 법"',
+        memberId: "KFM1081G",
+      },
+      {
+        label: "손명수 (민주, 대변인)",
+        value:
+          '"잘못된 권력 남용의 진상을 규명하고자 하는 특검의 본질을 외면한 채 정치 공방으로 국민을 호도하는 행태를 당장 멈추라"',
+        memberId: "JSA8739I",
+      },
+    ],
+    sources: [
+      {
+        title: '장동혁 "대한민국은 죽고 이재명만 살았다…탄핵말이가 답" / 뉴스1',
+        url: "https://www.news1.kr/politics/assembly/6346444",
+      },
+      {
+        title:
+          "국민의힘, '조작기소 특검법' 강행 규탄 장외집회 개최… 대국민 여론전 본격화 / 파이낸스투데이",
+        url: "https://www.fntoday.co.kr/news/articleView.html?idxno=397263",
+      },
+      {
+        title: '민주 "대통령 구하기? 국민 호도"...국힘 장외집회 비판 / MBN',
+        url: "http://mbn.mk.co.kr/pages/news/newsView.php?category=mbn00006&news_seq_no=5229546",
+      },
+      {
+        title:
+          "초광역특구법 철회 vs 조작기소 특검 규탄…주말 서울 도심 대규모 집회 세 대결 / kbc광주방송",
+        url: "https://www.ikbc.co.kr/article/view/kbc202611070033",
+      },
+    ],
+    linkUrl: "/bills/PRC_B2X6B0K4J3E0L1E7V0V4X2U3Z0N1Q4",
+    active: true,
+  },
+  {
     id: "2026-11-06-manipulated-indictment-special-counsel-passed",
     title:
       "'조작수사·조작기소 의혹' 특검법 본회의 통과 — 국민의힘 표결 불참·장외투쟁 돌입, 이재명 정부 7번째 특검",
