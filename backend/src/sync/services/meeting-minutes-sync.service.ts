@@ -112,11 +112,11 @@ export class MeetingMinutesSyncService {
         const newConfDate = this.normalizeDate(entry.row.CONF_DATE);
         if (
           existing.conferNum !== String(entry.row.CONFER_NUM || '') ||
-          existing.title !== entry.row.TITLE ||
+          existing.title !== (entry.row.TITLE || '') ||
           existing.className !== (entry.row.CLASS_NAME || '') ||
           existing.committeeName !== (entry.row.COMM_NAME || '') ||
           existing.confDate !== newConfDate ||
-          JSON.stringify(existing.agendas) !== JSON.stringify(entry.agendas)
+          this.agendasKey(existing.agendas) !== this.agendasKey(entry.agendas)
         ) {
           updateEntries.push(entry);
         }
@@ -161,6 +161,22 @@ export class MeetingMinutesSyncService {
         },
       });
     }
+  }
+
+  /**
+   * 안건 목록 비교용 문자열. jsonb는 저장 시 객체 키 순서를 바꾸므로(키 길이순)
+   * 객체째 JSON.stringify하면 내용이 같아도 항상 달라진다 → 필드를 고정 순서 배열로 뽑아 비교.
+   */
+  private agendasKey(agendas: unknown): string {
+    if (!Array.isArray(agendas)) return '[]';
+    return JSON.stringify(
+      agendas.map((a: Partial<AgendaItem> | null) => [
+        a?.subName ?? '',
+        a?.vodLinkUrl ?? '',
+        a?.confLinkUrl ?? '',
+        a?.pdfLinkUrl ?? '',
+      ]),
+    );
   }
 
   private normalizeDate(raw: string): string {
