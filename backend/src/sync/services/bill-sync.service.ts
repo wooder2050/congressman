@@ -9,6 +9,16 @@ import {
   type PolicyEventDraft,
 } from './policy-event-builder';
 
+/** stale 보고용 정부·위원장 목록 조회: 보고는 부가 기능이라 재시도 없이 60초 기한(진행 중 요청 10초 포함 최악 약 70초). */
+const STALE_CHECK_FETCH = { pageSize: 100, maxRetries: 0, overallDeadlineMs: 60_000 };
+
+/** 로그용 ID 표본(최대 20개 + 생략 건수). */
+function sampleIds(ids: string[], max = 20): string {
+  return ids.length <= max
+    ? ids.join(', ')
+    : `${ids.slice(0, max).join(', ')} … (+${ids.length - max})`;
+}
+
 /** PolicyEvent createMany 입력(배치 트랜잭션에서 재사용). */
 type PolicyEventInput = Prisma.PolicyEventCreateManyInput;
 
@@ -115,6 +125,15 @@ export class BillSyncService {
 
       // Phase 2: Link proposers (optional, slower)
       await this.batchLinkProposers(rows, termId);
+
+      // Phase 3: stale 후보 보고(삭제하지 않음) — 발의자 검증·재구축 성공 뒤.
+      // 보고는 부가 기능이므로 실패해도 이미 커밋된 적재를 실패로 만들지 않는다.
+      try {
+        await this.reportStaleBills(rows, termId);
+      } catch (error) {
+        const msg = error instanceof Error ? error.message : String(error);
+        console.warn(`[BillSync]   ⚠ Stale check failed (ignored): ${msg}`);
+      }
 
       await this.syncLog.complete(log.id, rows.length);
       console.log(`[BillSync] Completed: ${rows.length} records`);
@@ -494,29 +513,94 @@ export class BillSyncService {
     const unchanged = existingBills.length - newRows.length - updatePlans.length;
     await this.flushBillUpdates(updatePlans, '[BillSync]', { radarOn, radarPreview, unchanged });
 
-    // P1: API 응답에 없는 stale bill 정리 (철회·삭제된 법안)
-    const apiIds = new Set(rows.map((r) => r.BILL_ID));
-    const staleIds = [...existingIds].filter((id) => !apiIds.has(id));
-    if (staleIds.length > 0) {
-      const staleRatio = staleIds.length / existingIds.size;
-      if (staleRatio > 0.05) {
-        // 5% 초과 삭제는 API 응답 이상으로 판단 → 삭제 스킵
-        console.warn(
-          `[BillSync]   ⚠ Skipping stale bill removal: ${staleIds.length}/${existingIds.size} (${(staleRatio * 100).toFixed(1)}%) exceeds 5% threshold`,
-        );
-      } else {
-        console.log(`[BillSync]   Removing ${staleIds.length} stale bills...`);
-        await this.prisma.billProposer.deleteMany({
-          where: { billId: { in: staleIds } },
-        });
-        await this.prisma.bill.deleteMany({
-          where: { id: { in: staleIds } },
-        });
-      }
-    }
-
     // BillProposer 재구축(발의자 변경 반영)은 batchLinkProposers에서
     // delete+insert를 한 트랜잭션으로 원자적으로 수행한다(여기서 미리 삭제하지 않음).
+  }
+
+  /**
+   * 의원 발의 API 응답에 없는 stale 법안(삭제·ID 변경된 법안) 후보를 로그로만 알린다.
+   * 자동 삭제는 하지 않는다: Bill에는 출처 칼럼이 없고, 행 수가 맞는 부분 응답·병렬 실행·
+   * FK 없는 참조(Vote, 북마크 ID 배열) 때문에 정상 법안을 지울 위험을 완전히 막을 수 없다.
+   * 철회 법안은 API에 '철회'로 남으므로 stale은 드물다(22대 전체 2건, 2026-11-22) → 후보는 사람이 확인 후 정리.
+   */
+  private async reportStaleBills(rows: BillApiRow[], termId: number): Promise<void> {
+    const apiIds = new Set(rows.map((r) => r.BILL_ID));
+    if (rows.some((r) => !r.BILL_ID) || apiIds.size !== rows.length) {
+      console.warn(
+        `[BillSync]   ⚠ Skipping stale check: member API response has empty/duplicate BILL_ID (${apiIds.size}/${rows.length})`,
+      );
+      return;
+    }
+    const existing = await this.prisma.bill.findMany({ where: { termId }, select: { id: true } });
+    const notInApi = existing.map((b) => b.id).filter((id) => !apiIds.has(id));
+    const candidates = await this.findStaleBills(notInApi, termId);
+    if (candidates && candidates.length > 0) {
+      console.warn(
+        `[BillSync]   ⚠ Stale bill candidates (not deleted, review manually): ${sampleIds(candidates)}`,
+      );
+    }
+  }
+
+  /**
+   * 의원 발의 API에 없는 법안 중 다른 출처가 아닌 stale 후보를 고른다.
+   * - 정부·위원장 법안: extra-bills(TVBPMBILL11)가 관리 → 같은 API에서 ID를 받아 제외
+   * - 본회의 안건(예산안·결의안 등): vote-sync가 표결 데이터로 backfill하며 Vote.id = Bill.id
+   *   → 같은 id의 Vote가 있으면 제외
+   * 정부·위원장 목록을 받지 못하거나 응답이 이상하면 판정 근거가 없으므로 null(정리 건너뜀).
+   */
+  private async findStaleBills(notInMemberApi: string[], termId: number): Promise<string[] | null> {
+    if (notInMemberApi.length === 0) return [];
+
+    let extraIds: Set<string>;
+    try {
+      const [govRows, chairRows] = await Promise.all([
+        this.api.fetchAll<{ BILL_ID: string }>(
+          'TVBPMBILL11',
+          { AGE: String(termId), PROPOSER_KIND: '정부' },
+          STALE_CHECK_FETCH,
+        ),
+        this.api.fetchAll<{ BILL_ID: string }>(
+          'TVBPMBILL11',
+          { AGE: String(termId), PROPOSER_KIND: '위원장' },
+          STALE_CHECK_FETCH,
+        ),
+      ]);
+      const extraRows = [...govRows, ...chairRows];
+      extraIds = new Set(extraRows.map((r) => r.BILL_ID));
+      if (
+        govRows.length === 0 ||
+        chairRows.length === 0 ||
+        extraRows.some((r) => !r.BILL_ID) ||
+        extraIds.size !== extraRows.length
+      ) {
+        console.warn(
+          `[BillSync]   ⚠ Skipping stale check: abnormal extra bill response (gov ${govRows.length}, chair ${chairRows.length}, unique ${extraIds.size})`,
+        );
+        return null;
+      }
+    } catch (error) {
+      const msg = error instanceof Error ? error.message : String(error);
+      console.warn(`[BillSync]   ⚠ Skipping stale check: extra bill fetch failed (${msg})`);
+      return null;
+    }
+
+    const afterExtra = notInMemberApi.filter((id) => !extraIds.has(id));
+    const voteRows =
+      afterExtra.length > 0
+        ? await this.prisma.vote.findMany({
+            where: { id: { in: afterExtra } },
+            select: { id: true },
+          })
+        : [];
+    const voteIds = new Set(voteRows.map((v) => v.id));
+    const candidates = afterExtra.filter((id) => !voteIds.has(id));
+
+    console.log(
+      `[BillSync]   Stale check: ${notInMemberApi.length} not in member API → ` +
+        `${notInMemberApi.length - afterExtra.length} in extra API, ${voteIds.size} with same-id Vote, ` +
+        `${candidates.length} candidates`,
+    );
+    return candidates;
   }
 
   private async batchLinkProposers(rows: BillApiRow[], termId: number): Promise<void> {
