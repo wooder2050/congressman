@@ -664,7 +664,14 @@ export async function getLocalElections(): Promise<LocalElectionSummary[]> {
   return fetchApi("/api/local-elections");
 }
 
+/**
+ * 백엔드는 local-YYYY 형식이 아닌 id에 400을 돌려주고, fetchApi는 400을 throw해 페이지가 500이 된다.
+ * /local-elections/sitemap.xml 같은 봇 요청이 [year]에 걸려도 404가 나도록 형식부터 거른다.
+ */
+const LOCAL_ELECTION_ID_PATTERN = /^local-\d{4}$/;
+
 export async function getLocalElection(id: string): Promise<LocalElectionOverview | null> {
+  if (!LOCAL_ELECTION_ID_PATTERN.test(id)) return null;
   return fetchApi(`/api/local-elections/${id}`);
 }
 
@@ -692,6 +699,14 @@ export async function getLocalElectionRace(params: {
   id: string;
   raceId: number;
 }): Promise<LocalElectionRaceDetail | null> {
+  // raceId는 parseInt 결과라 NaN("abc")일 수 있다 — 형식이 틀리면 묻지 않고 없음 처리
+  if (
+    !LOCAL_ELECTION_ID_PATTERN.test(params.id) ||
+    !Number.isInteger(params.raceId) ||
+    params.raceId <= 0
+  ) {
+    return null;
+  }
   return fetchApi(`/api/local-elections/${params.id}/races/${params.raceId}`);
 }
 
