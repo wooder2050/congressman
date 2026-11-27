@@ -33,6 +33,18 @@ function clampInt(value: string | undefined, def: number, min: number, max: numb
   return n;
 }
 
+// Postgres int4 상한 — 넘는 값을 Prisma에 넘기면 쿼리 오류로 500이 난다
+const MAX_INT4 = 2147483647;
+
+/** 경로의 숫자 id 검증. 숫자가 아니거나 범위 밖이면 404 (봇이 임의 주소를 두드려도 500이 나지 않게) */
+function parseRouteId(raw: string, label: string): number {
+  const n = Number(raw);
+  if (!Number.isInteger(n) || n <= 0 || n > MAX_INT4) {
+    throw new NotFoundException(`Invalid ${label} id`);
+  }
+  return n;
+}
+
 @ApiTags('Local Elections')
 @Controller('local-elections')
 export class LocalElectionsController {
@@ -130,7 +142,7 @@ export class LocalElectionsController {
   @ApiParam({ name: 'raceId' })
   async getRaceDetail(@Param('id') id: string, @Param('raceId') raceId: string) {
     await this.assertExistingElectionId(id);
-    const race = await this.service.getRaceDetail(id, parseInt(raceId, 10));
+    const race = await this.service.getRaceDetail(id, parseRouteId(raceId, 'race'));
     if (!race) throw new NotFoundException();
     return race;
   }
@@ -141,11 +153,7 @@ export class LocalElectionsController {
   @ApiParam({ name: 'candidateId' })
   async getCandidateDetail(@Param('id') id: string, @Param('candidateId') candidateId: string) {
     await this.assertExistingElectionId(id);
-    const numericId = Number(candidateId);
-    if (!Number.isInteger(numericId) || numericId <= 0) {
-      throw new NotFoundException('Invalid candidate id');
-    }
-    return this.service.getCandidateDetail(id, numericId);
+    return this.service.getCandidateDetail(id, parseRouteId(candidateId, 'candidate'));
   }
 
   @Get(':id/regions')
